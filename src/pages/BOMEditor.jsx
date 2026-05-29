@@ -3,7 +3,7 @@ import {
   ArrowLeft, DollarSign, Euro, FileText, CheckCircle2, ImagePlus, Network, Package, Grid,
   Wrench, Calculator, BookOpen, Plus, Search, Table as TableIcon, ZoomOut, ZoomIn, Maximize,
   Trash2, ChevronDown, Link as LinkIcon, Image as ImageIcon, ChevronRight, Layout, Activity,
-  AlertTriangle, PieChart, Server, Users, QrCode, Briefcase, Edit, Eye, EyeOff, PanelTopClose, PanelTopOpen,
+  AlertTriangle, PieChart, Server, Users, QrCode, Briefcase, Edit, Eye, EyeOff, PanelTopClose, PanelTopOpen, TrendingUp,
 } from 'lucide-react';
 import { manufactureGraph } from '../data/mockData';
 import { flattenTree } from '../utils/treeHelpers';
@@ -25,6 +25,46 @@ import SectionCard from '../components/ui/SectionCard';
 import RoutingModal from '../components/modals/RoutingModal';
 import SummaryDetailModal from '../components/modals/SummaryDetailModal';
 import KalkulasiModal from '../components/modals/KalkulasiModal';
+import MarkupPreviewModal from '../components/modals/MarkupPreviewModal';
+import ProductPanel from '../components/product/ProductPanel';
+import { VENDOR_SAMPLES } from '../data/masterSamples';
+import { resolveNodeFoto } from '../utils/images';
+
+function VendorField({ value, onChange }) {
+  const known = VENDOR_SAMPLES.includes(value);
+  const selectValue = known ? value : value ? '__custom__' : '';
+
+  return (
+    <div className="flex flex-col gap-1 min-w-[160px]">
+      <select
+        value={selectValue}
+        onChange={(e) => {
+          const v = e.target.value;
+          if (v === '__custom__') onChange(value && !known ? value : '');
+          else onChange(v);
+        }}
+        className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-xs font-medium bg-white focus:border-brand-400 focus:ring-1 focus:ring-brand-100 outline-none"
+      >
+        <option value="">— Pilih vendor —</option>
+        {VENDOR_SAMPLES.map((v) => (
+          <option key={v} value={v}>
+            {v}
+          </option>
+        ))}
+        <option value="__custom__">Lainnya (ketik manual)</option>
+      </select>
+      {selectValue === '__custom__' && (
+        <input
+          type="text"
+          value={value || ''}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="Nama vendor..."
+          className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-xs font-medium focus:border-brand-400 focus:ring-1 focus:ring-brand-100 outline-none"
+        />
+      )}
+    </div>
+  );
+}
 
 const NodeCard = ({ data }) => {
   const [showProses, setShowProses] = useState(true);
@@ -212,6 +252,7 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
   const [searchQuery, setSearchQuery] = useState('');
   const [routingNode, setRoutingNode] = useState(null);
   const [showKalkulasi, setShowKalkulasi] = useState(false);
+  const [showMarkupPreview, setShowMarkupPreview] = useState(false);
   const [detailSummaryNode, setDetailSummaryNode] = useState(null);
   const [showProductPanel, setShowProductPanel] = useState(true);
   const [priceDisplay, setPriceDisplay] = useState('IDR');
@@ -887,7 +928,7 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
 
   // --- EDITOR RENDER ---
   return (
-    <div className="w-full h-screen flex flex-col bg-page font-sans overflow-hidden">
+    <div className="editor-shell font-sans">
       
       {/* Include Routing Modal */}
       <RoutingModal
@@ -908,8 +949,7 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
       </svg>
       <style>{`@keyframes dashMove { to { stroke-dashoffset: -16; } } .animated-dash { animation: dashMove 0.8s linear infinite; }`}</style>
 
-      {/* GLOBAL TOP BAR HEADER */}
-      <div className="flex items-center justify-between px-6 py-3.5 bg-white border-b border-slate-200 shrink-0 shadow-sm z-10 relative">
+      <div className="editor-topbar">
         <div className="flex items-center gap-4">
           <button onClick={onBack} className="flex items-center text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors">
             <ArrowLeft className="w-4 h-4 mr-2" /> Ke Daftar BOM
@@ -958,209 +998,41 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
         </div>
       </div>
 
-      {/* Include Modal View Kalkulasi Lengkap */}
-      <KalkulasiModal isOpen={showKalkulasi} onClose={() => setShowKalkulasi(false)} bomData={bomData} />
+      <KalkulasiModal
+        isOpen={showKalkulasi}
+        onClose={() => setShowKalkulasi(false)}
+        bomData={bomData}
+        cogsData={cogsData}
+        cogsConfig={cogsConfig}
+        productInfo={productInfo}
+        packingCosts={{ boxMat: packBoxMat, boxLab: packBoxLab, sfMat: packSfMat, sfLab: packSfLab }}
+      />
+      <MarkupPreviewModal
+        isOpen={showMarkupPreview}
+        onClose={() => setShowMarkupPreview(false)}
+        totalCogs={cogsData.totalCogs}
+        selectedPct={cogsConfig.markupPct}
+        onSelect={(pct) => setCogsConfig((p) => ({ ...p, markupPct: pct }))}
+      />
 
-      {/* MAIN SCROLLABLE CONTENT AREA */}
-      <div className="flex-1 overflow-y-auto flex flex-col bg-page">
+      <div className="editor-body">
         
         {/* PRODUCT INFORMATION — bisa disembunyikan untuk fokus kalkulasi */}
         {showProductPanel ? (
-        <div className="px-6 pt-6 shrink-0 w-full pb-6 mb-2">
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row p-1.5 gap-1">
-            
-            {/* Gambar Kiri */}
-            <div className="w-full md:w-[280px] shrink-0 bg-slate-50 rounded-xl border border-slate-100 flex flex-col p-4 relative group justify-center">
-              <div className="w-full aspect-square bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm relative group-hover:border-blue-300 transition-all cursor-pointer">
-                <img src="https://images.unsplash.com/photo-1503602642458-232111445657?w=400&h=400&fit=crop&q=80" alt="Main Product" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/40 transition-colors flex flex-col items-center justify-center backdrop-blur-[1px]">
-                  <div className="translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center text-white">
-                    <ImagePlus className="w-8 h-8 mb-2" />
-                    <span className="text-xs font-bold tracking-wide">Ubah Foto Produk</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Form Kanan */}
-            <div className="flex-1 flex flex-col bg-white rounded-xl py-4 px-6 gap-6">
-              
-              {/* Baris 1: Detail Identitas */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="col-span-1 md:col-span-2">
-                  <label className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest mb-1 block">Nama Produk</label>
-                  <input type="text" value={productInfo.nama} onChange={(e) => handleProductInfoChange('nama', e.target.value)} className="w-full border-b-2 border-slate-200 px-0 py-1 text-xl font-black text-slate-800 focus:outline-none focus:border-blue-500 bg-transparent transition-colors hover:border-slate-300" />
-                </div>
-                <div>
-                  <label className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest mb-1 block">Kode Produk</label>
-                  <input type="text" value={productInfo.kode} onChange={(e) => handleProductInfoChange('kode', e.target.value)} className="w-full border-b-2 border-slate-200 px-0 py-2 text-sm font-bold text-slate-700 focus:outline-none focus:border-blue-500 bg-transparent transition-colors hover:border-slate-300" />
-                </div>
-                <div>
-                  <label className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest mb-1 block">Varian</label>
-                  <input type="text" value={productInfo.varian} onChange={(e) => handleProductInfoChange('varian', e.target.value)} className="w-full border-b-2 border-slate-200 px-0 py-2 text-sm font-bold text-slate-700 focus:outline-none focus:border-blue-500 bg-transparent transition-colors hover:border-slate-300" />
-                </div>
-              </div>
-
-              {/* Baris 2: Detail BOM & Customer */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="col-span-1 md:col-span-2">
-                  <label className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest mb-1 block">Nama BOM</label>
-                  <div className="flex items-center gap-2 border-b-2 border-slate-200 focus-within:border-blue-500 transition-colors hover:border-slate-300">
-                    <Network className="w-4 h-4 text-blue-500 shrink-0" />
-                    <input type="text" value={productInfo.namaBom} onChange={(e) => handleProductInfoChange('namaBom', e.target.value)} className="w-full py-2 text-sm font-bold text-blue-700 focus:outline-none bg-transparent" />
-                  </div>
-                </div>
-                <div>
-                  <label className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest mb-1 block">Kode BOM</label>
-                  <input type="text" value={productInfo.kodeBom} onChange={(e) => handleProductInfoChange('kodeBom', e.target.value)} className="w-full border-b-2 border-slate-200 px-0 py-2 text-sm font-bold text-blue-700 focus:outline-none focus:border-blue-500 bg-transparent transition-colors hover:border-slate-300" />
-                </div>
-                <div className="flex gap-4">
-                  <div className="flex-1">
-                    <label className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest mb-1 block">Versi</label>
-                    <input type="text" value={productInfo.versi} onChange={(e) => handleProductInfoChange('versi', e.target.value)} className="w-full border-b-2 border-slate-200 px-0 py-2 text-sm font-bold text-slate-700 focus:outline-none focus:border-blue-500 bg-transparent transition-colors hover:border-slate-300" />
-                  </div>
-                  <div className="flex-[2]">
-                    <label className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest mb-1 block">Customer</label>
-                    <input type="text" value={productInfo.customer} onChange={(e) => handleProductInfoChange('customer', e.target.value)} className="w-full border-b-2 border-slate-200 px-0 py-2 text-sm font-bold text-slate-700 focus:outline-none focus:border-blue-500 bg-transparent transition-colors hover:border-slate-300" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Baris 2b: Referensi Excel BOM TEMPLATE */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest mb-1 block">Item Type</label>
-                  <input type="text" value={productMeta.itemType} onChange={(e) => handleProductMetaChange('itemType', e.target.value)} className="w-full border-b-2 border-slate-200 px-0 py-2 text-sm font-bold text-slate-700 focus:outline-none focus:border-blue-500 bg-transparent" placeholder="CHAIR" />
-                </div>
-                <div>
-                  <label className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest mb-1 block">Wood</label>
-                  <input type="text" value={productMeta.wood} onChange={(e) => handleProductMetaChange('wood', e.target.value)} className="w-full border-b-2 border-slate-200 px-0 py-2 text-sm font-bold text-slate-700 focus:outline-none focus:border-blue-500 bg-transparent" />
-                </div>
-                <div>
-                  <label className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest mb-1 block">Coating</label>
-                  <input type="text" value={productMeta.coating} onChange={(e) => handleProductMetaChange('coating', e.target.value)} className="w-full border-b-2 border-slate-200 px-0 py-2 text-sm font-bold text-slate-700 focus:outline-none focus:border-blue-500 bg-transparent" />
-                </div>
-              </div>
-
-              {/* Baris 3: Dimensi Produk & Packing — horizontal, ringkas */}
-              <div className="flex flex-row gap-3 mt-auto w-full overflow-x-auto pb-1 scrollbar-hide items-stretch">
-                
-                {/* 1. Dimensi Produk */}
-                <div className="flex-1 min-w-[200px] max-w-[280px] bg-white border border-brand-100 rounded-xl p-3 flex flex-col gap-2 shadow-sm">
-                  <label className="text-[10px] font-extrabold text-brand-700 uppercase tracking-widest flex items-center gap-1.5 shrink-0">
-                    <Layout className="w-3.5 h-3.5 text-brand-500 shrink-0"/> 1. Dimensi Produk
-                  </label>
-                  <div className="flex items-center gap-1.5 flex-1">
-                    {[
-                      { key: 'w', label: 'W' },
-                      { key: 'd', label: 'D' },
-                      { key: 'h', label: 'H' },
-                    ].map(({ key, label }, i) => (
-                      <div key={key} className="flex items-center gap-1.5 flex-1 min-w-0">
-                        {i > 0 && <span className="text-slate-300 font-bold text-[10px] shrink-0">×</span>}
-                        <div className="relative flex-1 min-w-0">
-                          <span className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 font-black text-[9px]">{label}</span>
-                          <input
-                            type="number"
-                            value={dimensi[key]}
-                            onChange={(e) => updateDimensi(key, e.target.value)}
-                            className="w-full py-1.5 pl-5 pr-1 text-center text-xs font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded-md focus:border-brand-400 focus:ring-1 focus:ring-brand-100 outline-none tabular-nums"
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="bg-brand-50 border border-brand-100 rounded-md py-1.5 px-2.5 flex justify-between items-center shrink-0">
-                    <span className="text-[9px] font-bold text-brand-600 uppercase">Volume (m³)</span>
-                    <span className="text-xs font-black text-brand-700 tabular-nums">{volProduk}</span>
-                  </div>
-                </div>
-
-                {/* 2 & 3. Dimensi Packing — W/D/H dalam 3 kolom horizontal */}
-                {packingDimensions.map((item, index) => {
-                  const isBox = item.type?.toLowerCase().includes('box');
-                  const isSF = item.type?.toLowerCase().includes('single');
-                  const grossW = dimensi.w + (Number(item.tolW) || 0);
-                  const grossD = dimensi.d + (Number(item.tolD) || 0);
-                  const grossH = dimensi.h + (Number(item.tolH) || 0);
-                  const vol = calcPackingVolume(dimensi, item, packingVolOpts).toFixed(6);
-                  const axes = [
-                    { label: 'W', tol: 'tolW', base: dimensi.w },
-                    { label: 'D', tol: 'tolD', base: dimensi.d },
-                    { label: 'H', tol: 'tolH', base: dimensi.h },
-                  ];
-
-                  const cardCls = isBox
-                    ? 'border-material-200 bg-material-50/30'
-                    : isSF
-                      ? 'border-teal-200 bg-teal-50/30'
-                      : 'border-emerald-200 bg-emerald-50/30';
-                  const labelCls = isBox ? 'text-material-700' : isSF ? 'text-teal-700' : 'text-emerald-700';
-                  const iconCls = isBox ? 'text-material-500' : isSF ? 'text-teal-500' : 'text-emerald-500';
-                  const axisLbl = isBox ? 'text-material-600' : isSF ? 'text-teal-600' : 'text-emerald-600';
-                  const plusCls = isBox ? 'text-material-500' : isSF ? 'text-teal-500' : 'text-emerald-500';
-                  const nettCls = isBox ? 'border-material-100 bg-white' : isSF ? 'border-teal-100 bg-white' : 'border-emerald-100 bg-white';
-                  const tolCls = isBox
-                    ? 'border-material-200 text-material-700 focus:border-material-400'
-                    : isSF
-                      ? 'border-teal-200 text-teal-700 focus:border-teal-400'
-                      : 'border-emerald-200 text-emerald-700 focus:border-emerald-400';
-                  const grossCls = isBox
-                    ? 'border-material-200 text-material-800 bg-material-50/50'
-                    : isSF
-                      ? 'border-teal-200 text-teal-800 bg-teal-50/50'
-                      : 'border-emerald-200 text-emerald-800 bg-emerald-50/50';
-                  const volWrap = isBox ? 'bg-material-100 border-material-200' : isSF ? 'bg-teal-100 border-teal-200' : 'bg-emerald-100 border-emerald-200';
-                  const volLbl = isBox ? 'text-material-700' : isSF ? 'text-teal-700' : 'text-emerald-700';
-                  const volVal = isBox ? 'text-material-800' : isSF ? 'text-teal-800' : 'text-emerald-800';
-
-                  return (
-                    <div key={item.id} className={`flex-1 min-w-[240px] max-w-[320px] border rounded-xl p-3 flex flex-col gap-2 shadow-sm ${cardCls}`}>
-                      <label className={`text-[10px] font-extrabold ${labelCls} uppercase tracking-widest flex items-center gap-1.5 shrink-0`}>
-                        <Package className={`w-3.5 h-3.5 ${iconCls} shrink-0`}/> {index + 2}. Dimensi {item.type}
-                      </label>
-                      <div className="grid grid-cols-3 gap-2 flex-1">
-                        {axes.map(({ label, tol, base }) => {
-                          const gross = base + (Number(item[tol]) || 0);
-                          return (
-                            <div key={label} className="flex flex-col gap-1 min-w-0">
-                              <span className={`text-[9px] font-black ${axisLbl} text-center`}>{label}</span>
-                              <div className="flex items-center gap-0.5">
-                                <span className={`flex-1 text-[10px] font-semibold text-slate-500 border rounded py-1 text-center tabular-nums ${nettCls}`}>{base}</span>
-                                <span className={`${plusCls} text-[9px] font-bold shrink-0`}>+</span>
-                                <input
-                                  type="number"
-                                  value={item[tol]}
-                                  onChange={(e) => handleUpdatePackingDim(item.id, tol, e.target.value)}
-                                  className={`w-9 py-1 text-center text-[10px] font-bold bg-white border rounded focus:ring-1 outline-none tabular-nums ${tolCls}`}
-                                />
-                              </div>
-                              <div className="flex items-center gap-0.5">
-                                <span className="text-slate-300 text-[9px] font-bold shrink-0">=</span>
-                                <input
-                                  type="number"
-                                  value={gross}
-                                  onChange={(e) => handleUpdatePackingGross(item.id, tol, e.target.value, base)}
-                                  className={`flex-1 min-w-0 py-1 text-center text-[10px] font-bold border rounded focus:ring-1 outline-none tabular-nums ${grossCls}`}
-                                />
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                      <div className={`${volWrap} border rounded-md py-1.5 px-2.5 flex justify-between items-center shrink-0`}>
-                        <span className={`text-[9px] font-bold ${volLbl} uppercase`}>Volume (m³)</span>
-                        <span className={`text-xs font-black ${volVal} tabular-nums`}>{vol}</span>
-                      </div>
-                    </div>
-                  );
-                })}
-
-              </div>
-              
-            </div>
-          </div>
-        </div>
+          <ProductPanel
+            productInfo={productInfo}
+            onProductInfoChange={handleProductInfoChange}
+            productMeta={productMeta}
+            onProductMetaChange={handleProductMetaChange}
+            productImage={resolveNodeFoto(bomData)}
+            dimensi={dimensi}
+            onDimensiChange={updateDimensi}
+            volProduk={volProduk}
+            packingDimensions={packingDimensions}
+            onPackingTolChange={(id, tol, val) => handleUpdatePackingDim(id, tol, val)}
+            onPackingGrossChange={(id, tol, val, base) => handleUpdatePackingGross(id, tol, val, base)}
+            packingVolOpts={packingVolOpts}
+          />
         ) : (
           <div className="px-6 pt-4 pb-2 shrink-0 flex items-center justify-between bg-white border-b border-slate-200">
             <p className="text-xs font-bold text-slate-500">
@@ -1539,7 +1411,12 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                       {showHiddenContainers ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
                       {showHiddenContainers ? 'Sembunyikan baris hidden' : 'Tampilkan baris hidden'}
                     </button>
-                    <button onClick={handleAddContainer} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors shadow-sm">
+                    <button
+                      type="button"
+                      onClick={handleAddContainer}
+                      className="hidden bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold items-center gap-1.5 transition-colors shadow-sm"
+                      aria-hidden
+                    >
                       <Plus className="w-3.5 h-3.5" /> Tambah Kontainer
                     </button>
                   </div>
@@ -1762,12 +1639,9 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                             <td className="px-4 py-3 border-r border-slate-100 font-mono text-slate-500">{d.kode}</td>
                             <td className="px-4 py-3 border-r border-slate-100 font-black text-slate-700">{d.nama}</td>
                             <td className="px-4 py-3 border-r border-slate-100">
-                              <input
-                                type="text"
+                              <VendorField
                                 value={d.vendor || ''}
-                                onChange={(e) => handleUpdateNode(node.id, 'vendor', e.target.value)}
-                                placeholder="Nama vendor..."
-                                className="w-full min-w-[120px] border border-slate-200 rounded px-2 py-1 text-xs font-medium focus:border-brand-400 outline-none"
+                                onChange={(val) => handleUpdateNode(node.id, 'vendor', val)}
                               />
                             </td>
                             <td className="px-4 py-3 border-r border-slate-100 text-center">
@@ -2539,9 +2413,23 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                   {/* Pricing / Markup */}
                   <div className="flex flex-col gap-2">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">3. Pricing / Markup</label>
-                    <div className="flex items-center text-xs font-bold text-slate-600 bg-emerald-50 border border-emerald-200 rounded-lg overflow-hidden shadow-sm focus-within:border-emerald-400 focus-within:ring-1 focus-within:ring-emerald-100 mt-1">
-                      <span className="bg-emerald-100 px-3 py-2 border-r border-emerald-200 flex-1 text-[11px] text-emerald-800">Target Markup (%)</span>
-                      <input type="number" value={cogsConfig.markupPct} onChange={e => setCogsConfig(p => ({ ...p, markupPct: e.target.value }))} className="w-20 px-2 py-2 text-center outline-none text-emerald-700 font-black bg-white" />
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="flex flex-1 items-center text-xs font-bold text-slate-600 bg-emerald-50 border border-emerald-200 rounded-lg overflow-hidden shadow-sm focus-within:border-emerald-400 focus-within:ring-1 focus-within:ring-emerald-100">
+                        <span className="bg-emerald-100 px-3 py-2 border-r border-emerald-200 flex-1 text-[11px] text-emerald-800">Target Markup (%)</span>
+                        <input
+                          type="number"
+                          value={cogsConfig.markupPct}
+                          onChange={(e) => setCogsConfig((p) => ({ ...p, markupPct: e.target.value }))}
+                          className="w-20 px-2 py-2 text-center outline-none text-emerald-700 font-black bg-white"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setShowMarkupPreview(true)}
+                        className="shrink-0 px-3 py-2 rounded-lg border border-emerald-200 bg-white text-emerald-700 text-[10px] font-black uppercase tracking-wide hover:bg-emerald-50 flex items-center gap-1.5 shadow-sm"
+                      >
+                        <TrendingUp className="w-3.5 h-3.5" /> Preview
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -2611,7 +2499,22 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                       <tr className="border-b border-slate-100 hover:bg-slate-50/50 bg-amber-50/10">
                         <td className="px-6 py-4 text-center font-black text-amber-400">4</td>
                         <td className="px-6 py-4 font-bold text-amber-900">Factory Overhead</td>
-                        <td className="px-6 py-4 text-[10px] text-slate-500 leading-tight">Production Cost × <span className="font-bold text-amber-600">{cogsConfig.factoryOhPct}%</span></td>
+                        <td className="px-6 py-4 text-[10px] text-slate-500 leading-tight">
+                          <span className="inline-flex items-center gap-1.5 flex-wrap">
+                            Production Cost ×
+                            <input
+                              type="number"
+                              min={0}
+                              step={0.5}
+                              value={cogsConfig.factoryOhPct}
+                              onChange={(e) =>
+                                setCogsConfig((p) => ({ ...p, factoryOhPct: parseFloat(e.target.value) || 0 }))
+                              }
+                              className="w-14 border border-amber-200 rounded px-1.5 py-0.5 text-center font-bold text-amber-800 bg-white"
+                            />
+                            %
+                          </span>
+                        </td>
                         <td className="px-6 py-4 text-right font-black text-amber-700">+ Rp {formatIDR(cogsData.factoryOh)}</td>
                         <td className="px-6 py-4 text-right font-bold text-amber-400">Rp {formatIDR(cogsData.productionCost + cogsData.factoryOh)}</td>
                       </tr>
@@ -2620,7 +2523,22 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                       <tr className="border-b border-slate-100 hover:bg-slate-50/50 bg-amber-50/10">
                         <td className="px-6 py-4 text-center font-black text-amber-400">5</td>
                         <td className="px-6 py-4 font-bold text-amber-900">Management Overhead</td>
-                        <td className="px-6 py-4 text-[10px] text-slate-500 leading-tight">Production Cost × <span className="font-bold text-amber-600">{cogsConfig.managementOhPct}%</span></td>
+                        <td className="px-6 py-4 text-[10px] text-slate-500 leading-tight">
+                          <span className="inline-flex items-center gap-1.5 flex-wrap">
+                            Production Cost ×
+                            <input
+                              type="number"
+                              min={0}
+                              step={0.5}
+                              value={cogsConfig.managementOhPct}
+                              onChange={(e) =>
+                                setCogsConfig((p) => ({ ...p, managementOhPct: parseFloat(e.target.value) || 0 }))
+                              }
+                              className="w-14 border border-amber-200 rounded px-1.5 py-0.5 text-center font-bold text-amber-800 bg-white"
+                            />
+                            %
+                          </span>
+                        </td>
                         <td className="px-6 py-4 text-right font-black text-amber-700">+ Rp {formatIDR(cogsData.managementOh)}</td>
                         <td className="px-6 py-4 text-right font-bold text-amber-400">Rp {formatIDR(cogsData.totalCogs)}</td>
                       </tr>

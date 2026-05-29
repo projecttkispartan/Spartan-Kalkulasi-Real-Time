@@ -5,12 +5,14 @@ import { X, ZoomIn, ZoomOut, RotateCcw, Image as ImageIcon } from 'lucide-react'
 const btnCls =
   'w-9 h-9 flex items-center justify-center rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 shadow-md disabled:opacity-40';
 
-/** Thumbnail kecil — klik untuk buka lightbox zoom */
+/** Thumbnail — klik buka lightbox zoom */
 export default function ClickZoomImage({
   src,
   alt = '',
   size = 72,
   className = '',
+  /** Ukuran dari className (h-*, w-*), bukan prop size */
+  fill = false,
 }) {
   const [open, setOpen] = useState(false);
   const [zoom, setZoom] = useState(1);
@@ -36,14 +38,16 @@ export default function ClickZoomImage({
     setOpen(true);
   };
 
+  const thumbStyle = fill ? undefined : { width: size, height: size };
+
   return (
     <>
       <button
         type="button"
         onClick={openLightbox}
-        className={`group relative shrink-0 rounded-lg border-2 border-slate-200 bg-slate-100 overflow-hidden hover:border-brand-400 hover:ring-2 hover:ring-brand-100 transition-all focus:outline-none focus:ring-2 focus:ring-brand-400 ${className}`}
-        style={{ width: size, height: size }}
-        title="Klik untuk perbesar / perkecil"
+        className={`group relative shrink-0 rounded-lg border-2 border-slate-200 bg-slate-100 overflow-hidden hover:border-brand-400 hover:ring-2 hover:ring-brand-100 transition-all focus:outline-none focus:ring-2 focus:ring-brand-400 ${fill ? 'block' : ''} ${className}`}
+        style={thumbStyle}
+        title="Klik foto untuk zoom"
       >
         {src ? (
           <img src={src} alt={alt} className="w-full h-full object-cover" draggable={false} />

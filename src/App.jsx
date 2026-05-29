@@ -7,25 +7,25 @@ export default function App() {
   const [kursUsd, setKursUsd] = useState(16004);
   const [kursEur, setKursEur] = useState(17500);
 
-  if (currentRoute === 'editor') {
-    return (
-      <BOMEditor
-        onBack={() => setCurrentRoute('dashboard')}
-        kursUsd={kursUsd}
-        setKursUsd={setKursUsd}
-        kursEur={kursEur}
-        setKursEur={setKursEur}
-      />
-    );
-  }
-
   return (
-    <Dashboard
-      onNewProject={() => setCurrentRoute('editor')}
-      kursUsd={kursUsd}
-      setKursUsd={setKursUsd}
-      kursEur={kursEur}
-      setKursEur={setKursEur}
-    />
+    <div className="viewport-shell">
+      {currentRoute === 'editor' ? (
+        <BOMEditor
+          onBack={() => setCurrentRoute('dashboard')}
+          kursUsd={kursUsd}
+          setKursUsd={setKursUsd}
+          kursEur={kursEur}
+          setKursEur={setKursEur}
+        />
+      ) : (
+        <Dashboard
+          onNewProject={() => setCurrentRoute('editor')}
+          kursUsd={kursUsd}
+          setKursUsd={setKursUsd}
+          kursEur={kursEur}
+          setKursEur={setKursEur}
+        />
+      )}
+    </div>
   );
 }

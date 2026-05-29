@@ -3,8 +3,21 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    height: 100%;
+  }
+
   body {
-    @apply antialiased;
+    @apply m-0 p-0 antialiased text-slate-800 overflow-hidden bg-page;
+    height: 100%;
+    width: 100%;
+  }
+
+  #root {
+    @apply m-0 p-0 block;
+    height: 100%;
+    width: 100%;
+    min-height: 100dvh;
   }
 }
 
@@ -83,4 +96,194 @@
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+@layer components {
+  .viewport-shell {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    @apply bg-page isolate;
+  }
+
+  .viewport-shell-modal {
+    z-index: 200;
+  }
+
+  .page-inner-full {
+    @apply w-full max-w-none mx-0 box-border px-4 sm:px-6 lg:px-8 xl:px-10;
+  }
+
+  .editor-shell {
+    @apply flex flex-1 flex-col min-h-0 min-w-0 overflow-hidden bg-page;
+  }
+
+  .editor-topbar {
+    @apply flex flex-wrap items-center justify-between gap-3 px-4 md:px-6 py-3 bg-white border-b border-slate-200 shrink-0 shadow-sm z-20;
+  }
+
+  .editor-body {
+    @apply flex-1 flex flex-col min-h-0 overflow-hidden;
+  }
+
+  .editor-product-panel {
+    @apply shrink-0 w-full border-b border-slate-200/80 bg-page overflow-visible;
+  }
+
+  .tab-page {
+    @apply flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-4 md:p-6 bg-page flex flex-col gap-4 md:gap-5;
+  }
+
+  .tab-page-header {
+    @apply surface-card-lg p-4 md:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0;
+  }
+
+  .input-field {
+    @apply w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 outline-none transition-colors focus:border-brand-400 focus:ring-2 focus:ring-brand-100;
+  }
+
+  .scroll-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+  }
+
+  .scroll-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scroll-thin::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 rounded-full;
+  }
+
+  .product-dim-cols-wrap {
+    @apply rounded-xl border border-slate-200 bg-slate-50/60 p-3 space-y-2.5;
+  }
+
+  .product-dim-cols__legend {
+    @apply text-[10px] font-bold text-slate-400 uppercase tracking-wider px-0.5;
+  }
+
+  .product-dim-cols {
+    @apply grid grid-cols-1 md:grid-cols-3 gap-2.5;
+  }
+
+  .product-dim-col {
+    @apply flex flex-col rounded-lg border overflow-hidden bg-white min-w-0 shadow-sm;
+  }
+
+  .product-dim-col__head {
+    @apply px-3 py-2.5 flex items-center justify-between gap-2 border-b shrink-0;
+  }
+
+  .product-dim-col__title {
+    @apply text-[10px] font-extrabold uppercase tracking-wide flex items-center gap-1.5 min-w-0 leading-tight;
+  }
+
+  .product-dim-col__vol {
+    @apply text-[10px] font-black tabular-nums shrink-0 px-2 py-0.5 rounded border leading-none;
+  }
+
+  .product-dim-col__vol::after {
+    content: ' m³';
+    @apply font-bold text-[9px] opacity-80;
+  }
+
+  .product-dim-col__body {
+    @apply px-1.5 py-3 flex flex-row items-stretch justify-stretch min-h-[3.75rem];
+  }
+
+  .product-dim-axis {
+    @apply flex flex-col items-center justify-center gap-1.5 flex-1 min-w-0 px-1.5;
+  }
+
+  .product-dim-axis + .product-dim-axis {
+    @apply border-l border-slate-100;
+  }
+
+  .product-dim-axis__label {
+    @apply text-[10px] font-black text-slate-400 uppercase tracking-wider;
+  }
+
+  .product-dim-axis__row {
+    @apply flex flex-row flex-wrap items-center justify-center gap-1 w-full;
+  }
+
+  .product-dim-produk-in {
+    @apply w-full max-w-[3.5rem] py-1.5 text-center text-[11px] font-bold border rounded-md bg-white tabular-nums outline-none focus:ring-1;
+  }
+
+  .product-dim-pack__nett {
+    @apply text-[10px] font-semibold tabular-nums px-1.5 py-0.5 rounded border bg-white text-slate-600 shrink-0 min-w-[2rem] text-center;
+  }
+
+  .product-dim-pack__in {
+    @apply w-9 py-1 text-center text-[10px] font-bold border rounded-md bg-white tabular-nums outline-none focus:ring-1 shrink-0;
+  }
+
+  .product-dim-pack__sep {
+    @apply text-[10px] text-slate-300 font-semibold shrink-0 select-none leading-none;
+  }
+
+  .panel-card {
+    @apply rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden;
+  }
+
+  .panel-card-head {
+    @apply px-4 py-3 border-b border-slate-100 bg-slate-50/80;
+  }
+
+  .panel-card-head h3 {
+    @apply text-sm font-black text-slate-800 uppercase tracking-wide;
+  }
+
+  .data-table-wrap {
+    @apply overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm;
+  }
+
+  .data-table-wrap .table-compact {
+    @apply w-full text-xs text-left border-collapse;
+  }
+
+  .data-table-wrap .table-compact thead {
+    @apply sticky top-0 z-10;
+  }
+
+  .data-table-wrap .table-compact thead th {
+    @apply bg-slate-100 text-[10px] font-black uppercase tracking-wider text-slate-600 px-3 py-2 border-b border-slate-200 whitespace-nowrap;
+  }
+
+  .data-table-wrap .table-compact tbody td {
+    @apply px-3 py-2 border-b border-slate-100 text-slate-700;
+  }
+
+  .data-table-wrap .table-compact tbody tr:nth-child(even) {
+    @apply bg-slate-50/40;
+  }
+
+  .data-table-wrap .table-compact tfoot td {
+    @apply px-3 py-3 bg-slate-100 border-t-2 border-slate-300 font-bold text-slate-800;
+  }
+
+  .kalkulasi-th-group--material {
+    @apply bg-amber-50 text-amber-800 border-amber-200;
+  }
+
+  .kalkulasi-th-group--proses {
+    @apply bg-indigo-50 text-indigo-800 border-indigo-200;
+  }
+
+  .kalkulasi-row-part {
+    @apply bg-white;
+  }
+
+  .kalkulasi-row-module {
+    @apply bg-slate-50/90 font-semibold;
+  }
 }
