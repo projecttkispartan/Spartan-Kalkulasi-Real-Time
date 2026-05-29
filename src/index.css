@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased;
+  }
+}
+
+.label-field {
+  @apply text-[10px] font-bold uppercase tracking-widest text-slate-400;
+}
+
+.page-shell {
+  @apply min-h-screen bg-page font-sans text-slate-800;
+}
+
+.surface-card {
+  @apply rounded-xl border border-slate-200 bg-white shadow-sm;
+}
+
+.surface-card-lg {
+  @apply rounded-2xl border border-slate-200 bg-white shadow-sm;
+}
+
+.table-head {
+  @apply border-b border-slate-200 bg-slate-50 text-[10px] font-bold uppercase tracking-widest text-slate-500;
+}
+
+.btn-primary {
+  @apply inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-700;
+}
+
+.currency-idr {
+  @apply font-bold text-emerald-600;
+}
+
+.currency-usd {
+  @apply font-bold text-amber-600;
+}
+
+.currency-eur {
+  @apply font-bold text-brand-600;
+}
+
+.section-packing-box {
+  @apply rounded-xl border border-material-200 bg-material-50/60;
+}
+
+.section-packing-sf {
+  @apply rounded-xl border border-teal-200 bg-teal-50/60;
+}
+
+.tab-active {
+  @apply border-b-[3px] border-brand-600 bg-brand-50/60 text-brand-700;
+}
+
+.tab-inactive {
+  @apply border-b-[3px] border-transparent text-slate-500 hover:bg-slate-50 hover:text-slate-700;
+}
+
+.modal-header {
+  @apply bg-brand-600 text-white;
+}
+
+.badge-modul {
+  @apply rounded border border-blue-200 bg-blue-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-blue-700;
+}
+
+.badge-submodul {
+  @apply rounded border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-700;
+}
+
+.badge-part {
+  @apply rounded border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-700;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
