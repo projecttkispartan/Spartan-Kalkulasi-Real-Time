@@ -31,15 +31,18 @@ function PackingAxisInline({ base, tolVal, gross, theme, onTol, onGross }) {
   );
 }
 
-function DimColumn({ icon: Icon, title, vol, accent, children }) {
+function DimColumn({ icon: Icon, title, vol, accent, variant = 'produk', children }) {
+  const volDisplay = Number(vol).toFixed(4);
   return (
-    <div className={`product-dim-col ${accent.border}`}>
+    <div className={`product-dim-col product-dim-col--${variant} ${accent.border}`}>
       <div className={`product-dim-col__head ${accent.head}`}>
         <span className={`product-dim-col__title ${accent.title}`}>
-          <Icon className={`w-3.5 h-3.5 shrink-0 ${accent.icon}`} />
+          <Icon className={`w-3 h-3 shrink-0 ${accent.icon}`} />
           <span className="truncate">{title}</span>
         </span>
-        <span className={`product-dim-col__vol ${accent.vol}`}>{vol}</span>
+        <span className={`product-dim-col__vol ${accent.vol}`} title={`${vol} m³`}>
+          {volDisplay}
+        </span>
       </div>
       <div className={`product-dim-col__body ${accent.body}`}>{children}</div>
     </div>
@@ -121,7 +124,7 @@ export default function ProductPanel({
     const vol = calcPackingVolume(dimensi, item, packingVolOpts).toFixed(4);
 
     return (
-      <DimColumn key={themeKey} icon={Package} title={title} vol={vol} accent={theme}>
+      <DimColumn key={themeKey} icon={Package} title={title} vol={vol} accent={theme} variant="pack">
         {axes.map(({ label, tolKey, base }) => {
           const gross = base + (Number(item[tolKey]) || 0);
           return (
@@ -219,10 +222,10 @@ export default function ProductPanel({
               </div>
             </div>
 
-            <div className="product-dim-cols-wrap">
+            <div className="product-dim-cols-wrap mt-0.5">
               <p className="product-dim-cols__legend">Dimensi (mm) · W × D × H</p>
               <div className="product-dim-cols">
-                <DimColumn icon={Layout} title="Produk" vol={volProduk} accent={PRODUK_ACCENT}>
+                <DimColumn icon={Layout} title="Produk" vol={volProduk} accent={PRODUK_ACCENT} variant="produk">
                   {axes.map(({ label, dimKey }) => (
                     <AxisSlot key={dimKey} label={label}>
                       <input

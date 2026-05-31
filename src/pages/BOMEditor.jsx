@@ -17,6 +17,7 @@ import {
 } from '../utils/packingVolume';
 import { ELBA_CHAIR_REFERENCE, EXCEL_FACTORY_OH_PCT } from '../data/excelReference';
 import { calcProsesCosts, LABOR_RATE_PER_MIN } from '../utils/operationCosts';
+import { getProsesById } from '../data/routingCatalog';
 import { tipeStyles } from '../design/tipeStyles';
 import EditorTabBar from '../components/ui/EditorTabBar';
 import { CurrencyGroup } from '../components/ui/CurrencyInput';
@@ -27,6 +28,7 @@ import SummaryDetailModal from '../components/modals/SummaryDetailModal';
 import KalkulasiModal from '../components/modals/KalkulasiModal';
 import MarkupPreviewModal from '../components/modals/MarkupPreviewModal';
 import ProductPanel from '../components/product/ProductPanel';
+import OperasiDetailCell from '../components/ui/OperasiDetailCell';
 import { VENDOR_SAMPLES } from '../data/masterSamples';
 import { resolveNodeFoto } from '../utils/images';
 
@@ -618,6 +620,11 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
     return { material, process, total: material + process, partCount, modulCount };
   }, [flatNodes]);
 
+  const prosesTypeLabel = (p) => {
+    if (p.proses) return getProsesById(p.proses).label;
+    return p.mfgProcess || '—';
+  };
+
   const expandProsesList = (nodeData) => {
     if (nodeData.proses?.length) return nodeData.proses;
     if ((nodeData.proses_count || 0) > 0) {
@@ -739,9 +746,9 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                 <tr>
                   <th colSpan={5} className="sticky left-0 z-20 bg-slate-50 border-b-[3px] border-b-slate-300 text-center py-3 px-2 text-[10px] text-slate-600 font-bold uppercase tracking-wider border-r border-slate-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">KOMPONEN, IDENTITAS & AKSI</th>
                   <th colSpan={2} className="border-b-[3px] border-b-slate-200 text-center py-3 px-2 text-[10px] text-slate-500 font-bold uppercase tracking-wider border-r border-slate-200 bg-slate-50/50">DETAIL LAINNYA</th>
-                  <th colSpan={4} className="border-b-[3px] border-b-blue-500 text-center py-3 px-2 text-[10px] text-blue-700 font-bold uppercase tracking-wider border-r border-slate-200 bg-blue-50/30">SPESIFIKASI FISIK (DIMENSI & VOL)</th>
-                  <th colSpan={3} className="border-b-[3px] border-b-amber-400 text-center py-3 px-2 text-[10px] text-amber-700 font-bold uppercase tracking-wider border-r border-slate-200 bg-amber-50/30">HARGA MATERIAL (SATUAN)</th>
-                  <th colSpan={3} className="border-b-[3px] border-b-indigo-400 text-center py-3 px-2 text-[10px] text-indigo-700 font-bold uppercase tracking-wider border-r border-slate-200 bg-indigo-50/30">BIAYA PRODUKSI (TOTAL)</th>
+                  <th colSpan={4} className="border-b-[3px] border-b-blue-500 text-center py-2 px-1 text-[10px] text-blue-700 font-bold uppercase tracking-wider border-r border-slate-200 bg-blue-50/30">SPESIFIKASI FISIK (DIMENSI & VOL)</th>
+                  <th colSpan={3} className="border-b-[3px] border-b-amber-400 text-center py-2 px-1 text-[10px] text-amber-700 font-bold uppercase tracking-wider border-r border-slate-200 bg-amber-50/30">HARGA MATERIAL (SATUAN)</th>
+                  <th colSpan={3} className="border-b-[3px] border-b-indigo-400 text-center py-2 px-1 text-[10px] text-indigo-700 font-bold uppercase tracking-wider border-r border-slate-200 bg-indigo-50/30">BIAYA PRODUKSI (TOTAL)</th>
                   <th colSpan={1} className="border-b-[3px] border-b-slate-200 text-center py-3 px-2 text-[10px] text-slate-500 font-bold uppercase tracking-wider border-r border-slate-200 bg-slate-50/50">MANUFAKTUR</th>
                   <th colSpan={1} className="border-b-[3px] border-b-slate-200 text-center py-3 px-2 text-[10px] text-slate-500 font-bold uppercase tracking-wider bg-slate-50/50">LAIN-LAIN</th>
                 </tr>
@@ -754,25 +761,25 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                   
                   <th className="py-3 px-4 text-center w-20">GAMBAR</th>
                   <th className="py-3 px-4 border-r border-slate-200 text-center">QTY</th>
-                  <th className="py-3 px-4 text-center">Width (MM)</th>
-                  <th className="py-3 px-4 text-center">Depth (MM)</th>
-                  <th className="py-3 px-4 text-center">Height (MM)</th>
-                  <th className="py-3 px-4 border-r border-slate-200 text-center text-blue-600">VOLUME (M³)</th>
-                  <th className="py-3 px-4 text-right">MAT (IDR)</th>
-                  <th className="py-3 px-4 text-right">MAT (USD)</th>
-                  <th className="py-3 px-4 border-r border-slate-200 text-right">MAT (EUR)</th>
-                  <th className="py-3 px-4 text-right text-indigo-600">PROD (IDR)</th>
-                  <th className="py-3 px-4 text-right text-indigo-600">PROD (USD)</th>
-                  <th className="py-3 px-4 border-r border-slate-200 text-right text-indigo-600">PROD (EUR)</th>
-                  <th className="py-3 px-4 border-r border-slate-200">PENGATURAN PROSES LENGKAP</th>
-                  <th className="py-3 px-4 min-w-[200px]">CATATAN</th>
+                  <th className="py-2 px-1.5 text-center w-[4.25rem]">Width (MM)</th>
+                  <th className="py-2 px-1.5 text-center w-[4.25rem]">Depth (MM)</th>
+                  <th className="py-2 px-1.5 text-center w-[4.25rem]">Height (MM)</th>
+                  <th className="py-2 px-1.5 border-r border-slate-200 text-center text-blue-600 w-[4.75rem]">VOLUME (M³)</th>
+                  <th className="py-2 px-1.5 text-right text-amber-700 w-[5.5rem]">MAT (IDR)</th>
+                  <th className="py-2 px-1.5 text-right text-amber-600 w-[4.5rem]">MAT (USD)</th>
+                  <th className="py-2 px-1.5 border-r border-slate-200 text-right text-amber-600 w-[4.5rem]">MAT (EUR)</th>
+                  <th className="py-2 px-1.5 text-right text-indigo-600 min-w-[6.5rem]">PROD (IDR)</th>
+                  <th className="py-2 px-1.5 text-right text-indigo-600 w-[4.5rem]">PROD (USD)</th>
+                  <th className="py-2 px-1.5 border-r border-slate-200 text-right text-indigo-600 w-[4.5rem]">PROD (EUR)</th>
+                  <th className="py-2 px-1.5 border-r border-slate-200">PENGATURAN PROSES LENGKAP</th>
+                  <th className="py-2 px-1.5 min-w-[200px]">CATATAN</th>
                 </tr>
               </thead>
               <tbody>
                 {flatNodes.map((node) => {
                   const d = node.data;
-                  const usdPrice = (d.biaya / kursUsd).toFixed(2);
-                  const eurPrice = (d.biaya / kursEur).toFixed(2);
+                  const usdMat = ((Number(d.biaya) || 0) / kursUsd).toFixed(2);
+                  const eurMat = ((Number(d.biaya) || 0) / kursEur).toFixed(2);
 
                   // Hitung total proses
                   let totalProcess = 0;
@@ -870,35 +877,32 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                       <td className="py-2 px-2 border-r border-slate-100 text-center">
                         <input type="number" value={d.qty} onChange={(e) => handleUpdateNode(node.id, 'qty', Number(e.target.value))} className={`${inputClasses} font-bold text-center w-16 text-slate-700`} />
                       </td>
-                      <td className="py-2 px-2 text-center">
-                         <input type="number" value={d.p || ''} onChange={(e) => handleUpdateNode(node.id, 'p', Number(e.target.value))} placeholder="-" className={`${inputClasses} text-center w-16 text-slate-600`} />
+                      <td className="py-2 px-1.5 text-center">
+                         <input type="number" value={d.p || ''} onChange={(e) => handleUpdateNode(node.id, 'p', Number(e.target.value))} placeholder="-" className={`${inputClasses} text-center w-14 text-slate-600`} />
                       </td>
-                      <td className="py-2 px-2 text-center">
-                        <input type="number" value={d.l || ''} onChange={(e) => handleUpdateNode(node.id, 'l', Number(e.target.value))} placeholder="-" className={`${inputClasses} text-center w-16 text-slate-600`} />
+                      <td className="py-2 px-1.5 text-center">
+                        <input type="number" value={d.l || ''} onChange={(e) => handleUpdateNode(node.id, 'l', Number(e.target.value))} placeholder="-" className={`${inputClasses} text-center w-14 text-slate-600`} />
                       </td>
-                      <td className="py-2 px-2 text-center">
-                         <input type="number" value={d.t || ''} onChange={(e) => handleUpdateNode(node.id, 't', Number(e.target.value))} placeholder="-" className={`${inputClasses} text-center w-16 text-slate-600`} />
+                      <td className="py-2 px-1.5 text-center">
+                         <input type="number" value={d.t || ''} onChange={(e) => handleUpdateNode(node.id, 't', Number(e.target.value))} placeholder="-" className={`${inputClasses} text-center w-14 text-slate-600`} />
                       </td>
-                      <td className="py-3 px-4 border-r border-slate-100 text-center font-bold text-blue-600 bg-blue-50/20">{d.vol}</td>
-                      
-                      {/* UBAH BAGIAN INI MENJADI INPUT */}
-                      <td className="py-2 px-2 text-right">
-                        <input 
-                          type="number" 
-                          value={d.biaya === 0 ? '' : d.biaya} 
-                          onChange={(e) => handleUpdateNode(node.id, 'biaya', Number(e.target.value))} 
-                          placeholder="0" 
-                          className={`${inputClasses} text-right min-w-[100px] text-slate-700 font-medium`} 
+                      <td className="py-2 px-1.5 border-r border-slate-100 text-center font-bold text-blue-600 bg-blue-50/20 tabular-nums text-[11px]">{d.vol || '—'}</td>
+
+                      <td className="py-2 px-1.5 text-right bg-amber-50/15">
+                        <input
+                          type="number"
+                          value={d.biaya === 0 ? '' : d.biaya}
+                          onChange={(e) => handleUpdateNode(node.id, 'biaya', Number(e.target.value))}
+                          placeholder="0"
+                          className={`${inputClasses} text-right w-[5.25rem] text-slate-700 font-medium tabular-nums`}
                         />
                       </td>
-                      {/* ----------------------------- */}
+                      <td className="py-2 px-1.5 text-right text-amber-700/90 bg-amber-50/15 tabular-nums text-[11px] font-semibold">{usdMat}</td>
+                      <td className="py-2 px-1.5 border-r border-slate-100 text-right text-amber-700/90 bg-amber-50/15 tabular-nums text-[11px] font-semibold">{eurMat}</td>
 
-                      <td className="py-3 px-4 text-right text-slate-500">{usdPrice}</td>
-                      <td className="py-3 px-4 border-r border-slate-100 text-right text-slate-500">{eurPrice}</td>
-
-                      <td className="py-3 px-4 text-right font-black text-indigo-700 bg-indigo-50/10">Rp {formatIDR(hargaProduksiIDR)}</td>
-                      <td className="py-3 px-4 text-right font-bold text-indigo-600 bg-indigo-50/10">$ {usdProd}</td>
-                      <td className="py-3 px-4 border-r border-slate-100 text-right font-bold text-indigo-600 bg-indigo-50/10">€ {eurProd}</td>
+                      <td className="py-2 px-1.5 text-right font-black text-indigo-700 bg-indigo-50/10 tabular-nums text-[11px]">Rp {formatIDR(hargaProduksiIDR)}</td>
+                      <td className="py-2 px-1.5 text-right font-bold text-indigo-600 bg-indigo-50/10 tabular-nums text-[11px]">{usdProd}</td>
+                      <td className="py-2 px-1.5 border-r border-slate-100 text-right font-bold text-indigo-600 bg-indigo-50/10 tabular-nums text-[11px]">{eurProd}</td>
                       
                       <td className="py-3 px-4 border-r border-slate-100">
                         {d.proses_count > 0 ? (
@@ -926,11 +930,8 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
     );
   };
 
-  // --- EDITOR RENDER ---
-  return (
-    <div className="editor-shell font-sans">
-      
-      {/* Include Routing Modal */}
+  if (routingNode) {
+    return (
       <RoutingModal
         node={routingNode}
         onClose={() => setRoutingNode(null)}
@@ -938,6 +939,12 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
         kursUsd={kursUsd}
         kursEur={kursEur}
       />
+    );
+  }
+
+  // --- EDITOR RENDER ---
+  return (
+    <div className="editor-shell font-sans">
 
       {/* Include Detail Summary Modal */}
       <SummaryDetailModal node={detailSummaryNode} onClose={() => setDetailSummaryNode(null)} />
@@ -1861,7 +1868,7 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                        <th className="px-4 py-4 border-r border-slate-200 text-amber-600">SAFETY FACTOR (%)</th>
                        <th className="px-4 py-4 border-r border-slate-200 text-red-500">WASTE FACTOR (%)</th>
                        <th className="px-4 py-4 border-r border-slate-200 text-right">HARGA PART (IDR)</th>
-                       <th className="px-4 py-4 border-r border-slate-200 text-left min-w-[500px]">RINCIAN OPERASI PRODUKSI</th>
+                       <th className="px-4 py-4 border-r border-slate-200 text-left min-w-[640px]">RINCIAN OPERASI PRODUKSI</th>
                        <th className="px-4 py-4 text-right text-indigo-700 bg-indigo-50/50 min-w-[120px]">TOTAL BIAYA (IDR)</th>
                      </tr>
                    </thead>
@@ -1879,14 +1886,13 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                        let totalOpMesin = 0;
                        let totalOpPekerja = 0;
 
-                       if (d.proses && d.proses.length > 0) {
-                         d.proses.forEach(p => {
-                           const c = calcProsesCosts(p);
-                           totalOpWaktu += c.waktu;
-                           totalOpMesin += c.mesin;
-                           totalOpPekerja += c.pekerja;
-                         });
-                       } else if (d.proses_count > 0) {
+                       expandProsesList(d).forEach((p) => {
+                         const c = calcProsesCosts(p);
+                         totalOpWaktu += c.waktu;
+                         totalOpMesin += c.mesin;
+                         totalOpPekerja += c.pekerja;
+                       });
+                       if (!expandProsesList(d).length && d.proses_count > 0) {
                          totalOpMesin = d.proses_count * 110000;
                        }
                        const totalOpCost = totalOpMesin + totalOpPekerja;
@@ -1927,22 +1933,25 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                            
                            {/* Nested Table Rincian Operasi */}
                            <td className="p-0 border-r border-slate-100 align-top bg-slate-50/30">
-                             {d.proses && d.proses.length > 0 ? (
+                             {expandProsesList(d).length > 0 ? (
                                <div className="w-full">
                                  <table className="w-full text-left text-[9px]">
                                    <thead className="bg-slate-100 border-b border-slate-200 text-slate-500 font-bold">
                                      <tr>
                                        <th className="px-3 py-2 text-center w-16 border-r border-slate-200">Visual Posisi</th>
-                                       <th className="px-3 py-2 border-r border-slate-200">Tahap & Nama Operasi</th>
+                                       <th className="px-3 py-2 text-center border-r border-slate-200 w-20">Proses</th>
+                                       <th className="px-3 py-2 border-r border-slate-200 min-w-[120px]">Tahap & Nama Operasi</th>
                                        <th className="px-3 py-2 text-center border-r border-slate-200 w-20">Durasi Waktu</th>
-                                       <th className="px-3 py-2 text-right border-r border-slate-200 w-32">Work Center (Mesin)</th>
-                                       <th className="px-3 py-2 text-right border-r border-slate-200 w-32">Man Power (Pekerja)</th>
+                                       <th className="px-3 py-2 text-right border-r border-slate-200 w-28">Work Center (Mesin)</th>
+                                       <th className="px-3 py-2 text-right border-r border-slate-200 w-28">Jumlah Pekerja & Biaya</th>
+                                       <th className="px-3 py-2 border-r border-slate-200 min-w-[11rem] text-left">Detail</th>
                                        <th className="px-3 py-2 text-right w-24">Subtotal</th>
                                      </tr>
                                    </thead>
                                    <tbody className="divide-y divide-slate-100">
-                                     {d.proses.map((p, idx) => {
-                                        const { waktu: w, person, mesin: bMesin, pekerja: bPekerja, rate } = calcProsesCosts(p);
+                                     {expandProsesList(d).map((p, idx) => {
+                                        const { waktu: w, person, mesin: bMesin, pekerja: bPekerja, rate, ratePekerja } = calcProsesCosts(p);
+                                        const rowSubtotal = bMesin + bPekerja;
                                         return (
                                           <tr key={idx} className="bg-white hover:bg-blue-50/30">
                                             <td className="px-3 py-2 border-r border-slate-100 text-center">
@@ -1951,8 +1960,20 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                                               </div>
                                               <span className="text-[7px] font-black uppercase text-indigo-600 tracking-widest">{p.posisiOperasi || '-'}</span>
                                             </td>
+                                            <td className="px-3 py-2 border-r border-slate-100 text-center align-middle">
+                                              <span className="inline-block text-[8px] font-black uppercase tracking-wide text-violet-700 bg-violet-50 border border-violet-100 px-1.5 py-0.5 rounded whitespace-nowrap">
+                                                {prosesTypeLabel(p)}
+                                              </span>
+                                            </td>
                                             <td className="px-3 py-2 border-r border-slate-100">
-                                              <div className="font-bold text-slate-800 text-[10px] mb-0.5">{p.nama}</div>
+                                              <div className="font-bold text-slate-800 text-[10px] mb-0.5 flex flex-wrap items-center gap-1">
+                                                {p.nama}
+                                                {p.inputMode === 'routing' && (
+                                                  <span className="text-[7px] font-black uppercase px-1 py-px rounded bg-indigo-100 text-indigo-700 border border-indigo-200">
+                                                    RT{p.routingSteps?.length ? ` · ${p.routingSteps.length}` : ''}
+                                                  </span>
+                                                )}
+                                              </div>
                                               <div className="text-[8px] font-bold text-slate-400 bg-slate-100 inline-block px-1.5 py-0.5 rounded">{p.mfgProcess || '-'}</div>
                                             </td>
                                             <td className="px-3 py-2 border-r border-slate-100 text-center font-black text-blue-600">{w} Min</td>
@@ -1961,22 +1982,25 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                                               <div className="font-bold text-slate-700 text-[10px]">Rp {formatIDR(bMesin)}</div>
                                             </td>
                                             <td className="px-3 py-2 border-r border-slate-100 text-right">
-                                              <div className="text-[7px] text-slate-400 mb-0.5 flex justify-end gap-1">
-                                                <span className="font-black text-amber-600">{person} Org</span> @ Rp {formatIDR(LABOR_RATE_PER_MIN)} / mnt
-                                              </div>
-                                              <div className="font-bold text-slate-700 text-[10px]">Rp {formatIDR(bPekerja)}</div>
+                                              <div className="font-black text-amber-600 text-[10px]">{person} org</div>
+                                              <div className="text-[7px] text-slate-400 mt-0.5">@ Rp {formatIDR(ratePekerja || LABOR_RATE_PER_MIN)} / mnt</div>
+                                              <div className="font-bold text-emerald-700 text-[10px] mt-0.5">Rp {formatIDR(bPekerja)}</div>
                                             </td>
-                                            <td className="px-3 py-2 text-right font-black text-indigo-700 bg-indigo-50/10">Rp {formatIDR(bMesin + bPekerja)}</td>
+                                            <td className="px-3 py-2 border-r border-slate-100 text-left align-top">
+                                              <OperasiDetailCell operasi={p} operasiIndex={idx} />
+                                            </td>
+                                            <td className="px-3 py-2 text-right font-black text-indigo-700 bg-indigo-50/10">Rp {formatIDR(rowSubtotal)}</td>
                                           </tr>
                                         )
                                      })}
                                    </tbody>
                                    <tfoot className="bg-slate-50 border-t border-slate-200">
                                      <tr>
-                                       <td colSpan={2} className="px-3 py-2 text-right font-black text-slate-500 uppercase tracking-widest">TOTAL ALOKASI OPERASI:</td>
+                                       <td colSpan={3} className="px-3 py-2 text-right font-black text-slate-500 uppercase tracking-widest">TOTAL ALOKASI OPERASI:</td>
                                        <td className="px-3 py-2 text-center font-black text-blue-600">{totalOpWaktu} Min</td>
                                        <td className="px-3 py-2 text-right font-black text-slate-700">Rp {formatIDR(totalOpMesin)}</td>
-                                       <td className="px-3 py-2 text-right font-black text-slate-700">Rp {formatIDR(totalOpPekerja)}</td>
+                                       <td className="px-3 py-2 text-right font-black text-emerald-700">Rp {formatIDR(totalOpPekerja)}</td>
+                                       <td className="px-3 py-2 border-r border-slate-100" />
                                        <td className="px-3 py-2 text-right font-black text-indigo-700">Rp {formatIDR(totalOpCost)}</td>
                                      </tr>
                                    </tfoot>

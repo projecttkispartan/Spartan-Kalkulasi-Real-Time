@@ -8,7 +8,7 @@ export default function App() {
   const [kursEur, setKursEur] = useState(17500);
 
   return (
-    <div className="viewport-shell">
+    <div className="viewport-shell flex flex-col">
       {currentRoute === 'editor' ? (
         <BOMEditor
           onBack={() => setCurrentRoute('dashboard')}

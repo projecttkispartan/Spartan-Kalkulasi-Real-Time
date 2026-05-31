@@ -1083,7 +1083,7 @@ var require_react_development = __commonJS({
           }
           return dispatcher.useContext(Context);
         }
-        function useState6(initialState) {
+        function useState8(initialState) {
           var dispatcher = resolveDispatcher();
           return dispatcher.useState(initialState);
         }
@@ -1107,7 +1107,7 @@ var require_react_development = __commonJS({
           var dispatcher = resolveDispatcher();
           return dispatcher.useLayoutEffect(create, deps);
         }
-        function useCallback(callback, deps) {
+        function useCallback2(callback, deps) {
           var dispatcher = resolveDispatcher();
           return dispatcher.useCallback(callback, deps);
         }
@@ -1874,7 +1874,7 @@ var require_react_development = __commonJS({
         exports.memo = memo;
         exports.startTransition = startTransition;
         exports.unstable_act = act;
-        exports.useCallback = useCallback;
+        exports.useCallback = useCallback2;
         exports.useContext = useContext;
         exports.useDebugValue = useDebugValue;
         exports.useDeferredValue = useDeferredValue;
@@ -1886,7 +1886,7 @@ var require_react_development = __commonJS({
         exports.useMemo = useMemo4;
         exports.useReducer = useReducer;
         exports.useRef = useRef2;
-        exports.useState = useState6;
+        exports.useState = useState8;
         exports.useSyncExternalStore = useSyncExternalStore;
         exports.useTransition = useTransition;
         exports.version = ReactVersion;
@@ -2433,7 +2433,7 @@ var require_react_dom_development = __commonJS({
         var HostPortal = 4;
         var HostComponent = 5;
         var HostText = 6;
-        var Fragment4 = 7;
+        var Fragment6 = 7;
         var Mode = 8;
         var ContextConsumer = 9;
         var ContextProvider = 10;
@@ -3590,7 +3590,7 @@ var require_react_dom_development = __commonJS({
               return "DehydratedFragment";
             case ForwardRef:
               return getWrappedName$1(type, type.render, "ForwardRef");
-            case Fragment4:
+            case Fragment6:
               return "Fragment";
             case HostComponent:
               return type;
@@ -12019,7 +12019,7 @@ var require_react_dom_development = __commonJS({
             }
           }
           function updateFragment2(returnFiber, current2, fragment, lanes, key) {
-            if (current2 === null || current2.tag !== Fragment4) {
+            if (current2 === null || current2.tag !== Fragment6) {
               var created = createFiberFromFragment(fragment, returnFiber.mode, lanes, key);
               created.return = returnFiber;
               return created;
@@ -12422,7 +12422,7 @@ var require_react_dom_development = __commonJS({
               if (child.key === key) {
                 var elementType = element.type;
                 if (elementType === REACT_FRAGMENT_TYPE) {
-                  if (child.tag === Fragment4) {
+                  if (child.tag === Fragment6) {
                     deleteRemainingChildren(returnFiber, child.sibling);
                     var existing = useFiber(child, element.props.children);
                     existing.return = returnFiber;
@@ -17898,7 +17898,7 @@ var require_react_dom_development = __commonJS({
               var _resolvedProps2 = workInProgress2.elementType === type ? _unresolvedProps2 : resolveDefaultProps(type, _unresolvedProps2);
               return updateForwardRef(current2, workInProgress2, type, _resolvedProps2, renderLanes2);
             }
-            case Fragment4:
+            case Fragment6:
               return updateFragment(current2, workInProgress2, renderLanes2);
             case Mode:
               return updateMode(current2, workInProgress2, renderLanes2);
@@ -18170,7 +18170,7 @@ var require_react_dom_development = __commonJS({
             case SimpleMemoComponent:
             case FunctionComponent:
             case ForwardRef:
-            case Fragment4:
+            case Fragment6:
             case Mode:
             case Profiler:
             case ContextConsumer:
@@ -22431,7 +22431,7 @@ var require_react_dom_development = __commonJS({
           return fiber;
         }
         function createFiberFromFragment(elements, mode, lanes, key) {
-          var fiber = createFiber(Fragment4, elements, key, mode);
+          var fiber = createFiber(Fragment6, elements, key, mode);
           fiber.lanes = lanes;
           return fiber;
         }
@@ -22608,7 +22608,7 @@ var require_react_dom_development = __commonJS({
           return root2;
         }
         var ReactVersion = "18.3.1";
-        function createPortal5(children, containerInfo, implementation) {
+        function createPortal6(children, containerInfo, implementation) {
           var key = arguments.length > 3 && arguments[3] !== void 0 ? arguments[3] : null;
           {
             checkKeyStringCoercion(key);
@@ -23465,7 +23465,7 @@ var require_react_dom_development = __commonJS({
           if (!isValidContainer(container)) {
             throw new Error("Target container is not a DOM element.");
           }
-          return createPortal5(children, container, null, key);
+          return createPortal6(children, container, null, key);
         }
         function renderSubtreeIntoContainer(parentComponent, element, containerNode, callback) {
           return unstable_renderSubtreeIntoContainer(parentComponent, element, containerNode, callback);
@@ -24463,11 +24463,11 @@ var require_react_jsx_runtime_development = __commonJS({
             return jsxWithValidation(type, props, key, false);
           }
         }
-        var jsx17 = jsxWithValidationDynamic;
-        var jsxs14 = jsxWithValidationStatic;
+        var jsx20 = jsxWithValidationDynamic;
+        var jsxs16 = jsxWithValidationStatic;
         exports.Fragment = REACT_FRAGMENT_TYPE;
-        exports.jsx = jsx17;
-        exports.jsxs = jsxs14;
+        exports.jsx = jsx20;
+        exports.jsxs = jsxs16;
       })();
     }
   }
@@ -24486,11 +24486,11 @@ var require_jsx_runtime = __commonJS({
 });
 
 // src/main.jsx
-var import_react8 = __toESM(require_react(), 1);
+var import_react10 = __toESM(require_react(), 1);
 var import_client = __toESM(require_client(), 1);
 
 // src/App.jsx
-var import_react7 = __toESM(require_react(), 1);
+var import_react9 = __toESM(require_react(), 1);
 
 // node_modules/lucide-react/dist/esm/createLucideIcon.js
 var import_react2 = __toESM(require_react());
@@ -24640,6 +24640,12 @@ var CircleCheck = createLucideIcon("CircleCheck", [
   ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
 ]);
 
+// node_modules/lucide-react/dist/esm/icons/clock.js
+var Clock = createLucideIcon("Clock", [
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["polyline", { points: "12 6 12 12 16 14", key: "68esgv" }]
+]);
+
 // node_modules/lucide-react/dist/esm/icons/dollar-sign.js
 var DollarSign = createLucideIcon("DollarSign", [
   ["line", { x1: "12", x2: "12", y1: "2", y2: "22", key: "7eqyqh" }],
@@ -24729,6 +24735,9 @@ var Maximize = createLucideIcon("Maximize", [
   ["path", { d: "M3 16v3a2 2 0 0 0 2 2h3", key: "wsl5sc" }],
   ["path", { d: "M16 21h3a2 2 0 0 0 2-2v-3", key: "18trek" }]
 ]);
+
+// node_modules/lucide-react/dist/esm/icons/minus.js
+var Minus = createLucideIcon("Minus", [["path", { d: "M5 12h14", key: "1ays0h" }]]);
 
 // node_modules/lucide-react/dist/esm/icons/network.js
 var Network = createLucideIcon("Network", [
@@ -25066,8 +25075,32 @@ var manufactureGraph = {
           proses_count: 2,
           foto: "https://images.unsplash.com/photo-1611078813350-0a149c40fd3b?w=150&h=150&fit=crop&q=80",
           proses: [
-            { nama: "Potong Pola", mfgProcess: "Woodworking", posisiOperasi: "Depan", waktuOperasi: 15, biaya: 5e3, gambar: posisiGambarMap.Depan },
-            { nama: "Bubut Kayu", mfgProcess: "Woodworking", posisiOperasi: "Samping Kanan", waktuOperasi: 30, biaya: 1e4, gambar: posisiGambarMap["Samping Kanan"] }
+            {
+              inputMode: "work_center",
+              workCenterId: "WCT-PEMOTONGAN",
+              nama: "Potong Pola",
+              mfgProcess: "Preparation",
+              posisiOperasi: "Depan",
+              waktuOperasi: 15,
+              totalPerson: 2,
+              rateMesin: 2104,
+              ratePekerja: 6294,
+              note: "Rough cut sunduk sandaran",
+              gambar: posisiGambarMap.Depan
+            },
+            {
+              inputMode: "work_center",
+              workCenterId: "WC-WOOD-01",
+              nama: "Bubut Kayu",
+              mfgProcess: "Woodworking",
+              posisiOperasi: "Samping Kanan",
+              waktuOperasi: 30,
+              totalPerson: 2,
+              rateMesin: 1200,
+              ratePekerja: 500,
+              note: "Shaping profil sunduk",
+              gambar: posisiGambarMap["Samping Kanan"]
+            }
           ]
         },
         {
@@ -25087,7 +25120,24 @@ var manufactureGraph = {
           proses_count: 1,
           foto: "https://images.unsplash.com/photo-1563283995-1f9f2bce4302?w=150&h=150&fit=crop&q=80",
           proses: [
-            { nama: "Amplas Halus", mfgProcess: "Finishing", posisiOperasi: "Belakang", waktuOperasi: 20, biaya: 8e3, gambar: posisiGambarMap.Belakang }
+            {
+              inputMode: "routing",
+              routingId: "RTMKJ6",
+              nama: "Routing Produk",
+              mfgProcess: "Finishing",
+              posisiOperasi: "Belakang",
+              waktuOperasi: 125,
+              totalPerson: 2,
+              note: "Panel sandaran \u2014 full routing 5 langkah",
+              gambar: posisiGambarMap.Belakang,
+              routingSteps: [
+                { urutan: 1, workCenterId: "WCT-PEMOTONGAN", namaProses: "Potong Pola", waktuMenit: 15, totalPerson: 2, note: "Rough cut material" },
+                { urutan: 2, workCenterId: "WCT-CNC", namaProses: "Profiling CNC", waktuMenit: 30, totalPerson: 1, note: "Profil & pocket" },
+                { urutan: 3, workCenterId: "WCT-AMPLAS", namaProses: "Amplas Halus", waktuMenit: 20, totalPerson: 2, note: "Grit 180\u2013220" },
+                { urutan: 4, workCenterId: "WCT-PERAKITAN", namaProses: "Perakitan Submodul", waktuMenit: 35, totalPerson: 3, note: "Drill & confirmat" },
+                { urutan: 5, workCenterId: "WCT-COATING", namaProses: "NC Coating", waktuMenit: 25, totalPerson: 2, note: "2 coat NC matt" }
+              ]
+            }
           ]
         }
       ]
@@ -25143,7 +25193,19 @@ var manufactureGraph = {
               proses_count: 1,
               foto: "https://images.unsplash.com/photo-1533090481720-856c6e3c1fdc?w=150&h=150&fit=crop&q=80",
               proses: [
-                { nama: "Potong CNC", mfgProcess: "Preparation", posisiOperasi: "Atas", waktuOperasi: 45, biaya: 15e3, gambar: posisiGambarMap.Atas }
+                {
+                  inputMode: "work_center",
+                  workCenterId: "WCT-CNC",
+                  nama: "Potong CNC",
+                  mfgProcess: "Woodworking",
+                  posisiOperasi: "Atas",
+                  waktuOperasi: 45,
+                  totalPerson: 1,
+                  rateMesin: 2500,
+                  ratePekerja: 550,
+                  note: "Nested sheet sunduk depan",
+                  gambar: posisiGambarMap.Atas
+                }
               ]
             },
             {
@@ -25163,7 +25225,19 @@ var manufactureGraph = {
               proses_count: 1,
               foto: "https://images.unsplash.com/photo-1611078813350-0a149c40fd3b?w=150&h=150&fit=crop&q=80",
               proses: [
-                { nama: "Bor Lubang", mfgProcess: "Preparation", posisiOperasi: "Bawah", waktuOperasi: 10, biaya: 7500, gambar: posisiGambarMap.Bawah }
+                {
+                  inputMode: "work_center",
+                  workCenterId: "WC-001",
+                  nama: "Cutting Section",
+                  mfgProcess: "Preparation",
+                  posisiOperasi: "Bawah",
+                  waktuOperasi: 10,
+                  totalPerson: 2,
+                  rateMesin: 2104,
+                  ratePekerja: 7525,
+                  note: "Bor & trim sunduk tengah",
+                  gambar: posisiGambarMap.Bawah
+                }
               ]
             }
           ]
@@ -25185,7 +25259,19 @@ var manufactureGraph = {
           proses_count: 1,
           foto: "",
           proses: [
-            { nama: "Amplas Dasar", mfgProcess: "Finishing", posisiOperasi: "Samping Kiri", waktuOperasi: 12, biaya: 5e3, gambar: posisiGambarMap["Samping Kiri"] }
+            {
+              inputMode: "work_center",
+              workCenterId: "WCT-AMPLAS",
+              nama: "Amplas Dasar",
+              mfgProcess: "Finishing",
+              posisiOperasi: "Samping Kiri",
+              waktuOperasi: 12,
+              totalPerson: 2,
+              rateMesin: 1800,
+              ratePekerja: 500,
+              note: "Prep sebelum assembly",
+              gambar: posisiGambarMap["Samping Kiri"]
+            }
           ]
         },
         {
@@ -25205,7 +25291,22 @@ var manufactureGraph = {
           proses_count: 1,
           foto: "",
           proses: [
-            { nama: "Potong Papan", mfgProcess: "Preparation", posisiOperasi: "Depan", waktuOperasi: 25, biaya: 1e4, gambar: posisiGambarMap.Depan }
+            {
+              inputMode: "routing",
+              routingId: "RT-DUDUKAN-FULL",
+              nama: "Routing Dudukan Lengkap",
+              mfgProcess: "Assembly",
+              posisiOperasi: "Depan",
+              waktuOperasi: 100,
+              totalPerson: 2,
+              note: "Sunduk samping \u2014 routing 3 langkah",
+              gambar: posisiGambarMap.Depan,
+              routingSteps: [
+                { urutan: 1, workCenterId: "WCT-CNC", namaProses: "Potong CNC", waktuMenit: 45, totalPerson: 1, note: "" },
+                { urutan: 2, workCenterId: "WC-001", namaProses: "Cutting Section", waktuMenit: 25, totalPerson: 2, note: "Trim & sizing" },
+                { urutan: 3, workCenterId: "WCT-PERAKITAN", namaProses: "Rakit Rangka", waktuMenit: 30, totalPerson: 3, note: "" }
+              ]
+            }
           ]
         }
       ]
@@ -25299,7 +25400,7 @@ function Dashboard({ onNewProject, kursUsd, setKursUsd, kursEur, setKursEur }) {
 }
 
 // src/pages/BOMEditor.jsx
-var import_react6 = __toESM(require_react(), 1);
+var import_react8 = __toESM(require_react(), 1);
 
 // src/utils/treeHelpers.js
 var flattenTree = (node, level = 0, isLast = true, result = []) => {
@@ -25427,24 +25528,286 @@ function findPackingByType(packingDimensions, keyword) {
 
 // src/data/routingCatalog.js
 var DEFAULT_LABOR_RATE_PER_MIN = 500;
+var wcBase = (overrides) => ({
+  usesMachine: true,
+  mesin: "\u2014",
+  tipeGaji: "Harian",
+  templateGaji: "Template Operator Produksi",
+  defaultTime: 0,
+  actualTime: 0,
+  oeeTarget: 90,
+  capacityUnit: "m\xB3",
+  setupTime: 10,
+  timeEfficiency: 100,
+  productionTime: 0,
+  cleanUpTime: 5,
+  defaultPerson: 2,
+  actualPerson: 2,
+  knife: "\u2014",
+  notes: "",
+  ...overrides
+});
 var WORK_CENTERS = [
-  { id: "WC-PREP-01", kode: "WC-PREP-01", nama: "Preparation \u2014 Potong Pola", mfgProcess: "Preparation", ratePerMin: 1e3, laborRatePerMin: 500, capacity: "12 m\xB3", lokasi: "Area A" },
-  { id: "WC-WOOD-01", kode: "WC-WOOD-01", nama: "Woodworking \u2014 Bubut & Shaping", mfgProcess: "Woodworking", ratePerMin: 1200, laborRatePerMin: 500, capacity: "14 m\xB3", lokasi: "Area B" },
-  { id: "WC-WOOD-02", kode: "WC-WOOD-02", nama: "Woodworking \u2014 CNC Router", mfgProcess: "Woodworking", ratePerMin: 1500, laborRatePerMin: 550, capacity: "10 m\xB3", lokasi: "Area B" },
-  { id: "WC-ASM-01", kode: "WC-ASM-01", nama: "Assembly \u2014 Perakitan Submodul", mfgProcess: "Assembly", ratePerMin: 900, laborRatePerMin: 450, capacity: "16 m\xB3", lokasi: "Area C" },
-  { id: "WC-FIN-01", kode: "WC-FIN-01", nama: "Finishing \u2014 Amplas & Coating", mfgProcess: "Finishing", ratePerMin: 1100, laborRatePerMin: 500, capacity: "12 m\xB3", lokasi: "Area D" },
-  { id: "WC-PACK-01", kode: "WC-PACK-01", nama: "Packing \u2014 Box & Seal", mfgProcess: "Packing", ratePerMin: 800, laborRatePerMin: 400, capacity: "20 m\xB3", lokasi: "Area E" }
+  wcBase({
+    id: "WC-001",
+    kode: "WC-001",
+    nama: "Cutting Section",
+    mfgProcess: "Preparation",
+    ratePerMin: 2104,
+    wcCostPerMin: 14,
+    laborRatePerMin: 7525,
+    capacity: "80",
+    capacityUnit: "Meter (M)",
+    lokasi: "Line A",
+    mesin: "Chainsaw",
+    tipeGaji: "Borongan",
+    templateGaji: "Template Operator Produksi",
+    defaultTime: 150,
+    actualTime: 120,
+    oeeTarget: 90,
+    setupTime: 10,
+    productionTime: 140,
+    cleanUpTime: 10,
+    timeEfficiency: 125,
+    defaultPerson: 2,
+    actualPerson: 2,
+    knife: "Ripping Blade",
+    notes: "Potong bahan baku kayu solid & plywood"
+  }),
+  wcBase({
+    id: "WCT-PEMOTONGAN",
+    kode: "WCT-PEMOTONGAN",
+    nama: "WCT Pemotongan",
+    mfgProcess: "Preparation",
+    ratePerMin: 2104,
+    wcCostPerMin: 2104,
+    laborRatePerMin: 6294,
+    capacity: "12",
+    lokasi: "Area A",
+    mesin: "Panel Saw",
+    defaultTime: 15,
+    actualTime: 15,
+    defaultPerson: 2,
+    knife: "Rip Blade",
+    notes: "Potong pola komponen furniture"
+  }),
+  wcBase({
+    id: "WCT-CNC",
+    kode: "WCT-CNC",
+    nama: "WCT CNC Router",
+    mfgProcess: "Woodworking",
+    ratePerMin: 2500,
+    wcCostPerMin: 2500,
+    laborRatePerMin: 550,
+    capacity: "10",
+    lokasi: "Area B",
+    mesin: "CNC Router 5-Axis",
+    tipeGaji: "Harian",
+    templateGaji: "Template Operator CNC",
+    defaultTime: 45,
+    defaultPerson: 1,
+    oeeTarget: 85,
+    notes: "Routing & profiling presisi"
+  }),
+  wcBase({
+    id: "WCT-AMPLAS",
+    kode: "WCT-AMPLAS",
+    nama: "WCT Amplas & Prep Finishing",
+    mfgProcess: "Finishing",
+    ratePerMin: 1800,
+    wcCostPerMin: 1800,
+    laborRatePerMin: 500,
+    capacity: "14",
+    lokasi: "Area D",
+    mesin: "Belt Sander",
+    defaultTime: 20,
+    defaultPerson: 2,
+    knife: "\u2014",
+    notes: "Amplas halus sebelum coating"
+  }),
+  wcBase({
+    id: "WCT-PERAKITAN",
+    kode: "WCT-PERAKITAN",
+    nama: "WCT Perakitan",
+    mfgProcess: "Assembly",
+    ratePerMin: 1650,
+    wcCostPerMin: 1650,
+    laborRatePerMin: 450,
+    capacity: "16",
+    lokasi: "Area C",
+    usesMachine: false,
+    mesin: "\u2014",
+    tipeGaji: "Harian",
+    templateGaji: "Template Operator Perakitan",
+    defaultTime: 35,
+    defaultPerson: 3,
+    setupTime: 15,
+    notes: "Perakitan submodul & hardware"
+  }),
+  wcBase({
+    id: "WCT-COATING",
+    kode: "WCT-COATING",
+    nama: "WCT Coating & Finishing",
+    mfgProcess: "Finishing",
+    ratePerMin: 2200,
+    wcCostPerMin: 2200,
+    laborRatePerMin: 520,
+    capacity: "12",
+    lokasi: "Area D",
+    mesin: "Spray Booth",
+    defaultTime: 25,
+    defaultPerson: 2,
+    oeeTarget: 88,
+    notes: "NC coating / stain / sealant"
+  }),
+  wcBase({
+    id: "WCT-QC",
+    kode: "WCT-QC",
+    nama: "WCT Quality Control",
+    mfgProcess: "QC",
+    ratePerMin: 800,
+    wcCostPerMin: 800,
+    laborRatePerMin: 400,
+    capacity: "20",
+    lokasi: "Area QC",
+    usesMachine: false,
+    defaultTime: 10,
+    defaultPerson: 1,
+    notes: "Inspeksi dimensi & finishing"
+  }),
+  wcBase({
+    id: "WCT-PACKING",
+    kode: "WCT-PACKING",
+    nama: "WCT Packing Ekspor",
+    mfgProcess: "Packing",
+    ratePerMin: 1200,
+    wcCostPerMin: 1200,
+    laborRatePerMin: 400,
+    capacity: "25",
+    lokasi: "Area E",
+    usesMachine: false,
+    defaultTime: 15,
+    defaultPerson: 2,
+    notes: "Box, bubble wrap, palletizing"
+  }),
+  // Alias legacy — backward compat mock BOM
+  wcBase({
+    id: "WC-PREP-01",
+    kode: "WC-PREP-01",
+    nama: "Preparation \u2014 Potong Pola",
+    mfgProcess: "Preparation",
+    ratePerMin: 1e3,
+    wcCostPerMin: 1e3,
+    laborRatePerMin: 500,
+    capacity: "12",
+    lokasi: "Area A",
+    mesin: "Panel Saw",
+    defaultTime: 15,
+    knife: "Rip Blade"
+  }),
+  wcBase({
+    id: "WC-WOOD-01",
+    kode: "WC-WOOD-01",
+    nama: "Woodworking \u2014 Bubut & Shaping",
+    mfgProcess: "Woodworking",
+    ratePerMin: 1200,
+    wcCostPerMin: 1200,
+    laborRatePerMin: 500,
+    capacity: "14",
+    lokasi: "Area B",
+    mesin: "Wood Lathe",
+    defaultTime: 30
+  }),
+  wcBase({
+    id: "WC-WOOD-02",
+    kode: "WC-WOOD-02",
+    nama: "Woodworking \u2014 CNC Router",
+    mfgProcess: "Woodworking",
+    ratePerMin: 1500,
+    wcCostPerMin: 1500,
+    laborRatePerMin: 550,
+    capacity: "10",
+    lokasi: "Area B",
+    mesin: "CNC Router 5-Axis",
+    defaultTime: 45,
+    defaultPerson: 1
+  }),
+  wcBase({
+    id: "WC-ASM-01",
+    kode: "WC-ASM-01",
+    nama: "Assembly \u2014 Perakitan Submodul",
+    mfgProcess: "Assembly",
+    ratePerMin: 900,
+    wcCostPerMin: 900,
+    laborRatePerMin: 450,
+    capacity: "16",
+    lokasi: "Area C",
+    usesMachine: false,
+    defaultTime: 35,
+    defaultPerson: 3
+  }),
+  wcBase({
+    id: "WC-FIN-01",
+    kode: "WC-FIN-01",
+    nama: "Finishing \u2014 Amplas & Coating",
+    mfgProcess: "Finishing",
+    ratePerMin: 1100,
+    wcCostPerMin: 1100,
+    laborRatePerMin: 500,
+    capacity: "12",
+    lokasi: "Area D",
+    mesin: "Spray Booth",
+    defaultTime: 20
+  }),
+  wcBase({
+    id: "WC-PACK-01",
+    kode: "WC-PACK-01",
+    nama: "Packing \u2014 Box & Seal",
+    mfgProcess: "Packing",
+    ratePerMin: 800,
+    wcCostPerMin: 800,
+    laborRatePerMin: 400,
+    capacity: "20",
+    lokasi: "Area E",
+    usesMachine: false,
+    defaultTime: 15
+  })
 ];
 var ROUTING_TEMPLATES = [
+  {
+    id: "RTMKJ6",
+    kode: "RTMKJ6",
+    nama: "Routing Produk",
+    deskripsi: "Alur standar produk furniture: potong \u2192 CNC \u2192 amplas \u2192 rakit \u2192 finishing",
+    steps: [
+      { urutan: 1, workCenterId: "WCT-PEMOTONGAN", namaProses: "Potong Pola", waktuMenit: 15, totalPerson: 2, note: "Rough cut material" },
+      { urutan: 2, workCenterId: "WCT-CNC", namaProses: "Profiling CNC", waktuMenit: 30, totalPerson: 1, note: "Profil & pocket" },
+      { urutan: 3, workCenterId: "WCT-AMPLAS", namaProses: "Amplas Halus", waktuMenit: 20, totalPerson: 2, note: "Grit 180\u2013220" },
+      { urutan: 4, workCenterId: "WCT-PERAKITAN", namaProses: "Perakitan Submodul", waktuMenit: 35, totalPerson: 3, note: "Drill & confirmat" },
+      { urutan: 5, workCenterId: "WCT-COATING", namaProses: "NC Coating", waktuMenit: 25, totalPerson: 2, note: "2 coat NC matt" }
+    ]
+  },
+  {
+    id: "RT-ELBA-CHAIR",
+    kode: "RT-ELBA-01",
+    nama: "Routing ELBA Chair",
+    deskripsi: "Routing khusus kursi ELBA \u2014 sandaran & dudukan",
+    steps: [
+      { urutan: 1, workCenterId: "WCT-PEMOTONGAN", namaProses: "Potong Sunduk", waktuMenit: 15, totalPerson: 2, note: "" },
+      { urutan: 2, workCenterId: "WC-WOOD-01", namaProses: "Bubut Kayu", waktuMenit: 30, totalPerson: 2, note: "" },
+      { urutan: 3, workCenterId: "WCT-AMPLAS", namaProses: "Amplas Halus", waktuMenit: 20, totalPerson: 2, note: "" },
+      { urutan: 4, workCenterId: "WCT-QC", namaProses: "QC Dimensi", waktuMenit: 8, totalPerson: 1, note: "Cek toleransi \xB11mm" }
+    ]
+  },
   {
     id: "RT-KURSI-STD",
     kode: "RT-KURSI-STD",
     nama: "Routing Standar Kursi Jati",
     deskripsi: "Alur produksi kursi: prep \u2192 woodworking \u2192 finishing",
     steps: [
-      { urutan: 1, workCenterId: "WC-PREP-01", namaProses: "Potong Pola", waktuMenit: 15, totalPerson: 2 },
-      { urutan: 2, workCenterId: "WC-WOOD-01", namaProses: "Bubut Kayu", waktuMenit: 30, totalPerson: 2 },
-      { urutan: 3, workCenterId: "WC-FIN-01", namaProses: "Amplas Halus", waktuMenit: 20, totalPerson: 2 }
+      { urutan: 1, workCenterId: "WC-PREP-01", namaProses: "Potong Pola", waktuMenit: 15, totalPerson: 2, note: "" },
+      { urutan: 2, workCenterId: "WC-WOOD-01", namaProses: "Bubut Kayu", waktuMenit: 30, totalPerson: 2, note: "" },
+      { urutan: 3, workCenterId: "WC-FIN-01", namaProses: "Amplas Halus", waktuMenit: 20, totalPerson: 2, note: "" }
     ]
   },
   {
@@ -25453,8 +25816,8 @@ var ROUTING_TEMPLATES = [
     nama: "Routing Panel CNC",
     deskripsi: "Panel plywood via CNC + finishing",
     steps: [
-      { urutan: 1, workCenterId: "WC-WOOD-02", namaProses: "Potong CNC", waktuMenit: 45, totalPerson: 1 },
-      { urutan: 2, workCenterId: "WC-FIN-01", namaProses: "Amplas & Seal", waktuMenit: 25, totalPerson: 2 }
+      { urutan: 1, workCenterId: "WC-WOOD-02", namaProses: "Potong CNC", waktuMenit: 45, totalPerson: 1, note: "Nested sheet cutting" },
+      { urutan: 2, workCenterId: "WC-FIN-01", namaProses: "Amplas & Seal", waktuMenit: 25, totalPerson: 2, note: "" }
     ]
   },
   {
@@ -25463,36 +25826,137 @@ var ROUTING_TEMPLATES = [
     nama: "Routing Assembly & Packing",
     deskripsi: "Perakitan akhir dan packing ekspor",
     steps: [
-      { urutan: 1, workCenterId: "WC-ASM-01", namaProses: "Perakitan", waktuMenit: 35, totalPerson: 3 },
-      { urutan: 2, workCenterId: "WC-PACK-01", namaProses: "Packing Box", waktuMenit: 15, totalPerson: 2 }
+      { urutan: 1, workCenterId: "WCT-PERAKITAN", namaProses: "Perakitan Final", waktuMenit: 40, totalPerson: 3, note: "Hardware & label" },
+      { urutan: 2, workCenterId: "WCT-QC", namaProses: "Final QC", waktuMenit: 12, totalPerson: 1, note: "" },
+      { urutan: 3, workCenterId: "WCT-PACKING", namaProses: "Packing Ekspor", waktuMenit: 18, totalPerson: 2, note: "Carton + pallet" }
+    ]
+  },
+  {
+    id: "RT-DUDUKAN-FULL",
+    kode: "RT-DUDUKAN",
+    nama: "Routing Dudukan Lengkap",
+    deskripsi: "Rangka dudukan kursi \u2014 multi WC",
+    steps: [
+      { urutan: 1, workCenterId: "WCT-CNC", namaProses: "Potong CNC", waktuMenit: 45, totalPerson: 1, note: "" },
+      { urutan: 2, workCenterId: "WC-001", namaProses: "Cutting Section", waktuMenit: 25, totalPerson: 2, note: "Trim & sizing" },
+      { urutan: 3, workCenterId: "WCT-PERAKITAN", namaProses: "Rakit Rangka", waktuMenit: 30, totalPerson: 3, note: "" }
     ]
   }
 ];
+var PROSES_OPTIONS = [
+  { id: "veneer", label: "Veneer", mfgProcess: "Woodworking", timeFactor: 1 },
+  { id: "edging", label: "Edging", mfgProcess: "Woodworking", timeFactor: 0.9 },
+  { id: "finishing", label: "Finishing", mfgProcess: "Finishing", timeFactor: 1.15 },
+  { id: "preparation", label: "Preparation", mfgProcess: "Preparation", timeFactor: 0.85 },
+  { id: "assembly", label: "Assembly", mfgProcess: "Assembly", timeFactor: 1 },
+  { id: "coating", label: "Coating", mfgProcess: "Finishing", timeFactor: 1.2 },
+  { id: "cnc", label: "CNC Profiling", mfgProcess: "Woodworking", timeFactor: 1.1 },
+  { id: "sanding", label: "Sanding", mfgProcess: "Finishing", timeFactor: 0.95 },
+  { id: "packing", label: "Packing", mfgProcess: "Packing", timeFactor: 0.75 }
+];
+var REF_PART_VOL_M3 = 1e-3;
+function getProsesById(id) {
+  return PROSES_OPTIONS.find((p) => p.id === id) ?? PROSES_OPTIONS[0];
+}
+function parseCapacityAsM3(wc) {
+  if (!wc) return 14;
+  const num = Number(String(wc.capacity).replace(/[^\d.]/g, "")) || 14;
+  const unit = (wc.capacityUnit || "m\xB3").toLowerCase();
+  if (unit.includes("m\xB3") || unit === "m3") return Math.max(num, 1e-3);
+  if (unit.includes("meter") || unit === "m") return Math.max(num * 0.01, 1e-3);
+  return Math.max(num * 1e-3, 1e-3);
+}
+function calcWaktuFromVolume(materialVolM3, wc, totalPerson, prosesId) {
+  if (!wc) return 0;
+  const vol = Number(materialVolM3) || 0;
+  const proses = getProsesById(prosesId);
+  const refPerson = Math.max(1, wc.defaultPerson ?? 2);
+  const person = Math.max(1, Number(totalPerson) || refPerson);
+  const defaultMin = Number(wc.defaultTime) || 15;
+  const capM3 = parseCapacityAsM3(wc);
+  const volRatio = vol > 0 ? vol / REF_PART_VOL_M3 : 1;
+  const capFactor = REF_PART_VOL_M3 / capM3;
+  const waktuBase = defaultMin * volRatio * capFactor * (proses.timeFactor || 1);
+  const waktu = waktuBase * (refPerson / person);
+  return Math.max(1, Math.round(waktu * 10) / 10);
+}
+function applyVolumeToOperation(op, materialVolM3) {
+  if (op.waktuManual) return op;
+  const vol = Number(materialVolM3) || 0;
+  const prosesId = op.proses || "veneer";
+  const person = op.totalPerson ?? 2;
+  if (op.inputMode === "work_center") {
+    const wc = getWorkCenterById(op.workCenterId);
+    const waktuOperasi = calcWaktuFromVolume(vol, wc, person, prosesId);
+    return { ...op, waktuOperasi, biayaMesin: void 0, biayaPekerja: void 0 };
+  }
+  if (op.inputMode === "routing" && op.routingSteps?.length) {
+    const steps = op.routingSteps;
+    const firstWc = getWorkCenterById(steps[0]?.workCenterId);
+    const totalWaktu = calcWaktuFromVolume(vol, firstWc, person, prosesId);
+    const weights = steps.map((s) => Number(s.waktuMenit) || getWorkCenterById(s.workCenterId)?.defaultTime || 1);
+    const weightSum = weights.reduce((a, b) => a + b, 0) || 1;
+    const rawSteps = steps.map((s, i) => ({
+      urutan: s.urutan ?? i + 1,
+      workCenterId: s.workCenterId,
+      namaProses: s.namaProses,
+      waktuMenit: Math.max(1, Math.round(totalWaktu * weights[i] / weightSum * 10) / 10),
+      totalPerson: s.totalPerson ?? person,
+      note: s.note ?? ""
+    }));
+    const enriched = enrichRoutingSteps(rawSteps);
+    const waktuOperasi = enriched.reduce((s, st) => s + (Number(st.waktuMenit) || 0), 0);
+    return { ...op, routingSteps: enriched, waktuOperasi, biayaMesin: void 0, biayaPekerja: void 0 };
+  }
+  return op;
+}
 function getWorkCenterById(id) {
   return WORK_CENTERS.find((wc) => wc.id === id) ?? null;
 }
 function getRoutingById(id) {
   return ROUTING_TEMPLATES.find((rt) => rt.id === id) ?? null;
 }
+function calcStepCosts(step, wc, overrides = {}) {
+  const waktu = Number(step.waktuMenit ?? step.waktuOperasi) || 0;
+  const person = Number(step.totalPerson ?? overrides.totalPerson) || 2;
+  const rateMesin = Number(overrides.rateMesin) || wc?.ratePerMin || 1e3;
+  const ratePekerja = Number(overrides.ratePekerja) || wc?.laborRatePerMin || DEFAULT_LABOR_RATE_PER_MIN;
+  const wcCostRate = Number(overrides.wcCostPerMin) || wc?.wcCostPerMin || rateMesin;
+  const mesin = waktu * rateMesin;
+  const wcCost = waktu * wcCostRate;
+  const pekerja = waktu * person * ratePekerja;
+  return {
+    waktu,
+    mesin,
+    wc: wcCost,
+    pekerja,
+    total: mesin + wcCost + pekerja,
+    rateMesin,
+    ratePekerja,
+    wcCostRate,
+    person,
+    capacity: wc?.capacity ? `${wc.capacity} ${wc.capacityUnit || ""}`.trim() : "-"
+  };
+}
 function enrichRoutingSteps(steps) {
   return steps.map((step) => {
     const wc = getWorkCenterById(step.workCenterId);
-    const waktu = Number(step.waktuMenit) || 0;
-    const person = Number(step.totalPerson) || 2;
-    const rateMesin = wc?.ratePerMin ?? 1e3;
-    const ratePekerja = wc?.laborRatePerMin ?? DEFAULT_LABOR_RATE_PER_MIN;
+    const costs = calcStepCosts(step, wc);
     return {
       ...step,
+      note: step.note ?? "",
       workCenter: wc,
       wcNama: wc?.nama ?? "-",
       mfgProcess: wc?.mfgProcess ?? "-",
-      ratePerMin: rateMesin,
-      rateMesin,
-      ratePekerja,
-      capacity: wc?.capacity ?? "-",
-      biayaMesin: waktu * rateMesin,
-      biayaPekerja: waktu * person * ratePekerja,
-      biayaTotal: waktu * rateMesin + waktu * person * ratePekerja
+      ratePerMin: costs.rateMesin,
+      rateMesin: costs.rateMesin,
+      ratePekerja: costs.ratePekerja,
+      wcCostPerMin: costs.wcCostRate,
+      capacity: costs.capacity,
+      biayaMesin: costs.mesin,
+      biayaWc: costs.wc,
+      biayaPekerja: costs.pekerja,
+      biayaTotal: costs.total
     };
   });
 }
@@ -25505,13 +25969,14 @@ function calcOperationFromWorkCenter(wcId) {
     routingId: "",
     mfgProcess: wc.mfgProcess,
     nama: wc.nama.split("\u2014")[1]?.trim() || wc.nama,
-    waktuOperasi: 0,
-    totalPerson: 2,
+    waktuOperasi: wc.defaultTime || 0,
+    totalPerson: wc.defaultPerson ?? 2,
     wcRate: wc.ratePerMin,
     rateMesin: wc.ratePerMin,
     ratePekerja: wc.laborRatePerMin ?? DEFAULT_LABOR_RATE_PER_MIN,
-    wcCapacity: wc.capacity,
-    routingSteps: []
+    wcCapacity: `${wc.capacity} ${wc.capacityUnit || ""}`.trim(),
+    routingSteps: [],
+    note: wc.notes || ""
   };
 }
 function calcOperationFromRouting(routingId) {
@@ -25529,8 +25994,9 @@ function calcOperationFromRouting(routingId) {
     waktuOperasi,
     totalPerson: 2,
     wcRate: firstWc?.ratePerMin ?? 1e3,
-    wcCapacity: firstWc?.capacity ?? "14 m\xB3",
-    routingSteps: steps
+    wcCapacity: firstWc?.capacity ?? "14",
+    routingSteps: steps,
+    note: rt.deskripsi || ""
   };
 }
 
@@ -25538,20 +26004,23 @@ function calcOperationFromRouting(routingId) {
 var LABOR_RATE_PER_MIN = DEFAULT_LABOR_RATE_PER_MIN;
 function calcProsesCosts(p) {
   if (!p) {
-    return { waktu: 0, mesin: 0, pekerja: 0, total: 0, rateMesin: 1e3, ratePekerja: LABOR_RATE_PER_MIN, rate: 1e3, person: 2, capacity: "-" };
+    return { waktu: 0, mesin: 0, wc: 0, pekerja: 0, total: 0, rateMesin: 1e3, ratePekerja: LABOR_RATE_PER_MIN, rate: 1e3, person: 2, capacity: "-" };
   }
   const wc = p.workCenterId ? getWorkCenterById(p.workCenterId) : null;
   const rateMesin = Number(p.rateMesin ?? p.wcRate) || wc?.ratePerMin || 1e3;
   const ratePekerja = Number(p.ratePekerja) || Number(wc?.laborRatePerMin) || LABOR_RATE_PER_MIN;
-  const capacity = p.wcCapacity || wc?.capacity || "-";
+  const wcCostRate = Number(p.wcCostPerMin) || wc?.wcCostPerMin || rateMesin;
+  const capacity = p.wcCapacity || (wc ? `${wc.capacity} ${wc.capacityUnit || ""}`.trim() : "-");
   const person = Number(p.totalPerson) || 2;
   if (typeof p.biayaMesin === "number" && typeof p.biayaPekerja === "number") {
-    const waktu2 = Number(p.waktuOperasi) || 0;
+    const waktu = Number(p.waktuOperasi) || 0;
+    const wcCost = typeof p.biayaWc === "number" ? p.biayaWc : waktu * wcCostRate;
     return {
-      waktu: waktu2,
+      waktu,
       mesin: p.biayaMesin,
+      wc: wcCost,
       pekerja: p.biayaPekerja,
-      total: p.biayaMesin + p.biayaPekerja,
+      total: p.biayaMesin + wcCost + p.biayaPekerja,
       rateMesin,
       ratePekerja,
       rate: rateMesin,
@@ -25561,14 +26030,16 @@ function calcProsesCosts(p) {
   }
   if (p.inputMode === "routing" && p.routingSteps?.length) {
     const steps = enrichRoutingSteps(p.routingSteps);
-    const mesin2 = steps.reduce((s, st) => s + (st.biayaMesin || 0), 0);
-    const pekerja2 = steps.reduce((s, st) => s + (st.biayaPekerja || 0), 0);
-    const waktu2 = steps.reduce((s, st) => s + (Number(st.waktuMenit) || 0), 0);
+    const mesin = steps.reduce((s, st) => s + (st.biayaMesin || 0), 0);
+    const wcCost = steps.reduce((s, st) => s + (st.biayaWc || 0), 0);
+    const pekerja = steps.reduce((s, st) => s + (st.biayaPekerja || 0), 0);
+    const waktu = steps.reduce((s, st) => s + (Number(st.waktuMenit) || 0), 0);
     return {
-      waktu: waktu2,
-      mesin: mesin2,
-      pekerja: pekerja2,
-      total: mesin2 + pekerja2,
+      waktu,
+      mesin,
+      wc: wcCost,
+      pekerja,
+      total: mesin + wcCost + pekerja,
       rateMesin: steps[0]?.rateMesin || 1e3,
       ratePekerja: steps[0]?.ratePekerja || LABOR_RATE_PER_MIN,
       rate: steps[0]?.rateMesin || 1e3,
@@ -25576,10 +26047,23 @@ function calcProsesCosts(p) {
       capacity: steps.map((st) => st.capacity).filter(Boolean).join(" \xB7 ") || "-"
     };
   }
-  const waktu = Number(p.waktuOperasi) || 0;
-  const mesin = waktu * rateMesin;
-  const pekerja = waktu * person * ratePekerja;
-  return { waktu, mesin, pekerja, total: mesin + pekerja, rateMesin, ratePekerja, rate: rateMesin, person, capacity };
+  const costs = calcStepCosts(
+    { waktuOperasi: p.waktuOperasi, totalPerson: p.totalPerson },
+    wc,
+    { rateMesin, ratePekerja, wcCostPerMin: wcCostRate }
+  );
+  return {
+    waktu: costs.waktu,
+    mesin: costs.mesin,
+    wc: costs.wc,
+    pekerja: costs.pekerja,
+    total: costs.total,
+    rateMesin: costs.rateMesin,
+    ratePekerja: costs.ratePekerja,
+    rate: costs.rateMesin,
+    person: costs.person,
+    capacity
+  };
 }
 
 // src/design/tipeStyles.js
@@ -25659,6 +26143,9 @@ var import_jsx_runtime6 = __toESM(require_jsx_runtime(), 1);
 var import_jsx_runtime7 = __toESM(require_jsx_runtime(), 1);
 
 // src/components/modals/RoutingModal.jsx
+var import_react5 = __toESM(require_react(), 1);
+
+// src/components/modals/RoutingExcelView.jsx
 var import_react4 = __toESM(require_react(), 1);
 var import_react_dom2 = __toESM(require_react_dom(), 1);
 
@@ -25779,110 +26266,16 @@ function ClickZoomImage({
   ] });
 }
 
-// src/components/modals/RoutingModal.jsx
+// src/components/modals/RoutingExcelView.jsx
 var import_jsx_runtime9 = __toESM(require_jsx_runtime(), 1);
 var POSISI_OPTIONS = Object.keys(posisiGambarMap);
-var PAGE = "w-full max-w-[1600px] mx-auto";
-var defaultOperation = (id = 1) => ({
-  id,
-  inputMode: "work_center",
-  workCenterId: WORK_CENTERS[0]?.id ?? "",
-  routingId: "",
-  routingSteps: [],
-  mfgProcess: WORK_CENTERS[0]?.mfgProcess ?? "Woodworking",
-  nama: "Veneer",
-  position: id,
-  posisiOperasi: "Depan",
-  gambar: posisiGambarMap.Depan,
-  waktuOperasi: 0,
-  totalPerson: 2,
-  wcRate: WORK_CENTERS[0]?.ratePerMin ?? 1e3,
-  rateMesin: WORK_CENTERS[0]?.ratePerMin ?? 1e3,
-  ratePekerja: WORK_CENTERS[0]?.laborRatePerMin ?? LABOR_RATE_PER_MIN,
-  wcCapacity: WORK_CENTERS[0]?.capacity ?? "14 m\xB3"
-});
-function mapSavedOp(p, i) {
-  const base = {
-    id: i + 1,
-    inputMode: p.inputMode || "work_center",
-    workCenterId: p.workCenterId || "",
-    routingId: p.routingId || "",
-    routingSteps: p.routingSteps?.length ? enrichRoutingSteps(p.routingSteps) : [],
-    mfgProcess: p.mfgProcess || "Woodworking",
-    nama: p.nama || `Operasi ${i + 1}`,
-    position: p.position ?? i + 1,
-    posisiOperasi: p.posisiOperasi || "Depan",
-    gambar: p.gambar || posisiGambarMap[p.posisiOperasi] || posisiGambarMap.Depan,
-    waktuOperasi: Number(p.waktuOperasi) || 0,
-    totalPerson: p.totalPerson ?? 2,
-    wcRate: p.wcRate ?? p.rateMesin ?? 1e3,
-    rateMesin: p.rateMesin ?? p.wcRate ?? 1e3,
-    ratePekerja: p.ratePekerja ?? LABOR_RATE_PER_MIN,
-    wcCapacity: p.wcCapacity ?? "14 m\xB3",
-    biayaMesin: p.biayaMesin,
-    biayaPekerja: p.biayaPekerja
-  };
-  if (base.inputMode === "routing" && base.routingId && !base.routingSteps.length) {
-    const fromRt = calcOperationFromRouting(base.routingId);
-    if (fromRt) {
-      return { ...base, ...fromRt, id: base.id, position: base.position, posisiOperasi: base.posisiOperasi, gambar: base.gambar };
-    }
-  }
-  if (base.inputMode === "work_center" && base.workCenterId) {
-    const wc = getWorkCenterById(base.workCenterId);
-    if (wc) {
-      base.wcRate = wc.ratePerMin;
-      base.rateMesin = p.rateMesin ?? wc.ratePerMin;
-      base.ratePekerja = p.ratePekerja ?? wc.laborRatePerMin ?? LABOR_RATE_PER_MIN;
-      base.wcCapacity = wc.capacity;
-      base.mfgProcess = wc.mfgProcess;
-    }
-  }
-  return base;
-}
-function RateKapasitasInfo({ rateMesin, ratePekerja, capacity, compact = false }) {
-  const box = compact ? "px-2 py-1.5" : "px-3 py-2";
-  return /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "grid grid-cols-3 gap-2 text-[10px]", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: `rounded-lg border border-slate-200 bg-white ${box}`, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("span", { className: "text-slate-400 font-semibold uppercase block", children: "Rate mesin" }),
-      /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("span", { className: "font-bold text-slate-800", children: [
-        "Rp ",
-        formatIDR(rateMesin),
-        "/mnt"
-      ] })
-    ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: `rounded-lg border border-amber-100 bg-amber-50/50 ${box}`, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("span", { className: "text-amber-700 font-semibold uppercase block", children: "Rate pekerja" }),
-      /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("span", { className: "font-bold text-amber-800", children: [
-        "Rp ",
-        formatIDR(ratePekerja),
-        "/mnt"
-      ] })
-    ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: `rounded-lg border border-blue-100 bg-blue-50/50 ${box}`, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("span", { className: "text-blue-600 font-semibold uppercase block", children: "Kapasitas" }),
-      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("span", { className: "font-bold text-blue-800", children: capacity || "-" })
-    ] })
-  ] });
-}
-function buildOperationsFromNode(node) {
-  const d = node?.data ?? node;
-  if (!d) return [defaultOperation()];
-  if (d.proses?.length) return d.proses.map((p, i) => mapSavedOp(p, i));
-  const count = Number(d.proses_count) || 0;
-  if (count > 0) return Array.from({ length: count }, (_, i) => defaultOperation(i + 1));
-  return [defaultOperation()];
-}
-function SectionHead({ icon: Icon2, title, tone = "slate" }) {
-  const tones = {
-    slate: "text-slate-700",
-    brand: "text-brand-700",
-    blue: "text-blue-700",
-    indigo: "text-indigo-700"
-  };
-  return /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: `flex items-center gap-2 text-xs font-bold uppercase tracking-wide ${tones[tone] || tones.slate}`, children: [
-    Icon2 && /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Icon2, { className: "w-4 h-4 shrink-0" }),
-    title
+var PAGE = "page-inner-full w-full max-w-[1600px] mx-auto";
+var selectCls = "w-full h-10 appearance-none rounded-lg border border-slate-200 bg-white pl-3 pr-9 text-sm font-medium text-slate-800 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none";
+var inputCls = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-800 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none";
+function SelectWrap({ children }) {
+  return /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "relative", children: [
+    children,
+    /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(ChevronDown, { className: "w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" })
   ] });
 }
 function Field({ label, children, className = "" }) {
@@ -25891,327 +26284,889 @@ function Field({ label, children, className = "" }) {
     children
   ] });
 }
-var selectCls = "w-full h-10 appearance-none rounded-lg border border-slate-200 bg-white pl-3 pr-9 text-sm font-medium text-slate-800 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none";
-var inputCls = "w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-800 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none";
 function MaterialCard({ data, style }) {
   const dim = data.p && data.l && data.t ? `${data.p} \xD7 ${data.l} \xD7 ${data.t} mm` : null;
-  return /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("section", { className: "bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "px-4 py-3 border-b border-slate-100 bg-slate-50 flex items-center gap-2", children: [
+  return /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("section", { className: "surface-card-lg overflow-hidden border border-brand-100/80 shadow-sm", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("div", { className: "px-4 py-2.5 bg-gradient-to-r from-brand-50 via-sky-50/80 to-white border-b border-brand-100/60", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex items-center gap-2", children: [
       /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Package, { className: "w-4 h-4 text-brand-600" }),
-      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("h3", { className: "text-xs font-bold text-slate-800 uppercase tracking-wide", children: "Material yang Dioperasikan" })
-    ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "p-4 grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(ClickZoomImage, { src: data.foto, alt: data.nama, size: 96 }),
-      /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex flex-col justify-center gap-3 min-w-0", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("h3", { className: "text-[10px] font-black uppercase tracking-widest text-brand-800/80", children: "Material yang Dioperasikan" })
+    ] }) }),
+    /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "p-3 sm:p-4 flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("div", { className: "shrink-0 flex justify-center sm:justify-start", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("div", { className: "rounded-xl border-2 border-brand-200/70 bg-white p-1 shadow-md ring-1 ring-brand-50", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(ClickZoomImage, { src: data.foto, alt: data.nama, size: 148, className: "rounded-lg" }) }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex-1 min-w-0 flex flex-col justify-center gap-2.5", children: [
         /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex flex-wrap items-center gap-2 mb-1", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("span", { className: `text-[10px] font-bold uppercase px-2 py-0.5 rounded border ${style.pill}`, children: data.tipe }),
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("span", { className: "text-[11px] font-mono text-slate-500", children: data.kode })
+          /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex flex-wrap items-center gap-2 mb-0.5", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("span", { className: `text-[10px] font-bold uppercase px-2 py-0.5 rounded-md border ${style.pill}`, children: data.tipe }),
+            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("span", { className: "text-[11px] font-mono text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded", children: data.kode })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "text-lg font-bold text-slate-900 leading-snug", children: data.nama })
+          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "text-base sm:text-lg font-bold text-slate-900 leading-snug", children: data.nama })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("dl", { className: "grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "rounded-lg bg-slate-50 border border-slate-100 px-3 py-2", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("dt", { className: "text-[10px] font-semibold text-slate-400 uppercase", children: "Qty" }),
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("dd", { className: "font-bold text-brand-600", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("dl", { className: "grid grid-cols-3 gap-2 text-sm", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "rounded-lg bg-sky-50/90 border border-sky-100 px-2.5 py-2", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("dt", { className: "text-[9px] font-bold text-sky-600/80 uppercase", children: "Qty" }),
+            /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("dd", { className: "font-bold text-sky-800 text-sm tabular-nums", children: [
               data.qty,
               " ",
               data.unit || "Pcs"
             ] })
           ] }),
-          dim && /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "rounded-lg bg-slate-50 border border-slate-100 px-3 py-2", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("dt", { className: "text-[10px] font-semibold text-slate-400 uppercase flex items-center gap-1", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Ruler, { className: "w-3 h-3" }),
+          dim ? /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "rounded-lg bg-violet-50/90 border border-violet-100 px-2.5 py-2", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("dt", { className: "text-[9px] font-bold text-violet-600/80 uppercase flex items-center gap-0.5", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Ruler, { className: "w-2.5 h-2.5" }),
               " Dimensi"
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("dd", { className: "font-bold text-slate-700 text-xs", children: dim })
+            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("dd", { className: "font-bold text-violet-900 text-[11px] tabular-nums leading-tight", children: dim })
+          ] }) : /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "rounded-lg bg-slate-50 border border-slate-100 px-2.5 py-2 opacity-60", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("dt", { className: "text-[9px] font-bold text-slate-400 uppercase", children: "Dimensi" }),
+            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("dd", { className: "text-xs text-slate-400", children: "\u2014" })
           ] }),
-          data.vol > 0 && /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "rounded-lg bg-slate-50 border border-slate-100 px-3 py-2", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("dt", { className: "text-[10px] font-semibold text-slate-400 uppercase", children: "Volume" }),
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("dd", { className: "font-bold text-blue-600", children: [
-              data.vol,
-              " m\xB3"
-            ] })
+          /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "rounded-lg bg-teal-50/90 border border-teal-100 px-2.5 py-2", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("dt", { className: "text-[9px] font-bold text-teal-600/80 uppercase", children: "Volume" }),
+            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("dd", { className: "font-bold text-teal-800 text-sm tabular-nums", children: data.vol > 0 ? `${data.vol} m\xB3` : "\u2014" })
           ] })
         ] })
       ] })
     ] })
   ] });
 }
-function KalkulasiStrip({ costs, isRouting }) {
-  const items = [
-    { label: "Waktu", value: `${costs.waktu} mnt`, color: "text-blue-600" },
-    { label: "Biaya mesin", value: `Rp ${formatIDR(costs.mesin)}`, color: "text-slate-800" },
-    { label: "Biaya pekerja", value: `Rp ${formatIDR(costs.pekerja)}`, color: "text-emerald-700" },
-    { label: "Subtotal", value: `Rp ${formatIDR(costs.total)}`, color: "text-indigo-700" }
-  ];
-  return /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "space-y-2", children: [
+function PersonStepper({ value, onChange, min = 1 }) {
+  const n = Number(value) || min;
+  return /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex items-center justify-center gap-1 mt-1.5", children: [
     /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
-      RateKapasitasInfo,
+      "button",
       {
-        rateMesin: costs.rateMesin,
-        ratePekerja: costs.ratePekerja,
-        capacity: costs.capacity,
-        compact: true
+        type: "button",
+        onClick: () => onChange(Math.max(min, n - 1)),
+        disabled: n <= min,
+        className: "w-7 h-7 flex items-center justify-center rounded-md border border-emerald-200 bg-white text-emerald-700 hover:bg-emerald-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors",
+        title: "Kurangi pekerja",
+        children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Minus, { className: "w-3.5 h-3.5" })
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("div", { className: "grid grid-cols-2 sm:grid-cols-4 gap-2", children: items.map((item) => /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "rounded-lg border border-slate-100 bg-slate-50 px-3 py-2", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "text-[10px] font-semibold text-slate-400 uppercase", children: item.label }),
-      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: `text-sm font-bold mt-0.5 ${item.color}`, children: item.value })
-    ] }, item.label)) }),
-    isRouting && /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "text-[10px] text-slate-400", children: "Rate & kapasitas per langkah \u2014 lihat tabel routing di atas." }),
-    !isRouting && /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("p", { className: "text-[10px] text-slate-400", children: [
-      costs.person,
-      " org \xD7 rate pekerja Rp ",
-      formatIDR(costs.ratePekerja),
-      "/mnt"
+    /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("span", { className: "min-w-[3.5rem] text-center text-xs font-bold text-emerald-800 tabular-nums", children: [
+      n,
+      " org"
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+      "button",
+      {
+        type: "button",
+        onClick: () => onChange(n + 1),
+        className: "w-7 h-7 flex items-center justify-center rounded-md border border-emerald-200 bg-emerald-600 text-white hover:bg-emerald-700 transition-colors",
+        title: "Tambah pekerja",
+        children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Plus, { className: "w-3.5 h-3.5" })
+      }
+    )
+  ] });
+}
+function KalkulasiMini({ costs, isRouting, op, onUpdate, materialVol }) {
+  const canEdit = !isRouting && op && onUpdate;
+  return /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "space-y-2", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "grid grid-cols-2 sm:grid-cols-4 gap-2", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "rounded-xl border border-sky-200 bg-gradient-to-b from-sky-50 to-white px-3 py-2.5", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("p", { className: "text-[10px] font-bold text-sky-600/90 uppercase flex items-center gap-1", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Clock, { className: "w-3 h-3" }),
+          " Waktu",
+          canEdit && !op.waktuManual && materialVol > 0 && /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("span", { className: "text-[8px] font-normal normal-case text-sky-500 ml-auto", children: "auto" })
+        ] }),
+        canEdit ? /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex items-center gap-1 mt-1", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+            "input",
+            {
+              type: "number",
+              min: 0,
+              step: 0.5,
+              value: op.waktuOperasi ?? 0,
+              onChange: (e) => onUpdate(op.id, "waktuOperasi", e.target.value),
+              className: "w-full h-8 rounded-lg border border-sky-200 bg-white px-2 text-sm font-bold text-sky-800 text-center tabular-nums focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none"
+            }
+          ),
+          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("span", { className: "text-[10px] font-semibold text-sky-500 shrink-0", children: "mnt" })
+        ] }) : /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("p", { className: "text-sm font-bold mt-1 tabular-nums text-sky-800", children: [
+          costs.waktu,
+          " mnt"
+        ] })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "rounded-xl border border-slate-200 bg-gradient-to-b from-slate-50 to-white px-3 py-2.5", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "text-[10px] font-bold text-slate-500 uppercase", children: "Biaya Mesin" }),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("p", { className: "text-sm font-bold mt-1 tabular-nums text-slate-800", children: [
+          "Rp ",
+          formatIDR(costs.mesin)
+        ] })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "rounded-xl border border-emerald-200 bg-gradient-to-b from-emerald-50 to-white px-3 py-2.5", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("p", { className: "text-[10px] font-bold text-emerald-600/90 uppercase flex items-center gap-1", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Users, { className: "w-3 h-3" }),
+          " Biaya Pekerja"
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("p", { className: "text-sm font-bold mt-0.5 tabular-nums text-emerald-800", children: [
+          "Rp ",
+          formatIDR(costs.pekerja)
+        ] }),
+        canEdit ? /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+          PersonStepper,
+          {
+            value: op.totalPerson ?? 2,
+            onChange: (n) => onUpdate(op.id, "totalPerson", n)
+          }
+        ) : /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("p", { className: "text-[10px] text-emerald-600/70 mt-1", children: [
+          costs.person,
+          " org"
+        ] })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "rounded-xl border border-violet-200 bg-gradient-to-b from-violet-50 to-white px-3 py-2.5 ring-1 ring-violet-100/50", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "text-[10px] font-bold text-violet-600/90 uppercase", children: "Subtotal" }),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("p", { className: "text-sm font-black mt-1 tabular-nums text-violet-800", children: [
+          "Rp ",
+          formatIDR(costs.total)
+        ] })
+      ] })
+    ] }),
+    canEdit && /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "text-[10px] text-slate-400", children: materialVol > 0 && !op.waktuManual ? `Auto: vol ${materialVol} m\xB3 \xD7 ${costs.person} org \u2192 ${costs.waktu} mnt` : `Rate pekerja Rp ${formatIDR(costs.ratePekerja)}/mnt \xD7 ${costs.person} org \xD7 ${costs.waktu} mnt` }),
+    isRouting && /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "text-[10px] text-indigo-500/80", children: "Waktu & pekerja per langkah \u2014 atur di popup Detail" })
+  ] });
+}
+function RateKapasitasInfo({ rateMesin, ratePekerja, capacity, compact = false }) {
+  const box = compact ? "px-2 py-1.5" : "px-3 py-2";
+  return /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "grid grid-cols-3 gap-2 text-[10px]", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: `rounded-lg border border-slate-200 bg-slate-50/80 ${box}`, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("span", { className: "text-slate-500 font-bold uppercase block", children: "Rate mesin" }),
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("span", { className: "font-bold text-slate-800", children: [
+        "Rp ",
+        formatIDR(rateMesin),
+        "/mnt"
+      ] })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: `rounded-lg border border-amber-200 bg-amber-50/80 ${box}`, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("span", { className: "text-amber-700 font-bold uppercase block", children: "Rate pekerja" }),
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("span", { className: "font-bold text-amber-900", children: [
+        "Rp ",
+        formatIDR(ratePekerja),
+        "/mnt"
+      ] })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: `rounded-lg border border-sky-200 bg-sky-50/80 ${box}`, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("span", { className: "text-sky-700 font-bold uppercase block", children: "Kapasitas" }),
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("span", { className: "font-bold text-sky-900", children: capacity || "-" })
     ] })
   ] });
 }
-function OperationCard({
-  op,
-  index,
-  onRemove,
-  onUpdate,
-  onUpdateStep,
-  selectCls: sel,
-  inputCls: inp
-}) {
-  const costs = calcProsesCosts(op);
+function OperationDetailModal({ op, index, costs, materialVol, onClose, onUpdate, onUpdateStep, onAddStep, onRemoveStep }) {
+  if (!op) return null;
   const isRouting = op.inputMode === "routing";
-  const selectedWc = getWorkCenterById(op.workCenterId);
-  const SelectWrap = ({ children }) => /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "relative", children: [
-    children,
-    /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(ChevronDown, { className: "w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" })
-  ] });
-  return /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("article", { className: "relative z-0 bg-white rounded-xl border border-slate-200 shadow-sm", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("header", { className: "flex items-center justify-between gap-3 px-4 py-3 border-b border-slate-100 bg-slate-50/80", children: [
+  const selectedWc = !isRouting ? getWorkCenterById(op.workCenterId) : null;
+  const modal = /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+    "div",
+    {
+      className: "fixed inset-0 z-[300] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm",
+      onClick: onClose,
+      role: "dialog",
+      "aria-modal": "true",
+      "aria-label": "Detail operasi",
+      children: /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)(
+        "div",
+        {
+          className: "bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[min(90vh,820px)] flex flex-col overflow-hidden",
+          onClick: (e) => e.stopPropagation(),
+          children: [
+            /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("header", { className: "shrink-0 px-5 py-4 border-b border-brand-100 bg-gradient-to-r from-brand-50 to-sky-50/50 flex items-center justify-between gap-3", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("p", { className: "text-[10px] font-bold uppercase tracking-widest text-slate-400", children: [
+                  "Detail Tahap ",
+                  index + 1
+                ] }),
+                /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("h2", { className: "text-lg font-black text-slate-800", children: op.nama || `Operasi ${index + 1}` }),
+                /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+                  "span",
+                  {
+                    className: `inline-block mt-1 text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${isRouting ? "bg-indigo-100 text-indigo-700" : "bg-blue-100 text-blue-700"}`,
+                    children: isRouting ? "Routing" : "Work Center"
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("button", { type: "button", onClick: onClose, className: "p-2 rounded-lg hover:bg-slate-200 text-slate-500", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(X, { className: "w-5 h-5" }) })
+            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex-1 min-h-0 overflow-y-auto scroll-thin p-5 space-y-5", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "grid grid-cols-2 sm:grid-cols-3 gap-3", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Field, { label: "Proses", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(SelectWrap, { children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("select", { value: op.proses || "veneer", onChange: (e) => onUpdate(op.id, "proses", e.target.value), className: selectCls, children: PROSES_OPTIONS.map((p) => /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("option", { value: p.id, children: p.label }, p.id)) }) }) }),
+                /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Field, { label: "Volume material", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("div", { className: "h-10 flex items-center px-3 rounded-lg border border-teal-200 bg-teal-50 text-sm font-bold text-teal-800", children: materialVol > 0 ? `${materialVol} m\xB3` : "\u2014" }) }),
+                /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Field, { label: "Tipe input", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("div", { className: "h-10 flex items-center px-3 rounded-lg border border-slate-200 bg-slate-50 text-sm font-semibold text-slate-700", children: isRouting ? "Routing" : "Work Center" }) })
+              ] }),
+              !isRouting && selectedWc && /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "rounded-xl border border-blue-100 bg-blue-50/40 p-4 space-y-4", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-blue-700", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Server, { className: "w-4 h-4" }),
+                  " Parameter Work Center"
+                ] }),
+                /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "grid grid-cols-2 gap-2 text-xs mb-1", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("span", { className: "text-slate-400", children: "Kode" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "font-semibold text-slate-800", children: selectedWc.kode })
+                  ] }),
+                  /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("span", { className: "text-slate-400", children: "Proses" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "font-semibold", children: selectedWc.mfgProcess })
+                  ] })
+                ] }),
+                /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+                  RateKapasitasInfo,
+                  {
+                    rateMesin: op.rateMesin ?? selectedWc.ratePerMin,
+                    ratePekerja: op.ratePekerja ?? selectedWc.laborRatePerMin ?? 500,
+                    capacity: costs.capacity,
+                    compact: true
+                  }
+                ),
+                /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "grid grid-cols-2 sm:grid-cols-3 gap-3", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Field, { label: "Rate mesin (/mnt)", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+                    "input",
+                    {
+                      type: "number",
+                      value: op.rateMesin ?? selectedWc.ratePerMin,
+                      onChange: (e) => onUpdate(op.id, "rateMesin", e.target.value),
+                      className: inputCls
+                    }
+                  ) }),
+                  /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Field, { label: "Rate pekerja (/mnt)", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+                    "input",
+                    {
+                      type: "number",
+                      value: op.ratePekerja ?? selectedWc.laborRatePerMin ?? 500,
+                      onChange: (e) => onUpdate(op.id, "ratePekerja", e.target.value),
+                      className: inputCls
+                    }
+                  ) }),
+                  /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Field, { label: "Nama operasi", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("input", { type: "text", value: op.nama, onChange: (e) => onUpdate(op.id, "nama", e.target.value), className: inputCls }) }),
+                  /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Field, { label: "Waktu (menit)", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+                    "input",
+                    {
+                      type: "number",
+                      min: 0,
+                      value: op.waktuOperasi,
+                      onChange: (e) => onUpdate(op.id, "waktuOperasi", e.target.value),
+                      className: `${inputCls} font-semibold text-brand-700`
+                    }
+                  ) }),
+                  /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Field, { label: "Total person", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+                    "input",
+                    {
+                      type: "number",
+                      min: 1,
+                      value: op.totalPerson ?? 2,
+                      onChange: (e) => onUpdate(op.id, "totalPerson", e.target.value),
+                      className: `${inputCls} text-center`
+                    }
+                  ) }),
+                  /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Field, { label: "Catatan", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("input", { type: "text", value: op.note || "", onChange: (e) => onUpdate(op.id, "note", e.target.value), className: inputCls }) })
+                ] })
+              ] }),
+              isRouting && /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)(import_jsx_runtime9.Fragment, { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Field, { label: "Template routing", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(SelectWrap, { children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("select", { value: op.routingId, onChange: (e) => onUpdate(op.id, "routingId", e.target.value), className: selectCls, children: ROUTING_TEMPLATES.map((rt) => /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("option", { value: rt.id, children: [
+                  rt.kode,
+                  " \u2014 ",
+                  rt.nama
+                ] }, rt.id)) }) }) }),
+                op.routingSteps?.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "rounded-xl border border-indigo-100 overflow-hidden", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "px-3 py-2 bg-indigo-50 border-b border-indigo-100 flex items-center gap-2", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Network, { className: "w-4 h-4 text-indigo-600" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("span", { className: "text-xs font-bold text-indigo-800 uppercase", children: "Langkah Routing" })
+                  ] }),
+                  /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("div", { className: "overflow-x-auto", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("table", { className: "w-full text-left text-xs", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("thead", { className: "bg-white text-slate-500 font-semibold uppercase text-[10px] border-b border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("tr", { children: [
+                      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("th", { className: "px-3 py-2 w-8", children: "#" }),
+                      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("th", { className: "px-3 py-2", children: "Work center" }),
+                      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("th", { className: "px-3 py-2 text-center w-16", children: "Mnt" }),
+                      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("th", { className: "px-3 py-2 text-center w-12", children: "Org" }),
+                      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("th", { className: "px-3 py-2 text-right", children: "Mesin" }),
+                      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("th", { className: "px-3 py-2 text-right", children: "Pekerja" }),
+                      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("th", { className: "px-3 py-2", children: "Note" }),
+                      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("th", { className: "px-3 py-2 w-10" })
+                    ] }) }),
+                    /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("tbody", { className: "divide-y divide-slate-50", children: op.routingSteps.map((st, si) => /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("tr", { className: "hover:bg-slate-50/50", children: [
+                      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("td", { className: "px-3 py-2 text-slate-400", children: st.urutan }),
+                      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("td", { className: "px-3 py-2 font-medium text-slate-800", children: st.wcNama }),
+                      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("td", { className: "px-3 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+                        "input",
+                        {
+                          type: "number",
+                          min: 0,
+                          value: st.waktuMenit,
+                          onChange: (e) => onUpdateStep(op.id, si, "waktuMenit", e.target.value),
+                          className: "w-14 h-8 text-center text-xs border border-slate-200 rounded-md"
+                        }
+                      ) }),
+                      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("td", { className: "px-3 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+                        "input",
+                        {
+                          type: "number",
+                          min: 1,
+                          value: st.totalPerson,
+                          onChange: (e) => onUpdateStep(op.id, si, "totalPerson", e.target.value),
+                          className: "w-12 h-8 text-center text-xs border border-slate-200 rounded-md"
+                        }
+                      ) }),
+                      /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("td", { className: "px-3 py-2 text-right tabular-nums", children: [
+                        "Rp ",
+                        formatIDR(st.biayaMesin)
+                      ] }),
+                      /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("td", { className: "px-3 py-2 text-right tabular-nums text-emerald-700", children: [
+                        "Rp ",
+                        formatIDR(st.biayaPekerja)
+                      ] }),
+                      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("td", { className: "px-3 py-2", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+                        "input",
+                        {
+                          type: "text",
+                          value: st.note || "",
+                          onChange: (e) => onUpdateStep(op.id, si, "note", e.target.value),
+                          className: "w-full min-w-[6rem] h-8 px-2 text-xs border border-slate-200 rounded-md",
+                          placeholder: "Note"
+                        }
+                      ) }),
+                      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("td", { className: "px-3 py-2", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+                        "button",
+                        {
+                          type: "button",
+                          onClick: () => onRemoveStep(op.id, si),
+                          className: "p-1 text-red-400 hover:text-red-600",
+                          children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Trash2, { className: "w-3.5 h-3.5" })
+                        }
+                      ) })
+                    ] }, si)) })
+                  ] }) }),
+                  /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("div", { className: "px-3 py-2 border-t border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)(
+                    "button",
+                    {
+                      type: "button",
+                      onClick: () => onAddStep(op.id),
+                      className: "text-xs font-bold text-brand-600 hover:text-brand-700 inline-flex items-center gap-1",
+                      children: [
+                        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Plus, { className: "w-3.5 h-3.5" }),
+                        " Tambah langkah"
+                      ]
+                    }
+                  ) })
+                ] })
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "rounded-xl border border-violet-100 bg-violet-50/30 p-4 space-y-2", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-violet-700", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Activity, { className: "w-4 h-4" }),
+                  " Kalkulasi Lengkap"
+                ] }),
+                /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(RateKapasitasInfo, { rateMesin: costs.rateMesin, ratePekerja: costs.ratePekerja, capacity: costs.capacity }),
+                /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(KalkulasiMini, { costs, isRouting, op, onUpdate, materialVol }),
+                (costs.wc || 0) > 0 && /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("p", { className: "text-[10px] text-amber-700", children: [
+                  "Biaya work center: Rp ",
+                  formatIDR(costs.wc)
+                ] })
+              ] })
+            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("footer", { className: "shrink-0 px-5 py-3 border-t border-slate-100 flex justify-end", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("button", { type: "button", onClick: onClose, className: "btn-primary h-10 px-5 text-sm", children: "Selesai" }) })
+          ]
+        }
+      )
+    }
+  );
+  return (0, import_react_dom2.createPortal)(modal, document.body);
+}
+function OperationCard({ op, index, costs, materialVol, onRemove, onUpdate, onViewDetail }) {
+  const isRouting = op.inputMode === "routing";
+  const volLabel = materialVol > 0 ? `${materialVol} m\xB3` : "\u2014";
+  return /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("article", { className: "surface-card-lg overflow-hidden border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("header", { className: "flex items-center justify-between gap-3 px-4 py-3 border-b border-slate-100 bg-gradient-to-r from-slate-50 via-white to-brand-50/40", children: [
       /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex items-center gap-2 min-w-0", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("span", { className: "w-7 h-7 shrink-0 rounded-full bg-brand-600 text-white text-xs font-bold flex items-center justify-center", children: index + 1 }),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("span", { className: "w-7 h-7 shrink-0 rounded-full bg-gradient-to-br from-brand-500 to-brand-700 text-white text-xs font-bold flex items-center justify-center shadow-sm", children: index + 1 }),
         /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "min-w-0", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("p", { className: "text-sm font-bold text-slate-800 truncate", children: [
-            "Tahap Operasi ",
-            index + 1
-          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "text-sm font-bold text-slate-800 truncate", children: op.nama || `Tahap Operasi ${index + 1}` }),
           /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
             "span",
             {
-              className: `inline-block mt-0.5 text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${isRouting ? "bg-indigo-100 text-indigo-700" : "bg-blue-100 text-blue-700"}`,
+              className: `inline-block mt-0.5 text-[9px] font-bold uppercase px-1.5 py-0.5 rounded-md ${isRouting ? "bg-indigo-100 text-indigo-700 border border-indigo-200/60" : "bg-sky-100 text-sky-800 border border-sky-200/60"}`,
               children: isRouting ? "Routing" : "Work Center"
             }
           )
         ] })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
-        "button",
-        {
-          type: "button",
-          onClick: () => onRemove(op.id),
-          className: "shrink-0 p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors",
-          title: "Hapus tahap",
-          children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Trash2, { className: "w-4 h-4" })
-        }
-      )
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex items-center gap-1 shrink-0", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)(
+          "button",
+          {
+            type: "button",
+            onClick: () => onViewDetail(op.id),
+            className: "inline-flex items-center gap-1.5 h-8 px-3 rounded-lg border border-brand-200 bg-brand-50 text-xs font-bold text-brand-700 hover:bg-brand-100 hover:border-brand-300 transition-colors",
+            children: [
+              /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Eye, { className: "w-3.5 h-3.5" }),
+              " Detail"
+            ]
+          }
+        ),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+          "button",
+          {
+            type: "button",
+            onClick: () => onRemove(op.id),
+            className: "p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors",
+            title: "Hapus tahap",
+            children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Trash2, { className: "w-4 h-4" })
+          }
+        )
+      ] })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "p-4 space-y-4", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Field, { label: "Tipe input", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(SelectWrap, { children: /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("select", { value: op.inputMode, onChange: (e) => onUpdate(op.id, "inputMode", e.target.value), className: sel, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Field, { label: "Proses", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(SelectWrap, { children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("select", { value: op.proses || "veneer", onChange: (e) => onUpdate(op.id, "proses", e.target.value), className: selectCls, children: PROSES_OPTIONS.map((p) => /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("option", { value: p.id, children: p.label }, p.id)) }) }) }),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Field, { label: "Volume material", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+          "div",
+          {
+            className: "h-10 flex items-center px-3 rounded-lg border border-teal-200 bg-teal-50/80 text-sm font-bold text-teal-800 tabular-nums",
+            title: "Volume komponen \u2014 dasar kalkulasi waktu otomatis",
+            children: volLabel
+          }
+        ) }),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Field, { label: "Tipe input", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(SelectWrap, { children: /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("select", { value: op.inputMode, onChange: (e) => onUpdate(op.id, "inputMode", e.target.value), className: selectCls, children: [
           /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("option", { value: "work_center", children: "Work Center" }),
           /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("option", { value: "routing", children: "Routing" })
         ] }) }) }),
-        !isRouting ? /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Field, { label: "Work center", className: "sm:col-span-2", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(SelectWrap, { children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("select", { value: op.workCenterId, onChange: (e) => onUpdate(op.id, "workCenterId", e.target.value), className: sel, children: WORK_CENTERS.map((wc) => /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("option", { value: wc.id, children: [
+        !isRouting ? /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Field, { label: "Work center", className: "lg:col-span-2", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(SelectWrap, { children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("select", { value: op.workCenterId, onChange: (e) => onUpdate(op.id, "workCenterId", e.target.value), className: selectCls, children: WORK_CENTERS.map((wc) => /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("option", { value: wc.id, children: [
           wc.kode,
           " \u2014 ",
           wc.nama
-        ] }, wc.id)) }) }) }) : /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Field, { label: "Routing", className: "sm:col-span-2", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(SelectWrap, { children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("select", { value: op.routingId, onChange: (e) => onUpdate(op.id, "routingId", e.target.value), className: sel, children: ROUTING_TEMPLATES.map((rt) => /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("option", { value: rt.id, children: [
+        ] }, wc.id)) }) }) }) : /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Field, { label: "Routing", className: "lg:col-span-2", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(SelectWrap, { children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("select", { value: op.routingId, onChange: (e) => onUpdate(op.id, "routingId", e.target.value), className: selectCls, children: ROUTING_TEMPLATES.map((rt) => /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("option", { value: rt.id, children: [
           rt.kode,
           " \u2014 ",
           rt.nama
         ] }, rt.id)) }) }) }),
-        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Field, { label: "Urutan", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("input", { type: "number", value: op.position, onChange: (e) => onUpdate(op.id, "position", e.target.value), className: `${inp} text-center` }) })
-      ] }),
-      !isRouting && selectedWc && /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "rounded-lg border border-blue-100 bg-blue-50/40 p-3 space-y-3", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(SectionHead, { icon: Server, title: "Parameter work center", tone: "blue" }),
-        /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "grid grid-cols-2 gap-2 text-xs mb-1", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { children: [
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("span", { className: "text-slate-400", children: "Kode" }),
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "font-semibold text-slate-800", children: selectedWc.kode })
-          ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { children: [
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("span", { className: "text-slate-400", children: "Proses" }),
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "font-semibold", children: selectedWc.mfgProcess })
-          ] })
-        ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
-          RateKapasitasInfo,
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Field, { label: "Urutan", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+          "input",
           {
-            rateMesin: op.rateMesin ?? selectedWc.ratePerMin,
-            ratePekerja: op.ratePekerja ?? selectedWc.laborRatePerMin ?? LABOR_RATE_PER_MIN,
-            capacity: selectedWc.capacity,
-            compact: true
+            type: "number",
+            value: op.position,
+            onChange: (e) => onUpdate(op.id, "position", e.target.value),
+            className: `${inputCls} text-center`
           }
-        ),
-        /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "grid grid-cols-2 sm:grid-cols-4 gap-3", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Field, { label: "Rate mesin (/mnt)", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
-            "input",
-            {
-              type: "number",
-              value: op.rateMesin ?? selectedWc.ratePerMin,
-              onChange: (e) => onUpdate(op.id, "rateMesin", e.target.value),
-              className: inp
-            }
-          ) }),
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Field, { label: "Rate pekerja (/mnt)", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
-            "input",
-            {
-              type: "number",
-              value: op.ratePekerja ?? selectedWc.laborRatePerMin ?? LABOR_RATE_PER_MIN,
-              onChange: (e) => onUpdate(op.id, "ratePekerja", e.target.value),
-              className: inp
-            }
-          ) })
-        ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "grid grid-cols-1 sm:grid-cols-3 gap-3", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Field, { label: "Nama operasi", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("input", { type: "text", value: op.nama, onChange: (e) => onUpdate(op.id, "nama", e.target.value), className: inp }) }),
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Field, { label: "Waktu (menit)", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("input", { type: "number", value: op.waktuOperasi, onChange: (e) => onUpdate(op.id, "waktuOperasi", e.target.value), className: `${inp} font-semibold text-brand-700` }) }),
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Field, { label: "Total person", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("input", { type: "number", value: op.totalPerson ?? 2, onChange: (e) => onUpdate(op.id, "totalPerson", e.target.value), className: `${inp} text-center` }) })
-        ] })
-      ] }),
-      isRouting && op.routingSteps?.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "rounded-lg border border-indigo-100 overflow-hidden", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("div", { className: "px-3 py-2 bg-indigo-50 border-b border-indigo-100", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(SectionHead, { icon: Network, title: "Langkah routing", tone: "indigo" }) }),
-        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("div", { className: "overflow-x-auto", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("table", { className: "w-full text-left text-xs", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("thead", { className: "bg-white text-slate-500 font-semibold uppercase text-[10px] border-b border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("tr", { children: [
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("th", { className: "px-3 py-2 w-8", children: "#" }),
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("th", { className: "px-3 py-2", children: "Work center" }),
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("th", { className: "px-3 py-2 hidden sm:table-cell", children: "Proses" }),
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("th", { className: "px-3 py-2 text-right hidden md:table-cell", children: "Rate mesin" }),
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("th", { className: "px-3 py-2 text-right hidden md:table-cell", children: "Rate pekerja" }),
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("th", { className: "px-3 py-2 hidden lg:table-cell", children: "Kapasitas" }),
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("th", { className: "px-3 py-2 text-center w-16", children: "Mnt" }),
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("th", { className: "px-3 py-2 text-center w-12", children: "Org" }),
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("th", { className: "px-3 py-2 text-right", children: "Biaya mesin" }),
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("th", { className: "px-3 py-2 text-right", children: "Biaya pekerja" })
-          ] }) }),
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("tbody", { className: "divide-y divide-slate-50", children: op.routingSteps.map((st, si) => /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("tr", { className: "hover:bg-slate-50/50", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("td", { className: "px-3 py-2 text-slate-400 font-medium", children: st.urutan }),
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("td", { className: "px-3 py-2", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "font-medium text-slate-800 truncate max-w-[140px]", children: st.wcNama }) }),
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("td", { className: "px-3 py-2 text-slate-600 hidden sm:table-cell", children: st.mfgProcess }),
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("td", { className: "px-3 py-2 text-right text-slate-600 hidden md:table-cell whitespace-nowrap", children: [
-              "Rp ",
-              formatIDR(st.rateMesin)
-            ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("td", { className: "px-3 py-2 text-right text-amber-700 hidden md:table-cell whitespace-nowrap", children: [
-              "Rp ",
-              formatIDR(st.ratePekerja)
-            ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("td", { className: "px-3 py-2 text-slate-500 hidden lg:table-cell", children: st.capacity }),
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("td", { className: "px-3 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("input", { type: "number", value: st.waktuMenit, onChange: (e) => onUpdateStep(op.id, si, "waktuMenit", e.target.value), className: "w-14 h-8 text-center text-xs border border-slate-200 rounded-md" }) }),
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("td", { className: "px-3 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("input", { type: "number", value: st.totalPerson, onChange: (e) => onUpdateStep(op.id, si, "totalPerson", e.target.value), className: "w-12 h-8 text-center text-xs border border-slate-200 rounded-md" }) }),
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("td", { className: "px-3 py-2 text-right font-medium text-slate-700 whitespace-nowrap", children: [
-              "Rp ",
-              formatIDR(st.biayaMesin)
-            ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("td", { className: "px-3 py-2 text-right font-medium text-emerald-700 whitespace-nowrap", children: [
-              "Rp ",
-              formatIDR(st.biayaPekerja)
-            ] })
-          ] }, si)) })
-        ] }) })
+        ) })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-4 pt-1 border-t border-slate-100", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(SectionHead, { icon: PanelsTopLeft, title: "Visual posisi", tone: "brand" }),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "space-y-2 rounded-xl bg-brand-50/30 border border-brand-100/60 p-3", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-brand-700", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(PanelsTopLeft, { className: "w-4 h-4" }),
+            " Visual posisi"
+          ] }),
           /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex items-start gap-3", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(ClickZoomImage, { src: op.gambar, alt: op.posisiOperasi, size: 72 }),
+            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("div", { className: "rounded-lg border-2 border-white bg-white p-0.5 shadow-sm shrink-0", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(ClickZoomImage, { src: op.gambar, alt: op.posisiOperasi, size: 80 }) }),
             /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex-1 min-w-0 space-y-2", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "text-[10px] text-slate-500", children: "Klik thumbnail untuk zoom in / out" }),
-              /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Field, { label: "Area kerja", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(SelectWrap, { children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("select", { value: op.posisiOperasi, onChange: (e) => onUpdate(op.id, "posisiOperasi", e.target.value), className: sel, children: POSISI_OPTIONS.map((label) => /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("option", { value: label, children: label }, label)) }) }) })
+              /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "text-[10px] text-brand-600/70", children: "Klik thumbnail untuk zoom" }),
+              /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Field, { label: "Area kerja", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(SelectWrap, { children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("select", { value: op.posisiOperasi, onChange: (e) => onUpdate(op.id, "posisiOperasi", e.target.value), className: selectCls, children: POSISI_OPTIONS.map((label) => /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("option", { value: label, children: label }, label)) }) }) })
             ] })
           ] })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(SectionHead, { icon: Activity, title: "Kalkulasi", tone: "slate" }),
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(KalkulasiStrip, { costs, isRouting })
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "space-y-2 rounded-xl bg-violet-50/20 border border-violet-100/50 p-3", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-violet-700", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Activity, { className: "w-4 h-4" }),
+            " Kalkulasi"
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(KalkulasiMini, { costs, isRouting, op, onUpdate, materialVol })
         ] })
       ] })
     ] })
   ] });
 }
+function RoutingExcelView({
+  materialData,
+  materialStyle,
+  materialVol = 0,
+  operations,
+  costsById,
+  totals,
+  onUpdate,
+  onUpdateStep,
+  onRemove,
+  onAddRow,
+  onAddStep,
+  onRemoveStep,
+  onClose,
+  onSave,
+  kursUsd,
+  kursEur
+}) {
+  const [detailOpId, setDetailOpId] = (0, import_react4.useState)(null);
+  const detailIndex = operations.findIndex((o) => o.id === detailOpId);
+  const detailOp = detailIndex >= 0 ? operations[detailIndex] : null;
+  const detailCosts = detailOp ? costsById[detailOp.id] : null;
+  return /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "routing-fullpage-root font-sans flex flex-col", role: "dialog", "aria-modal": "true", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("header", { className: "shrink-0 bg-gradient-to-r from-brand-700 to-brand-600 text-white shadow-md", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("div", { className: `${PAGE} px-4 sm:px-6 lg:px-8 py-4`, children: /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex items-center justify-between gap-4", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex items-center gap-3 min-w-0", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+          "button",
+          {
+            type: "button",
+            onClick: onClose,
+            className: "shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-lg bg-white/10 hover:bg-white/20",
+            children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(ArrowLeft, { className: "w-4 h-4" })
+          }
+        ),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("div", { className: "p-2 bg-white/10 rounded-lg shrink-0 hidden sm:block", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Settings, { className: "w-6 h-6" }) }),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "min-w-0", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("h1", { className: "text-lg sm:text-xl font-bold tracking-wide", children: "Setup Operasi & Produksi Terpadu" }),
+          /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("p", { className: "text-xs text-brand-100 mt-0.5 truncate", children: [
+            materialData.kode,
+            " \xB7 ",
+            materialData.nama
+          ] })
+        ] })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("button", { type: "button", onClick: onClose, className: "sm:hidden p-2 rounded-lg hover:bg-white/20", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(X, { className: "w-5 h-5" }) })
+    ] }) }) }),
+    /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("main", { className: "flex-1 min-h-0 overflow-y-auto scroll-thin bg-page", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: `${PAGE} px-4 sm:px-6 lg:px-8 py-6 lg:py-8 flex flex-col gap-6`, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(MaterialCard, { data: materialData, style: materialStyle }),
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex items-center justify-between gap-3", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("h2", { className: "text-sm font-bold text-slate-700", children: [
+          "Daftar Operasi ",
+          /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("span", { className: "text-slate-400 font-normal", children: [
+            "(",
+            operations.length,
+            ")"
+          ] })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("button", { type: "button", onClick: () => onAddRow("work_center"), className: "btn-primary text-xs h-9 px-3 shrink-0", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Plus, { className: "w-4 h-4" }),
+          " Tambah tahap"
+        ] })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("div", { className: "flex flex-col gap-4", children: operations.map((op, index) => /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+        OperationCard,
+        {
+          op,
+          index,
+          costs: costsById[op.id],
+          materialVol,
+          onRemove,
+          onUpdate,
+          onViewDetail: setDetailOpId
+        },
+        op.id
+      )) }),
+      operations.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "surface-card-lg p-10 text-center text-slate-500 text-sm", children: [
+        "Belum ada tahap operasi. Klik ",
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("strong", { children: "Tambah tahap" }),
+        " untuk memulai."
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("section", { className: "surface-card-lg p-4 sm:p-5 shrink-0 border border-brand-100/60 bg-gradient-to-br from-white to-brand-50/20", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex items-center gap-2 mb-3", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(ChartPie, { className: "w-4 h-4 text-brand-600" }),
+          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("h3", { className: "text-xs font-bold text-slate-800 uppercase tracking-wide", children: "Ringkasan Total" })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("div", { className: "grid grid-cols-2 md:grid-cols-4 gap-2", children: [
+          { l: "Waktu", v: `${totals.waktu} mnt`, cls: "border-sky-200 bg-sky-50/80 text-sky-800" },
+          { l: "Mesin", v: `Rp ${formatIDR(totals.mesin)}`, cls: "border-slate-200 bg-slate-50/80 text-slate-800" },
+          { l: "Pekerja", v: `Rp ${formatIDR(totals.pekerja)}`, cls: "border-emerald-200 bg-emerald-50/80 text-emerald-800" },
+          { l: "Total IDR", v: `Rp ${formatIDR(totals.total)}`, cls: "border-violet-300 bg-violet-50 ring-1 ring-violet-200/50 text-violet-900 font-black" }
+        ].map((row) => /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: `rounded-xl px-3 py-2.5 border ${row.cls}`, children: [
+          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "text-[10px] font-bold uppercase opacity-70", children: row.l }),
+          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "text-sm font-bold mt-0.5 tabular-nums", children: row.v })
+        ] }, row.l)) }),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("p", { className: "text-[11px] text-slate-500 mt-2 text-right", children: [
+          "\u2248 $ ",
+          (totals.total / kursUsd).toFixed(2),
+          " \xB7 \u20AC ",
+          (totals.total / kursEur).toFixed(2)
+        ] })
+      ] })
+    ] }) }),
+    /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("footer", { className: "shrink-0 border-t border-slate-200 bg-white shadow-[0_-4px_12px_rgba(0,0,0,0.06)]", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: `${PAGE} px-4 sm:px-6 lg:px-8 py-4 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-3`, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("button", { type: "button", onClick: onClose, className: "btn-secondary h-10 px-4 text-sm", children: "Batal" }),
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("button", { type: "button", onClick: onSave, className: "btn-primary h-10 px-5 text-sm font-semibold", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(CircleCheck, { className: "w-4 h-4" }),
+        " Selesai & Simpan Routing"
+      ] })
+    ] }) }),
+    detailOp && detailCosts && /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+      OperationDetailModal,
+      {
+        op: detailOp,
+        index: detailIndex,
+        costs: detailCosts,
+        materialVol,
+        onClose: () => setDetailOpId(null),
+        onUpdate,
+        onUpdateStep,
+        onAddStep,
+        onRemoveStep
+      }
+    )
+  ] });
+}
+
+// src/components/modals/RoutingModal.jsx
+var import_jsx_runtime10 = __toESM(require_jsx_runtime(), 1);
+var defaultOperation = (id = 1, materialVol = 0) => {
+  const proses = "veneer";
+  const meta = getProsesById(proses);
+  const base = {
+    id,
+    proses,
+    inputMode: "work_center",
+    workCenterId: WORK_CENTERS[0]?.id ?? "",
+    routingId: "",
+    routingSteps: [],
+    mfgProcess: meta.mfgProcess,
+    nama: meta.label,
+    position: id,
+    posisiOperasi: "Depan",
+    gambar: posisiGambarMap.Depan,
+    waktuOperasi: 0,
+    waktuManual: false,
+    totalPerson: 2,
+    wcRate: WORK_CENTERS[0]?.ratePerMin ?? 1e3,
+    rateMesin: WORK_CENTERS[0]?.ratePerMin ?? 1e3,
+    ratePekerja: WORK_CENTERS[0]?.laborRatePerMin ?? LABOR_RATE_PER_MIN,
+    wcCapacity: WORK_CENTERS[0]?.capacity ?? "14 m\xB3",
+    note: ""
+  };
+  return applyVolumeToOperation(base, materialVol);
+};
+function inferProsesId(p) {
+  if (p.proses) return p.proses;
+  const label = (p.nama || "").toLowerCase();
+  const found = [
+    { k: "veneer", m: "veneer" },
+    { k: "edging", m: "edging" },
+    { k: "finishing", m: "finishing" },
+    { k: "amplas", m: "sanding" },
+    { k: "cnc", m: "cnc" },
+    { k: "potong", m: "preparation" },
+    { k: "rakit", m: "assembly" },
+    { k: "coating", m: "coating" },
+    { k: "pack", m: "packing" }
+  ].find(({ m }) => label.includes(m));
+  return found?.k ?? "veneer";
+}
+function mapSavedOp(p, i, materialVol) {
+  const prosesId = inferProsesId(p);
+  const meta = getProsesById(prosesId);
+  const base = {
+    id: i + 1,
+    proses: prosesId,
+    inputMode: p.inputMode || "work_center",
+    workCenterId: p.workCenterId || "",
+    routingId: p.routingId || "",
+    routingSteps: p.routingSteps?.length ? enrichRoutingSteps(p.routingSteps) : [],
+    mfgProcess: p.mfgProcess || meta.mfgProcess,
+    nama: p.nama || meta.label,
+    position: p.position ?? i + 1,
+    posisiOperasi: p.posisiOperasi || "Depan",
+    gambar: p.gambar || posisiGambarMap[p.posisiOperasi] || posisiGambarMap.Depan,
+    waktuOperasi: Number(p.waktuOperasi) || 0,
+    waktuManual: Boolean(p.waktuManual),
+    totalPerson: p.totalPerson ?? 2,
+    wcRate: p.wcRate ?? p.rateMesin ?? 1e3,
+    rateMesin: p.rateMesin ?? p.wcRate ?? 1e3,
+    ratePekerja: p.ratePekerja ?? LABOR_RATE_PER_MIN,
+    wcCapacity: p.wcCapacity ?? "14 m\xB3",
+    biayaMesin: p.biayaMesin,
+    biayaPekerja: p.biayaPekerja,
+    note: p.note ?? ""
+  };
+  if (base.inputMode === "routing" && base.routingId && !base.routingSteps.length) {
+    const fromRt = calcOperationFromRouting(base.routingId);
+    if (fromRt) {
+      return applyVolumeToOperation(
+        { ...base, ...fromRt, id: base.id, position: base.position, posisiOperasi: base.posisiOperasi, gambar: base.gambar, note: base.note, proses: base.proses, waktuManual: base.waktuManual },
+        materialVol
+      );
+    }
+  }
+  if (base.inputMode === "work_center" && base.workCenterId) {
+    const wc = getWorkCenterById(base.workCenterId);
+    if (wc) {
+      base.wcRate = wc.ratePerMin;
+      base.rateMesin = p.rateMesin ?? wc.ratePerMin;
+      base.ratePekerja = p.ratePekerja ?? wc.laborRatePerMin ?? LABOR_RATE_PER_MIN;
+      base.wcCapacity = `${wc.capacity} ${wc.capacityUnit || ""}`.trim();
+    }
+  }
+  if (!base.waktuManual && materialVol > 0) {
+    return applyVolumeToOperation(base, materialVol);
+  }
+  return base;
+}
+function buildOperationsFromNode(node) {
+  const d = node?.data ?? node;
+  const vol = Number(d?.vol) || 0;
+  if (!d) return [defaultOperation(1, vol)];
+  if (d.proses?.length) return d.proses.map((p, i) => mapSavedOp(p, i, vol));
+  const count = Number(d.proses_count) || 0;
+  if (count > 0) return Array.from({ length: count }, (_, i) => defaultOperation(i + 1, vol));
+  return [defaultOperation(1, vol)];
+}
+function reindexSteps(steps) {
+  return enrichRoutingSteps(
+    steps.map((s, i) => ({
+      urutan: i + 1,
+      workCenterId: s.workCenterId,
+      namaProses: s.namaProses,
+      waktuMenit: s.waktuMenit,
+      totalPerson: s.totalPerson,
+      note: s.note ?? ""
+    }))
+  );
+}
+function withVolumeTime(op, materialVol, resetManual = false) {
+  const next = resetManual ? { ...op, waktuManual: false } : op;
+  return applyVolumeToOperation(next, materialVol);
+}
 function RoutingModal({ node, onClose, kursUsd, kursEur, onSave }) {
-  const nodeData = (0, import_react4.useMemo)(() => node?.data ?? node, [node]);
-  const [operations, setOperations] = (0, import_react4.useState)(() => buildOperationsFromNode(node));
-  (0, import_react4.useEffect)(() => {
+  const nodeData = (0, import_react5.useMemo)(() => node?.data ?? node, [node]);
+  const materialVol = (0, import_react5.useMemo)(() => Number(nodeData?.vol) || 0, [nodeData]);
+  const [operations, setOperations] = (0, import_react5.useState)(() => buildOperationsFromNode(node));
+  (0, import_react5.useEffect)(() => {
     if (!node) return;
     setOperations(buildOperationsFromNode(node));
   }, [node?.id, node]);
-  const handleAddOperation = () => {
-    const newId = operations.length > 0 ? Math.max(...operations.map((o) => o.id)) + 1 : 1;
-    setOperations([...operations, { ...defaultOperation(newId), position: newId }]);
-  };
-  const handleRemoveOperation = (id) => {
-    setOperations(operations.filter((op) => op.id !== id));
-  };
-  const updateOperation = (id, field, value) => {
-    setOperations(
-      operations.map((op) => {
-        if (op.id !== id) return op;
-        if (field === "inputMode") {
-          if (value === "routing") {
-            const rt = calcOperationFromRouting(ROUTING_TEMPLATES[0]?.id);
-            return rt ? { ...op, ...rt, id: op.id, position: op.position, posisiOperasi: op.posisiOperasi, gambar: op.gambar } : { ...op, inputMode: "routing" };
+  const costsById = (0, import_react5.useMemo)(() => {
+    const map = {};
+    operations.forEach((op) => {
+      map[op.id] = calcProsesCosts(op);
+    });
+    return map;
+  }, [operations]);
+  const totals = (0, import_react5.useMemo)(() => {
+    const vals = Object.values(costsById);
+    return {
+      waktu: vals.reduce((s, c) => s + c.waktu, 0),
+      mesin: vals.reduce((s, c) => s + c.mesin, 0),
+      wc: vals.reduce((s, c) => s + (c.wc || 0), 0),
+      pekerja: vals.reduce((s, c) => s + c.pekerja, 0),
+      total: vals.reduce((s, c) => s + c.total, 0)
+    };
+  }, [costsById]);
+  const handleAddRow = (0, import_react5.useCallback)(
+    (mode) => {
+      setOperations((prev) => {
+        const newId = prev.length > 0 ? Math.max(...prev.map((o) => o.id)) + 1 : 1;
+        let row = { ...defaultOperation(newId, materialVol), position: newId };
+        if (mode === "routing") {
+          const rt = calcOperationFromRouting(ROUTING_TEMPLATES[0]?.id);
+          if (rt) row = { ...row, ...rt, id: newId, position: newId, proses: row.proses };
+          else row.inputMode = "routing";
+        }
+        return [...prev, withVolumeTime(row, materialVol)];
+      });
+    },
+    [materialVol]
+  );
+  const handleRemove = (0, import_react5.useCallback)((id) => {
+    setOperations((prev) => {
+      const next = prev.filter((op) => op.id !== id);
+      return next.length ? next : [defaultOperation(1, materialVol)];
+    });
+  }, [materialVol]);
+  const updateOperation = (0, import_react5.useCallback)(
+    (id, field, value) => {
+      setOperations(
+        (prev) => prev.map((op) => {
+          if (op.id !== id) return op;
+          let updated = { ...op };
+          if (field === "inputMode") {
+            if (value === "routing") {
+              const rt = calcOperationFromRouting(ROUTING_TEMPLATES[0]?.id);
+              updated = rt ? { ...op, ...rt, id: op.id, position: op.position, posisiOperasi: op.posisiOperasi, gambar: op.gambar, note: op.note, proses: op.proses, waktuManual: false } : { ...op, inputMode: "routing", waktuManual: false };
+            } else {
+              const wc = calcOperationFromWorkCenter(op.workCenterId || WORK_CENTERS[0]?.id);
+              updated = wc ? { ...op, ...wc, id: op.id, position: op.position, posisiOperasi: op.posisiOperasi, gambar: op.gambar, note: op.note, proses: op.proses, nama: getProsesById(op.proses).label, waktuManual: false } : { ...op, inputMode: "work_center", routingSteps: [], waktuManual: false };
+            }
+          } else if (field === "proses") {
+            const meta = getProsesById(value);
+            updated = { ...op, proses: value, nama: meta.label, mfgProcess: meta.mfgProcess, waktuManual: false };
+          } else if (field === "workCenterId") {
+            const wc = calcOperationFromWorkCenter(value);
+            updated = wc ? { ...op, ...wc, id: op.id, position: op.position, posisiOperasi: op.posisiOperasi, gambar: op.gambar, note: op.note, proses: op.proses, nama: getProsesById(op.proses).label, waktuManual: false } : op;
+          } else if (field === "routingId") {
+            const rt = calcOperationFromRouting(value);
+            updated = rt ? { ...op, ...rt, id: op.id, position: op.position, posisiOperasi: op.posisiOperasi, gambar: op.gambar, note: op.note, proses: op.proses, waktuManual: false } : op;
+          } else {
+            updated = { ...op, [field]: value };
+            if (field === "posisiOperasi") updated.gambar = posisiGambarMap[value] || posisiGambarMap.Depan;
+            if (field === "waktuOperasi") {
+              updated.waktuManual = true;
+            }
+            if (field === "totalPerson") {
+              updated.waktuManual = false;
+            }
+            if (field === "waktuOperasi" || field === "totalPerson" || field === "rateMesin" || field === "ratePekerja") {
+              delete updated.biayaMesin;
+              delete updated.biayaPekerja;
+              if (field === "rateMesin") updated.wcRate = Number(value) || 0;
+            }
           }
-          const wc = calcOperationFromWorkCenter(op.workCenterId || WORK_CENTERS[0]?.id);
-          return wc ? { ...op, ...wc, id: op.id, position: op.position, posisiOperasi: op.posisiOperasi, gambar: op.gambar } : { ...op, inputMode: "work_center", routingSteps: [] };
-        }
-        if (field === "workCenterId") {
-          const wc = calcOperationFromWorkCenter(value);
-          return wc ? { ...op, ...wc, id: op.id, position: op.position, posisiOperasi: op.posisiOperasi, gambar: op.gambar } : op;
-        }
-        if (field === "routingId") {
-          const rt = calcOperationFromRouting(value);
-          return rt ? { ...op, ...rt, id: op.id, position: op.position, posisiOperasi: op.posisiOperasi, gambar: op.gambar } : op;
-        }
-        const updated = { ...op, [field]: value };
-        if (field === "posisiOperasi") updated.gambar = posisiGambarMap[value] || posisiGambarMap.Depan;
-        if (field === "waktuOperasi" || field === "totalPerson" || field === "rateMesin" || field === "ratePekerja") {
-          delete updated.biayaMesin;
-          delete updated.biayaPekerja;
-          if (field === "rateMesin") updated.wcRate = Number(value) || 0;
-        }
-        return updated;
-      })
-    );
-  };
-  const updateRoutingStep = (opId, stepIndex, field, value) => {
+          const recalcFields = ["proses", "workCenterId", "routingId", "inputMode", "totalPerson"];
+          if (recalcFields.includes(field) || field === "inputMode" && !updated.waktuManual) {
+            updated = withVolumeTime(updated, materialVol);
+          }
+          return updated;
+        })
+      );
+    },
+    [materialVol]
+  );
+  const updateRoutingStep = (0, import_react5.useCallback)(
+    (opId, stepIndex, field, value) => {
+      setOperations(
+        (prev) => prev.map((op) => {
+          if (op.id !== opId || op.inputMode !== "routing") return op;
+          const steps = [...op.routingSteps || []];
+          const patch = field === "note" || field === "workCenterId" || field === "namaProses" ? { [field]: value } : { [field]: Number(value) || 0 };
+          steps[stepIndex] = { ...steps[stepIndex], ...patch };
+          if (field === "waktuMenit") {
+            const enriched = reindexSteps(steps);
+            const waktuOperasi = enriched.reduce((s, st) => s + (Number(st.waktuMenit) || 0), 0);
+            return { ...op, routingSteps: enriched, waktuOperasi, waktuManual: true, biayaMesin: void 0, biayaPekerja: void 0 };
+          }
+          let next = { ...op, routingSteps: reindexSteps(steps), waktuManual: false, biayaMesin: void 0, biayaPekerja: void 0 };
+          next = withVolumeTime(next, materialVol);
+          return next;
+        })
+      );
+    },
+    [materialVol]
+  );
+  const handleAddStep = (0, import_react5.useCallback)((opId) => {
     setOperations(
-      operations.map((op) => {
+      (prev) => prev.map((op) => {
         if (op.id !== opId || op.inputMode !== "routing") return op;
-        const steps = [...op.routingSteps || []];
-        steps[stepIndex] = { ...steps[stepIndex], [field]: Number(value) || 0 };
-        const enriched = enrichRoutingSteps(
-          steps.map((s) => ({
-            urutan: s.urutan,
-            workCenterId: s.workCenterId,
-            namaProses: s.namaProses,
-            waktuMenit: s.waktuMenit,
-            totalPerson: s.totalPerson
-          }))
-        );
-        const waktuOperasi = enriched.reduce((s, st) => s + (Number(st.waktuMenit) || 0), 0);
-        return { ...op, routingSteps: enriched, waktuOperasi, biayaMesin: void 0, biayaPekerja: void 0 };
+        const wc = WORK_CENTERS[0];
+        const steps = [
+          ...op.routingSteps || [],
+          {
+            urutan: (op.routingSteps?.length || 0) + 1,
+            workCenterId: wc?.id ?? "",
+            namaProses: wc?.nama ?? "Langkah baru",
+            waktuMenit: wc?.defaultTime || 0,
+            totalPerson: wc?.defaultPerson ?? 2,
+            note: ""
+          }
+        ];
+        return withVolumeTime({ ...op, routingSteps: reindexSteps(steps), waktuManual: false }, materialVol);
       })
     );
-  };
-  if (!node || !nodeData) return null;
-  const d = nodeData;
-  const style = tipeStyles[d.tipe] || tipeStyles.PART;
-  const handleSave = () => {
+  }, [materialVol]);
+  const handleRemoveStep = (0, import_react5.useCallback)((opId, stepIndex) => {
+    setOperations(
+      (prev) => prev.map((op) => {
+        if (op.id !== opId || op.inputMode !== "routing") return op;
+        const steps = (op.routingSteps || []).filter((_, i) => i !== stepIndex);
+        if (!steps.length) return { ...op, routingSteps: [], waktuOperasi: 0 };
+        return withVolumeTime({ ...op, routingSteps: reindexSteps(steps), waktuManual: false }, materialVol);
+      })
+    );
+  }, [materialVol]);
+  const handleSave = (0, import_react5.useCallback)(() => {
     if (onSave) {
       onSave(
         node.id,
         operations.map((op) => {
           const costs = calcProsesCosts(op);
           return {
+            proses: op.proses,
             inputMode: op.inputMode,
             workCenterId: op.workCenterId,
             routingId: op.routingId,
@@ -26220,137 +27175,273 @@ function RoutingModal({ node, onClose, kursUsd, kursEur, onSave }) {
               workCenterId: st.workCenterId,
               namaProses: st.namaProses,
               waktuMenit: st.waktuMenit,
-              totalPerson: st.totalPerson
+              totalPerson: st.totalPerson,
+              note: st.note ?? ""
             })),
             nama: op.nama,
             mfgProcess: op.mfgProcess,
             posisiOperasi: op.posisiOperasi,
             gambar: op.gambar,
             waktuOperasi: costs.waktu,
+            waktuManual: op.waktuManual,
             totalPerson: Number(op.totalPerson) || 2,
             wcRate: costs.rateMesin,
             rateMesin: costs.rateMesin,
             ratePekerja: costs.ratePekerja,
             wcCapacity: costs.capacity,
             biayaMesin: costs.mesin,
+            biayaWc: costs.wc,
             biayaPekerja: costs.pekerja,
-            biaya: costs.total
+            biaya: costs.total,
+            note: op.note ?? ""
           };
         })
       );
     }
     onClose();
-  };
-  const grandTotal = operations.reduce((s, op) => s + calcProsesCosts(op).total, 0);
-  const totalWaktu = operations.reduce((s, op) => s + calcProsesCosts(op).waktu, 0);
-  const totalMesin = operations.reduce((s, op) => s + calcProsesCosts(op).mesin, 0);
-  const totalPekerja = operations.reduce((s, op) => s + calcProsesCosts(op).pekerja, 0);
-  const modalContent = /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)(
-    "div",
+  }, [node, onSave, onClose, operations]);
+  if (!node || !nodeData) return null;
+  const style = tipeStyles[nodeData.tipe] || tipeStyles.PART;
+  return /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(
+    RoutingExcelView,
     {
-      className: "fixed inset-0 z-[200] flex flex-col bg-page isolate",
-      style: { height: "100dvh", maxHeight: "100dvh", width: "100vw" },
-      role: "dialog",
-      "aria-modal": "true",
-      "aria-label": "Setup Operasi dan Produksi Terpadu",
-      children: [
-        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("header", { className: "shrink-0 z-10 bg-gradient-to-r from-brand-700 to-blue-600 text-white shadow-md", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: `${PAGE} px-6 lg:px-10 py-4 flex items-center justify-between gap-4`, children: [
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex items-center gap-4 min-w-0", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("div", { className: "p-2.5 bg-white/10 rounded-lg shrink-0", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Settings, { className: "w-6 h-6" }) }),
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "min-w-0", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("h1", { className: "text-lg sm:text-xl font-bold tracking-wide", children: "Setup Operasi & Produksi Terpadu" }),
-              /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("p", { className: "text-xs text-brand-100 mt-0.5 truncate", children: [
-                d.kode,
-                " \xB7 ",
-                d.nama
-              ] })
-            ] })
-          ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("button", { type: "button", onClick: onClose, className: "shrink-0 w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition-colors", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(X, { className: "w-5 h-5" }) })
-        ] }) }),
-        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("main", { className: "flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-y-contain bg-slate-50/80", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: `${PAGE} px-6 lg:px-10 py-6 lg:py-8 flex flex-col gap-6`, children: [
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(MaterialCard, { data: d, style }),
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex items-center justify-between gap-3 shrink-0", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("h2", { className: "text-sm font-bold text-slate-700", children: [
-              "Daftar Operasi ",
-              /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("span", { className: "text-slate-400 font-normal", children: [
-                "(",
-                operations.length,
-                ")"
-              ] })
-            ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)(
-              "button",
-              {
-                type: "button",
-                onClick: handleAddOperation,
-                className: "inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-brand-600 text-white text-xs font-semibold hover:bg-brand-700 transition-colors shrink-0",
-                children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Plus, { className: "w-4 h-4" }),
-                  " Tambah tahap"
-                ]
-              }
-            )
-          ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("div", { className: "flex flex-col gap-4 w-full", children: operations.map((op, index) => /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
-            OperationCard,
-            {
-              op,
-              index,
-              onRemove: handleRemoveOperation,
-              onUpdate: updateOperation,
-              onUpdateStep: updateRoutingStep,
-              selectCls,
-              inputCls
-            },
-            op.id
-          )) }),
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("section", { className: "relative z-0 mt-4 pt-6 border-t-2 border-slate-300 bg-white rounded-xl p-4 shadow-sm shrink-0", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex items-center gap-2 mb-3", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(ChartPie, { className: "w-4 h-4 text-brand-600" }),
-              /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("h3", { className: "text-xs font-bold text-slate-800 uppercase tracking-wide", children: "Ringkasan total" })
-            ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("div", { className: "grid grid-cols-2 md:grid-cols-4 gap-2", children: [
-              { l: "Waktu", v: `${totalWaktu} mnt` },
-              { l: "Mesin", v: `Rp ${formatIDR(totalMesin)}` },
-              { l: "Pekerja", v: `Rp ${formatIDR(totalPekerja)}` },
-              { l: "Total IDR", v: `Rp ${formatIDR(grandTotal)}`, highlight: true }
-            ].map((row) => /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: `rounded-lg px-3 py-2 border ${row.highlight ? "border-indigo-200 bg-indigo-50" : "border-slate-100 bg-slate-50"}`, children: [
-              /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "text-[10px] font-semibold text-slate-400 uppercase", children: row.l }),
-              /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: `text-sm font-bold mt-0.5 ${row.highlight ? "text-indigo-700" : "text-slate-800"}`, children: row.v })
-            ] }, row.l)) }),
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("p", { className: "text-[11px] text-slate-500 mt-2 text-right", children: [
-              "\u2248 $ ",
-              (grandTotal / kursUsd).toFixed(2),
-              " \xB7 \u20AC ",
-              (grandTotal / kursEur).toFixed(2)
-            ] })
-          ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("div", { className: "h-4 shrink-0", "aria-hidden": true })
-        ] }) }),
-        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("footer", { className: "shrink-0 z-10 border-t border-slate-200 bg-white shadow-[0_-4px_12px_rgba(0,0,0,0.06)]", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: `${PAGE} px-6 lg:px-10 py-4 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-3`, children: [
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("button", { type: "button", onClick: onClose, className: "h-10 px-4 rounded-lg border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50", children: "Batal" }),
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)(
-            "button",
-            {
-              type: "button",
-              onClick: handleSave,
-              className: "h-10 px-5 rounded-lg bg-slate-800 text-white text-sm font-semibold hover:bg-slate-900 inline-flex items-center justify-center gap-2",
-              children: [
-                /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(CircleCheck, { className: "w-4 h-4" }),
-                " Selesai & Simpan Routing"
-              ]
-            }
-          )
-        ] }) })
-      ]
+      materialData: nodeData,
+      materialStyle: style,
+      materialVol,
+      operations,
+      costsById,
+      totals,
+      onUpdate: updateOperation,
+      onUpdateStep: updateRoutingStep,
+      onRemove: handleRemove,
+      onAddRow: handleAddRow,
+      onAddStep: handleAddStep,
+      onRemoveStep: handleRemoveStep,
+      onClose,
+      onSave: handleSave,
+      kursUsd,
+      kursEur
     }
   );
-  return (0, import_react_dom2.createPortal)(modalContent, document.body);
+}
+
+// src/components/ui/OperasiDetailCell.jsx
+var import_react6 = __toESM(require_react(), 1);
+
+// src/components/modals/OperasiRoutingDetailModal.jsx
+var import_react_dom3 = __toESM(require_react_dom(), 1);
+var import_jsx_runtime11 = __toESM(require_jsx_runtime(), 1);
+function OperasiRoutingDetailModal({ operasi, operasiIndex = 0, onClose }) {
+  if (!operasi) return null;
+  const isRouting = operasi.inputMode === "routing";
+  const routingMeta = operasi.routingId ? getRoutingById(operasi.routingId) : null;
+  const steps = enrichRoutingSteps(operasi.routingSteps || []);
+  const costs = calcProsesCosts(operasi);
+  const prosesLabel = operasi.proses ? getProsesById(operasi.proses).label : operasi.mfgProcess || "\u2014";
+  const modal = /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(
+    "div",
+    {
+      className: "fixed inset-0 z-[350] flex items-center justify-center p-4 bg-slate-900/55 backdrop-blur-sm",
+      onClick: onClose,
+      role: "dialog",
+      "aria-modal": "true",
+      "aria-label": "Detail operasi routing",
+      children: /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)(
+        "div",
+        {
+          className: "bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[min(88vh,720px)] flex flex-col overflow-hidden",
+          onClick: (e) => e.stopPropagation(),
+          children: [
+            /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("header", { className: "shrink-0 px-5 py-4 border-b border-indigo-100 bg-gradient-to-r from-indigo-50 to-slate-50 flex items-start justify-between gap-3", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "min-w-0", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("p", { className: "text-[10px] font-bold uppercase tracking-widest text-slate-400", children: [
+                  "Detail operasi \xB7 Tahap ",
+                  operasiIndex + 1
+                ] }),
+                /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("h2", { className: "text-lg font-black text-slate-800 truncate", children: operasi.nama || `Operasi ${operasiIndex + 1}` }),
+                /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "flex flex-wrap items-center gap-1.5 mt-1.5", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700 border border-indigo-200", children: isRouting ? "Routing" : "Work Center" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("span", { className: "text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-violet-50 text-violet-700 border border-violet-100", children: [
+                    "Proses: ",
+                    prosesLabel
+                  ] }),
+                  routingMeta && /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("span", { className: "text-[9px] font-bold text-slate-600 bg-white border border-slate-200 px-1.5 py-0.5 rounded", children: [
+                    routingMeta.kode,
+                    " \u2014 ",
+                    routingMeta.nama
+                  ] })
+                ] })
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(
+                "button",
+                {
+                  type: "button",
+                  onClick: onClose,
+                  className: "p-2 rounded-lg hover:bg-slate-200 text-slate-500 shrink-0",
+                  "aria-label": "Tutup",
+                  children: /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(X, { className: "w-5 h-5" })
+                }
+              )
+            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "flex-1 min-h-0 overflow-y-auto scroll-thin p-5 space-y-4", children: [
+              operasi.note?.trim() && /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "rounded-lg border border-slate-200 bg-slate-50 px-3 py-2", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("p", { className: "text-[9px] font-bold uppercase text-slate-400 mb-0.5", children: "Catatan operasi" }),
+                /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("p", { className: "text-sm text-slate-700 leading-snug", children: operasi.note })
+              ] }),
+              isRouting && steps.length > 0 ? /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "rounded-xl border border-indigo-100 overflow-hidden", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "px-3 py-2 bg-indigo-50 border-b border-indigo-100 flex items-center gap-2", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(Network, { className: "w-4 h-4 text-indigo-600" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("span", { className: "text-xs font-bold text-indigo-800 uppercase", children: [
+                    "Langkah routing (",
+                    steps.length,
+                    ")"
+                  ] })
+                ] }),
+                /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "overflow-x-auto", children: /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("table", { className: "w-full text-left text-xs", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("thead", { className: "bg-white text-slate-500 font-semibold uppercase text-[10px] border-b border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("tr", { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("th", { className: "px-3 py-2 w-8", children: "#" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("th", { className: "px-3 py-2", children: "Work center" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("th", { className: "px-3 py-2 text-center", children: "Mnt" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("th", { className: "px-3 py-2 text-center", children: "Org" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("th", { className: "px-3 py-2 text-right", children: "Biaya mesin" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("th", { className: "px-3 py-2 text-right", children: "Biaya pekerja" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("th", { className: "px-3 py-2", children: "Detail / catatan" })
+                  ] }) }),
+                  /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("tbody", { className: "divide-y divide-slate-50", children: steps.map((st, si) => /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("tr", { className: "hover:bg-slate-50/50", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { className: "px-3 py-2 text-slate-400 font-bold", children: st.urutan }),
+                    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { className: "px-3 py-2 font-medium text-slate-800", children: st.wcNama || st.namaProses || "\u2014" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { className: "px-3 py-2 text-center font-bold text-blue-600 tabular-nums", children: st.waktuMenit ?? 0 }),
+                    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { className: "px-3 py-2 text-center font-bold text-amber-600 tabular-nums", children: st.totalPerson ?? "\u2014" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("td", { className: "px-3 py-2 text-right tabular-nums text-slate-700", children: [
+                      "Rp ",
+                      formatIDR(st.biayaMesin)
+                    ] }),
+                    /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("td", { className: "px-3 py-2 text-right tabular-nums text-emerald-700", children: [
+                      "Rp ",
+                      formatIDR(st.biayaPekerja)
+                    ] }),
+                    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { className: "px-3 py-2 text-slate-600 max-w-[12rem] whitespace-normal leading-snug", children: st.note?.trim() || /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "text-slate-400 italic", children: "\u2014" }) })
+                  ] }, si)) })
+                ] }) })
+              ] }) : isRouting ? /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("p", { className: "text-sm text-slate-500 italic text-center py-6", children: "Belum ada langkah routing terdaftar." }) : /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "rounded-xl border border-blue-100 bg-blue-50/40 p-4 space-y-2", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "flex items-center gap-2 text-xs font-bold uppercase text-blue-700", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(Server, { className: "w-4 h-4" }),
+                  " Work Center"
+                ] }),
+                /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("p", { className: "text-sm font-semibold text-slate-800", children: operasi.workCenterId || "\u2014" }),
+                /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs mt-2", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "text-slate-400 block text-[9px] uppercase font-bold", children: "Waktu" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("span", { className: "font-black text-blue-600", children: [
+                      costs.waktu,
+                      " mnt"
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "text-slate-400 block text-[9px] uppercase font-bold", children: "Pekerja" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("span", { className: "font-black text-amber-600", children: [
+                      costs.person,
+                      " org"
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "text-slate-400 block text-[9px] uppercase font-bold", children: "Mesin" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("span", { className: "font-bold text-slate-700", children: [
+                      "Rp ",
+                      formatIDR(costs.mesin)
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "text-slate-400 block text-[9px] uppercase font-bold", children: "Tenaga kerja" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("span", { className: "font-bold text-emerald-700", children: [
+                      "Rp ",
+                      formatIDR(costs.pekerja)
+                    ] })
+                  ] })
+                ] })
+              ] })
+            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("footer", { className: "shrink-0 px-5 py-3 border-t border-slate-200 bg-slate-50 flex flex-wrap items-center justify-between gap-3 text-xs font-bold", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "text-slate-500 uppercase tracking-widest text-[10px]", children: "Total operasi" }),
+              /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "flex flex-wrap gap-4", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("span", { className: "text-blue-600", children: [
+                  costs.waktu,
+                  " mnt"
+                ] }),
+                /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("span", { className: "text-slate-700", children: [
+                  "Mesin: Rp ",
+                  formatIDR(costs.mesin)
+                ] }),
+                /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("span", { className: "text-emerald-700", children: [
+                  "Pekerja: Rp ",
+                  formatIDR(costs.pekerja)
+                ] }),
+                /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("span", { className: "text-indigo-800 bg-white px-2 py-1 rounded border border-indigo-100", children: [
+                  "Rp ",
+                  formatIDR(costs.total)
+                ] })
+              ] })
+            ] })
+          ]
+        }
+      )
+    }
+  );
+  return (0, import_react_dom3.createPortal)(modal, document.body);
+}
+
+// src/components/ui/OperasiDetailCell.jsx
+var import_jsx_runtime12 = __toESM(require_jsx_runtime(), 1);
+function OperasiDetailCell({ operasi, operasiIndex = 0, className = "" }) {
+  const [popupOpen, setPopupOpen] = (0, import_react6.useState)(false);
+  const isRouting = operasi?.inputMode === "routing";
+  const stepCount = operasi?.routingSteps?.length || 0;
+  if (!isRouting) {
+    const note = operasi?.note?.trim();
+    return /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(
+      "p",
+      {
+        className: `text-[9px] text-slate-600 leading-snug whitespace-normal font-medium ${className}`,
+        title: note || "",
+        children: note || "\u2014"
+      }
+    );
+  }
+  return /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)(import_jsx_runtime12.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("div", { className: `flex flex-col items-start gap-1 ${className}`, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)(
+        "button",
+        {
+          type: "button",
+          onClick: () => setPopupOpen(true),
+          className: "inline-flex items-center gap-1 px-2 py-1 rounded-md text-[9px] font-bold uppercase tracking-wide text-indigo-700 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300 transition-colors",
+          title: "Buka detail langkah routing",
+          children: [
+            /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(Eye, { className: "w-3 h-3" }),
+            "Detail",
+            stepCount > 0 && /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("span", { className: "text-indigo-500 font-black", children: [
+              "(",
+              stepCount,
+              ")"
+            ] })
+          ]
+        }
+      ),
+      operasi?.note?.trim() && /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("p", { className: "text-[8px] text-slate-500 leading-snug max-w-[10rem] truncate", title: operasi.note, children: operasi.note })
+    ] }),
+    popupOpen && /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(
+      OperasiRoutingDetailModal,
+      {
+        operasi,
+        operasiIndex,
+        onClose: () => setPopupOpen(false)
+      }
+    )
+  ] });
 }
 
 // src/components/modals/SummaryDetailModal.jsx
-var import_jsx_runtime10 = __toESM(require_jsx_runtime(), 1);
+var import_jsx_runtime13 = __toESM(require_jsx_runtime(), 1);
 function SummaryDetailModal({ node, onClose }) {
   if (!node) return null;
   const d = node.data;
@@ -26374,206 +27465,215 @@ function SummaryDetailModal({ node, onClose }) {
   }
   const totalOperationCost = totalMesinAll + totalPekerjaAll;
   const grandTotal = materialCostWithFactors + totalOperationCost;
-  return /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("div", { className: "fixed inset-0 z-[130] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 md:p-6 lg:p-8 animate-in fade-in duration-200", children: /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "bg-white rounded-2xl shadow-2xl w-full max-w-[1000px] max-h-[90vh] flex flex-col overflow-hidden transform scale-100", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "bg-slate-50 border-b border-slate-200 px-6 py-4 flex items-center justify-between shrink-0", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "flex items-center gap-4", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("div", { className: "w-12 h-12 bg-white border border-slate-200 rounded-xl flex items-center justify-center shadow-sm overflow-hidden", children: d.foto ? /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("img", { src: d.foto, alt: "pic", className: "w-full h-full object-cover" }) : /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(Image, { className: "w-6 h-6 text-slate-300" }) }),
-        /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "flex items-center gap-2 mb-1", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("span", { className: `px-2 py-0.5 rounded text-[10px] font-black tracking-wider uppercase border ${style.pill}`, children: d.tipe }),
-            /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("span", { className: "text-xs font-mono font-bold text-slate-500", children: d.kode })
+  return /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("div", { className: "fixed inset-0 z-[130] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 md:p-6 lg:p-8 animate-in fade-in duration-200", children: /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "bg-white rounded-2xl shadow-2xl w-full max-w-[1000px] max-h-[90vh] flex flex-col overflow-hidden transform scale-100", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "bg-slate-50 border-b border-slate-200 px-6 py-4 flex items-center justify-between shrink-0", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "flex items-center gap-4", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("div", { className: "w-12 h-12 bg-white border border-slate-200 rounded-xl flex items-center justify-center shadow-sm overflow-hidden", children: d.foto ? /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("img", { src: d.foto, alt: "pic", className: "w-full h-full object-cover" }) : /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(Image, { className: "w-6 h-6 text-slate-300" }) }),
+        /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "flex items-center gap-2 mb-1", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { className: `px-2 py-0.5 rounded text-[10px] font-black tracking-wider uppercase border ${style.pill}`, children: d.tipe }),
+            /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { className: "text-xs font-mono font-bold text-slate-500", children: d.kode })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("h2", { className: "text-lg font-black text-slate-800 tracking-tight leading-none", children: d.nama })
+          /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("h2", { className: "text-lg font-black text-slate-800 tracking-tight leading-none", children: d.nama })
         ] })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("button", { onClick: onClose, className: "w-10 h-10 flex items-center justify-center bg-white border border-slate-200 hover:bg-slate-100 hover:text-red-500 rounded-xl transition-all shadow-sm", children: /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(X, { className: "w-5 h-5" }) })
+      /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("button", { onClick: onClose, className: "w-10 h-10 flex items-center justify-center bg-white border border-slate-200 hover:bg-slate-100 hover:text-red-500 rounded-xl transition-all shadow-sm", children: /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(X, { className: "w-5 h-5" }) })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "flex-1 overflow-y-auto p-6 bg-slate-50/50 flex flex-col gap-6", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-6", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "bg-white rounded-xl border border-slate-200 shadow-sm p-5", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("h3", { className: "text-xs font-extrabold text-slate-500 uppercase tracking-widest flex items-center gap-2 mb-4 border-b border-slate-100 pb-2", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(PanelsTopLeft, { className: "w-4 h-4 text-brand-500" }),
+    /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "flex-1 overflow-y-auto p-6 bg-slate-50/50 flex flex-col gap-6", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-6", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "bg-white rounded-xl border border-slate-200 shadow-sm p-5", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("h3", { className: "text-xs font-extrabold text-slate-500 uppercase tracking-widest flex items-center gap-2 mb-4 border-b border-slate-100 pb-2", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(PanelsTopLeft, { className: "w-4 h-4 text-brand-500" }),
             " Spesifikasi Fisik"
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "grid grid-cols-2 gap-4", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { children: [
-              /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("span", { className: "block text-[10px] font-bold text-slate-400 uppercase mb-1", children: "Dimensi (W x D x H)" }),
-              /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("span", { className: "font-bold text-slate-700", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "grid grid-cols-2 gap-4", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { className: "block text-[10px] font-bold text-slate-400 uppercase mb-1", children: "Dimensi (W x D x H)" }),
+              /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("span", { className: "font-bold text-slate-700", children: [
                 d.p || 0,
                 " x ",
                 d.l || 0,
                 " x ",
                 d.t || 0,
                 " ",
-                /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("span", { className: "text-xs text-slate-400", children: "mm" })
+                /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { className: "text-xs text-slate-400", children: "mm" })
               ] })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { children: [
-              /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("span", { className: "block text-[10px] font-bold text-slate-400 uppercase mb-1", children: "Volume Kalkulasi" }),
-              /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("span", { className: "font-bold text-brand-600", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { className: "block text-[10px] font-bold text-slate-400 uppercase mb-1", children: "Volume Kalkulasi" }),
+              /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("span", { className: "font-bold text-brand-600", children: [
                 d.vol,
                 " ",
-                /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("span", { className: "text-xs text-brand-400", children: "m\xB3" })
+                /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { className: "text-xs text-brand-400", children: "m\xB3" })
               ] })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { children: [
-              /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("span", { className: "block text-[10px] font-bold text-slate-400 uppercase mb-1", children: "Kebutuhan (Qty)" }),
-              /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("span", { className: "font-black text-slate-800", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { className: "block text-[10px] font-bold text-slate-400 uppercase mb-1", children: "Kebutuhan (Qty)" }),
+              /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("span", { className: "font-black text-slate-800", children: [
                 d.qty,
                 " ",
-                /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("span", { className: "text-xs font-bold text-slate-400", children: "EA" })
+                /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { className: "text-xs font-bold text-slate-400", children: "EA" })
               ] })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { children: [
-              /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("span", { className: "block text-[10px] font-bold text-slate-400 uppercase mb-1", children: "Level Hierarki" }),
-              /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("span", { className: "font-bold text-slate-700", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { className: "block text-[10px] font-bold text-slate-400 uppercase mb-1", children: "Level Hierarki" }),
+              /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("span", { className: "font-bold text-slate-700", children: [
                 "Level ",
                 node.level
               ] })
             ] })
           ] })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "bg-white rounded-xl border border-slate-200 shadow-sm p-5", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("h3", { className: "text-xs font-extrabold text-slate-500 uppercase tracking-widest flex items-center gap-2 mb-4 border-b border-slate-100 pb-2", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(Grid3x3, { className: "w-4 h-4 text-amber-500" }),
+        /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "bg-white rounded-xl border border-slate-200 shadow-sm p-5", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("h3", { className: "text-xs font-extrabold text-slate-500 uppercase tracking-widest flex items-center gap-2 mb-4 border-b border-slate-100 pb-2", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(Grid3x3, { className: "w-4 h-4 text-amber-500" }),
             " Kalkulasi Material"
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "grid grid-cols-2 gap-y-4 gap-x-2", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { children: [
-              /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("span", { className: "block text-[10px] font-bold text-slate-400 uppercase mb-1", children: "Harga Satuan Part" }),
-              /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("span", { className: "font-bold text-slate-700", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "grid grid-cols-2 gap-y-4 gap-x-2", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { className: "block text-[10px] font-bold text-slate-400 uppercase mb-1", children: "Harga Satuan Part" }),
+              /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("span", { className: "font-bold text-slate-700", children: [
                 "Rp ",
                 formatIDR(d.biaya || 0)
               ] })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { children: [
-              /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("span", { className: "block text-[10px] font-bold text-slate-400 uppercase mb-1", children: "Safety Factor (SF)" }),
-              /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("span", { className: "font-bold text-amber-600", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { className: "block text-[10px] font-bold text-slate-400 uppercase mb-1", children: "Safety Factor (SF)" }),
+              /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("span", { className: "font-bold text-amber-600", children: [
                 sf,
                 "%"
               ] })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { children: [
-              /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("span", { className: "block text-[10px] font-bold text-slate-400 uppercase mb-1", children: "Total Base Harga (x Qty)" }),
-              /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("span", { className: "font-bold text-slate-700", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { className: "block text-[10px] font-bold text-slate-400 uppercase mb-1", children: "Total Base Harga (x Qty)" }),
+              /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("span", { className: "font-bold text-slate-700", children: [
                 "Rp ",
                 formatIDR(baseMaterialCost)
               ] })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { children: [
-              /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("span", { className: "block text-[10px] font-bold text-slate-400 uppercase mb-1", children: "Waste Factor (WF)" }),
-              /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("span", { className: "font-bold text-red-600", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { className: "block text-[10px] font-bold text-slate-400 uppercase mb-1", children: "Waste Factor (WF)" }),
+              /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("span", { className: "font-bold text-red-600", children: [
                 wf,
                 "%"
               ] })
             ] })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "mt-4 pt-3 border-t border-slate-100 flex justify-between items-center bg-amber-50/50 p-2 rounded-lg", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("span", { className: "text-[10px] font-black text-amber-800 uppercase tracking-wide", children: "Subtotal Material" }),
-            /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("span", { className: "text-sm font-black text-amber-600", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "mt-4 pt-3 border-t border-slate-100 flex justify-between items-center bg-amber-50/50 p-2 rounded-lg", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { className: "text-[10px] font-black text-amber-800 uppercase tracking-wide", children: "Subtotal Material" }),
+            /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("span", { className: "text-sm font-black text-amber-600", children: [
               "Rp ",
               formatIDR(materialCostWithFactors)
             ] })
           ] })
         ] })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col flex-1", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/80", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("h3", { className: "text-xs font-extrabold text-slate-700 uppercase tracking-widest flex items-center gap-2", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(Activity, { className: "w-4 h-4 text-brand-500" }),
+      /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col flex-1", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/80", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("h3", { className: "text-xs font-extrabold text-slate-700 uppercase tracking-widest flex items-center gap-2", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(Activity, { className: "w-4 h-4 text-brand-500" }),
             " Rincian Operasi Manufaktur"
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("span", { className: "text-[10px] font-bold bg-brand-100 text-brand-700 px-2 py-1 rounded-md", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("span", { className: "text-[10px] font-bold bg-brand-100 text-brand-700 px-2 py-1 rounded-md", children: [
             "Total Operasi: ",
             d.proses?.length || d.proses_count || 0
           ] })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("div", { className: "overflow-x-auto", children: /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("table", { className: "w-full text-left text-xs whitespace-nowrap", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("thead", { className: "bg-brand-50 border-b border-brand-100 text-brand-800 text-[10px] uppercase tracking-widest font-extrabold", children: /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("tr", { children: [
-            /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("th", { className: "px-4 py-3 border-r border-brand-100 text-center w-16", children: "Visual" }),
-            /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("th", { className: "px-4 py-3 border-r border-brand-100", children: "Tahap & Nama Operasi" }),
-            /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("th", { className: "px-4 py-3 border-r border-brand-100 text-center", children: "Durasi" }),
-            /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("th", { className: "px-4 py-3 border-r border-brand-100 text-right", children: "Biaya Mesin" }),
-            /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("th", { className: "px-4 py-3 border-r border-brand-100 text-right", children: "Biaya Pekerja" }),
-            /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("th", { className: "px-4 py-3 text-right", children: "Subtotal" })
+        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("div", { className: "overflow-x-auto", children: /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("table", { className: "w-full text-left text-xs whitespace-nowrap", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("thead", { className: "bg-brand-50 border-b border-brand-100 text-brand-800 text-[10px] uppercase tracking-widest font-extrabold", children: /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("tr", { children: [
+            /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("th", { className: "px-4 py-3 border-r border-brand-100 text-center w-16", children: "Visual" }),
+            /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("th", { className: "px-4 py-3 border-r border-brand-100 text-center w-20", children: "Proses" }),
+            /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("th", { className: "px-4 py-3 border-r border-brand-100", children: "Tahap & Nama Operasi" }),
+            /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("th", { className: "px-4 py-3 border-r border-brand-100 text-center", children: "Durasi" }),
+            /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("th", { className: "px-4 py-3 border-r border-brand-100 text-right", children: "Biaya Mesin" }),
+            /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("th", { className: "px-4 py-3 border-r border-brand-100 text-right", children: "Jumlah Pekerja & Biaya" }),
+            /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("th", { className: "px-4 py-3 border-r border-brand-100 text-left", children: "Detail" }),
+            /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("th", { className: "px-4 py-3 text-right", children: "Subtotal" })
           ] }) }),
-          /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("tbody", { children: d.proses && d.proses.length > 0 ? d.proses.map((p, idx) => {
-            const { waktu, person: totalPerson, mesin: biayaMesin, pekerja: biayaPekerja, total: subtotal, rate } = calcProsesCosts(p);
-            return /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("tr", { className: "border-b border-slate-100 hover:bg-slate-50 transition-colors", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("td", { className: "px-4 py-3 border-r border-slate-100 text-center align-middle", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("div", { className: "w-12 h-12 rounded bg-white border border-slate-200 overflow-hidden mx-auto shadow-sm mb-1.5", children: p.gambar ? /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("img", { src: p.gambar, alt: "posisi", className: "w-full h-full object-cover" }) : /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(Image, { className: "w-5 h-5 text-slate-300 mx-auto mt-3" }) }),
-                /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("span", { className: "text-[9px] font-black bg-slate-100 text-slate-600 px-2 py-0.5 rounded uppercase tracking-wider", children: p.posisiOperasi || "-" })
+          /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("tbody", { children: d.proses && d.proses.length > 0 ? d.proses.map((p, idx) => {
+            const { waktu, person: totalPerson, mesin: biayaMesin, pekerja: biayaPekerja, total: subtotal, rate, ratePekerja } = calcProsesCosts(p);
+            const prosesLabel = p.proses ? getProsesById(p.proses).label : p.mfgProcess || "\u2014";
+            return /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("tr", { className: "border-b border-slate-100 hover:bg-slate-50 transition-colors", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("td", { className: "px-4 py-3 border-r border-slate-100 text-center align-middle", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("div", { className: "w-12 h-12 rounded bg-white border border-slate-200 overflow-hidden mx-auto shadow-sm mb-1.5", children: p.gambar ? /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("img", { src: p.gambar, alt: "posisi", className: "w-full h-full object-cover" }) : /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(Image, { className: "w-5 h-5 text-slate-300 mx-auto mt-3" }) }),
+                /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { className: "text-[9px] font-black bg-slate-100 text-slate-600 px-2 py-0.5 rounded uppercase tracking-wider", children: p.posisiOperasi || "-" })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("td", { className: "px-4 py-3 border-r border-slate-100 align-middle", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("div", { className: "font-black text-brand-900 text-sm mb-1", children: p.nama }),
-                /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("div", { className: "text-[10px] font-bold text-slate-500 bg-slate-100 inline-block px-2 py-0.5 rounded border border-slate-200", children: p.mfgProcess || "-" })
+              /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 text-center align-middle", children: /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { className: "inline-block text-[9px] font-black uppercase tracking-wide text-violet-700 bg-violet-50 border border-violet-100 px-2 py-0.5 rounded", children: prosesLabel }) }),
+              /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("td", { className: "px-4 py-3 border-r border-slate-100 align-middle", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "font-black text-brand-900 text-sm mb-1 flex flex-wrap items-center gap-1.5", children: [
+                  p.nama,
+                  p.inputMode === "routing" && /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("span", { className: "text-[8px] font-black uppercase px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700 border border-indigo-200", children: [
+                    "RT",
+                    p.routingSteps?.length ? ` \xB7 ${p.routingSteps.length} langkah` : ""
+                  ] })
+                ] }),
+                /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("div", { className: "text-[10px] font-bold text-slate-500 bg-slate-100 inline-block px-2 py-0.5 rounded border border-slate-200", children: p.mfgProcess || "-" })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 text-center align-middle", children: /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "inline-flex items-center justify-center bg-brand-50 border border-brand-100 text-brand-700 font-black px-2.5 py-1.5 rounded shadow-inner", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 text-center align-middle", children: /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "inline-flex items-center justify-center bg-brand-50 border border-brand-100 text-brand-700 font-black px-2.5 py-1.5 rounded shadow-inner", children: [
                 waktu,
                 " ",
-                /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("span", { className: "text-[9px] ml-1 font-bold", children: "Mnt" })
+                /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { className: "text-[9px] ml-1 font-bold", children: "Mnt" })
               ] }) }),
-              /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("td", { className: "px-4 py-3 border-r border-slate-100 text-right align-middle", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "text-[9px] text-slate-400 font-bold mb-1", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("td", { className: "px-4 py-3 border-r border-slate-100 text-right align-middle", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "text-[9px] text-slate-400 font-bold mb-1", children: [
                   "Rate: Rp ",
                   formatIDR(rate),
                   " / mnt"
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "font-bold text-slate-700", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "font-bold text-slate-700", children: [
                   "Rp ",
                   formatIDR(biayaMesin)
                 ] })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("td", { className: "px-4 py-3 border-r border-slate-100 text-right align-middle", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "flex items-center justify-end gap-1.5 mb-1", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("span", { className: "text-[9px] font-black bg-amber-100 text-amber-700 px-1.5 rounded", children: [
-                    totalPerson,
-                    " Org"
-                  ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("span", { className: "text-[9px] text-slate-400 font-bold", children: [
-                    "@ Rp ",
-                    formatIDR(LABOR_RATE_PER_MIN),
-                    " / mnt"
-                  ] })
+              /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("td", { className: "px-4 py-3 border-r border-slate-100 text-right align-middle", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "font-black text-amber-600 text-sm mb-0.5", children: [
+                  totalPerson,
+                  " org"
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "font-bold text-slate-700", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "text-[9px] text-slate-400 font-bold mb-1", children: [
+                  "@ Rp ",
+                  formatIDR(ratePekerja || LABOR_RATE_PER_MIN),
+                  " / mnt"
+                ] }),
+                /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "font-bold text-emerald-700", children: [
                   "Rp ",
                   formatIDR(biayaPekerja)
                 ] })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("td", { className: "px-4 py-3 text-right align-middle bg-brand-50/20", children: /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "font-black text-brand-700", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 align-top min-w-[7rem]", children: /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(OperasiDetailCell, { operasi: p, operasiIndex: idx, className: "text-xs" }) }),
+              /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("td", { className: "px-4 py-3 text-right align-middle bg-brand-50/20", children: /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "font-black text-brand-700", children: [
                 "Rp ",
                 formatIDR(subtotal)
               ] }) })
             ] }, idx);
-          }) : /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("tr", { children: /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("td", { colSpan: 6, className: "px-4 py-8 text-center text-slate-400 italic text-xs bg-slate-50/50", children: [
+          }) : /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("tr", { children: /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("td", { colSpan: 8, className: "px-4 py-8 text-center text-slate-400 italic text-xs bg-slate-50/50", children: [
             "Belum ada operasi manufaktur terperinci.",
-            d.proses_count > 0 && /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("span", { className: "block mt-1 font-bold text-brand-400", children: [
+            d.proses_count > 0 && /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("span", { className: "block mt-1 font-bold text-brand-400", children: [
               "Total estimasi biaya kasar tersedia: Rp ",
               formatIDR(totalMesinAll)
             ] })
           ] }) }) })
         ] }) }),
-        /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "bg-brand-100/50 border-t border-brand-200 px-4 py-3 flex flex-wrap gap-4 items-center justify-between text-xs font-black", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("span", { className: "text-brand-900 uppercase tracking-widest text-[10px]", children: "Total Kalkulasi Manufaktur" }),
-          /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "flex gap-6 items-center", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("span", { className: "text-brand-800 flex items-center gap-1.5", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(Activity, { className: "w-3.5 h-3.5" }),
+        /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "bg-brand-100/50 border-t border-brand-200 px-4 py-3 flex flex-wrap gap-4 items-center justify-between text-xs font-black", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { className: "text-brand-900 uppercase tracking-widest text-[10px]", children: "Total Kalkulasi Manufaktur" }),
+          /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "flex gap-6 items-center", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("span", { className: "text-brand-800 flex items-center gap-1.5", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(Activity, { className: "w-3.5 h-3.5" }),
               " ",
               totalWaktuAll,
               " Mnt"
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("span", { className: "text-slate-700 flex items-center gap-1.5", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(Settings, { className: "w-3.5 h-3.5" }),
+            /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("span", { className: "text-slate-700 flex items-center gap-1.5", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(Settings, { className: "w-3.5 h-3.5" }),
               " Rp ",
               formatIDR(totalMesinAll)
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("span", { className: "text-slate-700 flex items-center gap-1.5", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(Users, { className: "w-3.5 h-3.5" }),
+            /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("span", { className: "text-slate-700 flex items-center gap-1.5", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(Users, { className: "w-3.5 h-3.5" }),
               " Rp ",
               formatIDR(totalPekerjaAll)
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("span", { className: "text-brand-700 bg-white px-3 py-1 rounded shadow-sm border border-brand-100 text-sm", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("span", { className: "text-brand-700 bg-white px-3 py-1 rounded shadow-sm border border-brand-100 text-sm", children: [
               "Rp ",
               formatIDR(totalOperationCost)
             ] })
@@ -26581,12 +27681,12 @@ function SummaryDetailModal({ node, onClose }) {
         ] })
       ] })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "bg-slate-800 text-white px-6 py-5 shrink-0 flex items-center justify-between", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("span", { className: "text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-0.5", children: "Grand Total Biaya (Material + Operasi)" }),
-        /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("span", { className: "text-sm font-medium text-slate-300", children: d.nama })
+    /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "bg-slate-800 text-white px-6 py-5 shrink-0 flex items-center justify-between", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { className: "text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-0.5", children: "Grand Total Biaya (Material + Operasi)" }),
+        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { className: "text-sm font-medium text-slate-300", children: d.nama })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "text-2xl font-black text-emerald-400", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "text-2xl font-black text-emerald-400", children: [
         "Rp ",
         formatIDR(grandTotal)
       ] })
@@ -26595,8 +27695,8 @@ function SummaryDetailModal({ node, onClose }) {
 }
 
 // src/components/modals/KalkulasiModal.jsx
-var import_react5 = __toESM(require_react(), 1);
-var import_react_dom3 = __toESM(require_react_dom(), 1);
+var import_react7 = __toESM(require_react(), 1);
+var import_react_dom4 = __toESM(require_react_dom(), 1);
 
 // src/utils/bomCostRollup.js
 function expandProsesList(nodeData) {
@@ -26623,15 +27723,17 @@ function computePartCostRow(d) {
   const wfAmt = matBase * (wf / 100);
   const matAdjusted = matBase + sfAmt + wfAmt;
   let mesin = 0;
+  let wc = 0;
   let pekerja = 0;
   let waktu = 0;
   expandProsesList(d).forEach((p) => {
     const c = calcProsesCosts(p);
     mesin += c.mesin;
+    wc += c.wc || 0;
     pekerja += c.pekerja;
     waktu += c.waktu;
   });
-  const prosesTotal = mesin + pekerja;
+  const prosesTotal = mesin + wc + pekerja;
   return {
     sf,
     wf,
@@ -26641,6 +27743,7 @@ function computePartCostRow(d) {
     wfAmt,
     matAdjusted,
     mesin,
+    wc,
     pekerja,
     prosesTotal,
     waktu,
@@ -26653,6 +27756,7 @@ var EMPTY_ROLLUP = {
   wfAmt: 0,
   matAdjusted: 0,
   mesin: 0,
+  wc: 0,
   pekerja: 0,
   prosesTotal: 0,
   waktu: 0,
@@ -26695,7 +27799,7 @@ function computePartsTotals(bomData) {
 }
 
 // src/components/modals/KalkulasiModal.jsx
-var import_jsx_runtime11 = __toESM(require_jsx_runtime(), 1);
+var import_jsx_runtime14 = __toESM(require_jsx_runtime(), 1);
 var fmt = (val) => val === 0 ? "\u2014" : formatIDR(val);
 function KpiCard2({ label, value, sub, tone = "slate" }) {
   const tones = {
@@ -26705,13 +27809,13 @@ function KpiCard2({ label, value, sub, tone = "slate" }) {
     blue: "border-blue-200 bg-blue-50/80 text-blue-800",
     slate: "border-slate-200 bg-white text-slate-800"
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: `rounded-xl border p-4 shadow-sm ${tones[tone] || tones.slate}`, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "text-[10px] font-bold uppercase tracking-wider opacity-70 block", children: label }),
-    /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("p", { className: "text-lg font-black mt-1 tabular-nums", children: [
+  return /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: `rounded-xl border p-4 shadow-sm ${tones[tone] || tones.slate}`, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[10px] font-bold uppercase tracking-wider opacity-70 block", children: label }),
+    /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("p", { className: "text-lg font-black mt-1 tabular-nums", children: [
       "Rp ",
       fmt(value)
     ] }),
-    sub && /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("p", { className: "text-[10px] font-medium mt-0.5 opacity-80", children: sub })
+    sub && /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("p", { className: "text-[10px] font-medium mt-0.5 opacity-80", children: sub })
   ] });
 }
 function KalkulasiModal({
@@ -26723,23 +27827,23 @@ function KalkulasiModal({
   productInfo,
   packingCosts = {}
 }) {
-  const [activeTab, setActiveTab] = (0, import_react5.useState)("breakdown");
-  const enrichedBom = (0, import_react5.useMemo)(() => {
+  const [activeTab, setActiveTab] = (0, import_react7.useState)("breakdown");
+  const enrichedBom = (0, import_react7.useMemo)(() => {
     if (!bomData || !isOpen) return null;
     const clone = structuredClone(bomData);
     rollupTreeCosts(clone);
     return clone;
   }, [bomData, isOpen]);
-  const flatNodes = (0, import_react5.useMemo)(
+  const flatNodes = (0, import_react7.useMemo)(
     () => enrichedBom ? flattenTree(enrichedBom) : [],
     [enrichedBom]
   );
-  const partTotals = (0, import_react5.useMemo)(
+  const partTotals = (0, import_react7.useMemo)(
     () => enrichedBom ? computePartsTotals(enrichedBom) : null,
     [enrichedBom]
   );
   const rootRollup = enrichedBom?._rollup;
-  const stats = (0, import_react5.useMemo)(
+  const stats = (0, import_react7.useMemo)(
     () => ({
       modul: flatNodes.filter((n) => n.data.tipe === "MODUL").length,
       subModul: flatNodes.filter((n) => n.data.tipe?.includes("SUBMODUL")).length,
@@ -26751,52 +27855,52 @@ function KalkulasiModal({
   const packingCost = cogsData?.packingCost ?? 0;
   const sellingFob = Math.floor((cogsData?.sellingPrice ?? 0) / 1e3) * 1e3;
   if (!isOpen || !enrichedBom) return null;
-  const content = /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "viewport-shell viewport-shell-modal flex flex-col bg-page", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("header", { className: "shrink-0 bg-gradient-to-r from-brand-700 to-brand-600 text-white px-4 md:px-6 py-4 shadow-md", children: /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "page-inner-full w-full flex items-start justify-between gap-4", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("p", { className: "text-[10px] font-bold uppercase tracking-widest text-brand-100", children: "Kalkulasi Lengkap" }),
-        /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("h2", { className: "text-lg md:text-xl font-black mt-0.5", children: [
+  const content = /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "viewport-shell viewport-shell-modal flex flex-col bg-page", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("header", { className: "shrink-0 bg-gradient-to-r from-brand-700 to-brand-600 text-white px-4 md:px-6 py-4 shadow-md", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "page-inner-full w-full flex items-start justify-between gap-4", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("p", { className: "text-[10px] font-bold uppercase tracking-widest text-brand-100", children: "Kalkulasi Lengkap" }),
+        /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("h2", { className: "text-lg md:text-xl font-black mt-0.5", children: [
           productInfo?.nama || "Produk",
           " \xB7 ",
           productInfo?.kode || "\u2014"
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("p", { className: "text-xs text-brand-100 mt-1 opacity-90", children: "Breakdown material (SF/WF), biaya proses, COGS & harga jual FOB" })
+        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("p", { className: "text-xs text-brand-100 mt-1 opacity-90", children: "Breakdown material (SF/WF), biaya proses, COGS & harga jual FOB" })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(
+      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(
         "button",
         {
           type: "button",
           onClick: onClose,
           className: "p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors shrink-0",
           "aria-label": "Tutup",
-          children: /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(X, { className: "w-5 h-5" })
+          children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(X, { className: "w-5 h-5" })
         }
       )
     ] }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "shrink-0 bg-white border-b border-slate-200 px-4 md:px-6 flex gap-1 overflow-x-auto scroll-thin", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "shrink-0 bg-white border-b border-slate-200 px-4 md:px-6 flex gap-1 overflow-x-auto scroll-thin", children: [
       { id: "breakdown", label: "Breakdown Biaya", icon: Calculator },
       { id: "skenario", label: "COGS & Rincian FOB", icon: TrendingUp }
-    ].map(({ id, label, icon: Icon2 }) => /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)(
+    ].map(({ id, label, icon: Icon2 }) => /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)(
       "button",
       {
         type: "button",
         onClick: () => setActiveTab(id),
         className: `px-4 py-3 text-sm font-bold border-b-[3px] whitespace-nowrap flex items-center gap-2 transition-colors ${activeTab === id ? "border-brand-600 text-brand-700 bg-brand-50/50" : "border-transparent text-slate-500 hover:text-slate-700"}`,
         children: [
-          /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(Icon2, { className: "w-4 h-4" }),
+          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Icon2, { className: "w-4 h-4" }),
           label
         ]
       },
       id
     )) }),
-    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "flex-1 min-h-0 overflow-y-auto scroll-thin p-4 md:p-6", children: /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "page-inner-full w-full flex flex-col gap-5", children: [
-      activeTab === "breakdown" && /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)(import_jsx_runtime11.Fragment, { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(KpiCard2, { label: "Material (dasar)", value: partTotals?.matBase ?? 0, tone: "amber" }),
-          /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(KpiCard2, { label: "Penyesuaian SF", value: partTotals?.sfAmt ?? 0, sub: `rata SF part`, tone: "amber" }),
-          /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(KpiCard2, { label: "Penyesuaian WF", value: partTotals?.wfAmt ?? 0, sub: "waste factor", tone: "amber" }),
-          /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(KpiCard2, { label: "Material + SF/WF", value: partTotals?.matAdjusted ?? 0, tone: "amber" }),
-          /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "flex-1 min-h-0 overflow-y-auto scroll-thin p-4 md:p-6", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "page-inner-full w-full flex flex-col gap-5", children: [
+      activeTab === "breakdown" && /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)(import_jsx_runtime14.Fragment, { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(KpiCard2, { label: "Material (dasar)", value: partTotals?.matBase ?? 0, tone: "amber" }),
+          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(KpiCard2, { label: "Penyesuaian SF", value: partTotals?.sfAmt ?? 0, sub: `rata SF part`, tone: "amber" }),
+          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(KpiCard2, { label: "Penyesuaian WF", value: partTotals?.wfAmt ?? 0, sub: "waste factor", tone: "amber" }),
+          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(KpiCard2, { label: "Material + SF/WF", value: partTotals?.matAdjusted ?? 0, tone: "amber" }),
+          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(
             KpiCard2,
             {
               label: "Biaya Proses",
@@ -26805,145 +27909,145 @@ function KalkulasiModal({
               tone: "indigo"
             }
           ),
-          /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(KpiCard2, { label: "Biaya Produksi (Part)", value: partTotals?.biayaProduksi ?? 0, tone: "blue" })
+          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(KpiCard2, { label: "Biaya Produksi (Part)", value: partTotals?.biayaProduksi ?? 0, tone: "blue" })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "surface-card-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gradient-to-r from-brand-50 to-indigo-50 border-brand-200", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { children: [
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "text-[10px] font-black text-brand-600 uppercase tracking-widest", children: "Total Rollup Hierarki" }),
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("p", { className: "text-xs text-slate-600 mt-0.5", children: "Agregasi seluruh level modul \u2192 part" })
+        /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "surface-card-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gradient-to-r from-brand-50 to-indigo-50 border-brand-200", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { children: [
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[10px] font-black text-brand-600 uppercase tracking-widest", children: "Total Rollup Hierarki" }),
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("p", { className: "text-xs text-slate-600 mt-0.5", children: "Agregasi seluruh level modul \u2192 part" })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("span", { className: "text-2xl font-black text-brand-800 tabular-nums", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "text-2xl font-black text-brand-800 tabular-nums", children: [
             "Rp ",
             fmt(rootRollup?.biayaProduksi ?? 0)
           ] })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "rounded-lg border border-slate-200 bg-slate-50/80 px-4 py-3 text-xs text-slate-600 leading-relaxed", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("p", { children: [
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "font-black text-amber-800", children: "Material (PART):" }),
+        /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "rounded-lg border border-slate-200 bg-slate-50/80 px-4 py-3 text-xs text-slate-600 leading-relaxed", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("p", { children: [
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "font-black text-amber-800", children: "Material (PART):" }),
             " harga dasar \xD7 qty, lalu penyesuaian",
             " ",
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "text-amber-700 font-semibold", children: "SF%" }),
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-amber-700 font-semibold", children: "SF%" }),
             " dan",
             " ",
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "text-red-600 font-semibold", children: "WF%" }),
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-red-600 font-semibold", children: "WF%" }),
             "."
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("p", { className: "mt-1", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "font-black text-indigo-800", children: "Proses:" }),
+          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("p", { className: "mt-1", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "font-black text-indigo-800", children: "Proses:" }),
             " biaya mesin (work center) + tenaga kerja dari routing. Baris modul/submodul menampilkan agregasi anak."
           ] })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "data-table-wrap max-h-[min(70vh,640px)] overflow-auto scroll-thin", children: /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("table", { className: "table-compact min-w-[1280px]", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("thead", { children: [
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("tr", { children: [
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("th", { rowSpan: 2, className: "text-center w-10 align-middle", children: "No" }),
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("th", { rowSpan: 2, className: "align-middle", children: "Kode" }),
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("th", { rowSpan: 2, className: "min-w-[180px] align-middle", children: "Nama / Hierarki" }),
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("th", { rowSpan: 2, className: "text-center align-middle", children: "Qty" }),
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("th", { colSpan: 6, className: "text-center kalkulasi-th-group--material border-b border-amber-200", children: "Material (PART)" }),
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("th", { colSpan: 3, className: "text-center kalkulasi-th-group--proses border-b border-indigo-200", children: "Biaya Proses" }),
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("th", { rowSpan: 2, className: "text-right align-middle bg-brand-50 text-brand-800", children: "Biaya Prod." })
+        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "data-table-wrap max-h-[min(70vh,640px)] overflow-auto scroll-thin", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("table", { className: "table-compact min-w-[1280px]", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("thead", { children: [
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { rowSpan: 2, className: "text-center w-10 align-middle", children: "No" }),
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { rowSpan: 2, className: "align-middle", children: "Kode" }),
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { rowSpan: 2, className: "min-w-[180px] align-middle", children: "Nama / Hierarki" }),
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { rowSpan: 2, className: "text-center align-middle", children: "Qty" }),
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { colSpan: 6, className: "text-center kalkulasi-th-group--material border-b border-amber-200", children: "Material (PART)" }),
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { colSpan: 3, className: "text-center kalkulasi-th-group--proses border-b border-indigo-200", children: "Biaya Proses" }),
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { rowSpan: 2, className: "text-right align-middle bg-brand-50 text-brand-800", children: "Biaya Prod." })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("tr", { children: [
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("th", { className: "text-center text-amber-700", children: "SF%" }),
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("th", { className: "text-center text-red-600", children: "WF%" }),
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("th", { className: "text-right text-amber-800", children: "Dasar" }),
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("th", { className: "text-right text-amber-600", children: "+ SF" }),
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("th", { className: "text-right text-red-600", children: "+ WF" }),
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("th", { className: "text-right text-amber-900", children: "Adj." }),
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("th", { className: "text-right text-indigo-700", children: "Mesin" }),
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("th", { className: "text-right text-emerald-700", children: "Pekerja" }),
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("th", { className: "text-right text-indigo-900", children: "Total" })
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "text-center text-amber-700", children: "SF%" }),
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "text-center text-red-600", children: "WF%" }),
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "text-right text-amber-800", children: "Dasar" }),
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "text-right text-amber-600", children: "+ SF" }),
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "text-right text-red-600", children: "+ WF" }),
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "text-right text-amber-900", children: "Adj." }),
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "text-right text-indigo-700", children: "Mesin" }),
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "text-right text-emerald-700", children: "Pekerja" }),
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "text-right text-indigo-900", children: "Total" })
             ] })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("tbody", { children: flatNodes.map((node, index) => {
+          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("tbody", { children: flatNodes.map((node, index) => {
             const d = node.data;
             const r = d._rollup || {};
             const isPart = d.tipe === "PART";
-            return /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)(
+            return /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)(
               "tr",
               {
                 className: isPart ? "kalkulasi-row-part" : "kalkulasi-row-module",
                 children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { className: "text-center text-slate-400 font-semibold tabular-nums", children: index + 1 }),
-                  /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { className: "font-mono text-slate-500 text-[11px]", children: d.kode || "\u2014" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { className: "font-bold text-slate-800", children: /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)(
+                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "text-center text-slate-400 font-semibold tabular-nums", children: index + 1 }),
+                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "font-mono text-slate-500 text-[11px]", children: d.kode || "\u2014" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "font-bold text-slate-800", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)(
                     "div",
                     {
                       className: "flex items-center gap-2 min-w-[160px]",
                       style: { paddingLeft: `${node.level * 12}px` },
                       children: [
-                        /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(
+                        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(
                           "span",
                           {
                             className: `text-[9px] font-black uppercase px-1.5 py-0.5 rounded shrink-0 ${isPart ? "bg-amber-100 text-amber-800" : "bg-slate-200 text-slate-600"}`,
                             children: d.tipe
                           }
                         ),
-                        /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "truncate", title: d.nama, children: d.nama })
+                        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "truncate", title: d.nama, children: d.nama })
                       ]
                     }
                   ) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { className: "text-center tabular-nums", children: d.qty ?? "\u2014" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { className: "text-center text-amber-700 font-semibold", children: isPart ? `${r.sf ?? 0}%` : "\u2014" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { className: "text-center text-red-600 font-semibold", children: isPart ? `${r.wf ?? 0}%` : "\u2014" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { className: "text-right text-amber-800 tabular-nums", children: fmt(r.matBase) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { className: "text-right text-amber-600 tabular-nums", children: fmt(r.sfAmt) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { className: "text-right text-red-600 tabular-nums", children: fmt(r.wfAmt) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { className: "text-right font-semibold text-amber-900 tabular-nums", children: fmt(r.matAdjusted) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { className: "text-right text-indigo-700 tabular-nums", children: fmt(r.mesin) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { className: "text-right text-emerald-700 tabular-nums", children: fmt(r.pekerja) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { className: "text-right font-bold text-indigo-800 tabular-nums", children: fmt(r.prosesTotal) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { className: "text-right font-black text-brand-800 tabular-nums bg-brand-50/50", children: fmt(r.biayaProduksi) })
+                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "text-center tabular-nums", children: d.qty ?? "\u2014" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "text-center text-amber-700 font-semibold", children: isPart ? `${r.sf ?? 0}%` : "\u2014" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "text-center text-red-600 font-semibold", children: isPart ? `${r.wf ?? 0}%` : "\u2014" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "text-right text-amber-800 tabular-nums", children: fmt(r.matBase) }),
+                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "text-right text-amber-600 tabular-nums", children: fmt(r.sfAmt) }),
+                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "text-right text-red-600 tabular-nums", children: fmt(r.wfAmt) }),
+                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "text-right font-semibold text-amber-900 tabular-nums", children: fmt(r.matAdjusted) }),
+                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "text-right text-indigo-700 tabular-nums", children: fmt(r.mesin) }),
+                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "text-right text-emerald-700 tabular-nums", children: fmt(r.pekerja) }),
+                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "text-right font-bold text-indigo-800 tabular-nums", children: fmt(r.prosesTotal) }),
+                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "text-right font-black text-brand-800 tabular-nums bg-brand-50/50", children: fmt(r.biayaProduksi) })
                 ]
               },
               node.id
             );
           }) }),
-          /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("tfoot", { children: /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("tr", { children: [
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { colSpan: 6, className: "text-right font-black uppercase text-[10px] text-slate-600 sticky bottom-0", children: "Total agregasi PART:" }),
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { className: "text-right font-black text-amber-800 tabular-nums", children: fmt(partTotals?.matBase) }),
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { className: "text-right font-black text-amber-600 tabular-nums", children: fmt(partTotals?.sfAmt) }),
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { className: "text-right font-black text-red-600 tabular-nums", children: fmt(partTotals?.wfAmt) }),
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { className: "text-right font-black text-amber-900 tabular-nums", children: fmt(partTotals?.matAdjusted) }),
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { className: "text-right font-black text-indigo-700 tabular-nums", children: fmt(partTotals?.mesin) }),
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { className: "text-right font-black text-emerald-700 tabular-nums", children: fmt(partTotals?.pekerja) }),
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { className: "text-right font-black text-indigo-900 tabular-nums", children: fmt(partTotals?.prosesTotal) }),
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { className: "text-right font-black text-brand-800 tabular-nums bg-brand-100", children: fmt(partTotals?.biayaProduksi) })
+          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("tfoot", { children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { children: [
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { colSpan: 6, className: "text-right font-black uppercase text-[10px] text-slate-600 sticky bottom-0", children: "Total agregasi PART:" }),
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "text-right font-black text-amber-800 tabular-nums", children: fmt(partTotals?.matBase) }),
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "text-right font-black text-amber-600 tabular-nums", children: fmt(partTotals?.sfAmt) }),
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "text-right font-black text-red-600 tabular-nums", children: fmt(partTotals?.wfAmt) }),
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "text-right font-black text-amber-900 tabular-nums", children: fmt(partTotals?.matAdjusted) }),
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "text-right font-black text-indigo-700 tabular-nums", children: fmt(partTotals?.mesin) }),
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "text-right font-black text-emerald-700 tabular-nums", children: fmt(partTotals?.pekerja) }),
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "text-right font-black text-indigo-900 tabular-nums", children: fmt(partTotals?.prosesTotal) }),
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "text-right font-black text-brand-800 tabular-nums bg-brand-100", children: fmt(partTotals?.biayaProduksi) })
           ] }) })
         ] }) }),
-        /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "panel-card", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "panel-card-head", children: /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("h3", { className: "flex items-center gap-2", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(Wrench, { className: "w-4 h-4 text-indigo-500" }),
+        /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "panel-card", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "panel-card-head", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("h3", { className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Wrench, { className: "w-4 h-4 text-indigo-500" }),
             " Ringkasan Biaya Proses (informasi)"
           ] }) }),
-          /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "p-4 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "rounded-lg border border-indigo-100 bg-indigo-50/50 p-3", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "text-[10px] font-bold text-indigo-500 uppercase", children: "Total waktu operasi" }),
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("p", { className: "text-lg font-black text-indigo-800 mt-1", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "p-4 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "rounded-lg border border-indigo-100 bg-indigo-50/50 p-3", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[10px] font-bold text-indigo-500 uppercase", children: "Total waktu operasi" }),
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("p", { className: "text-lg font-black text-indigo-800 mt-1", children: [
                 partTotals?.waktu ?? 0,
                 " menit"
               ] })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "rounded-lg border border-blue-100 bg-blue-50/50 p-3", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "text-[10px] font-bold text-blue-500 uppercase", children: "Biaya mesin (WC)" }),
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("p", { className: "text-lg font-black text-blue-800 mt-1", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "rounded-lg border border-blue-100 bg-blue-50/50 p-3", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[10px] font-bold text-blue-500 uppercase", children: "Biaya mesin (WC)" }),
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("p", { className: "text-lg font-black text-blue-800 mt-1", children: [
                 "Rp ",
                 fmt(partTotals?.mesin)
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("p", { className: "text-[10px] text-slate-500 mt-1", children: "Waktu \xD7 rate mesin per routing/WC" })
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("p", { className: "text-[10px] text-slate-500 mt-1", children: "Waktu \xD7 rate mesin per routing/WC" })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "rounded-lg border border-emerald-100 bg-emerald-50/50 p-3", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "text-[10px] font-bold text-emerald-500 uppercase", children: "Biaya pekerja" }),
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("p", { className: "text-lg font-black text-emerald-800 mt-1", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "rounded-lg border border-emerald-100 bg-emerald-50/50 p-3", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[10px] font-bold text-emerald-500 uppercase", children: "Biaya pekerja" }),
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("p", { className: "text-lg font-black text-emerald-800 mt-1", children: [
                 "Rp ",
                 fmt(partTotals?.pekerja)
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("p", { className: "text-[10px] text-slate-500 mt-1", children: "Waktu \xD7 jumlah org \xD7 rate TK" })
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("p", { className: "text-[10px] text-slate-500 mt-1", children: "Waktu \xD7 jumlah org \xD7 rate TK" })
             ] })
           ] })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("p", { className: "text-[10px] text-slate-400 text-center pb-2", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("p", { className: "text-[10px] text-slate-400 text-center pb-2", children: [
           "Modul: ",
           stats.modul,
           " \xB7 Submodul: ",
@@ -26954,41 +28058,41 @@ function KalkulasiModal({
           flatNodes.length
         ] })
       ] }),
-      activeTab === "skenario" && cogsData && /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)(import_jsx_runtime11.Fragment, { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "grid grid-cols-1 lg:grid-cols-3 gap-4", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "lg:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-3", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(KpiCard2, { label: "Material (COGS)", value: cogsData.totalMaterial, tone: "amber" }),
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(KpiCard2, { label: "Proses Pabrik", value: cogsData.totalProcess, tone: "indigo" }),
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(KpiCard2, { label: `Packing (${packingJalur})`, value: packingCost, tone: "blue" }),
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(KpiCard2, { label: "Production Cost", value: cogsData.productionCost, tone: "slate" })
+      activeTab === "skenario" && cogsData && /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)(import_jsx_runtime14.Fragment, { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "grid grid-cols-1 lg:grid-cols-3 gap-4", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "lg:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-3", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(KpiCard2, { label: "Material (COGS)", value: cogsData.totalMaterial, tone: "amber" }),
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(KpiCard2, { label: "Proses Pabrik", value: cogsData.totalProcess, tone: "indigo" }),
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(KpiCard2, { label: `Packing (${packingJalur})`, value: packingCost, tone: "blue" }),
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(KpiCard2, { label: "Production Cost", value: cogsData.productionCost, tone: "slate" })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "surface-card-lg p-5 bg-emerald-50 border-emerald-200 flex flex-col justify-center items-center text-center", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(CircleCheck, { className: "w-8 h-8 text-emerald-600 mb-2" }),
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "text-[10px] font-black text-emerald-600 uppercase tracking-widest", children: "Harga Jual FOB" }),
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("p", { className: "text-2xl font-black text-emerald-800 mt-1 tabular-nums", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "surface-card-lg p-5 bg-emerald-50 border-emerald-200 flex flex-col justify-center items-center text-center", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(CircleCheck, { className: "w-8 h-8 text-emerald-600 mb-2" }),
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[10px] font-black text-emerald-600 uppercase tracking-widest", children: "Harga Jual FOB" }),
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("p", { className: "text-2xl font-black text-emerald-800 mt-1 tabular-nums", children: [
               "Rp ",
               fmt(sellingFob)
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("p", { className: "text-[10px] text-emerald-600 mt-1", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("p", { className: "text-[10px] text-emerald-600 mt-1", children: [
               "Markup ",
               cogsConfig?.markupPct ?? 0,
               "% \xB7 dibulatkan ribuan"
             ] })
           ] })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "panel-card", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "panel-card-head", children: /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("h3", { className: "flex items-center gap-2", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(Activity, { className: "w-4 h-4 text-indigo-500" }),
+        /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "panel-card", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "panel-card-head", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("h3", { className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Activity, { className: "w-4 h-4 text-indigo-500" }),
             " Pembentukan COGS (langkah demi langkah)"
           ] }) }),
-          /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "data-table-wrap rounded-none border-0 shadow-none", children: /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("table", { className: "table-compact min-w-[640px]", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("tr", { children: [
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("th", { className: "w-12 text-center", children: "#" }),
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("th", { children: "Komponen" }),
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("th", { className: "text-right", children: "Nilai (IDR)" }),
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("th", { className: "text-right", children: "Running Total" })
+          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "data-table-wrap rounded-none border-0 shadow-none", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("table", { className: "table-compact min-w-[640px]", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "w-12 text-center", children: "#" }),
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { children: "Komponen" }),
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "text-right", children: "Nilai (IDR)" }),
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "text-right", children: "Running Total" })
             ] }) }),
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("tbody", { children: [
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("tbody", { children: [
               { step: "1", label: "Bahan Baku & Material", desc: "Part \xD7 Qty + SF% + WF%", val: cogsData.totalMaterial, run: cogsData.totalMaterial },
               { step: "2", label: "Proses Pabrik", desc: "Mesin + tenaga kerja (routing/WC)", val: cogsData.totalProcess, run: cogsData.totalMaterial + cogsData.totalProcess },
               {
@@ -27015,18 +28119,18 @@ function KalkulasiModal({
                 run: cogsData.totalCogs
               },
               { step: "\u03A3", label: "TOTAL COGS", desc: "Sebelum markup jual", val: null, run: cogsData.totalCogs, total: true }
-            ].map((row) => /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)(
+            ].map((row) => /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)(
               "tr",
               {
                 className: row.total ? "bg-indigo-50 font-bold" : row.subtotal ? "bg-slate-100 font-bold" : row.highlight ? "bg-blue-50/50" : "",
                 children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { className: "text-center font-black text-slate-400", children: row.step }),
-                  /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("td", { children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "font-bold text-slate-800", children: row.label }),
-                    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "text-[10px] text-slate-500", children: row.desc })
+                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "text-center font-black text-slate-400", children: row.step }),
+                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "font-bold text-slate-800", children: row.label }),
+                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "text-[10px] text-slate-500", children: row.desc })
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("td", { className: "text-right font-bold tabular-nums", children: row.val != null ? row.val > 0 ? `+ Rp ${fmt(row.val)}` : "Rp 0" : "\u2014" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("td", { className: "text-right font-black text-indigo-700 tabular-nums", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "text-right font-bold tabular-nums", children: row.val != null ? row.val > 0 ? `+ Rp ${fmt(row.val)}` : "Rp 0" : "\u2014" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "text-right font-black text-indigo-700 tabular-nums", children: [
                     "Rp ",
                     fmt(row.run)
                   ] })
@@ -27036,94 +28140,94 @@ function KalkulasiModal({
             )) })
           ] }) })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "panel-card p-4", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("h4", { className: "text-xs font-black text-slate-700 uppercase tracking-wider mb-3 flex items-center gap-2", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(Package, { className: "w-4 h-4 text-blue-500" }),
+        /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "panel-card p-4", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("h4", { className: "text-xs font-black text-slate-700 uppercase tracking-wider mb-3 flex items-center gap-2", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Package, { className: "w-4 h-4 text-blue-500" }),
               " Rincian Packing"
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("ul", { className: "space-y-2 text-sm", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("li", { className: "flex justify-between border-b border-slate-100 pb-2", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "text-slate-600", children: "BOX \u2014 Material" }),
-                /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("span", { className: "font-bold tabular-nums", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("ul", { className: "space-y-2 text-sm", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("li", { className: "flex justify-between border-b border-slate-100 pb-2", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-slate-600", children: "BOX \u2014 Material" }),
+                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "font-bold tabular-nums", children: [
                   "Rp ",
                   fmt(packingCosts.boxMat ?? 0)
                 ] })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("li", { className: "flex justify-between border-b border-slate-100 pb-2", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "text-slate-600", children: "BOX \u2014 Tenaga" }),
-                /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("span", { className: "font-bold tabular-nums", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("li", { className: "flex justify-between border-b border-slate-100 pb-2", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-slate-600", children: "BOX \u2014 Tenaga" }),
+                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "font-bold tabular-nums", children: [
                   "Rp ",
                   fmt(packingCosts.boxLab ?? 0)
                 ] })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("li", { className: "flex justify-between border-b border-slate-100 pb-2", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "text-slate-600", children: "SF \u2014 Material" }),
-                /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("span", { className: "font-bold tabular-nums", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("li", { className: "flex justify-between border-b border-slate-100 pb-2", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-slate-600", children: "SF \u2014 Material" }),
+                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "font-bold tabular-nums", children: [
                   "Rp ",
                   fmt(packingCosts.sfMat ?? 0)
                 ] })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("li", { className: "flex justify-between", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "text-slate-600", children: "SF \u2014 Tenaga" }),
-                /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("span", { className: "font-bold tabular-nums", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("li", { className: "flex justify-between", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-slate-600", children: "SF \u2014 Tenaga" }),
+                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "font-bold tabular-nums", children: [
                   "Rp ",
                   fmt(packingCosts.sfLab ?? 0)
                 ] })
               ] })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("p", { className: "text-[10px] text-slate-400 mt-3", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("p", { className: "text-[10px] text-slate-400 mt-3", children: [
               "Jalur aktif COGS: ",
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("strong", { children: packingJalur })
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("strong", { children: packingJalur })
             ] })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "panel-card p-4 bg-gradient-to-br from-emerald-50 to-white border-emerald-200", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("h4", { className: "text-xs font-black text-emerald-800 uppercase tracking-wider mb-3 flex items-center gap-2", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(DollarSign, { className: "w-4 h-4" }),
+          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "panel-card p-4 bg-gradient-to-br from-emerald-50 to-white border-emerald-200", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("h4", { className: "text-xs font-black text-emerald-800 uppercase tracking-wider mb-3 flex items-center gap-2", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(DollarSign, { className: "w-4 h-4" }),
               " Rincian Harga Jual FOB"
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "space-y-3 text-sm", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "flex justify-between", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "text-slate-600", children: "Total COGS" }),
-                /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("span", { className: "font-bold tabular-nums", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "space-y-3 text-sm", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex justify-between", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-slate-600", children: "Total COGS" }),
+                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "font-bold tabular-nums", children: [
                   "Rp ",
                   fmt(cogsData.totalCogs)
                 ] })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "flex justify-between", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("span", { className: "text-slate-600", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex justify-between", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "text-slate-600", children: [
                   "Markup (",
                   cogsConfig?.markupPct ?? 0,
                   "%)"
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("span", { className: "font-bold text-emerald-600 tabular-nums", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "font-bold text-emerald-600 tabular-nums", children: [
                   "+ Rp ",
                   fmt(sellingFob - cogsData.totalCogs)
                 ] })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "flex justify-between pt-2 border-t border-emerald-200", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "font-black text-emerald-900", children: "Harga Jual FOB" }),
-                /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("span", { className: "text-lg font-black text-emerald-800 tabular-nums", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex justify-between pt-2 border-t border-emerald-200", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "font-black text-emerald-900", children: "Harga Jual FOB" }),
+                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "text-lg font-black text-emerald-800 tabular-nums", children: [
                   "Rp ",
                   fmt(sellingFob)
                 ] })
               ] })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("p", { className: "text-[10px] text-slate-500 mt-4 leading-relaxed", children: "Struktur mengacu sheet SUMMARY COST (ELB-555-98): Production Cost + Factory OH + Management OH, lalu markup FOB." })
+            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("p", { className: "text-[10px] text-slate-500 mt-4 leading-relaxed", children: "Struktur mengacu sheet SUMMARY COST (ELB-555-98): Production Cost + Factory OH + Management OH, lalu markup FOB." })
           ] })
         ] })
       ] })
     ] }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("footer", { className: "shrink-0 border-t border-slate-200 bg-white px-4 py-3 flex justify-end", children: /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("button", { type: "button", onClick: onClose, className: "btn-primary", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(FileText, { className: "w-4 h-4" }),
+    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("footer", { className: "shrink-0 border-t border-slate-200 bg-white px-4 py-3 flex justify-end", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("button", { type: "button", onClick: onClose, className: "btn-primary", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(FileText, { className: "w-4 h-4" }),
       " Tutup"
     ] }) })
   ] });
-  return (0, import_react_dom3.createPortal)(content, document.body);
+  return (0, import_react_dom4.createPortal)(content, document.body);
 }
 
 // src/components/modals/MarkupPreviewModal.jsx
-var import_react_dom4 = __toESM(require_react_dom(), 1);
+var import_react_dom5 = __toESM(require_react_dom(), 1);
 
 // src/data/masterSamples.js
 var VENDOR_SAMPLES = [
@@ -27137,44 +28241,44 @@ var VENDOR_SAMPLES = [
 var MARKUP_PRESETS = [15, 17.5, 20, 22.5, 25, 27.5, 30, 32.5, 35];
 
 // src/components/modals/MarkupPreviewModal.jsx
-var import_jsx_runtime12 = __toESM(require_jsx_runtime(), 1);
+var import_jsx_runtime15 = __toESM(require_jsx_runtime(), 1);
 function MarkupPreviewModal({ isOpen, onClose, totalCogs, selectedPct, onSelect }) {
   if (!isOpen) return null;
   const cogs = Number(totalCogs) || 0;
-  const content = /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("div", { className: "fixed inset-0 z-[130] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm", children: /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("div", { className: "bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("div", { className: "px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-emerald-50", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("div", { className: "flex items-center gap-2", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(TrendingUp, { className: "w-5 h-5 text-emerald-600" }),
-        /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("h3", { className: "text-sm font-black text-slate-800 uppercase tracking-wide", children: "Preview Mark Up" }),
-          /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("p", { className: "text-[10px] text-slate-500", children: [
+  const content = /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("div", { className: "fixed inset-0 z-[130] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("div", { className: "bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("div", { className: "px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-emerald-50", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("div", { className: "flex items-center gap-2", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(TrendingUp, { className: "w-5 h-5 text-emerald-600" }),
+        /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("div", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("h3", { className: "text-sm font-black text-slate-800 uppercase tracking-wide", children: "Preview Mark Up" }),
+          /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("p", { className: "text-[10px] text-slate-500", children: [
             "COGS: Rp ",
             formatIDR(cogs)
           ] })
         ] })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("button", { type: "button", onClick: onClose, className: "p-2 rounded-lg hover:bg-white/80 text-slate-500", children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(X, { className: "w-5 h-5" }) })
+      /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("button", { type: "button", onClick: onClose, className: "p-2 rounded-lg hover:bg-white/80 text-slate-500", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(X, { className: "w-5 h-5" }) })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("div", { className: "max-h-[70vh] overflow-y-auto scroll-thin", children: /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("table", { className: "w-full text-sm", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("tr", { className: "bg-slate-50 text-[10px] font-black uppercase text-slate-500 tracking-wider", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("th", { className: "px-5 py-3 text-left", children: "Mark Up" }),
-        /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("th", { className: "px-5 py-3 text-right", children: "Harga Jual FOB" })
+    /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("div", { className: "max-h-[70vh] overflow-y-auto scroll-thin", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("table", { className: "w-full text-sm", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("tr", { className: "bg-slate-50 text-[10px] font-black uppercase text-slate-500 tracking-wider", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("th", { className: "px-5 py-3 text-left", children: "Mark Up" }),
+        /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("th", { className: "px-5 py-3 text-right", children: "Harga Jual FOB" })
       ] }) }),
-      /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("tbody", { children: MARKUP_PRESETS.map((pct) => {
+      /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("tbody", { children: MARKUP_PRESETS.map((pct) => {
         const selling = cogs * (1 + pct / 100);
         const fob = Math.floor(selling / 1e3) * 1e3;
         const active = Number(selectedPct) === pct;
-        return /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)(
+        return /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)(
           "tr",
           {
             className: `border-t border-slate-100 cursor-pointer transition-colors ${active ? "bg-emerald-100 hover:bg-emerald-100" : "hover:bg-slate-50"}`,
             onClick: () => onSelect(pct),
             children: [
-              /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("td", { className: "px-5 py-3 font-black text-slate-800 tabular-nums", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("td", { className: "px-5 py-3 font-black text-slate-800 tabular-nums", children: [
                 pct.toLocaleString("id-ID", { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
                 "%"
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("td", { className: "px-5 py-3 text-right font-black text-emerald-800 tabular-nums", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("td", { className: "px-5 py-3 text-right font-black text-emerald-800 tabular-nums", children: [
                 "Rp ",
                 formatIDR(fob)
               ] })
@@ -27184,9 +28288,9 @@ function MarkupPreviewModal({ isOpen, onClose, totalCogs, selectedPct, onSelect 
         );
       }) })
     ] }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("div", { className: "px-5 py-3 border-t border-slate-100 bg-slate-50 text-[10px] text-slate-500", children: "Klik baris untuk memilih markup. FOB dibulatkan ke ribuan." })
+    /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("div", { className: "px-5 py-3 border-t border-slate-100 bg-slate-50 text-[10px] text-slate-500", children: "Klik baris untuk memilih markup. FOB dibulatkan ke ribuan." })
   ] }) });
-  return (0, import_react_dom4.createPortal)(content, document.body);
+  return (0, import_react_dom5.createPortal)(content, document.body);
 }
 
 // src/utils/images.js
@@ -27204,14 +28308,14 @@ function resolveNodeFoto(data) {
 }
 
 // src/components/product/ProductPanel.jsx
-var import_jsx_runtime13 = __toESM(require_jsx_runtime(), 1);
+var import_jsx_runtime16 = __toESM(require_jsx_runtime(), 1);
 var fieldLabel = "label-field mb-1 block";
 var fieldInput = "w-full border-b-2 border-slate-200 px-0 py-2 text-sm font-bold text-slate-700 focus:outline-none focus:border-brand-500 bg-transparent transition-colors hover:border-slate-300";
 function PackingAxisInline({ base, tolVal, gross, theme, onTol, onGross }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "product-dim-axis__row", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { className: `product-dim-pack__nett ${theme.nett}`, children: base }),
-    /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { className: `product-dim-pack__sep ${theme.plus}`, children: "+" }),
-    /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "product-dim-axis__row", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("span", { className: `product-dim-pack__nett ${theme.nett}`, children: base }),
+    /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("span", { className: `product-dim-pack__sep ${theme.plus}`, children: "+" }),
+    /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(
       "input",
       {
         type: "number",
@@ -27221,8 +28325,8 @@ function PackingAxisInline({ base, tolVal, gross, theme, onTol, onGross }) {
         "aria-label": "Toleransi"
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { className: "product-dim-pack__sep", children: "=" }),
-    /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("span", { className: "product-dim-pack__sep", children: "=" }),
+    /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(
       "input",
       {
         type: "number",
@@ -27234,21 +28338,22 @@ function PackingAxisInline({ base, tolVal, gross, theme, onTol, onGross }) {
     )
   ] });
 }
-function DimColumn({ icon: Icon2, title, vol, accent, children }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: `product-dim-col ${accent.border}`, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: `product-dim-col__head ${accent.head}`, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("span", { className: `product-dim-col__title ${accent.title}`, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(Icon2, { className: `w-3.5 h-3.5 shrink-0 ${accent.icon}` }),
-        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { className: "truncate", children: title })
+function DimColumn({ icon: Icon2, title, vol, accent, variant = "produk", children }) {
+  const volDisplay = Number(vol).toFixed(4);
+  return /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: `product-dim-col product-dim-col--${variant} ${accent.border}`, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: `product-dim-col__head ${accent.head}`, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("span", { className: `product-dim-col__title ${accent.title}`, children: [
+        /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(Icon2, { className: `w-3 h-3 shrink-0 ${accent.icon}` }),
+        /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("span", { className: "truncate", children: title })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { className: `product-dim-col__vol ${accent.vol}`, children: vol })
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("span", { className: `product-dim-col__vol ${accent.vol}`, title: `${vol} m\xB3`, children: volDisplay })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("div", { className: `product-dim-col__body ${accent.body}`, children })
+    /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("div", { className: `product-dim-col__body ${accent.body}`, children })
   ] });
 }
 function AxisSlot({ label, children }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "product-dim-axis", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { className: "product-dim-axis__label", children: label }),
+  return /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "product-dim-axis", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("span", { className: "product-dim-axis__label", children: label }),
     children
   ] });
 }
@@ -27312,9 +28417,9 @@ function ProductPanel({
     if (!item) return null;
     const theme = PACK_THEME[themeKey];
     const vol = calcPackingVolume(dimensi, item, packingVolOpts).toFixed(4);
-    return /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(DimColumn, { icon: Package, title, vol, accent: theme, children: axes.map(({ label, tolKey, base }) => {
+    return /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(DimColumn, { icon: Package, title, vol, accent: theme, variant: "pack", children: axes.map(({ label, tolKey, base }) => {
       const gross = base + (Number(item[tolKey]) || 0);
-      return /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(AxisSlot, { label, children: /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(
+      return /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(AxisSlot, { label, children: /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(
         PackingAxisInline,
         {
           base,
@@ -27328,9 +28433,9 @@ function ProductPanel({
     }) }, themeKey);
   };
   const fotoSrc = productImage || resolveNodeFoto({ foto: productImage, tipe: "MODUL" });
-  return /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("div", { className: "editor-product-panel", children: /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("div", { className: "surface-card-lg overflow-hidden", children: /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "grid grid-cols-1 lg:grid-cols-[minmax(10.5rem,12.5rem)_1fr] gap-0 lg:gap-0", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "flex flex-row lg:flex-col gap-4 p-4 lg:p-5 border-b lg:border-b-0 lg:border-r border-slate-100 bg-slate-50/40", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("div", { className: "editor-product-panel", children: /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("div", { className: "surface-card-lg overflow-hidden", children: /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "grid grid-cols-1 lg:grid-cols-[minmax(10.5rem,12.5rem)_1fr] gap-0 lg:gap-0", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "flex flex-row lg:flex-col gap-4 p-4 lg:p-5 border-b lg:border-b-0 lg:border-r border-slate-100 bg-slate-50/40", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(
         ClickZoomImage,
         {
           fill: true,
@@ -27339,19 +28444,19 @@ function ProductPanel({
           className: "h-24 w-24 sm:h-28 sm:w-28 lg:h-auto lg:w-full lg:aspect-square rounded-xl border-slate-200"
         }
       ),
-      /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "flex flex-wrap lg:flex-col gap-1.5 flex-1 min-w-0", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { className: "px-2 py-0.5 rounded-md bg-brand-100 text-brand-800 text-[10px] font-black uppercase", children: productMeta.itemType || "\u2014" }),
-        /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("span", { className: "px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-bold", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "flex flex-wrap lg:flex-col gap-1.5 flex-1 min-w-0", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("span", { className: "px-2 py-0.5 rounded-md bg-brand-100 text-brand-800 text-[10px] font-black uppercase", children: productMeta.itemType || "\u2014" }),
+        /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("span", { className: "px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-bold", children: [
           "v",
           productInfo.versi
         ] })
       ] })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "flex flex-col gap-4 p-4 md:p-5 min-w-0", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-3", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "sm:col-span-2", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("label", { className: fieldLabel, children: "Nama Produk" }),
-          /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "flex flex-col gap-4 p-4 md:p-5 min-w-0", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-3", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "sm:col-span-2", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("label", { className: fieldLabel, children: "Nama Produk" }),
+          /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(
             "input",
             {
               type: "text",
@@ -27361,19 +28466,19 @@ function ProductPanel({
             }
           )
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("label", { className: fieldLabel, children: "Kode Produk" }),
-          /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("input", { type: "text", value: productInfo.kode, onChange: (e) => onProductInfoChange("kode", e.target.value), className: fieldInput })
+        /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("label", { className: fieldLabel, children: "Kode Produk" }),
+          /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("input", { type: "text", value: productInfo.kode, onChange: (e) => onProductInfoChange("kode", e.target.value), className: fieldInput })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("label", { className: fieldLabel, children: "Varian" }),
-          /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("input", { type: "text", value: productInfo.varian, onChange: (e) => onProductInfoChange("varian", e.target.value), className: fieldInput })
+        /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("label", { className: fieldLabel, children: "Varian" }),
+          /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("input", { type: "text", value: productInfo.varian, onChange: (e) => onProductInfoChange("varian", e.target.value), className: fieldInput })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "sm:col-span-2", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("label", { className: fieldLabel, children: "Nama BOM" }),
-          /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "flex items-center gap-2 border-b-2 border-slate-200 focus-within:border-brand-500", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(Network, { className: "w-4 h-4 text-brand-500 shrink-0" }),
-            /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "sm:col-span-2", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("label", { className: fieldLabel, children: "Nama BOM" }),
+          /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "flex items-center gap-2 border-b-2 border-slate-200 focus-within:border-brand-500", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(Network, { className: "w-4 h-4 text-brand-500 shrink-0" }),
+            /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(
               "input",
               {
                 type: "text",
@@ -27384,21 +28489,21 @@ function ProductPanel({
             )
           ] })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("label", { className: fieldLabel, children: "Kode BOM" }),
-          /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("input", { type: "text", value: productInfo.kodeBom, onChange: (e) => onProductInfoChange("kodeBom", e.target.value), className: `${fieldInput} text-brand-700` })
+        /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("label", { className: fieldLabel, children: "Kode BOM" }),
+          /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("input", { type: "text", value: productInfo.kodeBom, onChange: (e) => onProductInfoChange("kodeBom", e.target.value), className: `${fieldInput} text-brand-700` })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("label", { className: fieldLabel, children: "Versi" }),
-          /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("input", { type: "text", value: productInfo.versi, onChange: (e) => onProductInfoChange("versi", e.target.value), className: fieldInput })
+        /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("label", { className: fieldLabel, children: "Versi" }),
+          /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("input", { type: "text", value: productInfo.versi, onChange: (e) => onProductInfoChange("versi", e.target.value), className: fieldInput })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "sm:col-span-2", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("label", { className: fieldLabel, children: "Customer" }),
-          /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("input", { type: "text", value: productInfo.customer, onChange: (e) => onProductInfoChange("customer", e.target.value), className: fieldInput })
+        /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "sm:col-span-2", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("label", { className: fieldLabel, children: "Customer" }),
+          /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("input", { type: "text", value: productInfo.customer, onChange: (e) => onProductInfoChange("customer", e.target.value), className: fieldInput })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("label", { className: fieldLabel, children: "Item Type" }),
-          /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("label", { className: fieldLabel, children: "Item Type" }),
+          /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(
             "input",
             {
               type: "text",
@@ -27410,10 +28515,10 @@ function ProductPanel({
           )
         ] })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "product-dim-cols-wrap", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("p", { className: "product-dim-cols__legend", children: "Dimensi (mm) \xB7 W \xD7 D \xD7 H" }),
-        /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "product-dim-cols", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(DimColumn, { icon: PanelsTopLeft, title: "Produk", vol: volProduk, accent: PRODUK_ACCENT, children: axes.map(({ label, dimKey }) => /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(AxisSlot, { label, children: /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "product-dim-cols-wrap mt-0.5", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("p", { className: "product-dim-cols__legend", children: "Dimensi (mm) \xB7 W \xD7 D \xD7 H" }),
+        /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "product-dim-cols", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(DimColumn, { icon: PanelsTopLeft, title: "Produk", vol: volProduk, accent: PRODUK_ACCENT, variant: "produk", children: axes.map(({ label, dimKey }) => /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(AxisSlot, { label, children: /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(
             "input",
             {
               type: "number",
@@ -27431,12 +28536,12 @@ function ProductPanel({
 }
 
 // src/pages/BOMEditor.jsx
-var import_jsx_runtime14 = __toESM(require_jsx_runtime(), 1);
+var import_jsx_runtime17 = __toESM(require_jsx_runtime(), 1);
 function VendorField({ value, onChange }) {
   const known = VENDOR_SAMPLES.includes(value);
   const selectValue = known ? value : value ? "__custom__" : "";
-  return /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex flex-col gap-1 min-w-[160px]", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)(
+  return /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex flex-col gap-1 min-w-[160px]", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)(
       "select",
       {
         value: selectValue,
@@ -27447,13 +28552,13 @@ function VendorField({ value, onChange }) {
         },
         className: "w-full border border-slate-200 rounded-lg px-2 py-1.5 text-xs font-medium bg-white focus:border-brand-400 focus:ring-1 focus:ring-brand-100 outline-none",
         children: [
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("option", { value: "", children: "\u2014 Pilih vendor \u2014" }),
-          VENDOR_SAMPLES.map((v) => /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("option", { value: v, children: v }, v)),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("option", { value: "__custom__", children: "Lainnya (ketik manual)" })
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("option", { value: "", children: "\u2014 Pilih vendor \u2014" }),
+          VENDOR_SAMPLES.map((v) => /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("option", { value: v, children: v }, v)),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("option", { value: "__custom__", children: "Lainnya (ketik manual)" })
         ]
       }
     ),
-    selectValue === "__custom__" && /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(
+    selectValue === "__custom__" && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(
       "input",
       {
         type: "text",
@@ -27466,9 +28571,9 @@ function VendorField({ value, onChange }) {
   ] });
 }
 var NodeCard = ({ data }) => {
-  const [showProses, setShowProses] = (0, import_react6.useState)(true);
+  const [showProses, setShowProses] = (0, import_react8.useState)(true);
   const style = tipeStyles[data.tipe] || tipeStyles.PART;
-  const prosesList = (0, import_react6.useMemo)(() => {
+  const prosesList = (0, import_react8.useMemo)(() => {
     if (data.proses?.length) return data.proses;
     if ((data.proses_count || 0) > 0) {
       const est = Math.round(11e4 / data.proses_count);
@@ -27484,24 +28589,24 @@ var NodeCard = ({ data }) => {
     return [];
   }, [data.proses, data.proses_count]);
   const hasProses = prosesList.length > 0;
-  return /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: `bg-white rounded-xl border border-slate-200 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1 ${style.cardBorder} ${showProses && hasProses ? "w-[540px]" : "w-72"}`, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: `p-4 flex items-start gap-4 ${style.bgHead}`, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "w-14 h-14 rounded-xl border border-white/50 bg-white/50 flex items-center justify-center text-slate-300 shrink-0 overflow-hidden shadow-sm backdrop-blur-sm p-0.5", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "w-full h-full rounded-lg overflow-hidden bg-slate-100 flex items-center justify-center", children: data.foto ? /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("img", { src: data.foto, alt: "pic", className: "w-full h-full object-cover" }) : /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Image, { className: "w-6 h-6" }) }) }),
-      /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex-1 min-w-0", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex justify-between items-start mb-2", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: `inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black tracking-wide border bg-white shadow-sm ${style.pill}`, children: data.tipe }),
-          data.biaya > 0 && /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "text-[10px] font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-200 shadow-sm", children: [
+  return /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: `bg-white rounded-xl border border-slate-200 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1 ${style.cardBorder} ${showProses && hasProses ? "w-[540px]" : "w-72"}`, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: `p-4 flex items-start gap-4 ${style.bgHead}`, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "w-14 h-14 rounded-xl border border-white/50 bg-white/50 flex items-center justify-center text-slate-300 shrink-0 overflow-hidden shadow-sm backdrop-blur-sm p-0.5", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "w-full h-full rounded-lg overflow-hidden bg-slate-100 flex items-center justify-center", children: data.foto ? /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("img", { src: data.foto, alt: "pic", className: "w-full h-full object-cover" }) : /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Image, { className: "w-6 h-6" }) }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex-1 min-w-0", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex justify-between items-start mb-2", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: `inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black tracking-wide border bg-white shadow-sm ${style.pill}`, children: data.tipe }),
+          data.biaya > 0 && /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "text-[10px] font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-200 shadow-sm", children: [
             "Rp",
             formatIDR(data.biaya)
           ] })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("h3", { className: "font-black text-slate-800 text-sm leading-tight truncate tracking-tight uppercase", title: data.nama, children: data.nama }),
-        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("p", { className: "text-[11px] text-slate-500 font-mono mt-1 font-bold", children: data.kode })
+        /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("h3", { className: "font-black text-slate-800 text-sm leading-tight truncate tracking-tight uppercase", title: data.nama, children: data.nama }),
+        /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("p", { className: "text-[11px] text-slate-500 font-mono mt-1 font-bold", children: data.kode })
       ] })
     ] }),
-    (data.p || data.vol > 0) && /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-slate-50/80 border-t border-slate-100 px-4 py-2.5 flex gap-4 text-[11px] text-slate-600 font-bold", children: [
-      data.p && /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "flex items-center gap-1.5", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(PanelsTopLeft, { className: "w-3.5 h-3.5 text-slate-400" }),
+    (data.p || data.vol > 0) && /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-slate-50/80 border-t border-slate-100 px-4 py-2.5 flex gap-4 text-[11px] text-slate-600 font-bold", children: [
+      data.p && /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "flex items-center gap-1.5", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(PanelsTopLeft, { className: "w-3.5 h-3.5 text-slate-400" }),
         " ",
         data.p,
         " x ",
@@ -27510,52 +28615,52 @@ var NodeCard = ({ data }) => {
         data.t,
         " mm"
       ] }),
-      data.vol > 0 && /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "flex items-center gap-1.5", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Package, { className: "w-3.5 h-3.5 text-slate-400" }),
+      data.vol > 0 && /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "flex items-center gap-1.5", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Package, { className: "w-3.5 h-3.5 text-slate-400" }),
         " ",
         data.vol,
         " m\xB3"
       ] }),
-      data.qty > 0 && /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "ml-auto font-black text-blue-600 bg-blue-100 px-2 py-0.5 rounded shadow-inner", children: data.qty })
+      data.qty > 0 && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "ml-auto font-black text-blue-600 bg-blue-100 px-2 py-0.5 rounded shadow-inner", children: data.qty })
     ] }),
-    hasProses && /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)(import_jsx_runtime14.Fragment, { children: [
-      /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-white border-t border-slate-100 px-4 py-3 flex justify-between items-center hover:bg-slate-50 transition-colors cursor-pointer group", onClick: () => setShowProses(!showProses), children: [
-        /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center gap-2", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "w-6 h-6 rounded bg-indigo-50 flex items-center justify-center border border-indigo-100", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Wrench, { className: "w-3.5 h-3.5 text-indigo-600" }) }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "text-[11px] font-black text-slate-700 tracking-wide", children: [
+    hasProses && /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)(import_jsx_runtime17.Fragment, { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-white border-t border-slate-100 px-4 py-3 flex justify-between items-center hover:bg-slate-50 transition-colors cursor-pointer group", onClick: () => setShowProses(!showProses), children: [
+        /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "w-6 h-6 rounded bg-indigo-50 flex items-center justify-center border border-indigo-100", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Wrench, { className: "w-3.5 h-3.5 text-indigo-600" }) }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "text-[11px] font-black text-slate-700 tracking-wide", children: [
             "OPERASI MANUFAKTUR (",
             prosesList.length,
             ")"
           ] })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("button", { className: "flex items-center gap-1.5 text-[10px] font-bold text-slate-400 group-hover:text-indigo-600 transition-colors", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("button", { className: "flex items-center gap-1.5 text-[10px] font-bold text-slate-400 group-hover:text-indigo-600 transition-colors", children: [
           showProses ? "SEMBUNYIKAN" : "LIHAT DETAIL",
-          showProses ? /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(ChevronDown, { className: "w-4 h-4" }) : /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(ChevronRight, { className: "w-4 h-4" })
+          showProses ? /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(ChevronDown, { className: "w-4 h-4" }) : /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(ChevronRight, { className: "w-4 h-4" })
         ] })
       ] }),
-      showProses && /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "bg-slate-50/50 border-t border-slate-100 p-4 pt-2", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("table", { className: "w-full text-left text-[10px] whitespace-nowrap", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("thead", { className: "bg-slate-100 text-slate-500 uppercase tracking-widest font-black border-b border-slate-200", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-3 py-2.5 border-r border-slate-200 text-center w-12", children: "Posisi" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-3 py-2.5 border-r border-slate-200", children: "Proses Utama" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-3 py-2.5 border-r border-slate-200", children: "Tipe Manufaktur" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-3 py-2.5 border-r border-slate-200 text-center", children: "Area" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-3 py-2.5 border-r border-slate-200 text-center text-indigo-600", children: "Durasi" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-3 py-2.5 text-right text-emerald-600", children: "Biaya Est." })
+      showProses && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "bg-slate-50/50 border-t border-slate-100 p-4 pt-2", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("table", { className: "w-full text-left text-[10px] whitespace-nowrap", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("thead", { className: "bg-slate-100 text-slate-500 uppercase tracking-widest font-black border-b border-slate-200", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-3 py-2.5 border-r border-slate-200 text-center w-12", children: "Posisi" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-3 py-2.5 border-r border-slate-200", children: "Proses Utama" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-3 py-2.5 border-r border-slate-200", children: "Tipe Manufaktur" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-3 py-2.5 border-r border-slate-200 text-center", children: "Area" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-3 py-2.5 border-r border-slate-200 text-center text-indigo-600", children: "Durasi" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-3 py-2.5 text-right text-emerald-600", children: "Biaya Est." })
         ] }) }),
-        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("tbody", { children: prosesList.map((p, idx) => /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { className: "border-b border-slate-100 last:border-0 hover:bg-blue-50/30 transition-colors group/row", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-3 py-2 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "w-9 h-9 rounded-lg bg-slate-50 border border-slate-200 mx-auto overflow-hidden flex items-center justify-center shadow-sm group-hover/row:border-blue-300 transition-colors p-0.5", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "w-full h-full rounded bg-slate-100 overflow-hidden", children: p.gambar ? /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("img", { src: p.gambar, alt: "posisi", className: "w-full h-full object-cover" }) : /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Image, { className: "w-3 h-3 text-slate-300" }) }) }) }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-3 py-2 border-r border-slate-100 font-bold text-slate-800", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("tbody", { children: prosesList.map((p, idx) => /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { className: "border-b border-slate-100 last:border-0 hover:bg-blue-50/30 transition-colors group/row", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-3 py-2 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "w-9 h-9 rounded-lg bg-slate-50 border border-slate-200 mx-auto overflow-hidden flex items-center justify-center shadow-sm group-hover/row:border-blue-300 transition-colors p-0.5", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "w-full h-full rounded bg-slate-100 overflow-hidden", children: p.gambar ? /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("img", { src: p.gambar, alt: "posisi", className: "w-full h-full object-cover" }) : /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Image, { className: "w-3 h-3 text-slate-300" }) }) }) }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-3 py-2 border-r border-slate-100 font-bold text-slate-800", children: [
             p.nama,
-            p.inputMode === "routing" && /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "ml-1.5 text-[8px] font-black uppercase px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700 border border-indigo-200", children: [
+            p.inputMode === "routing" && /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "ml-1.5 text-[8px] font-black uppercase px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700 border border-indigo-200", children: [
               "RT",
               p.routingSteps?.length ? ` \xB7 ${p.routingSteps.length} WC` : ""
             ] }),
-            p.inputMode === "work_center" && p.workCenterId && /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "ml-1.5 text-[8px] font-black uppercase px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 border border-blue-200", children: "WC" })
+            p.inputMode === "work_center" && p.workCenterId && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "ml-1.5 text-[8px] font-black uppercase px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 border border-blue-200", children: "WC" })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-3 py-2 border-r border-slate-100 font-bold text-slate-500", children: p.mfgProcess || "-" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-3 py-2 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "bg-slate-100 border border-slate-200 text-slate-600 px-2 py-1 rounded text-[9px] font-black uppercase", children: p.posisiOperasi || "-" }) }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-3 py-2 border-r border-slate-100 text-center font-black text-indigo-600", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "bg-indigo-50 px-2 py-1 rounded border border-indigo-100", children: p.waktuOperasi ? `${p.waktuOperasi} Min` : "-" }) }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-3 py-2 text-right font-black text-emerald-600", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-3 py-2 border-r border-slate-100 font-bold text-slate-500", children: p.mfgProcess || "-" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-3 py-2 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "bg-slate-100 border border-slate-200 text-slate-600 px-2 py-1 rounded text-[9px] font-black uppercase", children: p.posisiOperasi || "-" }) }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-3 py-2 border-r border-slate-100 text-center font-black text-indigo-600", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "bg-indigo-50 px-2 py-1 rounded border border-indigo-100", children: p.waktuOperasi ? `${p.waktuOperasi} Min` : "-" }) }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-3 py-2 text-right font-black text-emerald-600", children: [
             "Rp ",
             formatIDR(p.biaya ?? calcProsesCosts(p).total)
           ] })
@@ -27565,62 +28670,62 @@ var NodeCard = ({ data }) => {
   ] });
 };
 var TreeNode = ({ node, isRoot = false }) => {
-  const [isExpanded, setIsExpanded] = (0, import_react6.useState)(true);
+  const [isExpanded, setIsExpanded] = (0, import_react8.useState)(true);
   const hasChildren = node.children && node.children.length > 0;
-  return /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex flex-row items-start", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "relative z-10 flex items-start", children: [
-      !isRoot && /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "absolute left-[-8px] top-[36px] w-4 h-4 bg-white border-[3px] border-slate-400 rounded-full z-20 shadow-sm" }),
-      /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "relative", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(NodeCard, { data: node }),
-        hasChildren && /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)(import_jsx_runtime14.Fragment, { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "absolute right-[-8px] top-[36px] w-4 h-4 bg-white border-[3px] border-slate-400 rounded-full z-20 shadow-sm" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("button", { onClick: () => setIsExpanded(!isExpanded), className: "absolute right-[-16px] top-[64px] w-8 h-8 bg-white border-2 border-slate-300 rounded-full flex items-center justify-center shadow-lg text-slate-500 hover:text-blue-600 hover:border-blue-400 z-30 transition-all hover:scale-110", children: isExpanded ? /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(ChevronDown, { className: "w-5 h-5" }) : /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(ChevronRight, { className: "w-5 h-5" }) })
+  return /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex flex-row items-start", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "relative z-10 flex items-start", children: [
+      !isRoot && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "absolute left-[-8px] top-[36px] w-4 h-4 bg-white border-[3px] border-slate-400 rounded-full z-20 shadow-sm" }),
+      /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "relative", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(NodeCard, { data: node }),
+        hasChildren && /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)(import_jsx_runtime17.Fragment, { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "absolute right-[-8px] top-[36px] w-4 h-4 bg-white border-[3px] border-slate-400 rounded-full z-20 shadow-sm" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("button", { onClick: () => setIsExpanded(!isExpanded), className: "absolute right-[-16px] top-[64px] w-8 h-8 bg-white border-2 border-slate-300 rounded-full flex items-center justify-center shadow-lg text-slate-500 hover:text-blue-600 hover:border-blue-400 z-30 transition-all hover:scale-110", children: isExpanded ? /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(ChevronDown, { className: "w-5 h-5" }) : /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(ChevronRight, { className: "w-5 h-5" }) })
         ] })
       ] })
     ] }),
-    hasChildren && isExpanded && /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "flex items-start", style: { marginTop: "36px" }, children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("svg", { width: "32", height: "10", className: "overflow-visible -translate-y-1/2", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("path", { d: "M 0 5 L 32 5", stroke: "#94a3b8", strokeWidth: "3", fill: "none" }) }) }),
-    hasChildren && isExpanded && /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "flex flex-col relative", children: node.children.map((child, index) => {
+    hasChildren && isExpanded && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "flex items-start", style: { marginTop: "36px" }, children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("svg", { width: "32", height: "10", className: "overflow-visible -translate-y-1/2", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("path", { d: "M 0 5 L 32 5", stroke: "#94a3b8", strokeWidth: "3", fill: "none" }) }) }),
+    hasChildren && isExpanded && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "flex flex-col relative", children: node.children.map((child, index) => {
       const isFirst = index === 0;
       const isLast = index === node.children.length - 1;
       const isOnly = node.children.length === 1;
-      return /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex flex-row items-start relative pl-8 py-5", children: [
-        !isOnly && /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "absolute left-0 w-[3px] bg-slate-400", style: { top: isFirst ? "36px" : "0", bottom: isLast ? "calc(100% - 36px)" : "0" } }),
-        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "absolute left-0 top-[36px] -translate-y-1/2", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("svg", { width: "32", height: "10", className: "overflow-visible", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("path", { d: "M 0 5 L 32 5", stroke: "#94a3b8", strokeWidth: "3", fill: "none" }) }) }),
-        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(TreeNode, { node: child })
+      return /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex flex-row items-start relative pl-8 py-5", children: [
+        !isOnly && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "absolute left-0 w-[3px] bg-slate-400", style: { top: isFirst ? "36px" : "0", bottom: isLast ? "calc(100% - 36px)" : "0" } }),
+        /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "absolute left-0 top-[36px] -translate-y-1/2", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("svg", { width: "32", height: "10", className: "overflow-visible", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("path", { d: "M 0 5 L 32 5", stroke: "#94a3b8", strokeWidth: "3", fill: "none" }) }) }),
+        /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(TreeNode, { node: child })
       ] }, child.id);
     }) })
   ] });
 };
 function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
-  const [bomData, setBomData] = (0, import_react6.useState)(manufactureGraph);
-  const [viewMode, setViewMode] = (0, import_react6.useState)("table");
-  const [searchQuery, setSearchQuery] = (0, import_react6.useState)("");
-  const [routingNode, setRoutingNode] = (0, import_react6.useState)(null);
-  const [showKalkulasi, setShowKalkulasi] = (0, import_react6.useState)(false);
-  const [showMarkupPreview, setShowMarkupPreview] = (0, import_react6.useState)(false);
-  const [detailSummaryNode, setDetailSummaryNode] = (0, import_react6.useState)(null);
-  const [showProductPanel, setShowProductPanel] = (0, import_react6.useState)(true);
-  const [priceDisplay, setPriceDisplay] = (0, import_react6.useState)("IDR");
-  const [showHiddenContainers, setShowHiddenContainers] = (0, import_react6.useState)(false);
-  const [editorTab, setEditorTab] = (0, import_react6.useState)("struktur");
-  const [customErp, setCustomErp] = (0, import_react6.useState)({
+  const [bomData, setBomData] = (0, import_react8.useState)(manufactureGraph);
+  const [viewMode, setViewMode] = (0, import_react8.useState)("table");
+  const [searchQuery, setSearchQuery] = (0, import_react8.useState)("");
+  const [routingNode, setRoutingNode] = (0, import_react8.useState)(null);
+  const [showKalkulasi, setShowKalkulasi] = (0, import_react8.useState)(false);
+  const [showMarkupPreview, setShowMarkupPreview] = (0, import_react8.useState)(false);
+  const [detailSummaryNode, setDetailSummaryNode] = (0, import_react8.useState)(null);
+  const [showProductPanel, setShowProductPanel] = (0, import_react8.useState)(true);
+  const [priceDisplay, setPriceDisplay] = (0, import_react8.useState)("IDR");
+  const [showHiddenContainers, setShowHiddenContainers] = (0, import_react8.useState)(false);
+  const [editorTab, setEditorTab] = (0, import_react8.useState)("struktur");
+  const [customErp, setCustomErp] = (0, import_react8.useState)({
     parts: [],
     machines: [],
     workers: []
   });
-  const [cogsConfig, setCogsConfig] = (0, import_react6.useState)({
+  const [cogsConfig, setCogsConfig] = (0, import_react8.useState)({
     packingJalur: "BOX",
     // 'BOX' | 'SF'
     factoryOhPct: EXCEL_FACTORY_OH_PCT,
     managementOhPct: 2.5,
     markupPct: 20
   });
-  const [productMeta, setProductMeta] = (0, import_react6.useState)({
+  const [productMeta, setProductMeta] = (0, import_react8.useState)({
     itemType: ELBA_CHAIR_REFERENCE.itemType,
     wood: ELBA_CHAIR_REFERENCE.wood,
     coating: ELBA_CHAIR_REFERENCE.coating
   });
-  const [packingSpec, setPackingSpec] = (0, import_react6.useState)({
+  const [packingSpec, setPackingSpec] = (0, import_react8.useState)({
     materialsBox: [
       { id: 1, nama: "Karton Luar (Double Wall)", qty: 1, unit: "Pcs", harga: 114e3 },
       { id: 2, nama: 'Lakban Bening 2"', qty: 0.5, unit: "Roll", harga: 12e3 }
@@ -27638,7 +28743,7 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
       { id: 2, nama: "Ikat Strapping Tape", waktu: 10, pekerja: 2, rate: 500 }
     ]
   });
-  const [productInfo, setProductInfo] = (0, import_react6.useState)({
+  const [productInfo, setProductInfo] = (0, import_react8.useState)({
     kode: ELBA_CHAIR_REFERENCE.kode,
     nama: ELBA_CHAIR_REFERENCE.nama,
     varian: "NLH",
@@ -27647,38 +28752,38 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
     namaBom: ELBA_CHAIR_REFERENCE.namaBom,
     versi: ELBA_CHAIR_REFERENCE.versi
   });
-  const [scale, setScale] = (0, import_react6.useState)(1);
-  const [pan, setPan] = (0, import_react6.useState)({ x: 50, y: 50 });
-  const [isPanning, setIsPanning] = (0, import_react6.useState)(false);
-  const [lastMousePos, setLastMousePos] = (0, import_react6.useState)({ x: 0, y: 0 });
-  const containerRef = (0, import_react6.useRef)(null);
-  const [dimensi, setDimensi] = (0, import_react6.useState)({ ...ELBA_CHAIR_REFERENCE.dimensi });
-  const [packingDimensions, setPackingDimensions] = (0, import_react6.useState)([
+  const [scale, setScale] = (0, import_react8.useState)(1);
+  const [pan, setPan] = (0, import_react8.useState)({ x: 50, y: 50 });
+  const [isPanning, setIsPanning] = (0, import_react8.useState)(false);
+  const [lastMousePos, setLastMousePos] = (0, import_react8.useState)({ x: 0, y: 0 });
+  const containerRef = (0, import_react8.useRef)(null);
+  const [dimensi, setDimensi] = (0, import_react8.useState)({ ...ELBA_CHAIR_REFERENCE.dimensi });
+  const [packingDimensions, setPackingDimensions] = (0, import_react8.useState)([
     { id: 1, type: "BOX KARTON", tolW: 40, tolD: 40, tolH: 50 },
     { id: 2, type: "SINGLE FACE", tolW: 10, tolD: 10, tolH: 20, chairFactor: true }
   ]);
-  const [containerCapacity, setContainerCapacity] = (0, import_react6.useState)(buildDefaultContainerRows);
-  const packingBoxItem = (0, import_react6.useMemo)(
+  const [containerCapacity, setContainerCapacity] = (0, import_react8.useState)(buildDefaultContainerRows);
+  const packingBoxItem = (0, import_react8.useMemo)(
     () => findPackingByType(packingDimensions, "box") || packingDimensions[0],
     [packingDimensions]
   );
-  const packingSFItem = (0, import_react6.useMemo)(
+  const packingSFItem = (0, import_react8.useMemo)(
     () => findPackingByType(packingDimensions, "single") || packingDimensions[1],
     [packingDimensions]
   );
-  const packingVolOpts = (0, import_react6.useMemo)(
+  const packingVolOpts = (0, import_react8.useMemo)(
     () => ({ itemType: productMeta.itemType }),
     [productMeta.itemType]
   );
-  const volBoxPacking = (0, import_react6.useMemo)(
+  const volBoxPacking = (0, import_react8.useMemo)(
     () => calcPackingVolume(dimensi, packingBoxItem, packingVolOpts),
     [dimensi, packingBoxItem, packingVolOpts]
   );
-  const volSFPacking = (0, import_react6.useMemo)(
+  const volSFPacking = (0, import_react8.useMemo)(
     () => calcPackingVolume(dimensi, packingSFItem, packingVolOpts),
     [dimensi, packingSFItem, packingVolOpts]
   );
-  (0, import_react6.useEffect)(() => {
+  (0, import_react8.useEffect)(() => {
     setContainerCapacity((prev) => {
       if (!prev.length) return prev;
       return prev.map((row, index) => {
@@ -27884,7 +28989,7 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
     }
   };
   const handleMouseUp = () => setIsPanning(false);
-  (0, import_react6.useEffect)(() => {
+  (0, import_react8.useEffect)(() => {
     document.addEventListener("mouseup", handleMouseUp);
     return () => document.removeEventListener("mouseup", handleMouseUp);
   }, []);
@@ -27894,8 +28999,8 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
     setScale(1);
     setPan({ x: 50, y: 50 });
   };
-  const flatNodes = (0, import_react6.useMemo)(() => flattenTree(bomData), [bomData]);
-  const summaryData = (0, import_react6.useMemo)(() => {
+  const flatNodes = (0, import_react8.useMemo)(() => flattenTree(bomData), [bomData]);
+  const summaryData = (0, import_react8.useMemo)(() => {
     let material = 0;
     let process2 = 0;
     let partCount = 0;
@@ -27916,6 +29021,10 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
     });
     return { material, process: process2, total: material + process2, partCount, modulCount };
   }, [flatNodes]);
+  const prosesTypeLabel = (p) => {
+    if (p.proses) return getProsesById(p.proses).label;
+    return p.mfgProcess || "\u2014";
+  };
   const expandProsesList2 = (nodeData) => {
     if (nodeData.proses?.length) return nodeData.proses;
     if ((nodeData.proses_count || 0) > 0) {
@@ -27931,7 +29040,7 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
     }
     return [];
   };
-  const allProses = (0, import_react6.useMemo)(() => {
+  const allProses = (0, import_react8.useMemo)(() => {
     const result = [];
     flatNodes.forEach((node) => {
       expandProsesList2(node.data).forEach((p) => {
@@ -27940,7 +29049,7 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
     });
     return result;
   }, [flatNodes]);
-  const prosesSummary = (0, import_react6.useMemo)(() => {
+  const prosesSummary = (0, import_react8.useMemo)(() => {
     const summary = {};
     let totalWaktu = 0, totalMesin = 0, totalPekerja = 0, grandTotal = 0;
     allProses.forEach((p) => {
@@ -27965,7 +29074,7 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
       grandTotal
     };
   }, [allProses]);
-  const cogsData = (0, import_react6.useMemo)(() => {
+  const cogsData = (0, import_react8.useMemo)(() => {
     let totalMaterial = 0;
     let totalProcess = 0;
     flatNodes.forEach((node) => {
@@ -27994,7 +29103,7 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
     const sellingPrice = totalCogs * (1 + Number(cogsConfig.markupPct) / 100);
     return { totalMaterial, totalProcess, packingMat, packingLab, packingCost, productionCost, factoryOh, managementOh, totalCogs, sellingPrice };
   }, [flatNodes, cogsConfig, packBoxMat, packBoxLab, packSfMat, packSfLab]);
-  const summaryTotals = (0, import_react6.useMemo)(() => {
+  const summaryTotals = (0, import_react8.useMemo)(() => {
     let material = 0;
     let process2 = 0;
     flatNodes.forEach((node) => {
@@ -28012,43 +29121,43 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
   const fp = (value) => formatPrice(value, priceDisplay, kursUsd, kursEur);
   const inputClasses = "w-full bg-transparent hover:bg-slate-100 focus:bg-white border border-transparent hover:border-slate-200 focus:border-blue-400 focus:ring-1 focus:ring-blue-100 rounded px-2 py-1.5 outline-none transition-all [&::-webkit-inner-spin-button]:appearance-none";
   const renderTableView = () => {
-    return /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "flex-1 flex flex-col bg-slate-50 border-t border-slate-200 overflow-hidden relative", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "flex-1 overflow-x-auto overflow-y-auto bg-white relative", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "min-w-max pb-10", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("table", { className: "w-full text-left border-collapse whitespace-nowrap", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("thead", { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { colSpan: 5, className: "sticky left-0 z-20 bg-slate-50 border-b-[3px] border-b-slate-300 text-center py-3 px-2 text-[10px] text-slate-600 font-bold uppercase tracking-wider border-r border-slate-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]", children: "KOMPONEN, IDENTITAS & AKSI" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { colSpan: 2, className: "border-b-[3px] border-b-slate-200 text-center py-3 px-2 text-[10px] text-slate-500 font-bold uppercase tracking-wider border-r border-slate-200 bg-slate-50/50", children: "DETAIL LAINNYA" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { colSpan: 4, className: "border-b-[3px] border-b-blue-500 text-center py-3 px-2 text-[10px] text-blue-700 font-bold uppercase tracking-wider border-r border-slate-200 bg-blue-50/30", children: "SPESIFIKASI FISIK (DIMENSI & VOL)" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { colSpan: 3, className: "border-b-[3px] border-b-amber-400 text-center py-3 px-2 text-[10px] text-amber-700 font-bold uppercase tracking-wider border-r border-slate-200 bg-amber-50/30", children: "HARGA MATERIAL (SATUAN)" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { colSpan: 3, className: "border-b-[3px] border-b-indigo-400 text-center py-3 px-2 text-[10px] text-indigo-700 font-bold uppercase tracking-wider border-r border-slate-200 bg-indigo-50/30", children: "BIAYA PRODUKSI (TOTAL)" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { colSpan: 1, className: "border-b-[3px] border-b-slate-200 text-center py-3 px-2 text-[10px] text-slate-500 font-bold uppercase tracking-wider border-r border-slate-200 bg-slate-50/50", children: "MANUFAKTUR" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { colSpan: 1, className: "border-b-[3px] border-b-slate-200 text-center py-3 px-2 text-[10px] text-slate-500 font-bold uppercase tracking-wider bg-slate-50/50", children: "LAIN-LAIN" })
+    return /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "flex-1 flex flex-col bg-slate-50 border-t border-slate-200 overflow-hidden relative", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "flex-1 overflow-x-auto overflow-y-auto bg-white relative", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "min-w-max pb-10", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("table", { className: "w-full text-left border-collapse whitespace-nowrap", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("thead", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { colSpan: 5, className: "sticky left-0 z-20 bg-slate-50 border-b-[3px] border-b-slate-300 text-center py-3 px-2 text-[10px] text-slate-600 font-bold uppercase tracking-wider border-r border-slate-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]", children: "KOMPONEN, IDENTITAS & AKSI" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { colSpan: 2, className: "border-b-[3px] border-b-slate-200 text-center py-3 px-2 text-[10px] text-slate-500 font-bold uppercase tracking-wider border-r border-slate-200 bg-slate-50/50", children: "DETAIL LAINNYA" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { colSpan: 4, className: "border-b-[3px] border-b-blue-500 text-center py-2 px-1 text-[10px] text-blue-700 font-bold uppercase tracking-wider border-r border-slate-200 bg-blue-50/30", children: "SPESIFIKASI FISIK (DIMENSI & VOL)" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { colSpan: 3, className: "border-b-[3px] border-b-amber-400 text-center py-2 px-1 text-[10px] text-amber-700 font-bold uppercase tracking-wider border-r border-slate-200 bg-amber-50/30", children: "HARGA MATERIAL (SATUAN)" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { colSpan: 3, className: "border-b-[3px] border-b-indigo-400 text-center py-2 px-1 text-[10px] text-indigo-700 font-bold uppercase tracking-wider border-r border-slate-200 bg-indigo-50/30", children: "BIAYA PRODUKSI (TOTAL)" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { colSpan: 1, className: "border-b-[3px] border-b-slate-200 text-center py-3 px-2 text-[10px] text-slate-500 font-bold uppercase tracking-wider border-r border-slate-200 bg-slate-50/50", children: "MANUFAKTUR" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { colSpan: 1, className: "border-b-[3px] border-b-slate-200 text-center py-3 px-2 text-[10px] text-slate-500 font-bold uppercase tracking-wider bg-slate-50/50", children: "LAIN-LAIN" })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { className: "bg-white text-[10px] text-slate-500 font-bold uppercase tracking-wider border-b border-slate-200", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "sticky left-0 z-20 bg-white py-3 px-4 border-r border-slate-200 text-center", style: { minWidth: 50, width: 50 }, children: "NO" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "sticky left-[50px] z-20 bg-white py-3 px-4 border-r border-slate-200 text-left", style: { minWidth: 260, width: 260 }, children: "AKSI (TAMBAH / HAPUS)" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "sticky left-[310px] z-20 bg-white py-3 px-4 border-r border-slate-200", style: { minWidth: 150, width: 150 }, children: "HIERARKI (TIPE)" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "sticky left-[460px] z-20 bg-white py-3 px-4 border-r border-slate-200", style: { minWidth: 140, width: 140 }, children: "KODE MATERIAL" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "sticky left-[600px] z-20 bg-white py-3 px-4 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] border-r border-slate-200", style: { minWidth: 250, width: 250 }, children: "NAMA MATERIAL" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "py-3 px-4 text-center w-20", children: "GAMBAR" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "py-3 px-4 border-r border-slate-200 text-center", children: "QTY" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "py-3 px-4 text-center", children: "Width (MM)" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "py-3 px-4 text-center", children: "Depth (MM)" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "py-3 px-4 text-center", children: "Height (MM)" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "py-3 px-4 border-r border-slate-200 text-center text-blue-600", children: "VOLUME (M\xB3)" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "py-3 px-4 text-right", children: "MAT (IDR)" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "py-3 px-4 text-right", children: "MAT (USD)" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "py-3 px-4 border-r border-slate-200 text-right", children: "MAT (EUR)" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "py-3 px-4 text-right text-indigo-600", children: "PROD (IDR)" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "py-3 px-4 text-right text-indigo-600", children: "PROD (USD)" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "py-3 px-4 border-r border-slate-200 text-right text-indigo-600", children: "PROD (EUR)" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "py-3 px-4 border-r border-slate-200", children: "PENGATURAN PROSES LENGKAP" }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "py-3 px-4 min-w-[200px]", children: "CATATAN" })
+        /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { className: "bg-white text-[10px] text-slate-500 font-bold uppercase tracking-wider border-b border-slate-200", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "sticky left-0 z-20 bg-white py-3 px-4 border-r border-slate-200 text-center", style: { minWidth: 50, width: 50 }, children: "NO" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "sticky left-[50px] z-20 bg-white py-3 px-4 border-r border-slate-200 text-left", style: { minWidth: 260, width: 260 }, children: "AKSI (TAMBAH / HAPUS)" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "sticky left-[310px] z-20 bg-white py-3 px-4 border-r border-slate-200", style: { minWidth: 150, width: 150 }, children: "HIERARKI (TIPE)" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "sticky left-[460px] z-20 bg-white py-3 px-4 border-r border-slate-200", style: { minWidth: 140, width: 140 }, children: "KODE MATERIAL" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "sticky left-[600px] z-20 bg-white py-3 px-4 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] border-r border-slate-200", style: { minWidth: 250, width: 250 }, children: "NAMA MATERIAL" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "py-3 px-4 text-center w-20", children: "GAMBAR" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "py-3 px-4 border-r border-slate-200 text-center", children: "QTY" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "py-2 px-1.5 text-center w-[4.25rem]", children: "Width (MM)" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "py-2 px-1.5 text-center w-[4.25rem]", children: "Depth (MM)" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "py-2 px-1.5 text-center w-[4.25rem]", children: "Height (MM)" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "py-2 px-1.5 border-r border-slate-200 text-center text-blue-600 w-[4.75rem]", children: "VOLUME (M\xB3)" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "py-2 px-1.5 text-right text-amber-700 w-[5.5rem]", children: "MAT (IDR)" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "py-2 px-1.5 text-right text-amber-600 w-[4.5rem]", children: "MAT (USD)" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "py-2 px-1.5 border-r border-slate-200 text-right text-amber-600 w-[4.5rem]", children: "MAT (EUR)" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "py-2 px-1.5 text-right text-indigo-600 min-w-[6.5rem]", children: "PROD (IDR)" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "py-2 px-1.5 text-right text-indigo-600 w-[4.5rem]", children: "PROD (USD)" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "py-2 px-1.5 border-r border-slate-200 text-right text-indigo-600 w-[4.5rem]", children: "PROD (EUR)" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "py-2 px-1.5 border-r border-slate-200", children: "PENGATURAN PROSES LENGKAP" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "py-2 px-1.5 min-w-[200px]", children: "CATATAN" })
         ] })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("tbody", { children: flatNodes.map((node) => {
+      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("tbody", { children: flatNodes.map((node) => {
         const d = node.data;
-        const usdPrice = (d.biaya / kursUsd).toFixed(2);
-        const eurPrice = (d.biaya / kursEur).toFixed(2);
+        const usdMat = ((Number(d.biaya) || 0) / kursUsd).toFixed(2);
+        const eurMat = ((Number(d.biaya) || 0) / kursEur).toFixed(2);
         let totalProcess = 0;
         if (d.proses && d.proses.length > 0) {
           d.proses.forEach((p) => {
@@ -28061,94 +29170,88 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
         const usdProd = (hargaProduksiIDR / kursUsd).toFixed(2);
         const eurProd = (hargaProduksiIDR / kursEur).toFixed(2);
         const style = tipeStyles[d.tipe] || tipeStyles.PART;
-        return /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { className: "border-b border-slate-100 bg-white hover:bg-slate-50/70 transition-colors text-xs text-slate-700 group", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "sticky left-0 z-10 bg-inherit py-3 px-4 text-center font-bold text-slate-400 border-r border-slate-100", children: d.no }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "sticky left-[50px] z-10 bg-inherit py-2 px-4 border-r border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex flex-wrap items-center gap-1.5", children: [
-              d.tipe === "MODUL" && /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)(import_jsx_runtime14.Fragment, { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("button", { onClick: () => handleAddNode(d.id, "SUBMODUL"), className: "flex items-center gap-1 px-2 py-1 text-[9px] font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 rounded border border-amber-200 transition-colors shadow-sm", title: "Tambah Submodul di bawah item ini", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Plus, { className: "w-3 h-3" }),
+        return /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { className: "border-b border-slate-100 bg-white hover:bg-slate-50/70 transition-colors text-xs text-slate-700 group", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "sticky left-0 z-10 bg-inherit py-3 px-4 text-center font-bold text-slate-400 border-r border-slate-100", children: d.no }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "sticky left-[50px] z-10 bg-inherit py-2 px-4 border-r border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex flex-wrap items-center gap-1.5", children: [
+              d.tipe === "MODUL" && /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)(import_jsx_runtime17.Fragment, { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("button", { onClick: () => handleAddNode(d.id, "SUBMODUL"), className: "flex items-center gap-1 px-2 py-1 text-[9px] font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 rounded border border-amber-200 transition-colors shadow-sm", title: "Tambah Submodul di bawah item ini", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Plus, { className: "w-3 h-3" }),
                   " SUBMODUL"
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("button", { onClick: () => handleAddNode(d.id, "PART"), className: "flex items-center gap-1 px-2 py-1 text-[9px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded border border-emerald-200 transition-colors shadow-sm", title: "Tambah Part di bawah item ini", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Plus, { className: "w-3 h-3" }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("button", { onClick: () => handleAddNode(d.id, "PART"), className: "flex items-center gap-1 px-2 py-1 text-[9px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded border border-emerald-200 transition-colors shadow-sm", title: "Tambah Part di bawah item ini", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Plus, { className: "w-3 h-3" }),
                   " PART"
                 ] })
               ] }),
-              d.tipe === "SUBMODUL" && /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)(import_jsx_runtime14.Fragment, { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("button", { onClick: () => handleAddNode(d.id, "SUBMODUL 2"), className: "flex items-center gap-1 px-2 py-1 text-[9px] font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 rounded border border-purple-200 transition-colors shadow-sm", title: "Tambah Submodul 2 di bawah item ini", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Plus, { className: "w-3 h-3" }),
+              d.tipe === "SUBMODUL" && /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)(import_jsx_runtime17.Fragment, { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("button", { onClick: () => handleAddNode(d.id, "SUBMODUL 2"), className: "flex items-center gap-1 px-2 py-1 text-[9px] font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 rounded border border-purple-200 transition-colors shadow-sm", title: "Tambah Submodul 2 di bawah item ini", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Plus, { className: "w-3 h-3" }),
                   " SUBMODUL 2"
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("button", { onClick: () => handleAddNode(d.id, "PART"), className: "flex items-center gap-1 px-2 py-1 text-[9px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded border border-emerald-200 transition-colors shadow-sm", title: "Tambah Part di bawah item ini", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Plus, { className: "w-3 h-3" }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("button", { onClick: () => handleAddNode(d.id, "PART"), className: "flex items-center gap-1 px-2 py-1 text-[9px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded border border-emerald-200 transition-colors shadow-sm", title: "Tambah Part di bawah item ini", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Plus, { className: "w-3 h-3" }),
                   " PART"
                 ] })
               ] }),
-              d.tipe === "SUBMODUL 2" && /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(import_jsx_runtime14.Fragment, { children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("button", { onClick: () => handleAddNode(d.id, "PART"), className: "flex items-center gap-1 px-2 py-1 text-[9px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded border border-emerald-200 transition-colors shadow-sm", title: "Tambah Part di bawah item ini", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Plus, { className: "w-3 h-3" }),
+              d.tipe === "SUBMODUL 2" && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(import_jsx_runtime17.Fragment, { children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("button", { onClick: () => handleAddNode(d.id, "PART"), className: "flex items-center gap-1 px-2 py-1 text-[9px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded border border-emerald-200 transition-colors shadow-sm", title: "Tambah Part di bawah item ini", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Plus, { className: "w-3 h-3" }),
                 " PART"
               ] }) }),
-              d.tipe === "PART" && /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[10px] text-slate-400 italic px-2", children: "Batas Hierarki" })
+              d.tipe === "PART" && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-[10px] text-slate-400 italic px-2", children: "Batas Hierarki" })
             ] }),
-            node.level > 0 && /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("button", { onClick: () => handleDeleteNode(d.id), className: "p-1.5 text-red-500 bg-red-50 hover:bg-red-100 hover:text-red-600 rounded border border-red-200 transition-colors shadow-sm", title: "Hapus Item", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Trash2, { className: "w-4 h-4" }) })
+            node.level > 0 && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("button", { onClick: () => handleDeleteNode(d.id), className: "p-1.5 text-red-500 bg-red-50 hover:bg-red-100 hover:text-red-600 rounded border border-red-200 transition-colors shadow-sm", title: "Hapus Item", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Trash2, { className: "w-4 h-4" }) })
           ] }) }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "sticky left-[310px] z-10 bg-inherit py-2 px-4 border-r border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center", children: [
-            Array.from({ length: node.level }).map((_, i) => /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "w-6 h-10 border-l border-slate-300 ml-4 relative", children: i === node.level - 1 && /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "absolute top-1/2 left-0 w-3 border-t border-slate-300" }) }, i)),
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: `flex items-center gap-2 border rounded-md px-2.5 py-1 cursor-default shadow-sm bg-white ${style.pill}`, children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(ChevronDown, { className: `w-3.5 h-3.5 ${style.iconColor}` }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "font-bold text-[10px] tracking-wide", children: d.tipe })
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "sticky left-[310px] z-10 bg-inherit py-2 px-4 border-r border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center", children: [
+            Array.from({ length: node.level }).map((_, i) => /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "w-6 h-10 border-l border-slate-300 ml-4 relative", children: i === node.level - 1 && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "absolute top-1/2 left-0 w-3 border-t border-slate-300" }) }, i)),
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: `flex items-center gap-2 border rounded-md px-2.5 py-1 cursor-default shadow-sm bg-white ${style.pill}`, children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(ChevronDown, { className: `w-3.5 h-3.5 ${style.iconColor}` }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "font-bold text-[10px] tracking-wide", children: d.tipe })
             ] })
           ] }) }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "sticky left-[460px] z-10 bg-inherit py-2 px-2 border-r border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "text", value: d.kode, onChange: (e) => handleUpdateNode(node.id, "kode", e.target.value), className: `${inputClasses} font-mono text-slate-600 min-w-[120px]` }) }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "sticky left-[600px] z-10 bg-inherit py-2 px-2 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] border-r border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "text", value: d.nama, onChange: (e) => handleUpdateNode(node.id, "nama", e.target.value), className: `${inputClasses} font-bold text-slate-800 min-w-[220px]` }) }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "py-2 px-4 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "w-10 h-10 rounded-lg border border-slate-200 overflow-hidden bg-slate-50 flex items-center justify-center mx-auto shadow-sm", children: d.foto ? /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("img", { src: d.foto, alt: "pic", className: "w-full h-full object-cover" }) : /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Image, { className: "w-4 h-4 text-slate-300" }) }) }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "py-2 px-2 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: d.qty, onChange: (e) => handleUpdateNode(node.id, "qty", Number(e.target.value)), className: `${inputClasses} font-bold text-center w-16 text-slate-700` }) }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "py-2 px-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: d.p || "", onChange: (e) => handleUpdateNode(node.id, "p", Number(e.target.value)), placeholder: "-", className: `${inputClasses} text-center w-16 text-slate-600` }) }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "py-2 px-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: d.l || "", onChange: (e) => handleUpdateNode(node.id, "l", Number(e.target.value)), placeholder: "-", className: `${inputClasses} text-center w-16 text-slate-600` }) }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "py-2 px-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: d.t || "", onChange: (e) => handleUpdateNode(node.id, "t", Number(e.target.value)), placeholder: "-", className: `${inputClasses} text-center w-16 text-slate-600` }) }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "py-3 px-4 border-r border-slate-100 text-center font-bold text-blue-600 bg-blue-50/20", children: d.vol }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "py-2 px-2 text-right", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "sticky left-[460px] z-10 bg-inherit py-2 px-2 border-r border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "text", value: d.kode, onChange: (e) => handleUpdateNode(node.id, "kode", e.target.value), className: `${inputClasses} font-mono text-slate-600 min-w-[120px]` }) }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "sticky left-[600px] z-10 bg-inherit py-2 px-2 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] border-r border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "text", value: d.nama, onChange: (e) => handleUpdateNode(node.id, "nama", e.target.value), className: `${inputClasses} font-bold text-slate-800 min-w-[220px]` }) }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "py-2 px-4 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "w-10 h-10 rounded-lg border border-slate-200 overflow-hidden bg-slate-50 flex items-center justify-center mx-auto shadow-sm", children: d.foto ? /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("img", { src: d.foto, alt: "pic", className: "w-full h-full object-cover" }) : /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Image, { className: "w-4 h-4 text-slate-300" }) }) }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "py-2 px-2 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: d.qty, onChange: (e) => handleUpdateNode(node.id, "qty", Number(e.target.value)), className: `${inputClasses} font-bold text-center w-16 text-slate-700` }) }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "py-2 px-1.5 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: d.p || "", onChange: (e) => handleUpdateNode(node.id, "p", Number(e.target.value)), placeholder: "-", className: `${inputClasses} text-center w-14 text-slate-600` }) }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "py-2 px-1.5 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: d.l || "", onChange: (e) => handleUpdateNode(node.id, "l", Number(e.target.value)), placeholder: "-", className: `${inputClasses} text-center w-14 text-slate-600` }) }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "py-2 px-1.5 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: d.t || "", onChange: (e) => handleUpdateNode(node.id, "t", Number(e.target.value)), placeholder: "-", className: `${inputClasses} text-center w-14 text-slate-600` }) }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "py-2 px-1.5 border-r border-slate-100 text-center font-bold text-blue-600 bg-blue-50/20 tabular-nums text-[11px]", children: d.vol || "\u2014" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "py-2 px-1.5 text-right bg-amber-50/15", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(
             "input",
             {
               type: "number",
               value: d.biaya === 0 ? "" : d.biaya,
               onChange: (e) => handleUpdateNode(node.id, "biaya", Number(e.target.value)),
               placeholder: "0",
-              className: `${inputClasses} text-right min-w-[100px] text-slate-700 font-medium`
+              className: `${inputClasses} text-right w-[5.25rem] text-slate-700 font-medium tabular-nums`
             }
           ) }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "py-3 px-4 text-right text-slate-500", children: usdPrice }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "py-3 px-4 border-r border-slate-100 text-right text-slate-500", children: eurPrice }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "py-3 px-4 text-right font-black text-indigo-700 bg-indigo-50/10", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "py-2 px-1.5 text-right text-amber-700/90 bg-amber-50/15 tabular-nums text-[11px] font-semibold", children: usdMat }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "py-2 px-1.5 border-r border-slate-100 text-right text-amber-700/90 bg-amber-50/15 tabular-nums text-[11px] font-semibold", children: eurMat }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "py-2 px-1.5 text-right font-black text-indigo-700 bg-indigo-50/10 tabular-nums text-[11px]", children: [
             "Rp ",
             formatIDR(hargaProduksiIDR)
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "py-3 px-4 text-right font-bold text-indigo-600 bg-indigo-50/10", children: [
-            "$ ",
-            usdProd
-          ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "py-3 px-4 border-r border-slate-100 text-right font-bold text-indigo-600 bg-indigo-50/10", children: [
-            "\u20AC ",
-            eurProd
-          ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "py-3 px-4 border-r border-slate-100", children: d.proses_count > 0 ? /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { onClick: () => setRoutingNode(node), className: "flex items-center gap-1.5 text-blue-600 font-bold cursor-pointer hover:underline hover:text-blue-800 transition-colors", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Link, { className: "w-3.5 h-3.5" }),
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "py-2 px-1.5 text-right font-bold text-indigo-600 bg-indigo-50/10 tabular-nums text-[11px]", children: usdProd }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "py-2 px-1.5 border-r border-slate-100 text-right font-bold text-indigo-600 bg-indigo-50/10 tabular-nums text-[11px]", children: eurProd }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "py-3 px-4 border-r border-slate-100", children: d.proses_count > 0 ? /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { onClick: () => setRoutingNode(node), className: "flex items-center gap-1.5 text-blue-600 font-bold cursor-pointer hover:underline hover:text-blue-800 transition-colors", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Link, { className: "w-3.5 h-3.5" }),
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { children: [
               d.proses_count,
               " Operasi Terdaftar"
             ] })
-          ] }) : /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { onClick: () => setRoutingNode(node), className: "flex items-center gap-1.5 text-slate-400 cursor-pointer hover:text-slate-600 transition-colors font-medium", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Link, { className: "w-3.5 h-3.5" }),
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { children: "Tambah Multi Routing..." })
+          ] }) : /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { onClick: () => setRoutingNode(node), className: "flex items-center gap-1.5 text-slate-400 cursor-pointer hover:text-slate-600 transition-colors font-medium", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Link, { className: "w-3.5 h-3.5" }),
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { children: "Tambah Multi Routing..." })
           ] }) }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "py-2 px-2", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "text", value: d.catatan, onChange: (e) => handleUpdateNode(node.id, "catatan", e.target.value), placeholder: "Ketik catatan...", className: `${inputClasses} min-w-[180px] text-slate-500` }) })
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "py-2 px-2", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "text", value: d.catatan, onChange: (e) => handleUpdateNode(node.id, "catatan", e.target.value), placeholder: "Ketik catatan...", className: `${inputClasses} min-w-[180px] text-slate-500` }) })
         ] }, node.id);
       }) })
     ] }) }) }) });
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "editor-shell font-sans", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(
+  if (routingNode) {
+    return /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(
       RoutingModal,
       {
         node: routingNode,
@@ -28157,23 +29260,25 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
         kursUsd,
         kursEur
       }
-    ),
-    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(SummaryDetailModal, { node: detailSummaryNode, onClose: () => setDetailSummaryNode(null) }),
-    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("svg", { width: "0", height: "0", className: "absolute", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("defs", { children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("marker", { id: "arrowhead", markerWidth: "6", markerHeight: "4.5", refX: "5", refY: "2.25", orient: "auto", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("polygon", { points: "0 0, 6 2.25, 0 4.5", fill: "#818cf8" }) }) }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("style", { children: `@keyframes dashMove { to { stroke-dashoffset: -16; } } .animated-dash { animation: dashMove 0.8s linear infinite; }` }),
-    /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "editor-topbar", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center gap-4", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("button", { onClick: onBack, className: "flex items-center text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(ArrowLeft, { className: "w-4 h-4 mr-2" }),
+    );
+  }
+  return /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "editor-shell font-sans", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(SummaryDetailModal, { node: detailSummaryNode, onClose: () => setDetailSummaryNode(null) }),
+    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("svg", { width: "0", height: "0", className: "absolute", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("defs", { children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("marker", { id: "arrowhead", markerWidth: "6", markerHeight: "4.5", refX: "5", refY: "2.25", orient: "auto", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("polygon", { points: "0 0, 6 2.25, 0 4.5", fill: "#818cf8" }) }) }) }),
+    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("style", { children: `@keyframes dashMove { to { stroke-dashoffset: -16; } } .animated-dash { animation: dashMove 0.8s linear infinite; }` }),
+    /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "editor-topbar", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center gap-4", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("button", { onClick: onBack, className: "flex items-center text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(ArrowLeft, { className: "w-4 h-4 mr-2" }),
           " Ke Daftar BOM"
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "bg-blue-50 border border-blue-100 text-blue-700 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "bg-blue-50 border border-blue-100 text-blue-700 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm", children: [
           "Project: ",
           productInfo.kode
         ] })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center gap-3 flex-wrap justify-end", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)(
+      /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center gap-3 flex-wrap justify-end", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)(
           "button",
           {
             type: "button",
@@ -28181,12 +29286,12 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
             className: "border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors",
             title: showProductPanel ? "Sembunyikan data produk" : "Tampilkan data produk",
             children: [
-              showProductPanel ? /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(PanelTopClose, { className: "w-4 h-4" }) : /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(PanelTopOpen, { className: "w-4 h-4" }),
+              showProductPanel ? /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(PanelTopClose, { className: "w-4 h-4" }) : /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(PanelTopOpen, { className: "w-4 h-4" }),
               showProductPanel ? "Sembunyikan Produk" : "Tampilkan Produk"
             ]
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "flex items-center bg-slate-100 rounded-lg p-0.5 border border-slate-200", children: ["IDR", "USD", "EUR"].map((mode) => /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "flex items-center bg-slate-100 rounded-lg p-0.5 border border-slate-200", children: ["IDR", "USD", "EUR"].map((mode) => /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(
           "button",
           {
             type: "button",
@@ -28196,18 +29301,18 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
           },
           mode
         )) }),
-        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(CurrencyGroup, { kursUsd, setKursUsd, kursEur, setKursEur, className: "mr-1" }),
-        /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("button", { onClick: () => setShowKalkulasi(true), className: "bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors shadow-sm", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(FileText, { className: "w-4 h-4" }),
+        /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(CurrencyGroup, { kursUsd, setKursUsd, kursEur, setKursEur, className: "mr-1" }),
+        /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("button", { onClick: () => setShowKalkulasi(true), className: "bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors shadow-sm", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(FileText, { className: "w-4 h-4" }),
           " View Kalkulasi Lengkap"
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("button", { onClick: onBack, className: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors shadow-sm shadow-blue-500/30", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(CircleCheck, { className: "w-4 h-4" }),
+        /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("button", { onClick: onBack, className: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors shadow-sm shadow-blue-500/30", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(CircleCheck, { className: "w-4 h-4" }),
           " Simpan Project"
         ] })
       ] })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(
       KalkulasiModal,
       {
         isOpen: showKalkulasi,
@@ -28219,7 +29324,7 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
         packingCosts: { boxMat: packBoxMat, boxLab: packBoxLab, sfMat: packSfMat, sfLab: packSfLab }
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(
       MarkupPreviewModal,
       {
         isOpen: showMarkupPreview,
@@ -28229,8 +29334,8 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
         onSelect: (pct) => setCogsConfig((p) => ({ ...p, markupPct: pct }))
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "editor-body", children: [
-      showProductPanel ? /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "editor-body", children: [
+      showProductPanel ? /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(
         ProductPanel,
         {
           productInfo,
@@ -28246,336 +29351,336 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
           onPackingGrossChange: (id, tol, val, base) => handleUpdatePackingGross(id, tol, val, base),
           packingVolOpts
         }
-      ) : /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "px-6 pt-4 pb-2 shrink-0 flex items-center justify-between bg-white border-b border-slate-200", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("p", { className: "text-xs font-bold text-slate-500", children: "Panel produk disembunyikan \u2014 fokus pada kalkulasi & tab editor" }),
-        /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)(
+      ) : /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "px-6 pt-4 pb-2 shrink-0 flex items-center justify-between bg-white border-b border-slate-200", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("p", { className: "text-xs font-bold text-slate-500", children: "Panel produk disembunyikan \u2014 fokus pada kalkulasi & tab editor" }),
+        /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)(
           "button",
           {
             type: "button",
             onClick: () => setShowProductPanel(true),
             className: "text-xs font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1.5",
             children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(PanelTopOpen, { className: "w-4 h-4" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(PanelTopOpen, { className: "w-4 h-4" }),
               " Tampilkan data produk"
             ]
           }
         )
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(EditorTabBar, { activeTab: editorTab, onTabChange: setEditorTab }),
-      /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex-1 flex flex-col min-h-0 bg-white", children: [
-        editorTab === "struktur" && /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex-1 flex flex-col h-full bg-white relative", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "px-6 py-4 border-b border-slate-200 shrink-0 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white z-10 shadow-sm", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("h2", { className: "text-xl font-black text-slate-800 mb-0.5 tracking-tight", children: "Struktur Perakitan & Modul" }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("p", { className: "text-xs text-slate-500 font-medium", children: "Pengaturan hierarki Modul, Submodul, Part, dan Routing Produksi." })
+      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(EditorTabBar, { activeTab: editorTab, onTabChange: setEditorTab }),
+      /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex-1 flex flex-col min-h-0 bg-white", children: [
+        editorTab === "struktur" && /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex-1 flex flex-col h-full bg-white relative", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "px-6 py-4 border-b border-slate-200 shrink-0 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white z-10 shadow-sm", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("h2", { className: "text-xl font-black text-slate-800 mb-0.5 tracking-tight", children: "Struktur Perakitan & Modul" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("p", { className: "text-xs text-slate-500 font-medium", children: "Pengaturan hierarki Modul, Submodul, Part, dan Routing Produksi." })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex flex-wrap items-center gap-3", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("button", { onClick: () => handleAddNode(bomData.id, "MODUL"), className: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors shadow-sm shadow-blue-500/30", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Plus, { className: "w-4 h-4" }),
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex flex-wrap items-center gap-3", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("button", { onClick: () => handleAddNode(bomData.id, "MODUL"), className: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors shadow-sm shadow-blue-500/30", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Plus, { className: "w-4 h-4" }),
                 " Tambah Modul Utama"
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "relative", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Search, { className: "w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "text", placeholder: "Cari komponen...", value: searchQuery, onChange: (e) => setSearchQuery(e.target.value), className: "pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm w-48 md:w-64 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 bg-white transition-all font-medium" })
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "relative", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Search, { className: "w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "text", placeholder: "Cari komponen...", value: searchQuery, onChange: (e) => setSearchQuery(e.target.value), className: "pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm w-48 md:w-64 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 bg-white transition-all font-medium" })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex bg-slate-100 rounded-lg p-1 border border-slate-200 shadow-inner", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("button", { onClick: () => setViewMode("table"), className: `flex items-center gap-2 px-4 py-1.5 text-xs font-bold rounded-md transition-all ${viewMode === "table" ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700 hover:bg-white/50"}`, children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Table, { className: "w-4 h-4" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex bg-slate-100 rounded-lg p-1 border border-slate-200 shadow-inner", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("button", { onClick: () => setViewMode("table"), className: `flex items-center gap-2 px-4 py-1.5 text-xs font-bold rounded-md transition-all ${viewMode === "table" ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700 hover:bg-white/50"}`, children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Table, { className: "w-4 h-4" }),
                   " Tabel"
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("button", { onClick: () => setViewMode("graph"), className: `flex items-center gap-2 px-4 py-1.5 text-xs font-bold rounded-md transition-all ${viewMode === "graph" ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700 hover:bg-white/50"}`, children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Network, { className: "w-4 h-4" }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("button", { onClick: () => setViewMode("graph"), className: `flex items-center gap-2 px-4 py-1.5 text-xs font-bold rounded-md transition-all ${viewMode === "graph" ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700 hover:bg-white/50"}`, children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Network, { className: "w-4 h-4" }),
                   " Visual"
                 ] })
               ] })
             ] })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "flex-1 flex flex-col relative overflow-hidden bg-white", children: viewMode === "table" ? renderTableView() : /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: `flex-1 relative overflow-hidden bg-[#f1f5f9] ${isPanning ? "cursor-grabbing" : "cursor-grab"}`, ref: containerRef, onMouseDown: handleMouseDownCanvas, onMouseMove: handleMouseMove, style: { backgroundImage: "radial-gradient(#94a3b8 1px, transparent 1px)", backgroundSize: `${24 * scale}px ${24 * scale}px`, backgroundPosition: `${pan.x}px ${pan.y}px` }, children: [
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "absolute bottom-6 right-6 flex items-center gap-2 bg-white/95 backdrop-blur-md p-2 rounded-2xl border border-slate-200 shadow-xl z-50", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("button", { onClick: zoomOut, className: "p-2.5 hover:bg-slate-100 rounded-xl text-slate-600 transition-all", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(ZoomOut, { className: "w-5 h-5" }) }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "text-sm font-black text-slate-700 w-14 text-center", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "flex-1 flex flex-col relative overflow-hidden bg-white", children: viewMode === "table" ? renderTableView() : /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: `flex-1 relative overflow-hidden bg-[#f1f5f9] ${isPanning ? "cursor-grabbing" : "cursor-grab"}`, ref: containerRef, onMouseDown: handleMouseDownCanvas, onMouseMove: handleMouseMove, style: { backgroundImage: "radial-gradient(#94a3b8 1px, transparent 1px)", backgroundSize: `${24 * scale}px ${24 * scale}px`, backgroundPosition: `${pan.x}px ${pan.y}px` }, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "absolute bottom-6 right-6 flex items-center gap-2 bg-white/95 backdrop-blur-md p-2 rounded-2xl border border-slate-200 shadow-xl z-50", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("button", { onClick: zoomOut, className: "p-2.5 hover:bg-slate-100 rounded-xl text-slate-600 transition-all", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(ZoomOut, { className: "w-5 h-5" }) }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "text-sm font-black text-slate-700 w-14 text-center", children: [
                 Math.round(scale * 100),
                 "%"
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("button", { onClick: zoomIn, className: "p-2.5 hover:bg-slate-100 rounded-xl text-slate-600 transition-all", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(ZoomIn, { className: "w-5 h-5" }) }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "w-px h-6 bg-slate-300 mx-1" }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("button", { onClick: resetZoom, className: "p-2.5 hover:bg-slate-100 rounded-xl text-slate-600 transition-all", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Maximize, { className: "w-5 h-5" }) })
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("button", { onClick: zoomIn, className: "p-2.5 hover:bg-slate-100 rounded-xl text-slate-600 transition-all", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(ZoomIn, { className: "w-5 h-5" }) }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "w-px h-6 bg-slate-300 mx-1" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("button", { onClick: resetZoom, className: "p-2.5 hover:bg-slate-100 rounded-xl text-slate-600 transition-all", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Maximize, { className: "w-5 h-5" }) })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "absolute origin-top-left transition-transform duration-75", style: { transform: `translate(${pan.x}px, ${pan.y}px) scale(${scale})` }, children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "p-24 inline-block min-w-max pointer-events-none", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "pointer-events-auto", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(TreeNode, { node: bomData, isRoot: true }) }) }) })
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "absolute origin-top-left transition-transform duration-75", style: { transform: `translate(${pan.x}px, ${pan.y}px) scale(${scale})` }, children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "p-24 inline-block min-w-max pointer-events-none", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "pointer-events-auto", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(TreeNode, { node: bomData, isRoot: true }) }) }) })
           ] }) })
         ] }),
-        editorTab === "container" && /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex-1 overflow-y-auto p-6 md:p-8 bg-page flex flex-col gap-6 scrollbar-hide", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-white rounded-2xl border border-slate-200 shadow-sm p-6 shrink-0 flex items-center gap-4", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shadow-sm shrink-0", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Package, { className: "w-6 h-6" }) }),
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("h2", { className: "text-xl font-black text-slate-800", children: "Spesifikasi Packing & Container Capacity" }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("p", { className: "text-xs text-slate-500 mt-1 font-medium", children: "Definisi dimensi produk, list material packing, routing tenaga kerja, dan kalkulasi total muatan kontainer." })
+        editorTab === "container" && /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex-1 overflow-y-auto p-6 md:p-8 bg-page flex flex-col gap-6 scrollbar-hide", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-white rounded-2xl border border-slate-200 shadow-sm p-6 shrink-0 flex items-center gap-4", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shadow-sm shrink-0", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Package, { className: "w-6 h-6" }) }),
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("h2", { className: "text-xl font-black text-slate-800", children: "Spesifikasi Packing & Container Capacity" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("p", { className: "text-xs text-slate-500 mt-1 font-medium", children: "Definisi dimensi produk, list material packing, routing tenaga kerja, dan kalkulasi total muatan kontainer." })
             ] })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "grid grid-cols-1 xl:grid-cols-2 gap-6 shrink-0", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "px-5 py-4 border-b border-slate-100 bg-slate-50/80", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("h3", { className: "text-sm font-black text-slate-800", children: "1. Informasi Dimensi Produk (Nett)" }) }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("table", { className: "w-full text-left text-xs", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("thead", { className: "bg-white border-b border-slate-200 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-5 py-3 border-r border-slate-100", children: "Parameter" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-5 py-3 text-center border-r border-slate-100", children: "W (mm)" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-5 py-3 text-center border-r border-slate-100", children: "D (mm)" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-5 py-3 text-center border-r border-slate-100", children: "H (mm)" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-5 py-3 text-right text-blue-600 bg-blue-50/30", children: "Volume (m\xB3)" })
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "grid grid-cols-1 xl:grid-cols-2 gap-6 shrink-0", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "px-5 py-4 border-b border-slate-100 bg-slate-50/80", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("h3", { className: "text-sm font-black text-slate-800", children: "1. Informasi Dimensi Produk (Nett)" }) }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("table", { className: "w-full text-left text-xs", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("thead", { className: "bg-white border-b border-slate-200 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-5 py-3 border-r border-slate-100", children: "Parameter" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-5 py-3 text-center border-r border-slate-100", children: "W (mm)" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-5 py-3 text-center border-r border-slate-100", children: "D (mm)" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-5 py-3 text-center border-r border-slate-100", children: "H (mm)" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-5 py-3 text-right text-blue-600 bg-blue-50/30", children: "Volume (m\xB3)" })
                 ] }) }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("tbody", { children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-5 py-4 font-bold text-slate-700 border-r border-slate-100", children: "Produk Furniture" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-5 py-4 text-center border-r border-slate-100 font-medium text-slate-600", children: dimensi.w }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-5 py-4 text-center border-r border-slate-100 font-medium text-slate-600", children: dimensi.d }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-5 py-4 text-center border-r border-slate-100 font-medium text-slate-600", children: dimensi.h }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-5 py-4 text-right font-black text-blue-700 bg-blue-50/10", children: volProduk })
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("tbody", { children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-5 py-4 font-bold text-slate-700 border-r border-slate-100", children: "Produk Furniture" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-5 py-4 text-center border-r border-slate-100 font-medium text-slate-600", children: dimensi.w }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-5 py-4 text-center border-r border-slate-100 font-medium text-slate-600", children: dimensi.d }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-5 py-4 text-center border-r border-slate-100 font-medium text-slate-600", children: dimensi.h }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-5 py-4 text-right font-black text-blue-700 bg-blue-50/10", children: volProduk })
                 ] }) })
               ] })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "px-5 py-4 border-b border-slate-100 bg-slate-50/80 flex justify-between items-center", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("h3", { className: "text-sm font-black text-slate-800", children: "2. Informasi Dimensi Packing (Gross)" }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("button", { onClick: handleAddPackingDim, className: "bg-emerald-100 text-emerald-700 hover:bg-emerald-200 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Plus, { className: "w-3.5 h-3.5" }),
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "px-5 py-4 border-b border-slate-100 bg-slate-50/80 flex justify-between items-center", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("h3", { className: "text-sm font-black text-slate-800", children: "2. Informasi Dimensi Packing (Gross)" }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("button", { onClick: handleAddPackingDim, className: "bg-emerald-100 text-emerald-700 hover:bg-emerald-200 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Plus, { className: "w-3.5 h-3.5" }),
                   " Tambah Dimensi"
                 ] })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("table", { className: "w-full text-left text-xs", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("thead", { className: "bg-white border-b border-slate-200 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-5 py-3 border-r border-slate-100 w-1/4", children: "Tipe Packing" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-5 py-3 text-center border-r border-slate-100", children: "W x D x H (mm)" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-5 py-3 text-center border-r border-slate-100", children: "Toleransi (+mm)" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-5 py-3 text-right text-emerald-600 border-r border-slate-100 bg-emerald-50/30", children: "Volume (m\xB3)" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-5 py-3 text-center", children: "Aksi" })
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("table", { className: "w-full text-left text-xs", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("thead", { className: "bg-white border-b border-slate-200 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-5 py-3 border-r border-slate-100 w-1/4", children: "Tipe Packing" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-5 py-3 text-center border-r border-slate-100", children: "W x D x H (mm)" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-5 py-3 text-center border-r border-slate-100", children: "Toleransi (+mm)" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-5 py-3 text-right text-emerald-600 border-r border-slate-100 bg-emerald-50/30", children: "Volume (m\xB3)" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-5 py-3 text-center", children: "Aksi" })
                 ] }) }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("tbody", { children: packingDimensions.map((item) => {
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("tbody", { children: packingDimensions.map((item) => {
                   const grossW = dimensi.w + item.tolW;
                   const grossD = dimensi.d + item.tolD;
                   const grossH = dimensi.h + item.tolH;
                   const vol = (grossW * grossD * grossH / 1e9).toFixed(6);
-                  return /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { className: "border-b border-slate-100 hover:bg-slate-50 transition-colors", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-5 py-3 border-r border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "text", value: item.type, onChange: (e) => handleUpdatePackingDim(item.id, "type", e.target.value), className: "w-full bg-transparent font-black text-slate-700 outline-none border-b border-transparent focus:border-emerald-400" }) }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-5 py-3 text-center border-r border-slate-100 font-bold text-slate-600", children: [
+                  return /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { className: "border-b border-slate-100 hover:bg-slate-50 transition-colors", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-5 py-3 border-r border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "text", value: item.type, onChange: (e) => handleUpdatePackingDim(item.id, "type", e.target.value), className: "w-full bg-transparent font-black text-slate-700 outline-none border-b border-transparent focus:border-emerald-400" }) }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-5 py-3 text-center border-r border-slate-100 font-bold text-slate-600", children: [
                       grossW,
                       " x ",
                       grossD,
                       " x ",
                       grossH
                     ] }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-5 py-3 text-center border-r border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center justify-center gap-2", children: [
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center gap-1", children: [
-                        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[9px] text-amber-500 font-bold", children: "+W" }),
-                        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: item.tolW, onChange: (e) => handleUpdatePackingDim(item.id, "tolW", e.target.value), className: "w-12 text-center bg-slate-50 border border-slate-200 rounded py-1 outline-none focus:border-amber-400 font-bold text-slate-700" })
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-5 py-3 text-center border-r border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center justify-center gap-2", children: [
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center gap-1", children: [
+                        /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-[9px] text-amber-500 font-bold", children: "+W" }),
+                        /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: item.tolW, onChange: (e) => handleUpdatePackingDim(item.id, "tolW", e.target.value), className: "w-12 text-center bg-slate-50 border border-slate-200 rounded py-1 outline-none focus:border-amber-400 font-bold text-slate-700" })
                       ] }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center gap-1", children: [
-                        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[9px] text-amber-500 font-bold", children: "+D" }),
-                        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: item.tolD, onChange: (e) => handleUpdatePackingDim(item.id, "tolD", e.target.value), className: "w-12 text-center bg-slate-50 border border-slate-200 rounded py-1 outline-none focus:border-amber-400 font-bold text-slate-700" })
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center gap-1", children: [
+                        /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-[9px] text-amber-500 font-bold", children: "+D" }),
+                        /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: item.tolD, onChange: (e) => handleUpdatePackingDim(item.id, "tolD", e.target.value), className: "w-12 text-center bg-slate-50 border border-slate-200 rounded py-1 outline-none focus:border-amber-400 font-bold text-slate-700" })
                       ] }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center gap-1", children: [
-                        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[9px] text-amber-500 font-bold", children: "+H" }),
-                        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: item.tolH, onChange: (e) => handleUpdatePackingDim(item.id, "tolH", e.target.value), className: "w-12 text-center bg-slate-50 border border-slate-200 rounded py-1 outline-none focus:border-amber-400 font-bold text-slate-700" })
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center gap-1", children: [
+                        /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-[9px] text-amber-500 font-bold", children: "+H" }),
+                        /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: item.tolH, onChange: (e) => handleUpdatePackingDim(item.id, "tolH", e.target.value), className: "w-12 text-center bg-slate-50 border border-slate-200 rounded py-1 outline-none focus:border-amber-400 font-bold text-slate-700" })
                       ] })
                     ] }) }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-5 py-3 text-right font-black text-emerald-700 bg-emerald-50/10 border-r border-slate-100", children: vol }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-5 py-3 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("button", { onClick: () => handleDeletePackingDim(item.id), className: "p-1.5 text-red-400 hover:bg-red-50 hover:text-red-600 rounded transition-colors", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Trash2, { className: "w-4 h-4" }) }) })
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-5 py-3 text-right font-black text-emerald-700 bg-emerald-50/10 border-r border-slate-100", children: vol }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-5 py-3 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("button", { onClick: () => handleDeletePackingDim(item.id), className: "p-1.5 text-red-400 hover:bg-red-50 hover:text-red-600 rounded transition-colors", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Trash2, { className: "w-4 h-4" }) }) })
                   ] }, item.id);
                 }) })
               ] })
             ] })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col shrink-0", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "px-6 py-4 border-b border-slate-200 bg-slate-50/80", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("h3", { className: "text-sm font-black text-slate-800 flex items-center gap-2", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Grid3x3, { className: "w-4 h-4 text-amber-500" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col shrink-0", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "px-6 py-4 border-b border-slate-200 bg-slate-50/80", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("h3", { className: "text-sm font-black text-slate-800 flex items-center gap-2", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Grid3x3, { className: "w-4 h-4 text-amber-500" }),
               " 3. BOM Material Packing (Box & Single Face)"
             ] }) }),
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-0 divide-y md:divide-y-0 md:divide-x divide-slate-200", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "p-0 flex flex-col", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-amber-50/60 px-5 py-3 border-b border-slate-200 font-black text-amber-800 text-[10px] uppercase tracking-widest flex justify-between items-center", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-0 divide-y md:divide-y-0 md:divide-x divide-slate-200", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "p-0 flex flex-col", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-amber-50/60 px-5 py-3 border-b border-slate-200 font-black text-amber-800 text-[10px] uppercase tracking-widest flex justify-between items-center", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "flex items-center gap-2", children: [
                     "Material: Box Karton ",
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("button", { onClick: () => handleAddPackingSpec("materialsBox"), className: "bg-amber-100 text-amber-600 hover:bg-amber-200 p-1 rounded transition-colors", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Plus, { className: "w-3 h-3" }) })
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("button", { onClick: () => handleAddPackingSpec("materialsBox"), className: "bg-amber-100 text-amber-600 hover:bg-amber-200 p-1 rounded transition-colors", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Plus, { className: "w-3 h-3" }) })
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { children: [
                     "Total: Rp ",
                     formatIDR(packBoxMat)
                   ] })
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("table", { className: "w-full text-left text-xs", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("thead", { className: "bg-white border-b border-slate-100 text-[9px] text-slate-500 uppercase font-bold", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-5 py-2.5", children: "Item Material" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-2 py-2.5 text-center w-16", children: "Qty" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-2 py-2.5 text-center w-20", children: "Unit" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-2 py-2.5 text-right w-24", children: "Harga (IDR)" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-5 py-2.5 text-right w-24", children: "Total" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-2 py-2.5 text-center w-10", children: "Act" })
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("table", { className: "w-full text-left text-xs", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("thead", { className: "bg-white border-b border-slate-100 text-[9px] text-slate-500 uppercase font-bold", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-5 py-2.5", children: "Item Material" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-2 py-2.5 text-center w-16", children: "Qty" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-2 py-2.5 text-center w-20", children: "Unit" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-2 py-2.5 text-right w-24", children: "Harga (IDR)" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-5 py-2.5 text-right w-24", children: "Total" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-2 py-2.5 text-center w-10", children: "Act" })
                   ] }) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("tbody", { children: packingSpec.materialsBox.map((m) => /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { className: "border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-5 py-2", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "text", value: m.nama, onChange: (e) => handleUpdatePackingSpec("materialsBox", m.id, "nama", e.target.value), className: "w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-amber-400 focus:outline-none font-bold text-slate-700 py-1", placeholder: "Nama Material" }) }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-2 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: m.qty, onChange: (e) => handleUpdatePackingSpec("materialsBox", m.id, "qty", e.target.value), className: "w-full text-center bg-transparent border-b border-transparent hover:border-slate-300 focus:border-amber-400 focus:outline-none text-slate-600 py-1" }) }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-2 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "text", value: m.unit, onChange: (e) => handleUpdatePackingSpec("materialsBox", m.id, "unit", e.target.value), className: "w-full text-center bg-transparent border-b border-transparent hover:border-slate-300 focus:border-amber-400 focus:outline-none text-slate-600 py-1 uppercase text-[10px]" }) }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-2 py-2 text-right", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: m.harga, onChange: (e) => handleUpdatePackingSpec("materialsBox", m.id, "harga", e.target.value), className: "w-full text-right bg-transparent border-b border-transparent hover:border-slate-300 focus:border-amber-400 focus:outline-none text-slate-600 py-1" }) }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-5 py-2 text-right font-black text-amber-600", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("tbody", { children: packingSpec.materialsBox.map((m) => /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { className: "border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-5 py-2", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "text", value: m.nama, onChange: (e) => handleUpdatePackingSpec("materialsBox", m.id, "nama", e.target.value), className: "w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-amber-400 focus:outline-none font-bold text-slate-700 py-1", placeholder: "Nama Material" }) }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-2 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: m.qty, onChange: (e) => handleUpdatePackingSpec("materialsBox", m.id, "qty", e.target.value), className: "w-full text-center bg-transparent border-b border-transparent hover:border-slate-300 focus:border-amber-400 focus:outline-none text-slate-600 py-1" }) }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-2 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "text", value: m.unit, onChange: (e) => handleUpdatePackingSpec("materialsBox", m.id, "unit", e.target.value), className: "w-full text-center bg-transparent border-b border-transparent hover:border-slate-300 focus:border-amber-400 focus:outline-none text-slate-600 py-1 uppercase text-[10px]" }) }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-2 py-2 text-right", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: m.harga, onChange: (e) => handleUpdatePackingSpec("materialsBox", m.id, "harga", e.target.value), className: "w-full text-right bg-transparent border-b border-transparent hover:border-slate-300 focus:border-amber-400 focus:outline-none text-slate-600 py-1" }) }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-5 py-2 text-right font-black text-amber-600", children: [
                       "Rp ",
                       formatIDR(m.qty * m.harga)
                     ] }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-2 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("button", { onClick: () => handleDeletePackingSpec("materialsBox", m.id), className: "p-1.5 text-red-400 hover:bg-red-50 hover:text-red-600 rounded transition-colors", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Trash2, { className: "w-3.5 h-3.5" }) }) })
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-2 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("button", { onClick: () => handleDeletePackingSpec("materialsBox", m.id), className: "p-1.5 text-red-400 hover:bg-red-50 hover:text-red-600 rounded transition-colors", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Trash2, { className: "w-3.5 h-3.5" }) }) })
                   ] }, m.id)) })
                 ] })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "p-0 flex flex-col", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-emerald-50/60 px-5 py-3 border-b border-slate-200 font-black text-emerald-800 text-[10px] uppercase tracking-widest flex justify-between items-center", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "flex items-center gap-2", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "p-0 flex flex-col", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-emerald-50/60 px-5 py-3 border-b border-slate-200 font-black text-emerald-800 text-[10px] uppercase tracking-widest flex justify-between items-center", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "flex items-center gap-2", children: [
                     "Material: Single Face ",
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("button", { onClick: () => handleAddPackingSpec("materialsSF"), className: "bg-emerald-100 text-emerald-600 hover:bg-emerald-200 p-1 rounded transition-colors", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Plus, { className: "w-3 h-3" }) })
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("button", { onClick: () => handleAddPackingSpec("materialsSF"), className: "bg-emerald-100 text-emerald-600 hover:bg-emerald-200 p-1 rounded transition-colors", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Plus, { className: "w-3 h-3" }) })
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { children: [
                     "Total: Rp ",
                     formatIDR(packSfMat)
                   ] })
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("table", { className: "w-full text-left text-xs", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("thead", { className: "bg-white border-b border-slate-100 text-[9px] text-slate-500 uppercase font-bold", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-5 py-2.5", children: "Item Material" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-2 py-2.5 text-center w-16", children: "Qty" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-2 py-2.5 text-center w-20", children: "Unit" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-2 py-2.5 text-right w-24", children: "Harga (IDR)" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-5 py-2.5 text-right w-24", children: "Total" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-2 py-2.5 text-center w-10", children: "Act" })
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("table", { className: "w-full text-left text-xs", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("thead", { className: "bg-white border-b border-slate-100 text-[9px] text-slate-500 uppercase font-bold", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-5 py-2.5", children: "Item Material" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-2 py-2.5 text-center w-16", children: "Qty" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-2 py-2.5 text-center w-20", children: "Unit" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-2 py-2.5 text-right w-24", children: "Harga (IDR)" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-5 py-2.5 text-right w-24", children: "Total" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-2 py-2.5 text-center w-10", children: "Act" })
                   ] }) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("tbody", { children: packingSpec.materialsSF.map((m) => /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { className: "border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-5 py-2", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "text", value: m.nama, onChange: (e) => handleUpdatePackingSpec("materialsSF", m.id, "nama", e.target.value), className: "w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-emerald-400 focus:outline-none font-bold text-slate-700 py-1", placeholder: "Nama Material" }) }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-2 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: m.qty, onChange: (e) => handleUpdatePackingSpec("materialsSF", m.id, "qty", e.target.value), className: "w-full text-center bg-transparent border-b border-transparent hover:border-slate-300 focus:border-emerald-400 focus:outline-none text-slate-600 py-1" }) }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-2 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "text", value: m.unit, onChange: (e) => handleUpdatePackingSpec("materialsSF", m.id, "unit", e.target.value), className: "w-full text-center bg-transparent border-b border-transparent hover:border-slate-300 focus:border-emerald-400 focus:outline-none text-slate-600 py-1 uppercase text-[10px]" }) }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-2 py-2 text-right", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: m.harga, onChange: (e) => handleUpdatePackingSpec("materialsSF", m.id, "harga", e.target.value), className: "w-full text-right bg-transparent border-b border-transparent hover:border-slate-300 focus:border-emerald-400 focus:outline-none text-slate-600 py-1" }) }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-5 py-2 text-right font-black text-emerald-600", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("tbody", { children: packingSpec.materialsSF.map((m) => /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { className: "border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-5 py-2", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "text", value: m.nama, onChange: (e) => handleUpdatePackingSpec("materialsSF", m.id, "nama", e.target.value), className: "w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-emerald-400 focus:outline-none font-bold text-slate-700 py-1", placeholder: "Nama Material" }) }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-2 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: m.qty, onChange: (e) => handleUpdatePackingSpec("materialsSF", m.id, "qty", e.target.value), className: "w-full text-center bg-transparent border-b border-transparent hover:border-slate-300 focus:border-emerald-400 focus:outline-none text-slate-600 py-1" }) }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-2 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "text", value: m.unit, onChange: (e) => handleUpdatePackingSpec("materialsSF", m.id, "unit", e.target.value), className: "w-full text-center bg-transparent border-b border-transparent hover:border-slate-300 focus:border-emerald-400 focus:outline-none text-slate-600 py-1 uppercase text-[10px]" }) }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-2 py-2 text-right", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: m.harga, onChange: (e) => handleUpdatePackingSpec("materialsSF", m.id, "harga", e.target.value), className: "w-full text-right bg-transparent border-b border-transparent hover:border-slate-300 focus:border-emerald-400 focus:outline-none text-slate-600 py-1" }) }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-5 py-2 text-right font-black text-emerald-600", children: [
                       "Rp ",
                       formatIDR(m.qty * m.harga)
                     ] }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-2 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("button", { onClick: () => handleDeletePackingSpec("materialsSF", m.id), className: "p-1.5 text-red-400 hover:bg-red-50 hover:text-red-600 rounded transition-colors", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Trash2, { className: "w-3.5 h-3.5" }) }) })
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-2 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("button", { onClick: () => handleDeletePackingSpec("materialsSF", m.id), className: "p-1.5 text-red-400 hover:bg-red-50 hover:text-red-600 rounded transition-colors", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Trash2, { className: "w-3.5 h-3.5" }) }) })
                   ] }, m.id)) })
                 ] })
               ] })
             ] })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col shrink-0", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "px-6 py-4 border-b border-slate-200 bg-slate-50/80", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("h3", { className: "text-sm font-black text-slate-800 flex items-center gap-2", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Wrench, { className: "w-4 h-4 text-indigo-500" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col shrink-0", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "px-6 py-4 border-b border-slate-200 bg-slate-50/80", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("h3", { className: "text-sm font-black text-slate-800 flex items-center gap-2", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Wrench, { className: "w-4 h-4 text-indigo-500" }),
               " 4. Routing / Pekerja Packing (Box & Single Face)"
             ] }) }),
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-0 divide-y md:divide-y-0 md:divide-x divide-slate-200", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "p-0 flex flex-col", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-indigo-50/60 px-5 py-3 border-b border-slate-200 font-black text-indigo-800 text-[10px] uppercase tracking-widest flex justify-between items-center", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-0 divide-y md:divide-y-0 md:divide-x divide-slate-200", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "p-0 flex flex-col", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-indigo-50/60 px-5 py-3 border-b border-slate-200 font-black text-indigo-800 text-[10px] uppercase tracking-widest flex justify-between items-center", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "flex items-center gap-2", children: [
                     "Routing Pekerja: Box Karton ",
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("button", { onClick: () => handleAddPackingSpec("routingBox"), className: "bg-indigo-100 text-indigo-600 hover:bg-indigo-200 p-1 rounded transition-colors", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Plus, { className: "w-3 h-3" }) })
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("button", { onClick: () => handleAddPackingSpec("routingBox"), className: "bg-indigo-100 text-indigo-600 hover:bg-indigo-200 p-1 rounded transition-colors", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Plus, { className: "w-3 h-3" }) })
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { children: [
                     "Total: Rp ",
                     formatIDR(packBoxLab)
                   ] })
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("table", { className: "w-full text-left text-xs", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("thead", { className: "bg-white border-b border-slate-100 text-[9px] text-slate-500 uppercase font-bold", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-5 py-2.5", children: "Proses Kerja" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-2 py-2.5 text-center w-16", children: "Waktu(m)" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-2 py-2.5 text-center w-16", children: "Pekerja" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-2 py-2.5 text-right w-20", children: "Rate(IDR)" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-5 py-2.5 text-right w-24", children: "Total" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-2 py-2.5 text-center w-10", children: "Act" })
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("table", { className: "w-full text-left text-xs", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("thead", { className: "bg-white border-b border-slate-100 text-[9px] text-slate-500 uppercase font-bold", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-5 py-2.5", children: "Proses Kerja" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-2 py-2.5 text-center w-16", children: "Waktu(m)" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-2 py-2.5 text-center w-16", children: "Pekerja" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-2 py-2.5 text-right w-20", children: "Rate(IDR)" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-5 py-2.5 text-right w-24", children: "Total" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-2 py-2.5 text-center w-10", children: "Act" })
                   ] }) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("tbody", { children: packingSpec.routingBox.map((r) => /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { className: "border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-5 py-2", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "text", value: r.nama, onChange: (e) => handleUpdatePackingSpec("routingBox", r.id, "nama", e.target.value), className: "w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-indigo-400 focus:outline-none font-bold text-slate-700 py-1", placeholder: "Nama Routing" }) }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-2 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: r.waktu, onChange: (e) => handleUpdatePackingSpec("routingBox", r.id, "waktu", e.target.value), className: "w-full text-center bg-transparent border-b border-transparent hover:border-slate-300 focus:border-indigo-400 focus:outline-none text-slate-600 py-1" }) }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-2 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: r.pekerja, onChange: (e) => handleUpdatePackingSpec("routingBox", r.id, "pekerja", e.target.value), className: "w-full text-center bg-transparent border-b border-transparent hover:border-slate-300 focus:border-indigo-400 focus:outline-none text-slate-600 py-1" }) }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-2 py-2 text-right", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: r.rate, onChange: (e) => handleUpdatePackingSpec("routingBox", r.id, "rate", e.target.value), className: "w-full text-right bg-transparent border-b border-transparent hover:border-slate-300 focus:border-indigo-400 focus:outline-none text-slate-600 py-1" }) }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-5 py-2 text-right font-black text-indigo-600", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("tbody", { children: packingSpec.routingBox.map((r) => /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { className: "border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-5 py-2", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "text", value: r.nama, onChange: (e) => handleUpdatePackingSpec("routingBox", r.id, "nama", e.target.value), className: "w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-indigo-400 focus:outline-none font-bold text-slate-700 py-1", placeholder: "Nama Routing" }) }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-2 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: r.waktu, onChange: (e) => handleUpdatePackingSpec("routingBox", r.id, "waktu", e.target.value), className: "w-full text-center bg-transparent border-b border-transparent hover:border-slate-300 focus:border-indigo-400 focus:outline-none text-slate-600 py-1" }) }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-2 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: r.pekerja, onChange: (e) => handleUpdatePackingSpec("routingBox", r.id, "pekerja", e.target.value), className: "w-full text-center bg-transparent border-b border-transparent hover:border-slate-300 focus:border-indigo-400 focus:outline-none text-slate-600 py-1" }) }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-2 py-2 text-right", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: r.rate, onChange: (e) => handleUpdatePackingSpec("routingBox", r.id, "rate", e.target.value), className: "w-full text-right bg-transparent border-b border-transparent hover:border-slate-300 focus:border-indigo-400 focus:outline-none text-slate-600 py-1" }) }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-5 py-2 text-right font-black text-indigo-600", children: [
                       "Rp ",
                       formatIDR(r.waktu * r.pekerja * r.rate)
                     ] }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-2 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("button", { onClick: () => handleDeletePackingSpec("routingBox", r.id), className: "p-1.5 text-red-400 hover:bg-red-50 hover:text-red-600 rounded transition-colors", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Trash2, { className: "w-3.5 h-3.5" }) }) })
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-2 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("button", { onClick: () => handleDeletePackingSpec("routingBox", r.id), className: "p-1.5 text-red-400 hover:bg-red-50 hover:text-red-600 rounded transition-colors", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Trash2, { className: "w-3.5 h-3.5" }) }) })
                   ] }, r.id)) })
                 ] })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "p-0 flex flex-col", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-blue-50/60 px-5 py-3 border-b border-slate-200 font-black text-blue-800 text-[10px] uppercase tracking-widest flex justify-between items-center", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "flex items-center gap-2", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "p-0 flex flex-col", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-blue-50/60 px-5 py-3 border-b border-slate-200 font-black text-blue-800 text-[10px] uppercase tracking-widest flex justify-between items-center", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "flex items-center gap-2", children: [
                     "Routing Pekerja: Single Face ",
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("button", { onClick: () => handleAddPackingSpec("routingSF"), className: "bg-blue-100 text-blue-600 hover:bg-blue-200 p-1 rounded transition-colors", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Plus, { className: "w-3 h-3" }) })
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("button", { onClick: () => handleAddPackingSpec("routingSF"), className: "bg-blue-100 text-blue-600 hover:bg-blue-200 p-1 rounded transition-colors", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Plus, { className: "w-3 h-3" }) })
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { children: [
                     "Total: Rp ",
                     formatIDR(packSfLab)
                   ] })
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("table", { className: "w-full text-left text-xs", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("thead", { className: "bg-white border-b border-slate-100 text-[9px] text-slate-500 uppercase font-bold", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-5 py-2.5", children: "Proses Kerja" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-2 py-2.5 text-center w-16", children: "Waktu(m)" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-2 py-2.5 text-center w-16", children: "Pekerja" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-2 py-2.5 text-right w-20", children: "Rate(IDR)" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-5 py-2.5 text-right w-24", children: "Total" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-2 py-2.5 text-center w-10", children: "Act" })
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("table", { className: "w-full text-left text-xs", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("thead", { className: "bg-white border-b border-slate-100 text-[9px] text-slate-500 uppercase font-bold", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-5 py-2.5", children: "Proses Kerja" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-2 py-2.5 text-center w-16", children: "Waktu(m)" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-2 py-2.5 text-center w-16", children: "Pekerja" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-2 py-2.5 text-right w-20", children: "Rate(IDR)" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-5 py-2.5 text-right w-24", children: "Total" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-2 py-2.5 text-center w-10", children: "Act" })
                   ] }) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("tbody", { children: packingSpec.routingSF.map((r) => /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { className: "border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-5 py-2", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "text", value: r.nama, onChange: (e) => handleUpdatePackingSpec("routingSF", r.id, "nama", e.target.value), className: "w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blue-400 focus:outline-none font-bold text-slate-700 py-1", placeholder: "Nama Routing" }) }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-2 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: r.waktu, onChange: (e) => handleUpdatePackingSpec("routingSF", r.id, "waktu", e.target.value), className: "w-full text-center bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blue-400 focus:outline-none text-slate-600 py-1" }) }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-2 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: r.pekerja, onChange: (e) => handleUpdatePackingSpec("routingSF", r.id, "pekerja", e.target.value), className: "w-full text-center bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blue-400 focus:outline-none text-slate-600 py-1" }) }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-2 py-2 text-right", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: r.rate, onChange: (e) => handleUpdatePackingSpec("routingSF", r.id, "rate", e.target.value), className: "w-full text-right bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blue-400 focus:outline-none text-slate-600 py-1" }) }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-5 py-2 text-right font-black text-blue-600", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("tbody", { children: packingSpec.routingSF.map((r) => /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { className: "border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-5 py-2", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "text", value: r.nama, onChange: (e) => handleUpdatePackingSpec("routingSF", r.id, "nama", e.target.value), className: "w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blue-400 focus:outline-none font-bold text-slate-700 py-1", placeholder: "Nama Routing" }) }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-2 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: r.waktu, onChange: (e) => handleUpdatePackingSpec("routingSF", r.id, "waktu", e.target.value), className: "w-full text-center bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blue-400 focus:outline-none text-slate-600 py-1" }) }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-2 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: r.pekerja, onChange: (e) => handleUpdatePackingSpec("routingSF", r.id, "pekerja", e.target.value), className: "w-full text-center bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blue-400 focus:outline-none text-slate-600 py-1" }) }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-2 py-2 text-right", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: r.rate, onChange: (e) => handleUpdatePackingSpec("routingSF", r.id, "rate", e.target.value), className: "w-full text-right bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blue-400 focus:outline-none text-slate-600 py-1" }) }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-5 py-2 text-right font-black text-blue-600", children: [
                       "Rp ",
                       formatIDR(r.waktu * r.pekerja * r.rate)
                     ] }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-2 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("button", { onClick: () => handleDeletePackingSpec("routingSF", r.id), className: "p-1.5 text-red-400 hover:bg-red-50 hover:text-red-600 rounded transition-colors", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Trash2, { className: "w-3.5 h-3.5" }) }) })
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-2 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("button", { onClick: () => handleDeletePackingSpec("routingSF", r.id), className: "p-1.5 text-red-400 hover:bg-red-50 hover:text-red-600 rounded transition-colors", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Trash2, { className: "w-3.5 h-3.5" }) }) })
                   ] }, r.id)) })
                 ] })
               ] })
             ] })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "grid grid-cols-2 lg:grid-cols-4 gap-3 shrink-0", children: CONTAINER_PRESETS.map((preset, idx) => {
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "grid grid-cols-2 lg:grid-cols-4 gap-3 shrink-0", children: CONTAINER_PRESETS.map((preset, idx) => {
             const caps = calcContainerNetCapacity(preset, volBoxPacking, volSFPacking);
             const boxVal = caps.netCapBox;
             const sfVal = caps.netCapSF;
             const row = containerCapacity[idx];
             if (row?.hidden && !showHiddenContainers) return null;
-            return /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: `surface-card p-3 ${row?.hidden ? "opacity-50" : ""}`, children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "label-field", children: preset.type }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "grid grid-cols-2 gap-2 mt-2 text-center text-[10px]", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-material-50 rounded-lg py-2 border border-material-100", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-material-600 font-bold block", children: "Box" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "font-black text-material-800", children: boxVal }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-slate-400", children: preset.unitBox || "Pcs" })
+            return /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: `surface-card p-3 ${row?.hidden ? "opacity-50" : ""}`, children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "label-field", children: preset.type }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "grid grid-cols-2 gap-2 mt-2 text-center text-[10px]", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-material-50 rounded-lg py-2 border border-material-100", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-material-600 font-bold block", children: "Box" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "font-black text-material-800", children: boxVal }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-slate-400", children: preset.unitBox || "Pcs" })
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-teal-50 rounded-lg py-2 border border-teal-100", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-teal-600 font-bold block", children: "SF" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "font-black text-teal-800", children: sfVal }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-slate-400", children: preset.unitSF || "Pcs" })
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-teal-50 rounded-lg py-2 border border-teal-100", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-teal-600 font-bold block", children: "SF" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "font-black text-teal-800", children: sfVal }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-slate-400", children: preset.unitSF || "Pcs" })
                 ] })
               ] })
             ] }, preset.id);
           }) }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col shrink-0 mt-4", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center gap-3", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 shadow-sm shrink-0", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Package, { className: "w-4 h-4" }) }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("h3", { className: "text-base font-black text-slate-800 uppercase tracking-wide", children: "5. Tabel Container Capacity Terpadu" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("p", { className: "text-[10px] text-slate-500 mt-0.5", children: "Kapasitas: 1 piece = volume packing (m\xB3) \xB7 kontainer = floor(muatan kontainer m\xB3 \xF7 volume packing) \u2014 ref. ELB-555-98 (26 / 55 / 65 Pcs)" })
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col shrink-0 mt-4", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center gap-3", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 shadow-sm shrink-0", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Package, { className: "w-4 h-4" }) }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("h3", { className: "text-base font-black text-slate-800 uppercase tracking-wide", children: "5. Tabel Container Capacity Terpadu" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("p", { className: "text-[10px] text-slate-500 mt-0.5", children: "Kapasitas: 1 piece = volume packing (m\xB3) \xB7 kontainer = floor(muatan kontainer m\xB3 \xF7 volume packing) \u2014 ref. ELB-555-98 (26 / 55 / 65 Pcs)" })
                 ] })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center gap-2 flex-wrap", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)(
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center gap-2 flex-wrap", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)(
                   "button",
                   {
                     type: "button",
                     onClick: () => setShowHiddenContainers((v) => !v),
                     className: "border border-slate-200 text-slate-600 hover:bg-slate-50 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5",
                     children: [
-                      showHiddenContainers ? /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Eye, { className: "w-3.5 h-3.5" }) : /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(EyeOff, { className: "w-3.5 h-3.5" }),
+                      showHiddenContainers ? /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Eye, { className: "w-3.5 h-3.5" }) : /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(EyeOff, { className: "w-3.5 h-3.5" }),
                       showHiddenContainers ? "Sembunyikan baris hidden" : "Tampilkan baris hidden"
                     ]
                   }
                 ),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)(
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)(
                   "button",
                   {
                     type: "button",
@@ -28583,38 +29688,38 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
                     className: "hidden bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold items-center gap-1.5 transition-colors shadow-sm",
                     "aria-hidden": true,
                     children: [
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Plus, { className: "w-3.5 h-3.5" }),
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Plus, { className: "w-3.5 h-3.5" }),
                       " Tambah Kontainer"
                     ]
                   }
                 )
               ] })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "overflow-x-auto rounded-xl border border-slate-200 scrollbar-hide shadow-sm bg-white", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("table", { className: "w-full text-left text-xs whitespace-nowrap", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("thead", { className: "bg-slate-100 border-b border-slate-200 text-slate-600 font-extrabold text-[10px] uppercase tracking-widest text-center", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { rowSpan: 2, className: "px-4 py-3 border-r border-slate-200 align-middle sticky left-0 z-10 bg-slate-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]", children: "TYPE" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { colSpan: 2, className: "px-4 py-2 border-r border-slate-200 border-b border-slate-200 text-center", children: "NET CAPACITY CONTAINER" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { colSpan: 2, className: "px-4 py-2 border-r border-slate-200 border-b border-slate-200 bg-amber-50/50 text-amber-700", children: "MATERIAL COST" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { colSpan: 2, className: "px-4 py-2 border-r border-slate-200 border-b border-slate-200 bg-indigo-50/50 text-indigo-700", children: "ROUTING COST" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { colSpan: 2, className: "px-4 py-2 border-r border-slate-200 border-b border-slate-200", children: "MANAGEMENT OVERHEAD" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { colSpan: 2, className: "px-4 py-2 border-b border-slate-200 bg-blue-50 text-blue-700", children: "TOTAL COST" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { rowSpan: 2, className: "px-4 py-3 border-l border-slate-200 align-middle bg-slate-100 text-slate-500", children: "AKSI" })
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "overflow-x-auto rounded-xl border border-slate-200 scrollbar-hide shadow-sm bg-white", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("table", { className: "w-full text-left text-xs whitespace-nowrap", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("thead", { className: "bg-slate-100 border-b border-slate-200 text-slate-600 font-extrabold text-[10px] uppercase tracking-widest text-center", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { rowSpan: 2, className: "px-4 py-3 border-r border-slate-200 align-middle sticky left-0 z-10 bg-slate-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]", children: "TYPE" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { colSpan: 2, className: "px-4 py-2 border-r border-slate-200 border-b border-slate-200 text-center", children: "NET CAPACITY CONTAINER" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { colSpan: 2, className: "px-4 py-2 border-r border-slate-200 border-b border-slate-200 bg-amber-50/50 text-amber-700", children: "MATERIAL COST" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { colSpan: 2, className: "px-4 py-2 border-r border-slate-200 border-b border-slate-200 bg-indigo-50/50 text-indigo-700", children: "ROUTING COST" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { colSpan: 2, className: "px-4 py-2 border-r border-slate-200 border-b border-slate-200", children: "MANAGEMENT OVERHEAD" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { colSpan: 2, className: "px-4 py-2 border-b border-slate-200 bg-blue-50 text-blue-700", children: "TOTAL COST" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { rowSpan: 2, className: "px-4 py-3 border-l border-slate-200 align-middle bg-slate-100 text-slate-500", children: "AKSI" })
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { className: "bg-slate-50 text-[9px]", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-4 py-2 border-r border-slate-200 text-center", children: "BOX" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-4 py-2 border-r border-slate-200 text-center", children: "SINGLE FACE" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-4 py-2 border-r border-slate-200 bg-amber-50/30", children: "BOX" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-4 py-2 border-r border-slate-200 bg-amber-50/30", children: "SINGLE FACE" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-4 py-2 border-r border-slate-200 bg-indigo-50/30", children: "BOX" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-4 py-2 border-r border-slate-200 bg-indigo-50/30", children: "SINGLE FACE" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-4 py-2 border-r border-slate-200", children: "BOX" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-4 py-2 border-r border-slate-200", children: "SINGLE FACE" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-4 py-2 border-r border-slate-200 bg-blue-50/50 text-blue-600", children: "BOX" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-4 py-2 bg-blue-50/50 text-blue-600", children: "SINGLE FACE" })
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { className: "bg-slate-50 text-[9px]", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-4 py-2 border-r border-slate-200 text-center", children: "BOX" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-4 py-2 border-r border-slate-200 text-center", children: "SINGLE FACE" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-4 py-2 border-r border-slate-200 bg-amber-50/30", children: "BOX" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-4 py-2 border-r border-slate-200 bg-amber-50/30", children: "SINGLE FACE" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-4 py-2 border-r border-slate-200 bg-indigo-50/30", children: "BOX" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-4 py-2 border-r border-slate-200 bg-indigo-50/30", children: "SINGLE FACE" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-4 py-2 border-r border-slate-200", children: "BOX" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-4 py-2 border-r border-slate-200", children: "SINGLE FACE" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-4 py-2 border-r border-slate-200 bg-blue-50/50 text-blue-600", children: "BOX" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-4 py-2 bg-blue-50/50 text-blue-600", children: "SINGLE FACE" })
                 ] })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("tbody", { className: "font-medium text-slate-700", children: containerCapacity.map((item, index) => {
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("tbody", { className: "font-medium text-slate-700", children: containerCapacity.map((item, index) => {
                 if (item.hidden && !showHiddenContainers) return null;
                 const isPreset = index < CONTAINER_PRESETS.length;
                 const preset = CONTAINER_PRESETS[index];
@@ -28624,105 +29729,105 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
                 const unitSF = isOnePiece ? "m\xB3" : "Pcs";
                 const inputStyles = "w-full min-w-[80px] bg-white border border-slate-200 hover:border-emerald-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 rounded-lg px-3 py-1.5 text-right font-bold text-slate-700 transition-all shadow-sm";
                 const readOnlyCap = "w-full min-w-[80px] bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-right font-bold tabular-nums";
-                return /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { className: `border-b border-slate-100 last:border-b-0 hover:bg-slate-50/80 transition-colors ${item.hidden ? "opacity-60" : ""}`, children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 font-black text-slate-600 bg-slate-50/50 sticky left-0 z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] uppercase text-[11px] tracking-wide whitespace-nowrap", children: isPreset ? /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "px-2", children: item.type }) : /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "text", value: item.type, onChange: (e) => handleContainerCapacityChange(index, "type", e.target.value), className: "w-full bg-transparent focus:outline-none focus:border-blue-400 border-b border-transparent hover:border-slate-300 min-w-[100px] uppercase", placeholder: "Tipe..." }) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-3 py-2 border-r border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center gap-2", children: [
-                    isPreset ? /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: `${readOnlyCap} text-material-700`, title: preset?.containerNetM3 ? `floor(${preset.containerNetM3} m\xB3 \xF7 vol box)` : "Volume box (m\xB3)", children: capsFromFormula?.netCapBox ?? item.netCapBox }) : /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: item.netCapBox ?? 0, onChange: (e) => handleContainerCapacityChange(index, "netCapBox", e.target.value), className: inputStyles, placeholder: "0" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[9px] font-bold text-slate-400 bg-slate-100 px-2 py-1.5 rounded", children: unitBox })
+                return /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { className: `border-b border-slate-100 last:border-b-0 hover:bg-slate-50/80 transition-colors ${item.hidden ? "opacity-60" : ""}`, children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 font-black text-slate-600 bg-slate-50/50 sticky left-0 z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] uppercase text-[11px] tracking-wide whitespace-nowrap", children: isPreset ? /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "px-2", children: item.type }) : /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "text", value: item.type, onChange: (e) => handleContainerCapacityChange(index, "type", e.target.value), className: "w-full bg-transparent focus:outline-none focus:border-blue-400 border-b border-transparent hover:border-slate-300 min-w-[100px] uppercase", placeholder: "Tipe..." }) }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-3 py-2 border-r border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center gap-2", children: [
+                    isPreset ? /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: `${readOnlyCap} text-material-700`, title: preset?.containerNetM3 ? `floor(${preset.containerNetM3} m\xB3 \xF7 vol box)` : "Volume box (m\xB3)", children: capsFromFormula?.netCapBox ?? item.netCapBox }) : /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: item.netCapBox ?? 0, onChange: (e) => handleContainerCapacityChange(index, "netCapBox", e.target.value), className: inputStyles, placeholder: "0" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-[9px] font-bold text-slate-400 bg-slate-100 px-2 py-1.5 rounded", children: unitBox })
                   ] }) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-3 py-2 border-r border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center gap-2", children: [
-                    isPreset ? /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: `${readOnlyCap} text-teal-700`, title: preset?.containerNetM3 ? `floor(${preset.containerNetM3} m\xB3 \xF7 vol SF)` : "Volume SF (m\xB3)", children: capsFromFormula?.netCapSF ?? item.netCapSF }) : /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: item.netCapSF ?? 0, onChange: (e) => handleContainerCapacityChange(index, "netCapSF", e.target.value), className: inputStyles, placeholder: "0" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[9px] font-bold text-slate-400 bg-slate-100 px-2 py-1.5 rounded", children: unitSF })
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-3 py-2 border-r border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center gap-2", children: [
+                    isPreset ? /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: `${readOnlyCap} text-teal-700`, title: preset?.containerNetM3 ? `floor(${preset.containerNetM3} m\xB3 \xF7 vol SF)` : "Volume SF (m\xB3)", children: capsFromFormula?.netCapSF ?? item.netCapSF }) : /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: item.netCapSF ?? 0, onChange: (e) => handleContainerCapacityChange(index, "netCapSF", e.target.value), className: inputStyles, placeholder: "0" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-[9px] font-bold text-slate-400 bg-slate-100 px-2 py-1.5 rounded", children: unitSF })
                   ] }) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-3 py-2 border-r border-slate-100 bg-amber-50/10", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center gap-2", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[9px] font-bold text-amber-600 bg-amber-100 px-2 py-1.5 rounded", children: "Rp" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: item.matCostBox ?? 0, onChange: (e) => handleContainerCapacityChange(index, "matCostBox", e.target.value), className: inputStyles, placeholder: "0" })
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-3 py-2 border-r border-slate-100 bg-amber-50/10", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center gap-2", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-[9px] font-bold text-amber-600 bg-amber-100 px-2 py-1.5 rounded", children: "Rp" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: item.matCostBox ?? 0, onChange: (e) => handleContainerCapacityChange(index, "matCostBox", e.target.value), className: inputStyles, placeholder: "0" })
                   ] }) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-3 py-2 border-r border-slate-100 bg-amber-50/10", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center gap-2", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[9px] font-bold text-amber-600 bg-amber-100 px-2 py-1.5 rounded", children: "Rp" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: item.matCostSF || "", onChange: (e) => handleContainerCapacityChange(index, "matCostSF", e.target.value), className: inputStyles, placeholder: "0" })
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-3 py-2 border-r border-slate-100 bg-amber-50/10", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center gap-2", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-[9px] font-bold text-amber-600 bg-amber-100 px-2 py-1.5 rounded", children: "Rp" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: item.matCostSF || "", onChange: (e) => handleContainerCapacityChange(index, "matCostSF", e.target.value), className: inputStyles, placeholder: "0" })
                   ] }) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-3 py-2 border-r border-slate-100 bg-indigo-50/10", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center gap-2", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[9px] font-bold text-indigo-400 bg-indigo-100 px-2 py-1.5 rounded", children: "Rp" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: item.routCostBox || "", onChange: (e) => handleContainerCapacityChange(index, "routCostBox", e.target.value), className: inputStyles, placeholder: "0" })
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-3 py-2 border-r border-slate-100 bg-indigo-50/10", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center gap-2", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-[9px] font-bold text-indigo-400 bg-indigo-100 px-2 py-1.5 rounded", children: "Rp" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: item.routCostBox || "", onChange: (e) => handleContainerCapacityChange(index, "routCostBox", e.target.value), className: inputStyles, placeholder: "0" })
                   ] }) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-3 py-2 border-r border-slate-100 bg-indigo-50/10", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center gap-2", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[9px] font-bold text-indigo-400 bg-indigo-100 px-2 py-1.5 rounded", children: "Rp" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: item.routCostSF || "", onChange: (e) => handleContainerCapacityChange(index, "routCostSF", e.target.value), className: inputStyles, placeholder: "0" })
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-3 py-2 border-r border-slate-100 bg-indigo-50/10", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center gap-2", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-[9px] font-bold text-indigo-400 bg-indigo-100 px-2 py-1.5 rounded", children: "Rp" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: item.routCostSF || "", onChange: (e) => handleContainerCapacityChange(index, "routCostSF", e.target.value), className: inputStyles, placeholder: "0" })
                   ] }) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-3 py-2 border-r border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center gap-2", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[9px] font-bold text-slate-400 bg-slate-100 px-2 py-1.5 rounded", children: "Rp" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: item.mgtOvBox || "", onChange: (e) => handleContainerCapacityChange(index, "mgtOvBox", e.target.value), className: inputStyles, placeholder: "0" })
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-3 py-2 border-r border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center gap-2", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-[9px] font-bold text-slate-400 bg-slate-100 px-2 py-1.5 rounded", children: "Rp" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: item.mgtOvBox || "", onChange: (e) => handleContainerCapacityChange(index, "mgtOvBox", e.target.value), className: inputStyles, placeholder: "0" })
                   ] }) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-3 py-2 border-r border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center gap-2", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[9px] font-bold text-slate-400 bg-slate-100 px-2 py-1.5 rounded", children: "Rp" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: item.mgtOvSF || "", onChange: (e) => handleContainerCapacityChange(index, "mgtOvSF", e.target.value), className: inputStyles, placeholder: "0" })
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-3 py-2 border-r border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center gap-2", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-[9px] font-bold text-slate-400 bg-slate-100 px-2 py-1.5 rounded", children: "Rp" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: item.mgtOvSF || "", onChange: (e) => handleContainerCapacityChange(index, "mgtOvSF", e.target.value), className: inputStyles, placeholder: "0" })
                   ] }) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 bg-blue-50/40", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center justify-between gap-3 min-w-[95px]", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[9px] font-bold text-blue-400", children: "Rp" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "font-black text-blue-700", children: formatIDR(item.totalBox) })
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 bg-blue-50/40", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center justify-between gap-3 min-w-[95px]", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-[9px] font-bold text-blue-400", children: "Rp" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "font-black text-blue-700", children: formatIDR(item.totalBox) })
                   ] }) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-4 py-3 bg-blue-50/40", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center justify-between gap-3 min-w-[95px]", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[9px] font-bold text-blue-400", children: "Rp" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "font-black text-blue-700", children: formatIDR(item.totalSF) })
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-4 py-3 bg-blue-50/40", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center justify-between gap-3 min-w-[95px]", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-[9px] font-bold text-blue-400", children: "Rp" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "font-black text-blue-700", children: formatIDR(item.totalSF) })
                   ] }) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-4 py-3 border-l border-slate-100 text-center bg-slate-50/30", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center justify-center gap-1", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-4 py-3 border-l border-slate-100 text-center bg-slate-50/30", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center justify-center gap-1", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(
                       "button",
                       {
                         type: "button",
                         onClick: () => toggleContainerHidden(index),
                         className: "p-1.5 text-slate-500 hover:bg-slate-100 rounded border border-transparent hover:border-slate-200",
                         title: item.hidden ? "Tampilkan baris" : "Sembunyikan baris",
-                        children: item.hidden ? /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Eye, { className: "w-4 h-4" }) : /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(EyeOff, { className: "w-4 h-4" })
+                        children: item.hidden ? /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Eye, { className: "w-4 h-4" }) : /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(EyeOff, { className: "w-4 h-4" })
                       }
                     ),
-                    !isPreset && /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("button", { onClick: () => handleDeleteContainer(index), className: "p-1.5 text-red-500 hover:bg-red-50 hover:text-red-700 rounded border border-transparent hover:border-red-100 transition-all shadow-sm", title: "Hapus Kontainer", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Trash2, { className: "w-4 h-4" }) })
+                    !isPreset && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("button", { onClick: () => handleDeleteContainer(index), className: "p-1.5 text-red-500 hover:bg-red-50 hover:text-red-700 rounded border border-transparent hover:border-red-100 transition-all shadow-sm", title: "Hapus Kontainer", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Trash2, { className: "w-4 h-4" }) })
                   ] }) })
                 ] }, index);
               }) })
             ] }) })
           ] })
         ] }),
-        editorTab === "material" && /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "flex-1 overflow-y-auto p-6 md:p-8 bg-page flex flex-col gap-6 scrollbar-hide", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "px-6 py-5 border-b border-slate-100 bg-white", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("h2", { className: "text-lg font-black text-slate-800 flex items-center gap-2", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Grid3x3, { className: "w-5 h-5 text-amber-500" }),
+        editorTab === "material" && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "flex-1 overflow-y-auto p-6 md:p-8 bg-page flex flex-col gap-6 scrollbar-hide", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "px-6 py-5 border-b border-slate-100 bg-white", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("h2", { className: "text-lg font-black text-slate-800 flex items-center gap-2", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Grid3x3, { className: "w-5 h-5 text-amber-500" }),
               " Kebutuhan Material (Daftar Part)"
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("p", { className: "text-xs text-slate-500 mt-1 font-medium", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("p", { className: "text-xs text-slate-500 mt-1 font-medium", children: [
               "Rekapitulasi otomatis dari seluruh komponen dalam struktur BOM yang diidentifikasi sebagai ",
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("strong", { children: "PART" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("strong", { children: "PART" }),
               "."
             ] })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "overflow-x-auto", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("table", { className: "w-full text-left text-xs whitespace-nowrap", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("thead", { className: "bg-slate-50 border-b border-slate-200 text-slate-500 font-extrabold uppercase text-[10px] tracking-wider text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { rowSpan: 2, className: "px-4 py-4 border-r border-slate-100 w-12 border-b border-slate-200 align-middle", children: "NO" }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { rowSpan: 2, className: "px-4 py-4 border-r border-slate-100 w-16 border-b border-slate-200 align-middle", children: "FOTO" }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { rowSpan: 2, className: "px-4 py-4 border-r border-slate-100 text-left border-b border-slate-200 align-middle", children: "KODE MATERIAL" }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { rowSpan: 2, className: "px-4 py-4 border-r border-slate-100 text-left border-b border-slate-200 align-middle", children: "NAMA MATERIAL" }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { rowSpan: 2, className: "px-4 py-4 border-r border-slate-100 text-left border-b border-slate-200 align-middle", children: "VENDOR" }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { rowSpan: 2, className: "px-4 py-4 border-r border-slate-100 text-center border-b border-slate-200 text-amber-600 align-middle", children: "SF (%)" }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { rowSpan: 2, className: "px-4 py-4 border-r border-slate-100 text-center border-b border-slate-200 text-red-500 align-middle", children: "WF (%)" }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { rowSpan: 2, className: "px-4 py-4 border-r border-slate-100 text-center border-b border-slate-200 text-blue-600 align-middle", children: "DIMENSI & VOLUME" }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { rowSpan: 2, className: "px-4 py-4 border-r border-slate-100 text-amber-600 border-b border-slate-200 align-middle", children: "QTY" }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { rowSpan: 2, className: "px-4 py-4 border-r border-slate-100 text-amber-600 border-b border-slate-200 align-middle", children: "UNIT" }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("th", { rowSpan: 2, className: "px-4 py-4 border-r border-slate-100 border-b border-slate-200 text-emerald-600 align-middle min-w-[140px]", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "overflow-x-auto", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("table", { className: "w-full text-left text-xs whitespace-nowrap", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("thead", { className: "bg-slate-50 border-b border-slate-200 text-slate-500 font-extrabold uppercase text-[10px] tracking-wider text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { rowSpan: 2, className: "px-4 py-4 border-r border-slate-100 w-12 border-b border-slate-200 align-middle", children: "NO" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { rowSpan: 2, className: "px-4 py-4 border-r border-slate-100 w-16 border-b border-slate-200 align-middle", children: "FOTO" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { rowSpan: 2, className: "px-4 py-4 border-r border-slate-100 text-left border-b border-slate-200 align-middle", children: "KODE MATERIAL" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { rowSpan: 2, className: "px-4 py-4 border-r border-slate-100 text-left border-b border-slate-200 align-middle", children: "NAMA MATERIAL" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { rowSpan: 2, className: "px-4 py-4 border-r border-slate-100 text-left border-b border-slate-200 align-middle", children: "VENDOR" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { rowSpan: 2, className: "px-4 py-4 border-r border-slate-100 text-center border-b border-slate-200 text-amber-600 align-middle", children: "SF (%)" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { rowSpan: 2, className: "px-4 py-4 border-r border-slate-100 text-center border-b border-slate-200 text-red-500 align-middle", children: "WF (%)" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { rowSpan: 2, className: "px-4 py-4 border-r border-slate-100 text-center border-b border-slate-200 text-blue-600 align-middle", children: "DIMENSI & VOLUME" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { rowSpan: 2, className: "px-4 py-4 border-r border-slate-100 text-amber-600 border-b border-slate-200 align-middle", children: "QTY" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { rowSpan: 2, className: "px-4 py-4 border-r border-slate-100 text-amber-600 border-b border-slate-200 align-middle", children: "UNIT" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("th", { rowSpan: 2, className: "px-4 py-4 border-r border-slate-100 border-b border-slate-200 text-emerald-600 align-middle min-w-[140px]", children: [
                 "HARGA BELI (",
                 priceDisplay,
                 ")"
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("th", { rowSpan: 2, className: "px-4 py-4 border-r border-slate-100 border-b border-slate-200 text-indigo-600 align-middle min-w-[140px]", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("th", { rowSpan: 2, className: "px-4 py-4 border-r border-slate-100 border-b border-slate-200 text-indigo-600 align-middle min-w-[140px]", children: [
                 "HARGA PRODUKSI (",
                 priceDisplay,
                 ")"
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { rowSpan: 2, className: "px-4 py-4 border-r border-slate-100 border-b border-slate-200 align-middle", children: "STOCK GUDANG" }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { rowSpan: 2, className: "px-4 py-4 border-r border-slate-100 border-b border-slate-200 align-middle", children: "STATUS" }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { rowSpan: 2, className: "px-4 py-4 w-16 border-b border-slate-200 align-middle", children: "ACTION" })
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { rowSpan: 2, className: "px-4 py-4 border-r border-slate-100 border-b border-slate-200 align-middle", children: "STOCK GUDANG" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { rowSpan: 2, className: "px-4 py-4 border-r border-slate-100 border-b border-slate-200 align-middle", children: "STATUS" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { rowSpan: 2, className: "px-4 py-4 w-16 border-b border-slate-200 align-middle", children: "ACTION" })
             ] }) }),
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("tbody", { className: "font-medium text-slate-700 divide-y divide-slate-100", children: flatNodes.filter((n) => n.data.tipe === "PART").map((node, i) => {
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("tbody", { className: "font-medium text-slate-700 divide-y divide-slate-100", children: flatNodes.filter((n) => n.data.tipe === "PART").map((node, i) => {
               const d = node.data;
               const hargaBeliIDR = d.biaya || 0;
               const sf = Number(d.sf) || 0;
@@ -28732,19 +29837,19 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
                 totalProcess += calcProsesCosts(p).total;
               });
               const hargaProduksiIDR = hargaBeliIDR * (d.qty || 1) * (1 + sf / 100 + wf / 100) + totalProcess;
-              return /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { className: "hover:bg-slate-50 transition-colors", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-4 py-3 text-center border-r border-slate-100 text-slate-400 font-bold", children: i + 1 }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "w-8 h-8 rounded border border-slate-200 overflow-hidden bg-slate-50 flex items-center justify-center mx-auto", children: d.foto ? /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("img", { src: d.foto, alt: "pic", className: "w-full h-full object-cover" }) : /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Image, { className: "w-4 h-4 text-slate-300" }) }) }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 font-mono text-slate-500", children: d.kode }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 font-black text-slate-700", children: d.nama }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-4 py-3 border-r border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(
+              return /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { className: "hover:bg-slate-50 transition-colors", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-4 py-3 text-center border-r border-slate-100 text-slate-400 font-bold", children: i + 1 }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "w-8 h-8 rounded border border-slate-200 overflow-hidden bg-slate-50 flex items-center justify-center mx-auto", children: d.foto ? /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("img", { src: d.foto, alt: "pic", className: "w-full h-full object-cover" }) : /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Image, { className: "w-4 h-4 text-slate-300" }) }) }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 font-mono text-slate-500", children: d.kode }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 font-black text-slate-700", children: d.nama }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-4 py-3 border-r border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(
                   VendorField,
                   {
                     value: d.vendor || "",
                     onChange: (val) => handleUpdateNode(node.id, "vendor", val)
                   }
                 ) }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(
                   "input",
                   {
                     type: "number",
@@ -28753,7 +29858,7 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
                     className: "w-14 text-center border border-amber-200 text-amber-700 bg-amber-50 rounded px-1 py-1 text-xs font-bold outline-none focus:border-amber-400"
                   }
                 ) }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(
                   "input",
                   {
                     type: "number",
@@ -28762,194 +29867,194 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
                     className: "w-14 text-center border border-red-200 text-red-600 bg-red-50 rounded px-1 py-1 text-xs font-bold outline-none focus:border-red-400"
                   }
                 ) }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-4 py-3 border-r border-slate-100 text-center bg-blue-50/10", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "font-bold text-slate-700 text-[10px]", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-4 py-3 border-r border-slate-100 text-center bg-blue-50/10", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "font-bold text-slate-700 text-[10px]", children: [
                     d.p || 0,
                     " x ",
                     d.l || 0,
                     " x ",
                     d.t || 0
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "text-[10px] font-black text-blue-600 mt-0.5", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "text-[10px] font-black text-blue-600 mt-0.5", children: [
                     d.vol,
                     " m\xB3"
                   ] })
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 text-center font-black text-amber-600 bg-amber-50/20", children: d.qty }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 text-center font-bold text-slate-600 uppercase text-[10px]", children: d.unit || "EA" }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: `px-4 py-3 border-r border-slate-100 text-right font-bold ${priceDisplay === "IDR" ? "text-emerald-700" : priceDisplay === "USD" ? "text-amber-600" : "text-brand-600"}`, children: fp(hargaBeliIDR) }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: `px-4 py-3 border-r border-slate-100 text-right font-black bg-indigo-50/10 ${priceDisplay === "IDR" ? "text-indigo-700" : priceDisplay === "USD" ? "text-amber-600" : "text-brand-600"}`, children: fp(hargaProduksiIDR) }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "text", defaultValue: "0", className: "w-12 text-center border border-slate-200 rounded px-1 py-1 outline-none focus:border-blue-400 font-bold text-slate-600" }) }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "inline-flex items-center gap-1 bg-amber-50 text-amber-600 border border-amber-200 px-2 py-1 rounded text-[9px] font-black tracking-wider uppercase", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(TriangleAlert, { className: "w-3 h-3" }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 text-center font-black text-amber-600 bg-amber-50/20", children: d.qty }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 text-center font-bold text-slate-600 uppercase text-[10px]", children: d.unit || "EA" }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: `px-4 py-3 border-r border-slate-100 text-right font-bold ${priceDisplay === "IDR" ? "text-emerald-700" : priceDisplay === "USD" ? "text-amber-600" : "text-brand-600"}`, children: fp(hargaBeliIDR) }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: `px-4 py-3 border-r border-slate-100 text-right font-black bg-indigo-50/10 ${priceDisplay === "IDR" ? "text-indigo-700" : priceDisplay === "USD" ? "text-amber-600" : "text-brand-600"}`, children: fp(hargaProduksiIDR) }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "text", defaultValue: "0", className: "w-12 text-center border border-slate-200 rounded px-1 py-1 outline-none focus:border-blue-400 font-bold text-slate-600" }) }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "inline-flex items-center gap-1 bg-amber-50 text-amber-600 border border-amber-200 px-2 py-1 rounded text-[9px] font-black tracking-wider uppercase", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(TriangleAlert, { className: "w-3 h-3" }),
                   " WAITING"
                 ] }) }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-4 py-3 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("button", { className: "p-1.5 text-red-400 bg-red-50 hover:bg-red-100 hover:text-red-600 border border-red-100 rounded transition-colors mx-auto block", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Trash2, { className: "w-3.5 h-3.5" }) }) })
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-4 py-3 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("button", { className: "p-1.5 text-red-400 bg-red-50 hover:bg-red-100 hover:text-red-600 border border-red-100 rounded transition-colors mx-auto block", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Trash2, { className: "w-3.5 h-3.5" }) }) })
               ] }, node.id);
             }) })
           ] }) })
         ] }) }),
-        editorTab === "proses" && /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex-1 overflow-y-auto p-6 md:p-8 bg-page flex flex-col gap-6 scrollbar-hide", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "px-6 py-4 border-b border-slate-100 bg-white flex justify-between items-center", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("h3", { className: "text-sm font-black text-slate-800 flex items-center gap-2", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(ChartPie, { className: "w-4 h-4 text-indigo-500" }),
+        editorTab === "proses" && /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex-1 overflow-y-auto p-6 md:p-8 bg-page flex flex-col gap-6 scrollbar-hide", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "px-6 py-4 border-b border-slate-100 bg-white flex justify-between items-center", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("h3", { className: "text-sm font-black text-slate-800 flex items-center gap-2", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(ChartPie, { className: "w-4 h-4 text-indigo-500" }),
                 " Tabel Rekapitulasi Manufaktur"
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center gap-2 bg-indigo-50 border border-indigo-100 px-3 py-1.5 rounded-lg shadow-sm", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[9px] font-black text-indigo-400 uppercase tracking-widest", children: "Grand Total Operasional:" }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "text-sm font-black text-indigo-700", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center gap-2 bg-indigo-50 border border-indigo-100 px-3 py-1.5 rounded-lg shadow-sm", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-[9px] font-black text-indigo-400 uppercase tracking-widest", children: "Grand Total Operasional:" }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "text-sm font-black text-indigo-700", children: [
                   "Rp ",
                   formatIDR(prosesSummary.grandTotal)
                 ] })
               ] })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "overflow-x-auto", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("table", { className: "w-full text-left text-xs whitespace-nowrap", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("thead", { className: "bg-slate-50 border-b border-slate-200 text-slate-500 font-extrabold uppercase text-[9px] tracking-wider text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-4 py-3 border-r border-slate-100 w-12", children: "NO" }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-4 py-3 border-r border-slate-100 text-left", children: "KATEGORI MANUFAKTUR" }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-4 py-3 border-r border-slate-100", children: "TOTAL OPERASI" }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-4 py-3 border-r border-slate-100 text-blue-600", children: "TOTAL DURASI" }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-4 py-3 border-r border-slate-100 text-right", children: "SUBTOTAL WORK CENTER" }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-4 py-3 border-r border-slate-100 text-right", children: "SUBTOTAL MAN POWER" }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-4 py-3 text-right text-indigo-600", children: "TOTAL BIAYA (IDR)" })
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "overflow-x-auto", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("table", { className: "w-full text-left text-xs whitespace-nowrap", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("thead", { className: "bg-slate-50 border-b border-slate-200 text-slate-500 font-extrabold uppercase text-[9px] tracking-wider text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-4 py-3 border-r border-slate-100 w-12", children: "NO" }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-4 py-3 border-r border-slate-100 text-left", children: "KATEGORI MANUFAKTUR" }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-4 py-3 border-r border-slate-100", children: "TOTAL OPERASI" }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-4 py-3 border-r border-slate-100 text-blue-600", children: "TOTAL DURASI" }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-4 py-3 border-r border-slate-100 text-right", children: "SUBTOTAL WORK CENTER" }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-4 py-3 border-r border-slate-100 text-right", children: "SUBTOTAL MAN POWER" }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-4 py-3 text-right text-indigo-600", children: "TOTAL BIAYA (IDR)" })
               ] }) }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("tbody", { className: "font-medium text-slate-700 divide-y divide-slate-100", children: prosesSummary.items.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("tr", { children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { colSpan: 7, className: "px-6 py-8 text-center text-slate-400 text-xs italic", children: "Belum ada operasi manufaktur \u2014 tambahkan proses pada part di tab Struktur atau buka Routing." }) }) : prosesSummary.items.map((item, i) => /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { className: "hover:bg-slate-50 transition-colors", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-4 py-3 text-center border-r border-slate-100 text-slate-400 font-bold", children: i + 1 }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 font-black text-slate-800", children: item.name }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "bg-slate-100 border border-slate-200 px-2 py-0.5 rounded text-[10px] font-bold text-slate-500", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("tbody", { className: "font-medium text-slate-700 divide-y divide-slate-100", children: prosesSummary.items.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("tr", { children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { colSpan: 7, className: "px-6 py-8 text-center text-slate-400 text-xs italic", children: "Belum ada operasi manufaktur \u2014 tambahkan proses pada part di tab Struktur atau buka Routing." }) }) : prosesSummary.items.map((item, i) => /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { className: "hover:bg-slate-50 transition-colors", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-4 py-3 text-center border-r border-slate-100 text-slate-400 font-bold", children: i + 1 }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 font-black text-slate-800", children: item.name }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "bg-slate-100 border border-slate-200 px-2 py-0.5 rounded text-[10px] font-bold text-slate-500", children: [
                   item.count,
                   " Proses"
                 ] }) }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-4 py-3 border-r border-slate-100 text-center font-black text-blue-600", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-4 py-3 border-r border-slate-100 text-center font-black text-blue-600", children: [
                   item.waktu,
                   " Min"
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-700", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-700", children: [
                   "Rp ",
                   formatIDR(item.mesin)
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-700", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-700", children: [
                   "Rp ",
                   formatIDR(item.pekerja)
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-4 py-3 text-right font-black text-indigo-700 bg-indigo-50/20", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-4 py-3 text-right font-black text-indigo-700 bg-indigo-50/20", children: [
                   "Rp ",
                   formatIDR(item.total)
                 ] })
               ] }, item.name)) }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("tfoot", { className: "bg-slate-50 border-t-2 border-slate-200", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { colSpan: 3, className: "px-4 py-3 text-right font-black text-slate-700 uppercase tracking-widest text-[10px]", children: "AKUMULASI TOTAL:" }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-4 py-3 text-center font-black text-blue-600", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("tfoot", { className: "bg-slate-50 border-t-2 border-slate-200", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { colSpan: 3, className: "px-4 py-3 text-right font-black text-slate-700 uppercase tracking-widest text-[10px]", children: "AKUMULASI TOTAL:" }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-4 py-3 text-center font-black text-blue-600", children: [
                   prosesSummary.totalWaktu,
                   " Min"
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-4 py-3 text-right font-black text-slate-800", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-4 py-3 text-right font-black text-slate-800", children: [
                   "Rp ",
                   formatIDR(prosesSummary.totalMesin)
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-4 py-3 text-right font-black text-slate-800", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-4 py-3 text-right font-black text-slate-800", children: [
                   "Rp ",
                   formatIDR(prosesSummary.totalPekerja)
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-4 py-3 text-right font-black text-indigo-700", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-4 py-3 text-right font-black text-indigo-700", children: [
                   "Rp ",
                   formatIDR(prosesSummary.grandTotal)
                 ] })
               ] }) })
             ] }) })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "grid grid-cols-1 xl:grid-cols-2 gap-4", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "px-4 py-3 border-b border-slate-100 bg-blue-50/40", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("h3", { className: "text-xs font-black text-slate-800 flex items-center gap-2", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Server, { className: "w-4 h-4 text-blue-500" }),
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "grid grid-cols-1 xl:grid-cols-2 gap-4", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "px-4 py-3 border-b border-slate-100 bg-blue-50/40", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("h3", { className: "text-xs font-black text-slate-800 flex items-center gap-2", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Server, { className: "w-4 h-4 text-blue-500" }),
                 " Detail Work Center (Mesin)"
               ] }) }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "p-3", children: allProses.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("p", { className: "text-xs text-slate-400 italic text-center py-6", children: "Tidak ada data operasi." }) : /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "grid grid-cols-1 gap-2", children: allProses.map((p, i) => {
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "p-3", children: allProses.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("p", { className: "text-xs text-slate-400 italic text-center py-6", children: "Tidak ada data operasi." }) : /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "grid grid-cols-1 gap-2", children: allProses.map((p, i) => {
                 const { waktu, mesin: biayaMesin } = calcProsesCosts(p);
-                return /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "grid grid-cols-[24px_1fr_auto_auto] gap-2 items-center bg-slate-50 border border-slate-100 rounded-lg px-3 py-2 text-[10px]", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "font-black text-slate-400", children: i + 1 }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "min-w-0", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "font-bold text-slate-800 truncate", children: p.nama }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "text-[9px] text-slate-500 truncate", children: [
+                return /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "grid grid-cols-[24px_1fr_auto_auto] gap-2 items-center bg-slate-50 border border-slate-100 rounded-lg px-3 py-2 text-[10px]", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "font-black text-slate-400", children: i + 1 }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "min-w-0", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "font-bold text-slate-800 truncate", children: p.nama }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "text-[9px] text-slate-500 truncate", children: [
                       p.nodeNama,
                       " \xB7 ",
                       p.mfgProcess || "-"
                     ] })
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "font-black text-blue-600 whitespace-nowrap", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "font-black text-blue-600 whitespace-nowrap", children: [
                     waktu,
                     " mnt"
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "font-black text-indigo-700 whitespace-nowrap", children: fp(biayaMesin) })
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "font-black text-indigo-700 whitespace-nowrap", children: fp(biayaMesin) })
                 ] }, `wc-${i}`);
               }) }) })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "px-4 py-3 border-b border-slate-100 bg-emerald-50/40", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("h3", { className: "text-xs font-black text-slate-800 flex items-center gap-2", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Users, { className: "w-4 h-4 text-emerald-500" }),
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "px-4 py-3 border-b border-slate-100 bg-emerald-50/40", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("h3", { className: "text-xs font-black text-slate-800 flex items-center gap-2", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Users, { className: "w-4 h-4 text-emerald-500" }),
                 " Detail Man Power (Pekerja)"
               ] }) }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "p-3", children: allProses.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("p", { className: "text-xs text-slate-400 italic text-center py-6", children: "Tidak ada data operasi." }) : /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "grid grid-cols-1 gap-2", children: allProses.map((p, i) => {
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "p-3", children: allProses.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("p", { className: "text-xs text-slate-400 italic text-center py-6", children: "Tidak ada data operasi." }) : /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "grid grid-cols-1 gap-2", children: allProses.map((p, i) => {
                 const { waktu, person, pekerja: biayaPekerja } = calcProsesCosts(p);
-                return /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "grid grid-cols-[24px_1fr_auto_auto] gap-2 items-center bg-slate-50 border border-slate-100 rounded-lg px-3 py-2 text-[10px]", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "font-black text-slate-400", children: i + 1 }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "min-w-0", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "font-bold text-slate-800 truncate", children: p.nama }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "text-[9px] text-slate-500 truncate", children: [
+                return /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "grid grid-cols-[24px_1fr_auto_auto] gap-2 items-center bg-slate-50 border border-slate-100 rounded-lg px-3 py-2 text-[10px]", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "font-black text-slate-400", children: i + 1 }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "min-w-0", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "font-bold text-slate-800 truncate", children: p.nama }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "text-[9px] text-slate-500 truncate", children: [
                       p.nodeNama,
                       " \xB7 ",
                       person,
                       " org"
                     ] })
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "font-black text-blue-600 whitespace-nowrap", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "font-black text-blue-600 whitespace-nowrap", children: [
                     waktu,
                     " mnt"
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "font-black text-emerald-700 whitespace-nowrap", children: fp(biayaPekerja) })
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "font-black text-emerald-700 whitespace-nowrap", children: fp(biayaPekerja) })
                 ] }, `mp-${i}`);
               }) }) })
             ] })
           ] })
         ] }),
-        editorTab === "summary" && /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex-1 overflow-y-auto bg-slate-50 flex flex-col scrollbar-hide", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "px-8 py-5 border-b border-slate-200 bg-white shrink-0 shadow-sm z-10 sticky top-0", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("h2", { className: "text-lg font-black text-slate-800 flex items-center gap-2", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Calculator, { className: "w-5 h-5 text-blue-600" }),
+        editorTab === "summary" && /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex-1 overflow-y-auto bg-slate-50 flex flex-col scrollbar-hide", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "px-8 py-5 border-b border-slate-200 bg-white shrink-0 shadow-sm z-10 sticky top-0", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("h2", { className: "text-lg font-black text-slate-800 flex items-center gap-2", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Calculator, { className: "w-5 h-5 text-blue-600" }),
               " Summary Kalkulasi Terpadu"
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("p", { className: "text-xs text-slate-500 mt-1 font-medium", children: "Rangkuman lengkap struktur hierarki, spesifikasi dimensi, harga material, faktor penyesuaian (SF & WF), dan rincian biaya operasi manufaktur per komponen." })
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("p", { className: "text-xs text-slate-500 mt-1 font-medium", children: "Rangkuman lengkap struktur hierarki, spesifikasi dimensi, harga material, faktor penyesuaian (SF & WF), dan rincian biaya operasi manufaktur per komponen." })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "px-8 py-4 bg-white border-b border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-4 shrink-0", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "rounded-xl border border-emerald-100 bg-emerald-50/50 p-4", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[9px] font-bold text-emerald-600 uppercase tracking-widest", children: "Total Material" }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("p", { className: "text-lg font-black text-emerald-800 mt-1", children: fp(summaryTotals.material) })
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "px-8 py-4 bg-white border-b border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-4 shrink-0", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "rounded-xl border border-emerald-100 bg-emerald-50/50 p-4", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-[9px] font-bold text-emerald-600 uppercase tracking-widest", children: "Total Material" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("p", { className: "text-lg font-black text-emerald-800 mt-1", children: fp(summaryTotals.material) })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "rounded-xl border border-indigo-100 bg-indigo-50/50 p-4", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[9px] font-bold text-indigo-600 uppercase tracking-widest", children: "Total Proses" }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("p", { className: "text-lg font-black text-indigo-800 mt-1", children: fp(summaryTotals.process) })
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "rounded-xl border border-indigo-100 bg-indigo-50/50 p-4", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-[9px] font-bold text-indigo-600 uppercase tracking-widest", children: "Total Proses" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("p", { className: "text-lg font-black text-indigo-800 mt-1", children: fp(summaryTotals.process) })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "rounded-xl border border-brand-200 bg-brand-50/50 p-4", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[9px] font-bold text-brand-600 uppercase tracking-widest", children: "Total Biaya Produksi" }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("p", { className: "text-xl font-black text-brand-800 mt-1", children: fp(summaryTotals.production) })
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "rounded-xl border border-brand-200 bg-brand-50/50 p-4", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-[9px] font-bold text-brand-600 uppercase tracking-widest", children: "Total Biaya Produksi" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("p", { className: "text-xl font-black text-brand-800 mt-1", children: fp(summaryTotals.production) })
             ] })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "overflow-x-auto", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("table", { className: "w-full text-left text-xs whitespace-nowrap border-collapse", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("thead", { className: "bg-slate-100 border-b-2 border-slate-200 text-slate-500 font-extrabold uppercase text-[9px] tracking-widest text-center sticky top-0 z-10 shadow-sm", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-4 py-4 border-r border-slate-200 w-12", children: "REF" }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-4 py-4 border-r border-slate-200 text-left min-w-[200px]", children: "HIERARKI & NAMA KOMPONEN" }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-4 py-4 border-r border-slate-200 text-left", children: "KODE MATERIAL" }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-4 py-4 border-r border-slate-200 w-16", children: "QTY" }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-4 py-4 border-r border-slate-200", children: "DIMENSI (W X D X H)" }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-4 py-4 border-r border-slate-200", children: "VOLUME" }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-4 py-4 border-r border-slate-200 text-amber-600", children: "SAFETY FACTOR (%)" }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-4 py-4 border-r border-slate-200 text-red-500", children: "WASTE FACTOR (%)" }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-4 py-4 border-r border-slate-200 text-right", children: "HARGA PART (IDR)" }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-4 py-4 border-r border-slate-200 text-left min-w-[500px]", children: "RINCIAN OPERASI PRODUKSI" }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-4 py-4 text-right text-indigo-700 bg-indigo-50/50 min-w-[120px]", children: "TOTAL BIAYA (IDR)" })
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "overflow-x-auto", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("table", { className: "w-full text-left text-xs whitespace-nowrap border-collapse", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("thead", { className: "bg-slate-100 border-b-2 border-slate-200 text-slate-500 font-extrabold uppercase text-[9px] tracking-widest text-center sticky top-0 z-10 shadow-sm", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-4 py-4 border-r border-slate-200 w-12", children: "REF" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-4 py-4 border-r border-slate-200 text-left min-w-[200px]", children: "HIERARKI & NAMA KOMPONEN" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-4 py-4 border-r border-slate-200 text-left", children: "KODE MATERIAL" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-4 py-4 border-r border-slate-200 w-16", children: "QTY" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-4 py-4 border-r border-slate-200", children: "DIMENSI (W X D X H)" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-4 py-4 border-r border-slate-200", children: "VOLUME" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-4 py-4 border-r border-slate-200 text-amber-600", children: "SAFETY FACTOR (%)" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-4 py-4 border-r border-slate-200 text-red-500", children: "WASTE FACTOR (%)" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-4 py-4 border-r border-slate-200 text-right", children: "HARGA PART (IDR)" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-4 py-4 border-r border-slate-200 text-left min-w-[640px]", children: "RINCIAN OPERASI PRODUKSI" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-4 py-4 text-right text-indigo-700 bg-indigo-50/50 min-w-[120px]", children: "TOTAL BIAYA (IDR)" })
             ] }) }),
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("tbody", { className: "divide-y divide-slate-200 bg-white", children: flatNodes.map((node) => {
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("tbody", { className: "divide-y divide-slate-200 bg-white", children: flatNodes.map((node) => {
               const d = node.data;
               const style = tipeStyles[d.tipe] || tipeStyles.PART;
               const sf = Number(d.sf) || 0;
@@ -28959,117 +30064,128 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
               let totalOpWaktu = 0;
               let totalOpMesin = 0;
               let totalOpPekerja = 0;
-              if (d.proses && d.proses.length > 0) {
-                d.proses.forEach((p) => {
-                  const c = calcProsesCosts(p);
-                  totalOpWaktu += c.waktu;
-                  totalOpMesin += c.mesin;
-                  totalOpPekerja += c.pekerja;
-                });
-              } else if (d.proses_count > 0) {
+              expandProsesList2(d).forEach((p) => {
+                const c = calcProsesCosts(p);
+                totalOpWaktu += c.waktu;
+                totalOpMesin += c.mesin;
+                totalOpPekerja += c.pekerja;
+              });
+              if (!expandProsesList2(d).length && d.proses_count > 0) {
                 totalOpMesin = d.proses_count * 11e4;
               }
               const totalOpCost = totalOpMesin + totalOpPekerja;
               const grandTotalRow = adjustedMatCost + totalOpCost;
-              return /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { className: "hover:bg-slate-50/50 transition-colors align-top", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-4 py-4 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("button", { onClick: () => setDetailSummaryNode(node), className: "p-1.5 bg-slate-100 hover:bg-blue-100 text-slate-400 hover:text-blue-600 rounded transition-colors", title: "Lihat Detail Summary", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(QrCode, { className: "w-4 h-4" }) }) }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-4 py-4 border-r border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "flex items-start", style: { paddingLeft: `${node.level * 16}px` }, children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex flex-col gap-1", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: `inline-block px-1.5 py-0.5 rounded text-[8px] font-black tracking-wider uppercase border w-max ${style.pill}`, children: d.tipe }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "font-black text-slate-800 text-sm whitespace-normal leading-tight", children: d.nama })
+              return /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { className: "hover:bg-slate-50/50 transition-colors align-top", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-4 py-4 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("button", { onClick: () => setDetailSummaryNode(node), className: "p-1.5 bg-slate-100 hover:bg-blue-100 text-slate-400 hover:text-blue-600 rounded transition-colors", title: "Lihat Detail Summary", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(QrCode, { className: "w-4 h-4" }) }) }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-4 py-4 border-r border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "flex items-start", style: { paddingLeft: `${node.level * 16}px` }, children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex flex-col gap-1", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: `inline-block px-1.5 py-0.5 rounded text-[8px] font-black tracking-wider uppercase border w-max ${style.pill}`, children: d.tipe }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "font-black text-slate-800 text-sm whitespace-normal leading-tight", children: d.nama })
                 ] }) }) }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-4 py-4 border-r border-slate-100 font-mono text-slate-500", children: d.kode }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-4 py-4 border-r border-slate-100 text-center font-black text-slate-700", children: d.qty }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-4 py-4 border-r border-slate-100 text-center text-slate-600 font-bold", children: d.p && d.l && d.t ? `${d.p} x ${d.l} x ${d.t}` : "0 x 0 x 0" }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-4 py-4 border-r border-slate-100 text-center font-bold text-blue-600 bg-blue-50/10", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-4 py-4 border-r border-slate-100 font-mono text-slate-500", children: d.kode }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-4 py-4 border-r border-slate-100 text-center font-black text-slate-700", children: d.qty }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-4 py-4 border-r border-slate-100 text-center text-slate-600 font-bold", children: d.p && d.l && d.t ? `${d.p} x ${d.l} x ${d.t}` : "0 x 0 x 0" }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-4 py-4 border-r border-slate-100 text-center font-bold text-blue-600 bg-blue-50/10", children: [
                   d.vol,
                   " m\xB3"
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-4 py-4 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: sf, onChange: (e) => handleUpdateNode(node.id, "sf", e.target.value), className: "w-14 text-center border border-amber-200 text-amber-700 bg-amber-50 rounded px-1 py-1 outline-none focus:border-amber-400 font-bold text-xs" }) }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-4 py-4 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: wf, onChange: (e) => handleUpdateNode(node.id, "wf", e.target.value), className: "w-14 text-center border border-red-200 text-red-600 bg-red-50 rounded px-1 py-1 outline-none focus:border-red-400 font-bold text-xs" }) }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-4 py-4 border-r border-slate-100 text-right font-bold text-slate-800", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-4 py-4 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: sf, onChange: (e) => handleUpdateNode(node.id, "sf", e.target.value), className: "w-14 text-center border border-amber-200 text-amber-700 bg-amber-50 rounded px-1 py-1 outline-none focus:border-amber-400 font-bold text-xs" }) }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-4 py-4 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: wf, onChange: (e) => handleUpdateNode(node.id, "wf", e.target.value), className: "w-14 text-center border border-red-200 text-red-600 bg-red-50 rounded px-1 py-1 outline-none focus:border-red-400 font-bold text-xs" }) }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-4 py-4 border-r border-slate-100 text-right font-bold text-slate-800", children: [
                   "Rp ",
                   formatIDR(d.biaya || 0)
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "p-0 border-r border-slate-100 align-top bg-slate-50/30", children: d.proses && d.proses.length > 0 ? /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "w-full", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("table", { className: "w-full text-left text-[9px]", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("thead", { className: "bg-slate-100 border-b border-slate-200 text-slate-500 font-bold", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-3 py-2 text-center w-16 border-r border-slate-200", children: "Visual Posisi" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-3 py-2 border-r border-slate-200", children: "Tahap & Nama Operasi" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-3 py-2 text-center border-r border-slate-200 w-20", children: "Durasi Waktu" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-3 py-2 text-right border-r border-slate-200 w-32", children: "Work Center (Mesin)" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-3 py-2 text-right border-r border-slate-200 w-32", children: "Man Power (Pekerja)" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-3 py-2 text-right w-24", children: "Subtotal" })
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "p-0 border-r border-slate-100 align-top bg-slate-50/30", children: expandProsesList2(d).length > 0 ? /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "w-full", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("table", { className: "w-full text-left text-[9px]", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("thead", { className: "bg-slate-100 border-b border-slate-200 text-slate-500 font-bold", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-3 py-2 text-center w-16 border-r border-slate-200", children: "Visual Posisi" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-3 py-2 text-center border-r border-slate-200 w-20", children: "Proses" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-3 py-2 border-r border-slate-200 min-w-[120px]", children: "Tahap & Nama Operasi" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-3 py-2 text-center border-r border-slate-200 w-20", children: "Durasi Waktu" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-3 py-2 text-right border-r border-slate-200 w-28", children: "Work Center (Mesin)" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-3 py-2 text-right border-r border-slate-200 w-28", children: "Jumlah Pekerja & Biaya" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-3 py-2 border-r border-slate-200 min-w-[11rem] text-left", children: "Detail" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-3 py-2 text-right w-24", children: "Subtotal" })
                   ] }) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("tbody", { className: "divide-y divide-slate-100", children: d.proses.map((p, idx) => {
-                    const { waktu: w, person, mesin: bMesin, pekerja: bPekerja, rate } = calcProsesCosts(p);
-                    return /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { className: "bg-white hover:bg-blue-50/30", children: [
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-3 py-2 border-r border-slate-100 text-center", children: [
-                        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "w-8 h-8 rounded border border-slate-200 mx-auto overflow-hidden bg-slate-50 mb-1", children: p.gambar ? /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("img", { src: p.gambar, alt: "posisi", className: "w-full h-full object-cover" }) : /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Image, { className: "w-3 h-3 text-slate-300 mx-auto mt-2.5" }) }),
-                        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[7px] font-black uppercase text-indigo-600 tracking-widest", children: p.posisiOperasi || "-" })
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("tbody", { className: "divide-y divide-slate-100", children: expandProsesList2(d).map((p, idx) => {
+                    const { waktu: w, person, mesin: bMesin, pekerja: bPekerja, rate, ratePekerja } = calcProsesCosts(p);
+                    const rowSubtotal = bMesin + bPekerja;
+                    return /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { className: "bg-white hover:bg-blue-50/30", children: [
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-3 py-2 border-r border-slate-100 text-center", children: [
+                        /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "w-8 h-8 rounded border border-slate-200 mx-auto overflow-hidden bg-slate-50 mb-1", children: p.gambar ? /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("img", { src: p.gambar, alt: "posisi", className: "w-full h-full object-cover" }) : /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Image, { className: "w-3 h-3 text-slate-300 mx-auto mt-2.5" }) }),
+                        /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-[7px] font-black uppercase text-indigo-600 tracking-widest", children: p.posisiOperasi || "-" })
                       ] }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-3 py-2 border-r border-slate-100", children: [
-                        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "font-bold text-slate-800 text-[10px] mb-0.5", children: p.nama }),
-                        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "text-[8px] font-bold text-slate-400 bg-slate-100 inline-block px-1.5 py-0.5 rounded", children: p.mfgProcess || "-" })
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-3 py-2 border-r border-slate-100 text-center align-middle", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "inline-block text-[8px] font-black uppercase tracking-wide text-violet-700 bg-violet-50 border border-violet-100 px-1.5 py-0.5 rounded whitespace-nowrap", children: prosesTypeLabel(p) }) }),
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-3 py-2 border-r border-slate-100", children: [
+                        /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "font-bold text-slate-800 text-[10px] mb-0.5 flex flex-wrap items-center gap-1", children: [
+                          p.nama,
+                          p.inputMode === "routing" && /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "text-[7px] font-black uppercase px-1 py-px rounded bg-indigo-100 text-indigo-700 border border-indigo-200", children: [
+                            "RT",
+                            p.routingSteps?.length ? ` \xB7 ${p.routingSteps.length}` : ""
+                          ] })
+                        ] }),
+                        /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "text-[8px] font-bold text-slate-400 bg-slate-100 inline-block px-1.5 py-0.5 rounded", children: p.mfgProcess || "-" })
                       ] }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-3 py-2 border-r border-slate-100 text-center font-black text-blue-600", children: [
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-3 py-2 border-r border-slate-100 text-center font-black text-blue-600", children: [
                         w,
                         " Min"
                       ] }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-3 py-2 border-r border-slate-100 text-right", children: [
-                        /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "text-[7px] text-slate-400 mb-0.5", children: [
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-3 py-2 border-r border-slate-100 text-right", children: [
+                        /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "text-[7px] text-slate-400 mb-0.5", children: [
                           "Rate: Rp ",
                           formatIDR(rate),
                           " / mnt"
                         ] }),
-                        /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "font-bold text-slate-700 text-[10px]", children: [
+                        /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "font-bold text-slate-700 text-[10px]", children: [
                           "Rp ",
                           formatIDR(bMesin)
                         ] })
                       ] }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-3 py-2 border-r border-slate-100 text-right", children: [
-                        /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "text-[7px] text-slate-400 mb-0.5 flex justify-end gap-1", children: [
-                          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "font-black text-amber-600", children: [
-                            person,
-                            " Org"
-                          ] }),
-                          " @ Rp ",
-                          formatIDR(LABOR_RATE_PER_MIN),
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-3 py-2 border-r border-slate-100 text-right", children: [
+                        /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "font-black text-amber-600 text-[10px]", children: [
+                          person,
+                          " org"
+                        ] }),
+                        /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "text-[7px] text-slate-400 mt-0.5", children: [
+                          "@ Rp ",
+                          formatIDR(ratePekerja || LABOR_RATE_PER_MIN),
                           " / mnt"
                         ] }),
-                        /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "font-bold text-slate-700 text-[10px]", children: [
+                        /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "font-bold text-emerald-700 text-[10px] mt-0.5", children: [
                           "Rp ",
                           formatIDR(bPekerja)
                         ] })
                       ] }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-3 py-2 text-right font-black text-indigo-700 bg-indigo-50/10", children: [
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-3 py-2 border-r border-slate-100 text-left align-top", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(OperasiDetailCell, { operasi: p, operasiIndex: idx }) }),
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-3 py-2 text-right font-black text-indigo-700 bg-indigo-50/10", children: [
                         "Rp ",
-                        formatIDR(bMesin + bPekerja)
+                        formatIDR(rowSubtotal)
                       ] })
                     ] }, idx);
                   }) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("tfoot", { className: "bg-slate-50 border-t border-slate-200", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { colSpan: 2, className: "px-3 py-2 text-right font-black text-slate-500 uppercase tracking-widest", children: "TOTAL ALOKASI OPERASI:" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-3 py-2 text-center font-black text-blue-600", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("tfoot", { className: "bg-slate-50 border-t border-slate-200", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { colSpan: 3, className: "px-3 py-2 text-right font-black text-slate-500 uppercase tracking-widest", children: "TOTAL ALOKASI OPERASI:" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-3 py-2 text-center font-black text-blue-600", children: [
                       totalOpWaktu,
                       " Min"
                     ] }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-3 py-2 text-right font-black text-slate-700", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-3 py-2 text-right font-black text-slate-700", children: [
                       "Rp ",
                       formatIDR(totalOpMesin)
                     ] }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-3 py-2 text-right font-black text-slate-700", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-3 py-2 text-right font-black text-emerald-700", children: [
                       "Rp ",
                       formatIDR(totalOpPekerja)
                     ] }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-3 py-2 text-right font-black text-indigo-700", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-3 py-2 border-r border-slate-100" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-3 py-2 text-right font-black text-indigo-700", children: [
                       "Rp ",
                       formatIDR(totalOpCost)
                     ] })
                   ] }) })
-                ] }) }) : /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "h-full flex items-center justify-center p-4", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "text-[10px] text-slate-400 font-medium italic flex items-center gap-1.5", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(TriangleAlert, { className: "w-3 h-3" }),
+                ] }) }) : /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "h-full flex items-center justify-center p-4", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "text-[10px] text-slate-400 font-medium italic flex items-center gap-1.5", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(TriangleAlert, { className: "w-3 h-3" }),
                   " Belum ada data operasi manufaktur yang didaftarkan"
                 ] }) }) }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-4 py-4 text-right font-black text-indigo-700 bg-indigo-50/30 text-sm align-middle", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-4 py-4 text-right font-black text-indigo-700 bg-indigo-50/30 text-sm align-middle", children: [
                   "Rp ",
                   formatIDR(grandTotalRow)
                 ] })
@@ -29109,45 +30225,45 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
           const grandMachine = baseMachineCost + customMachineCost;
           const grandWorker = baseWorkerCost + customWorkerCost;
           const grandTotalErp = grandPart + grandMachine + grandWorker;
-          return /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex-1 overflow-y-auto p-6 md:p-8 bg-[#f1f5f9] flex flex-col gap-6 scrollbar-hide", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col md:flex-row justify-between md:items-center gap-4 shrink-0", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("h2", { className: "text-xl font-black text-slate-800 flex items-center gap-2", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(BookOpen, { className: "w-6 h-6 text-indigo-600" }),
+          return /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex-1 overflow-y-auto p-6 md:p-8 bg-[#f1f5f9] flex flex-col gap-6 scrollbar-hide", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col md:flex-row justify-between md:items-center gap-4 shrink-0", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("h2", { className: "text-xl font-black text-slate-800 flex items-center gap-2", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(BookOpen, { className: "w-6 h-6 text-indigo-600" }),
                   " ERP Referensi Jurnal Produksi"
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("p", { className: "text-xs text-slate-500 mt-1 font-medium", children: "Rekapitulasi total hirarki BOM, kebutuhan material, beban mesin, dan proyeksi beban gaji karyawan (Man Power). Anda dapat menambahkan entri *custom* sebagai penyesuaian aktual." })
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("p", { className: "text-xs text-slate-500 mt-1 font-medium", children: "Rekapitulasi total hirarki BOM, kebutuhan material, beban mesin, dan proyeksi beban gaji karyawan (Man Power). Anda dapat menambahkan entri *custom* sebagai penyesuaian aktual." })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-indigo-50 border border-indigo-100 px-6 py-3 rounded-xl flex flex-col justify-center text-right shrink-0", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[10px] font-extrabold text-indigo-400 uppercase tracking-widest mb-0.5", children: "Grand Total Estimasi (HPP)" }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "text-2xl font-black text-indigo-700 leading-none", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-indigo-50 border border-indigo-100 px-6 py-3 rounded-xl flex flex-col justify-center text-right shrink-0", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-[10px] font-extrabold text-indigo-400 uppercase tracking-widest mb-0.5", children: "Grand Total Estimasi (HPP)" }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "text-2xl font-black text-indigo-700 leading-none", children: [
                   "Rp ",
                   formatIDR(grandTotalErp)
                 ] })
               ] })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 shrink-0", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:border-slate-300 transition-colors", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center gap-2 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-3", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Network, { className: "w-4 h-4 text-slate-500" }),
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 shrink-0", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:border-slate-300 transition-colors", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center gap-2 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-3", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Network, { className: "w-4 h-4 text-slate-500" }),
                   " Hirarki BOM"
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "flex justify-between items-end", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex flex-col", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-2xl font-black text-slate-700", children: flatNodes.length }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[10px] font-bold text-slate-500", children: "Total Nodes" })
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "flex justify-between items-end", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex flex-col", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-2xl font-black text-slate-700", children: flatNodes.length }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-[10px] font-bold text-slate-500", children: "Total Nodes" })
                 ] }) })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-white rounded-xl border border-amber-200 p-5 shadow-sm hover:border-amber-300 transition-colors", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "flex items-center justify-between text-[10px] font-extrabold text-amber-500 uppercase tracking-widest mb-3", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center gap-2", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Package, { className: "w-4 h-4" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-white rounded-xl border border-amber-200 p-5 shadow-sm hover:border-amber-300 transition-colors", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "flex items-center justify-between text-[10px] font-extrabold text-amber-500 uppercase tracking-widest mb-3", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center gap-2", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Package, { className: "w-4 h-4" }),
                   " Material Part"
                 ] }) }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex flex-col gap-1", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "text-xl font-black text-amber-700", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex flex-col gap-1", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "text-xl font-black text-amber-700", children: [
                     "Rp ",
                     formatIDR(grandPart)
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "text-[10px] font-bold text-amber-600/70", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "text-[10px] font-bold text-amber-600/70", children: [
                     "Base: Rp ",
                     formatIDR(basePartCost),
                     " | Custom: Rp ",
@@ -29155,17 +30271,17 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
                   ] })
                 ] })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-white rounded-xl border border-blue-200 p-5 shadow-sm hover:border-blue-300 transition-colors", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "flex items-center justify-between text-[10px] font-extrabold text-blue-500 uppercase tracking-widest mb-3", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center gap-2", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Server, { className: "w-4 h-4" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-white rounded-xl border border-blue-200 p-5 shadow-sm hover:border-blue-300 transition-colors", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "flex items-center justify-between text-[10px] font-extrabold text-blue-500 uppercase tracking-widest mb-3", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center gap-2", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Server, { className: "w-4 h-4" }),
                   " Beban Mesin"
                 ] }) }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex flex-col gap-1", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "text-xl font-black text-blue-700", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex flex-col gap-1", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "text-xl font-black text-blue-700", children: [
                     "Rp ",
                     formatIDR(grandMachine)
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "text-[10px] font-bold text-blue-600/70", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "text-[10px] font-bold text-blue-600/70", children: [
                     "Base: Rp ",
                     formatIDR(baseMachineCost),
                     " | Custom: Rp ",
@@ -29173,17 +30289,17 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
                   ] })
                 ] })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-white rounded-xl border border-emerald-200 p-5 shadow-sm hover:border-emerald-300 transition-colors", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "flex items-center justify-between text-[10px] font-extrabold text-emerald-500 uppercase tracking-widest mb-3", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center gap-2", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Users, { className: "w-4 h-4" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-white rounded-xl border border-emerald-200 p-5 shadow-sm hover:border-emerald-300 transition-colors", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "flex items-center justify-between text-[10px] font-extrabold text-emerald-500 uppercase tracking-widest mb-3", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center gap-2", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Users, { className: "w-4 h-4" }),
                   " Gaji Karyawan"
                 ] }) }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex flex-col gap-1", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "text-xl font-black text-emerald-700", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex flex-col gap-1", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "text-xl font-black text-emerald-700", children: [
                     "Rp ",
                     formatIDR(grandWorker)
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "text-[10px] font-bold text-emerald-600/70", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "text-[10px] font-bold text-emerald-600/70", children: [
                     "Base: Rp ",
                     formatIDR(baseWorkerCost),
                     " | Custom: Rp ",
@@ -29191,247 +30307,247 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
                   ] })
                 ] })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-white rounded-xl border border-purple-200 p-5 shadow-sm hover:border-purple-300 transition-colors", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "flex items-center justify-between text-[10px] font-extrabold text-purple-500 uppercase tracking-widest mb-3", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center gap-2", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Activity, { className: "w-4 h-4" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-white rounded-xl border border-purple-200 p-5 shadow-sm hover:border-purple-300 transition-colors", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "flex items-center justify-between text-[10px] font-extrabold text-purple-500 uppercase tracking-widest mb-3", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center gap-2", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Activity, { className: "w-4 h-4" }),
                   " Work Proses"
                 ] }) }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex flex-col gap-1", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-xl font-black text-purple-700", children: totalProsesCount + customErp.machines.length + customErp.workers.length }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[10px] font-bold text-purple-600/70", children: "Total Registrasi Operasi & Custom" })
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex flex-col gap-1", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-xl font-black text-purple-700", children: totalProsesCount + customErp.machines.length + customErp.workers.length }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-[10px] font-bold text-purple-600/70", children: "Total Registrasi Operasi & Custom" })
                 ] })
               ] })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex flex-col gap-6", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("h4", { className: "text-xs font-black text-slate-700 uppercase tracking-wider", children: "1. Rincian Hirarki Struktur (BOM)" }) }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "p-6 grid grid-cols-2 md:grid-cols-4 gap-4", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-blue-50/50 border border-blue-100 rounded-lg p-4 flex flex-col items-center justify-center", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[10px] font-black text-blue-500 uppercase tracking-widest mb-1", children: "Modul Utama" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-3xl font-black text-blue-700", children: countModul })
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex flex-col gap-6", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("h4", { className: "text-xs font-black text-slate-700 uppercase tracking-wider", children: "1. Rincian Hirarki Struktur (BOM)" }) }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "p-6 grid grid-cols-2 md:grid-cols-4 gap-4", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-blue-50/50 border border-blue-100 rounded-lg p-4 flex flex-col items-center justify-center", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-[10px] font-black text-blue-500 uppercase tracking-widest mb-1", children: "Modul Utama" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-3xl font-black text-blue-700", children: countModul })
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-amber-50/50 border border-amber-100 rounded-lg p-4 flex flex-col items-center justify-center", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[10px] font-black text-amber-500 uppercase tracking-widest mb-1", children: "Submodul" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-3xl font-black text-amber-700", children: countSubmodul })
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-amber-50/50 border border-amber-100 rounded-lg p-4 flex flex-col items-center justify-center", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-[10px] font-black text-amber-500 uppercase tracking-widest mb-1", children: "Submodul" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-3xl font-black text-amber-700", children: countSubmodul })
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-purple-50/50 border border-purple-100 rounded-lg p-4 flex flex-col items-center justify-center", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[10px] font-black text-purple-500 uppercase tracking-widest mb-1", children: "Submodul 2" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-3xl font-black text-purple-700", children: countSubmodul2 })
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-purple-50/50 border border-purple-100 rounded-lg p-4 flex flex-col items-center justify-center", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-[10px] font-black text-purple-500 uppercase tracking-widest mb-1", children: "Submodul 2" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-3xl font-black text-purple-700", children: countSubmodul2 })
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-emerald-50/50 border border-emerald-100 rounded-lg p-4 flex flex-col items-center justify-center", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-1", children: "Part / Material Dasar" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-3xl font-black text-emerald-700", children: countPart })
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-emerald-50/50 border border-emerald-100 rounded-lg p-4 flex flex-col items-center justify-center", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-1", children: "Part / Material Dasar" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-3xl font-black text-emerald-700", children: countPart })
                   ] })
                 ] })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-white rounded-xl border border-amber-200 shadow-sm overflow-hidden", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "px-6 py-4 border-b border-amber-100 bg-amber-50/30 flex justify-between items-center", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("h4", { className: "text-xs font-black text-amber-800 uppercase tracking-wider flex items-center gap-2", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Package, { className: "w-4 h-4" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-white rounded-xl border border-amber-200 shadow-sm overflow-hidden", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "px-6 py-4 border-b border-amber-100 bg-amber-50/30 flex justify-between items-center", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("h4", { className: "text-xs font-black text-amber-800 uppercase tracking-wider flex items-center gap-2", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Package, { className: "w-4 h-4" }),
                     " 2. Rincian Kebutuhan Part & Material"
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("button", { onClick: () => handleAddCustomErp("parts"), className: "bg-amber-100 hover:bg-amber-200 text-amber-700 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Plus, { className: "w-3.5 h-3.5" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("button", { onClick: () => handleAddCustomErp("parts"), className: "bg-amber-100 hover:bg-amber-200 text-amber-700 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Plus, { className: "w-3.5 h-3.5" }),
                     " Tambah Custom Part"
                   ] })
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "overflow-x-auto", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("table", { className: "w-full text-left text-xs whitespace-nowrap", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("thead", { className: "bg-slate-50 border-b border-slate-200 text-slate-500 font-extrabold uppercase text-[10px] tracking-wider", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-6 py-3 w-16 text-center", children: "Tipe" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-6 py-3", children: "Deskripsi / Nama Part" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-6 py-3 text-center", children: "Qty" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-6 py-3 text-right", children: "Harga Satuan (IDR)" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-6 py-3 text-right", children: "Subtotal (IDR)" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-6 py-3 w-16 text-center", children: "Aksi" })
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "overflow-x-auto", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("table", { className: "w-full text-left text-xs whitespace-nowrap", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("thead", { className: "bg-slate-50 border-b border-slate-200 text-slate-500 font-extrabold uppercase text-[10px] tracking-wider", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-6 py-3 w-16 text-center", children: "Tipe" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-6 py-3", children: "Deskripsi / Nama Part" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-6 py-3 text-center", children: "Qty" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-6 py-3 text-right", children: "Harga Satuan (IDR)" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-6 py-3 text-right", children: "Subtotal (IDR)" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-6 py-3 w-16 text-center", children: "Aksi" })
                   ] }) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tbody", { className: "font-medium text-slate-700", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { className: "bg-slate-50/50 border-b border-slate-100", children: [
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-3 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "bg-slate-200 text-slate-600 px-2 py-0.5 rounded text-[9px] font-bold", children: "SYSTEM" }) }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-3 font-bold text-slate-600 italic", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tbody", { className: "font-medium text-slate-700", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { className: "bg-slate-50/50 border-b border-slate-100", children: [
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-3 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "bg-slate-200 text-slate-600 px-2 py-0.5 rounded text-[9px] font-bold", children: "SYSTEM" }) }),
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-3 font-bold text-slate-600 italic", children: [
                         "Akumulasi Seluruh Part BOM (",
                         countPart,
                         " Item)"
                       ] }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-3 text-center text-slate-400", children: "-" }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-3 text-right text-slate-400", children: "-" }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-3 text-right font-black text-amber-600", children: [
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-3 text-center text-slate-400", children: "-" }),
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-3 text-right text-slate-400", children: "-" }),
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-3 text-right font-black text-amber-600", children: [
                         "Rp ",
                         formatIDR(basePartCost)
                       ] }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-3 text-center", children: "-" })
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-3 text-center", children: "-" })
                     ] }),
-                    customErp.parts.map((c, idx) => /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { className: "border-b border-slate-100 bg-amber-50/10", children: [
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-3 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "bg-amber-200 text-amber-800 px-2 py-0.5 rounded text-[9px] font-bold", children: "CUSTOM" }) }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-2", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "text", value: c.nama, onChange: (e) => handleUpdateCustomErp("parts", c.id, "nama", e.target.value), placeholder: "Nama Part / Material Tambahan", className: "w-full border border-slate-200 rounded px-2 py-1.5 focus:border-amber-400 outline-none text-xs font-bold" }) }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: c.qty, onChange: (e) => handleUpdateCustomErp("parts", c.id, "qty", e.target.value), className: "w-20 border border-slate-200 rounded px-2 py-1.5 focus:border-amber-400 outline-none text-xs font-bold text-center" }) }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-2 text-right", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: c.rate, onChange: (e) => handleUpdateCustomErp("parts", c.id, "rate", e.target.value), placeholder: "0", className: "w-32 border border-slate-200 rounded px-2 py-1.5 focus:border-amber-400 outline-none text-xs font-bold text-right" }) }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-3 text-right font-black text-amber-700", children: [
+                    customErp.parts.map((c, idx) => /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { className: "border-b border-slate-100 bg-amber-50/10", children: [
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-3 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "bg-amber-200 text-amber-800 px-2 py-0.5 rounded text-[9px] font-bold", children: "CUSTOM" }) }),
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-2", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "text", value: c.nama, onChange: (e) => handleUpdateCustomErp("parts", c.id, "nama", e.target.value), placeholder: "Nama Part / Material Tambahan", className: "w-full border border-slate-200 rounded px-2 py-1.5 focus:border-amber-400 outline-none text-xs font-bold" }) }),
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: c.qty, onChange: (e) => handleUpdateCustomErp("parts", c.id, "qty", e.target.value), className: "w-20 border border-slate-200 rounded px-2 py-1.5 focus:border-amber-400 outline-none text-xs font-bold text-center" }) }),
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-2 text-right", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: c.rate, onChange: (e) => handleUpdateCustomErp("parts", c.id, "rate", e.target.value), placeholder: "0", className: "w-32 border border-slate-200 rounded px-2 py-1.5 focus:border-amber-400 outline-none text-xs font-bold text-right" }) }),
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-3 text-right font-black text-amber-700", children: [
                         "Rp ",
                         formatIDR((Number(c.qty) || 0) * (Number(c.rate) || 0))
                       ] }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("button", { onClick: () => handleDeleteCustomErp("parts", c.id), className: "p-1.5 text-red-500 hover:bg-red-50 rounded", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Trash2, { className: "w-4 h-4" }) }) })
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("button", { onClick: () => handleDeleteCustomErp("parts", c.id), className: "p-1.5 text-red-500 hover:bg-red-50 rounded", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Trash2, { className: "w-4 h-4" }) }) })
                     ] }, c.id))
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("tfoot", { className: "bg-amber-50 border-t-2 border-amber-200", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { colSpan: 4, className: "px-6 py-3 text-right font-black text-amber-800 uppercase text-[10px] tracking-widest", children: "TOTAL KEBUTUHAN PART:" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-3 text-right font-black text-amber-700 text-sm", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("tfoot", { className: "bg-amber-50 border-t-2 border-amber-200", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { colSpan: 4, className: "px-6 py-3 text-right font-black text-amber-800 uppercase text-[10px] tracking-widest", children: "TOTAL KEBUTUHAN PART:" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-3 text-right font-black text-amber-700 text-sm", children: [
                       "Rp ",
                       formatIDR(grandPart)
                     ] }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", {})
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", {})
                   ] }) })
                 ] }) })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-white rounded-xl border border-blue-200 shadow-sm overflow-hidden", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "px-6 py-4 border-b border-blue-100 bg-blue-50/30 flex justify-between items-center", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("h4", { className: "text-xs font-black text-blue-800 uppercase tracking-wider flex items-center gap-2", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Server, { className: "w-4 h-4" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-white rounded-xl border border-blue-200 shadow-sm overflow-hidden", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "px-6 py-4 border-b border-blue-100 bg-blue-50/30 flex justify-between items-center", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("h4", { className: "text-xs font-black text-blue-800 uppercase tracking-wider flex items-center gap-2", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Server, { className: "w-4 h-4" }),
                     " 3. Rincian Beban Work Center (Mesin)"
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("button", { onClick: () => handleAddCustomErp("machines"), className: "bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Plus, { className: "w-3.5 h-3.5" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("button", { onClick: () => handleAddCustomErp("machines"), className: "bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Plus, { className: "w-3.5 h-3.5" }),
                     " Tambah Custom Mesin"
                   ] })
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "overflow-x-auto", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("table", { className: "w-full text-left text-xs whitespace-nowrap", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("thead", { className: "bg-slate-50 border-b border-slate-200 text-slate-500 font-extrabold uppercase text-[10px] tracking-wider", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-6 py-3 w-16 text-center", children: "Tipe" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-6 py-3", children: "Deskripsi Operasi Mesin" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-6 py-3 text-center", children: "Waktu (Mnt)" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-6 py-3 text-right", children: "Rate/Mnt (IDR)" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-6 py-3 text-right", children: "Subtotal Biaya (IDR)" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-6 py-3 w-16 text-center", children: "Aksi" })
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "overflow-x-auto", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("table", { className: "w-full text-left text-xs whitespace-nowrap", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("thead", { className: "bg-slate-50 border-b border-slate-200 text-slate-500 font-extrabold uppercase text-[10px] tracking-wider", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-6 py-3 w-16 text-center", children: "Tipe" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-6 py-3", children: "Deskripsi Operasi Mesin" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-6 py-3 text-center", children: "Waktu (Mnt)" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-6 py-3 text-right", children: "Rate/Mnt (IDR)" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-6 py-3 text-right", children: "Subtotal Biaya (IDR)" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-6 py-3 w-16 text-center", children: "Aksi" })
                   ] }) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tbody", { className: "font-medium text-slate-700", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { className: "bg-slate-50/50 border-b border-slate-100", children: [
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-3 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "bg-slate-200 text-slate-600 px-2 py-0.5 rounded text-[9px] font-bold", children: "SYSTEM" }) }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-3 font-bold text-slate-600 italic", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tbody", { className: "font-medium text-slate-700", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { className: "bg-slate-50/50 border-b border-slate-100", children: [
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-3 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "bg-slate-200 text-slate-600 px-2 py-0.5 rounded text-[9px] font-bold", children: "SYSTEM" }) }),
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-3 font-bold text-slate-600 italic", children: [
                         "Akumulasi Proses Mesin BOM (",
                         totalProsesCount,
                         " Operasi)"
                       ] }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-3 text-center font-bold text-slate-600", children: [
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-3 text-center font-bold text-slate-600", children: [
                         baseMachineTime,
                         " Mnt"
                       ] }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-3 text-right text-slate-400", children: "Fixed/System" }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-3 text-right font-black text-blue-600", children: [
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-3 text-right text-slate-400", children: "Fixed/System" }),
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-3 text-right font-black text-blue-600", children: [
                         "Rp ",
                         formatIDR(baseMachineCost)
                       ] }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-3 text-center", children: "-" })
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-3 text-center", children: "-" })
                     ] }),
-                    customErp.machines.map((c, idx) => /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { className: "border-b border-slate-100 bg-blue-50/10", children: [
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-3 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "bg-blue-200 text-blue-800 px-2 py-0.5 rounded text-[9px] font-bold", children: "CUSTOM" }) }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-2", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "text", value: c.nama, onChange: (e) => handleUpdateCustomErp("machines", c.id, "nama", e.target.value), placeholder: "Nama Operasi Tambahan", className: "w-full border border-slate-200 rounded px-2 py-1.5 focus:border-blue-400 outline-none text-xs font-bold" }) }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: c.waktu, onChange: (e) => handleUpdateCustomErp("machines", c.id, "waktu", e.target.value), className: "w-20 border border-slate-200 rounded px-2 py-1.5 focus:border-blue-400 outline-none text-xs font-bold text-center" }) }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-2 text-right", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: c.rate, onChange: (e) => handleUpdateCustomErp("machines", c.id, "rate", e.target.value), placeholder: "0", className: "w-32 border border-slate-200 rounded px-2 py-1.5 focus:border-blue-400 outline-none text-xs font-bold text-right" }) }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-3 text-right font-black text-blue-700", children: [
+                    customErp.machines.map((c, idx) => /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { className: "border-b border-slate-100 bg-blue-50/10", children: [
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-3 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "bg-blue-200 text-blue-800 px-2 py-0.5 rounded text-[9px] font-bold", children: "CUSTOM" }) }),
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-2", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "text", value: c.nama, onChange: (e) => handleUpdateCustomErp("machines", c.id, "nama", e.target.value), placeholder: "Nama Operasi Tambahan", className: "w-full border border-slate-200 rounded px-2 py-1.5 focus:border-blue-400 outline-none text-xs font-bold" }) }),
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: c.waktu, onChange: (e) => handleUpdateCustomErp("machines", c.id, "waktu", e.target.value), className: "w-20 border border-slate-200 rounded px-2 py-1.5 focus:border-blue-400 outline-none text-xs font-bold text-center" }) }),
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-2 text-right", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: c.rate, onChange: (e) => handleUpdateCustomErp("machines", c.id, "rate", e.target.value), placeholder: "0", className: "w-32 border border-slate-200 rounded px-2 py-1.5 focus:border-blue-400 outline-none text-xs font-bold text-right" }) }),
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-3 text-right font-black text-blue-700", children: [
                         "Rp ",
                         formatIDR((Number(c.waktu) || 0) * (Number(c.rate) || 0))
                       ] }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("button", { onClick: () => handleDeleteCustomErp("machines", c.id), className: "p-1.5 text-red-500 hover:bg-red-50 rounded", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Trash2, { className: "w-4 h-4" }) }) })
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("button", { onClick: () => handleDeleteCustomErp("machines", c.id), className: "p-1.5 text-red-500 hover:bg-red-50 rounded", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Trash2, { className: "w-4 h-4" }) }) })
                     ] }, c.id))
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("tfoot", { className: "bg-blue-50 border-t-2 border-blue-200", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { colSpan: 4, className: "px-6 py-3 text-right font-black text-blue-800 uppercase text-[10px] tracking-widest", children: "TOTAL BEBAN MESIN:" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-3 text-right font-black text-blue-700 text-sm", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("tfoot", { className: "bg-blue-50 border-t-2 border-blue-200", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { colSpan: 4, className: "px-6 py-3 text-right font-black text-blue-800 uppercase text-[10px] tracking-widest", children: "TOTAL BEBAN MESIN:" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-3 text-right font-black text-blue-700 text-sm", children: [
                       "Rp ",
                       formatIDR(grandMachine)
                     ] }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", {})
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", {})
                   ] }) })
                 ] }) })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-white rounded-xl border border-emerald-200 shadow-sm overflow-hidden", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "px-6 py-4 border-b border-emerald-100 bg-emerald-50/30 flex justify-between items-center", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("h4", { className: "text-xs font-black text-emerald-800 uppercase tracking-wider flex items-center gap-2", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Briefcase, { className: "w-4 h-4" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-white rounded-xl border border-emerald-200 shadow-sm overflow-hidden", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "px-6 py-4 border-b border-emerald-100 bg-emerald-50/30 flex justify-between items-center", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("h4", { className: "text-xs font-black text-emerald-800 uppercase tracking-wider flex items-center gap-2", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Briefcase, { className: "w-4 h-4" }),
                     " 4. Rincian Beban Karyawan (Man Power)"
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("button", { onClick: () => handleAddCustomErp("workers"), className: "bg-emerald-100 hover:bg-emerald-200 text-emerald-700 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Plus, { className: "w-3.5 h-3.5" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("button", { onClick: () => handleAddCustomErp("workers"), className: "bg-emerald-100 hover:bg-emerald-200 text-emerald-700 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Plus, { className: "w-3.5 h-3.5" }),
                     " Tambah Custom Karyawan"
                   ] })
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "overflow-x-auto", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("table", { className: "w-full text-left text-xs whitespace-nowrap", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("thead", { className: "bg-slate-50 border-b border-slate-200 text-slate-500 font-extrabold uppercase text-[10px] tracking-wider", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-6 py-3 w-16 text-center", children: "Tipe" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-6 py-3", children: "Deskripsi Pekerjaan / Lembur" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-6 py-3 text-center", children: "Jumlah Org" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-6 py-3 text-center", children: "Waktu (Mnt)" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-6 py-3 text-right", children: "Rate/Org/Mnt (IDR)" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-6 py-3 text-right", children: "Subtotal Biaya (IDR)" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-6 py-3 w-16 text-center", children: "Aksi" })
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "overflow-x-auto", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("table", { className: "w-full text-left text-xs whitespace-nowrap", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("thead", { className: "bg-slate-50 border-b border-slate-200 text-slate-500 font-extrabold uppercase text-[10px] tracking-wider", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-6 py-3 w-16 text-center", children: "Tipe" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-6 py-3", children: "Deskripsi Pekerjaan / Lembur" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-6 py-3 text-center", children: "Jumlah Org" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-6 py-3 text-center", children: "Waktu (Mnt)" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-6 py-3 text-right", children: "Rate/Org/Mnt (IDR)" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-6 py-3 text-right", children: "Subtotal Biaya (IDR)" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-6 py-3 w-16 text-center", children: "Aksi" })
                   ] }) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tbody", { className: "font-medium text-slate-700", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { className: "bg-slate-50/50 border-b border-slate-100", children: [
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-3 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "bg-slate-200 text-slate-600 px-2 py-0.5 rounded text-[9px] font-bold", children: "SYSTEM" }) }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-3 font-bold text-slate-600 italic", children: "Akumulasi Proses Karyawan BOM" }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-3 text-center text-slate-400", children: "Variatif" }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-3 text-center font-bold text-slate-600", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tbody", { className: "font-medium text-slate-700", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { className: "bg-slate-50/50 border-b border-slate-100", children: [
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-3 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "bg-slate-200 text-slate-600 px-2 py-0.5 rounded text-[9px] font-bold", children: "SYSTEM" }) }),
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-3 font-bold text-slate-600 italic", children: "Akumulasi Proses Karyawan BOM" }),
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-3 text-center text-slate-400", children: "Variatif" }),
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-3 text-center font-bold text-slate-600", children: [
                         baseWorkerTime,
                         " Mnt"
                       ] }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-3 text-right text-slate-400", children: "Fixed/System" }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-3 text-right font-black text-emerald-600", children: [
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-3 text-right text-slate-400", children: "Fixed/System" }),
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-3 text-right font-black text-emerald-600", children: [
                         "Rp ",
                         formatIDR(baseWorkerCost)
                       ] }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-3 text-center", children: "-" })
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-3 text-center", children: "-" })
                     ] }),
-                    customErp.workers.map((c, idx) => /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { className: "border-b border-slate-100 bg-emerald-50/10", children: [
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-3 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded text-[9px] font-bold", children: "CUSTOM" }) }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-2", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "text", value: c.nama, onChange: (e) => handleUpdateCustomErp("workers", c.id, "nama", e.target.value), placeholder: "Misal: Lembur / Pekerja Lepas", className: "w-full border border-slate-200 rounded px-2 py-1.5 focus:border-emerald-400 outline-none text-xs font-bold" }) }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: c.person, onChange: (e) => handleUpdateCustomErp("workers", c.id, "person", e.target.value), className: "w-16 border border-slate-200 rounded px-2 py-1.5 focus:border-emerald-400 outline-none text-xs font-bold text-center" }) }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: c.waktu, onChange: (e) => handleUpdateCustomErp("workers", c.id, "waktu", e.target.value), className: "w-20 border border-slate-200 rounded px-2 py-1.5 focus:border-emerald-400 outline-none text-xs font-bold text-center" }) }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-2 text-right", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: c.rate, onChange: (e) => handleUpdateCustomErp("workers", c.id, "rate", e.target.value), placeholder: "0", className: "w-32 border border-slate-200 rounded px-2 py-1.5 focus:border-emerald-400 outline-none text-xs font-bold text-right" }) }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-3 text-right font-black text-emerald-700", children: [
+                    customErp.workers.map((c, idx) => /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { className: "border-b border-slate-100 bg-emerald-50/10", children: [
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-3 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded text-[9px] font-bold", children: "CUSTOM" }) }),
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-2", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "text", value: c.nama, onChange: (e) => handleUpdateCustomErp("workers", c.id, "nama", e.target.value), placeholder: "Misal: Lembur / Pekerja Lepas", className: "w-full border border-slate-200 rounded px-2 py-1.5 focus:border-emerald-400 outline-none text-xs font-bold" }) }),
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: c.person, onChange: (e) => handleUpdateCustomErp("workers", c.id, "person", e.target.value), className: "w-16 border border-slate-200 rounded px-2 py-1.5 focus:border-emerald-400 outline-none text-xs font-bold text-center" }) }),
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: c.waktu, onChange: (e) => handleUpdateCustomErp("workers", c.id, "waktu", e.target.value), className: "w-20 border border-slate-200 rounded px-2 py-1.5 focus:border-emerald-400 outline-none text-xs font-bold text-center" }) }),
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-2 text-right", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: c.rate, onChange: (e) => handleUpdateCustomErp("workers", c.id, "rate", e.target.value), placeholder: "0", className: "w-32 border border-slate-200 rounded px-2 py-1.5 focus:border-emerald-400 outline-none text-xs font-bold text-right" }) }),
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-3 text-right font-black text-emerald-700", children: [
                         "Rp ",
                         formatIDR((Number(c.waktu) || 0) * (Number(c.person) || 0) * (Number(c.rate) || 0))
                       ] }),
-                      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("button", { onClick: () => handleDeleteCustomErp("workers", c.id), className: "p-1.5 text-red-500 hover:bg-red-50 rounded", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Trash2, { className: "w-4 h-4" }) }) })
+                      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-2 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("button", { onClick: () => handleDeleteCustomErp("workers", c.id), className: "p-1.5 text-red-500 hover:bg-red-50 rounded", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Trash2, { className: "w-4 h-4" }) }) })
                     ] }, c.id))
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("tfoot", { className: "bg-emerald-50 border-t-2 border-emerald-200", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { colSpan: 5, className: "px-6 py-3 text-right font-black text-emerald-800 uppercase text-[10px] tracking-widest", children: "TOTAL GAJI KARYAWAN:" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-3 text-right font-black text-emerald-700 text-sm", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("tfoot", { className: "bg-emerald-50 border-t-2 border-emerald-200", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { colSpan: 5, className: "px-6 py-3 text-right font-black text-emerald-800 uppercase text-[10px] tracking-widest", children: "TOTAL GAJI KARYAWAN:" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-3 text-right font-black text-emerald-700 text-sm", children: [
                       "Rp ",
                       formatIDR(grandWorker)
                     ] }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", {})
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", {})
                   ] }) })
                 ] }) })
               ] })
             ] })
           ] });
         })(),
-        editorTab === "cogs" && /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex-1 overflow-y-auto p-6 md:p-8 bg-page flex flex-col gap-6 scrollbar-hide", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-white rounded-2xl border border-slate-200 shadow-sm p-6 shrink-0", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-start justify-between gap-4 mb-4", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("h2", { className: "text-xl font-black text-slate-800 flex items-center gap-2", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(FileText, { className: "w-6 h-6 text-emerald-600" }),
+        editorTab === "cogs" && /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex-1 overflow-y-auto p-6 md:p-8 bg-page flex flex-col gap-6 scrollbar-hide", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-white rounded-2xl border border-slate-200 shadow-sm p-6 shrink-0", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-start justify-between gap-4 mb-4", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("h2", { className: "text-xl font-black text-slate-800 flex items-center gap-2", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(FileText, { className: "w-6 h-6 text-emerald-600" }),
                   " Pembentukan COGS & Harga Jual"
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("p", { className: "text-xs text-slate-500 mt-1 font-medium", children: "Alur perhitungan Cost of Goods Sold berdasarkan material, proses pabrik, metode packing, dan penambahan persentase overhead sesuai referensi sistem." })
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("p", { className: "text-xs text-slate-500 mt-1 font-medium", children: "Alur perhitungan Cost of Goods Sold berdasarkan material, proses pabrik, metode packing, dan penambahan persentase overhead sesuai referensi sistem." })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-emerald-50 text-emerald-700 px-4 py-2 rounded-lg border border-emerald-100 flex items-center gap-2 shadow-sm shrink-0", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(CircleCheck, { className: "w-5 h-5" }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex flex-col", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-[10px] font-black uppercase tracking-wider", children: "Harga Jual (FOB)" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "text-xl font-black leading-none", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-emerald-50 text-emerald-700 px-4 py-2 rounded-lg border border-emerald-100 flex items-center gap-2 shadow-sm shrink-0", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(CircleCheck, { className: "w-5 h-5" }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex flex-col", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-[10px] font-black uppercase tracking-wider", children: "Harga Jual (FOB)" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "text-xl font-black leading-none", children: [
                     "Rp ",
                     formatIDR(Math.floor(cogsData.sellingPrice / 1e3) * 1e3)
                   ] })
                 ] })
               ] })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-slate-50 border border-slate-200 rounded-xl p-5 mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex flex-col gap-2", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("label", { className: "text-[10px] font-black text-slate-500 uppercase tracking-widest", children: "1. Jalur Packing (Fisik)" }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex bg-white rounded-lg border border-slate-200 p-1 shadow-sm", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-slate-50 border border-slate-200 rounded-xl p-5 mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex flex-col gap-2", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("label", { className: "text-[10px] font-black text-slate-500 uppercase tracking-widest", children: "1. Jalur Packing (Fisik)" }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex bg-white rounded-lg border border-slate-200 p-1 shadow-sm", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(
                     "button",
                     {
                       onClick: () => setCogsConfig((p) => ({ ...p, packingJalur: "BOX" })),
@@ -29439,7 +30555,7 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
                       children: "Karton / BOX"
                     }
                   ),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(
                     "button",
                     {
                       onClick: () => setCogsConfig((p) => ({ ...p, packingJalur: "SF" })),
@@ -29448,40 +30564,40 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
                     }
                   )
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "text-[9px] text-slate-400 mt-1 leading-tight", children: "Mempengaruhi komponen biaya packing di level Production Cost." })
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "text-[9px] text-slate-400 mt-1 leading-tight", children: "Mempengaruhi komponen biaya packing di level Production Cost." })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex flex-col gap-2", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("label", { className: "text-[10px] font-black text-slate-500 uppercase tracking-widest", children: "Biaya Packing (Material + Tenaga)" }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex flex-col gap-2", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "bg-slate-100 px-2 py-1.5 border-r border-slate-200 w-12 text-center text-[10px]", children: "BOX" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "text", value: `Rp ${formatIDR(packBoxMat + packBoxLab)}`, disabled: true, className: "w-full px-3 py-1.5 text-right bg-slate-50 cursor-not-allowed text-blue-700 font-black", title: "Terakumulasi otomatis dari tab Spesifikasi Packing" })
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex flex-col gap-2", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("label", { className: "text-[10px] font-black text-slate-500 uppercase tracking-widest", children: "Biaya Packing (Material + Tenaga)" }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex flex-col gap-2", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "bg-slate-100 px-2 py-1.5 border-r border-slate-200 w-12 text-center text-[10px]", children: "BOX" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "text", value: `Rp ${formatIDR(packBoxMat + packBoxLab)}`, disabled: true, className: "w-full px-3 py-1.5 text-right bg-slate-50 cursor-not-allowed text-blue-700 font-black", title: "Terakumulasi otomatis dari tab Spesifikasi Packing" })
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "bg-slate-100 px-2 py-1.5 border-r border-slate-200 w-12 text-center text-[10px]", children: "INNER" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "text", value: `Rp ${formatIDR(packSfMat + packSfLab)}`, disabled: true, className: "w-full px-3 py-1.5 text-right bg-slate-50 cursor-not-allowed text-emerald-700 font-black", title: "Terakumulasi otomatis dari tab Spesifikasi Packing" })
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "bg-slate-100 px-2 py-1.5 border-r border-slate-200 w-12 text-center text-[10px]", children: "INNER" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "text", value: `Rp ${formatIDR(packSfMat + packSfLab)}`, disabled: true, className: "w-full px-3 py-1.5 text-right bg-slate-50 cursor-not-allowed text-emerald-700 font-black", title: "Terakumulasi otomatis dari tab Spesifikasi Packing" })
                   ] })
                 ] })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex flex-col gap-2", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("label", { className: "text-[10px] font-black text-slate-500 uppercase tracking-widest", children: "2. Overhead Produksi" }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex flex-col gap-2", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm focus-within:border-blue-400 focus-within:ring-1 focus-within:ring-blue-100", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "bg-slate-100 px-2 py-1.5 border-r border-slate-200 flex-1 text-[10px]", children: "Factory OH (%)" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: cogsConfig.factoryOhPct, onChange: (e) => setCogsConfig((p) => ({ ...p, factoryOhPct: e.target.value })), className: "w-16 px-2 py-1.5 text-center outline-none text-blue-700 font-black" })
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex flex-col gap-2", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("label", { className: "text-[10px] font-black text-slate-500 uppercase tracking-widest", children: "2. Overhead Produksi" }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex flex-col gap-2", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm focus-within:border-blue-400 focus-within:ring-1 focus-within:ring-blue-100", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "bg-slate-100 px-2 py-1.5 border-r border-slate-200 flex-1 text-[10px]", children: "Factory OH (%)" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: cogsConfig.factoryOhPct, onChange: (e) => setCogsConfig((p) => ({ ...p, factoryOhPct: e.target.value })), className: "w-16 px-2 py-1.5 text-center outline-none text-blue-700 font-black" })
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm focus-within:border-blue-400 focus-within:ring-1 focus-within:ring-blue-100", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "bg-slate-100 px-2 py-1.5 border-r border-slate-200 flex-1 text-[10px]", children: "Mgmt OH (%)" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("input", { type: "number", value: cogsConfig.managementOhPct, onChange: (e) => setCogsConfig((p) => ({ ...p, managementOhPct: e.target.value })), className: "w-16 px-2 py-1.5 text-center outline-none text-blue-700 font-black" })
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm focus-within:border-blue-400 focus-within:ring-1 focus-within:ring-blue-100", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "bg-slate-100 px-2 py-1.5 border-r border-slate-200 flex-1 text-[10px]", children: "Mgmt OH (%)" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("input", { type: "number", value: cogsConfig.managementOhPct, onChange: (e) => setCogsConfig((p) => ({ ...p, managementOhPct: e.target.value })), className: "w-16 px-2 py-1.5 text-center outline-none text-blue-700 font-black" })
                   ] })
                 ] })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex flex-col gap-2", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("label", { className: "text-[10px] font-black text-slate-500 uppercase tracking-widest", children: "3. Pricing / Markup" }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex items-center gap-2 mt-1", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex flex-1 items-center text-xs font-bold text-slate-600 bg-emerald-50 border border-emerald-200 rounded-lg overflow-hidden shadow-sm focus-within:border-emerald-400 focus-within:ring-1 focus-within:ring-emerald-100", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "bg-emerald-100 px-3 py-2 border-r border-emerald-200 flex-1 text-[11px] text-emerald-800", children: "Target Markup (%)" }),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex flex-col gap-2", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("label", { className: "text-[10px] font-black text-slate-500 uppercase tracking-widest", children: "3. Pricing / Markup" }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex items-center gap-2 mt-1", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex flex-1 items-center text-xs font-bold text-slate-600 bg-emerald-50 border border-emerald-200 rounded-lg overflow-hidden shadow-sm focus-within:border-emerald-400 focus-within:ring-1 focus-within:ring-emerald-100", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "bg-emerald-100 px-3 py-2 border-r border-emerald-200 flex-1 text-[11px] text-emerald-800", children: "Target Markup (%)" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(
                       "input",
                       {
                         type: "number",
@@ -29491,14 +30607,14 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
                       }
                     )
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)(
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)(
                     "button",
                     {
                       type: "button",
                       onClick: () => setShowMarkupPreview(true),
                       className: "shrink-0 px-3 py-2 rounded-lg border border-emerald-200 bg-white text-emerald-700 text-[10px] font-black uppercase tracking-wide hover:bg-emerald-50 flex items-center gap-1.5 shadow-sm",
                       children: [
-                        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(TrendingUp, { className: "w-3.5 h-3.5" }),
+                        /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(TrendingUp, { className: "w-3.5 h-3.5" }),
                         " Preview"
                       ]
                     }
@@ -29507,101 +30623,101 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
               ] })
             ] })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col mb-8", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "px-6 py-4 border-b border-slate-200 bg-slate-50/80 flex items-center gap-3", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Activity, { className: "w-5 h-5 text-indigo-500" }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("h3", { className: "text-sm font-black text-slate-800 uppercase tracking-wider", children: "Langkah Demi Langkah Pembentukan COGS" })
+          /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col mb-8", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "px-6 py-4 border-b border-slate-200 bg-slate-50/80 flex items-center gap-3", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Activity, { className: "w-5 h-5 text-indigo-500" }),
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("h3", { className: "text-sm font-black text-slate-800 uppercase tracking-wider", children: "Langkah Demi Langkah Pembentukan COGS" })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "overflow-x-auto", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("table", { className: "w-full text-left text-sm", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("thead", { className: "bg-white border-b border-slate-200 text-slate-500 uppercase text-[10px] font-extrabold tracking-widest", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-6 py-3 w-16 text-center", children: "Step" }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-6 py-3 min-w-[200px]", children: "Komponen Cost" }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-6 py-3 min-w-[250px]", children: "Sumber & Referensi (Formula)" }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-6 py-3 text-right text-indigo-700", children: "Nilai Akumulasi (IDR)" }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("th", { className: "px-6 py-3 text-right", children: "Running Total (IDR)" })
+            /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "overflow-x-auto", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("table", { className: "w-full text-left text-sm", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("thead", { className: "bg-white border-b border-slate-200 text-slate-500 uppercase text-[10px] font-extrabold tracking-widest", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-6 py-3 w-16 text-center", children: "Step" }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-6 py-3 min-w-[200px]", children: "Komponen Cost" }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-6 py-3 min-w-[250px]", children: "Sumber & Referensi (Formula)" }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-6 py-3 text-right text-indigo-700", children: "Nilai Akumulasi (IDR)" }),
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("th", { className: "px-6 py-3 text-right", children: "Running Total (IDR)" })
               ] }) }),
-              /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tbody", { className: "text-xs font-medium text-slate-700", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { className: "border-b border-slate-100 hover:bg-slate-50/50", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-4 text-center font-black text-slate-400", children: "1" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-4 font-bold text-slate-800", children: "Bahan Baku & Material (RAW)" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-4 text-[10px] text-slate-500 leading-tight", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tbody", { className: "text-xs font-medium text-slate-700", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { className: "border-b border-slate-100 hover:bg-slate-50/50", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-4 text-center font-black text-slate-400", children: "1" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-4 font-bold text-slate-800", children: "Bahan Baku & Material (RAW)" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-4 text-[10px] text-slate-500 leading-tight", children: [
                     "Harga Part \xD7 Qty + Penyesuaian SF/WF",
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("br", {}),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-blue-500 font-bold", children: "Engine BOM Rollup" })
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("br", {}),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-blue-500 font-bold", children: "Engine BOM Rollup" })
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-4 text-right font-black text-slate-600", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-4 text-right font-black text-slate-600", children: [
                     "Rp ",
                     formatIDR(cogsData.totalMaterial)
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-4 text-right font-bold text-slate-400", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-4 text-right font-bold text-slate-400", children: [
                     "Rp ",
                     formatIDR(cogsData.totalMaterial)
                   ] })
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { className: "border-b border-slate-100 hover:bg-slate-50/50", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-4 text-center font-black text-slate-400", children: "2" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-4 font-bold text-slate-800", children: "Proses Pabrik (Work Center & Labor)" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-4 text-[10px] text-slate-500 leading-tight", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { className: "border-b border-slate-100 hover:bg-slate-50/50", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-4 text-center font-black text-slate-400", children: "2" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-4 font-bold text-slate-800", children: "Proses Pabrik (Work Center & Labor)" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-4 text-[10px] text-slate-500 leading-tight", children: [
                     "Total Waktu \xD7 (Tarif Mesin + Upah Karyawan)",
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("br", {}),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-blue-500 font-bold", children: "Costing Studio (Proses)" })
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("br", {}),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-blue-500 font-bold", children: "Costing Studio (Proses)" })
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-4 text-right font-black text-slate-600", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-4 text-right font-black text-slate-600", children: [
                     "+ Rp ",
                     formatIDR(cogsData.totalProcess)
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-4 text-right font-bold text-slate-400", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-4 text-right font-bold text-slate-400", children: [
                     "Rp ",
                     formatIDR(cogsData.totalMaterial + cogsData.totalProcess)
                   ] })
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { className: "border-b border-slate-100 hover:bg-slate-50/50 bg-blue-50/10", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-4 text-center font-black text-blue-400", children: "3" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-4 font-bold text-blue-900", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { className: "border-b border-slate-100 hover:bg-slate-50/50 bg-blue-50/10", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-4 text-center font-black text-blue-400", children: "3" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-4 font-bold text-blue-900", children: [
                     "Biaya Packing ",
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[9px] ml-2 tracking-wider", children: cogsConfig.packingJalur })
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[9px] ml-2 tracking-wider", children: cogsConfig.packingJalur })
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-4 text-[10px] text-slate-500 leading-tight", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-4 text-[10px] text-slate-500 leading-tight", children: [
                     "Material ",
                     cogsConfig.packingJalur === "BOX" ? "Karton Luar" : "Single Face",
                     " + Tenaga Packing",
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("br", {}),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "text-blue-500 font-bold text-[9px]", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("br", {}),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "text-blue-500 font-bold text-[9px]", children: [
                       "Material: Rp ",
                       formatIDR(cogsData.packingMat),
                       " | Labor: Rp ",
                       formatIDR(cogsData.packingLab)
                     ] })
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-4 text-right font-black text-blue-700", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-4 text-right font-black text-blue-700", children: [
                     "+ Rp ",
                     formatIDR(cogsData.packingCost)
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-4 text-right font-bold text-blue-400", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-4 text-right font-bold text-blue-400", children: [
                     "Rp ",
                     formatIDR(cogsData.productionCost)
                   ] })
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { className: "border-b-2 border-slate-200 bg-slate-100/50", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-4" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-4 font-black text-slate-800 text-sm uppercase tracking-wide", children: "RAW Production Cost" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-4 text-[10px] text-slate-500", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { className: "border-b-2 border-slate-200 bg-slate-100/50", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-4" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-4 font-black text-slate-800 text-sm uppercase tracking-wide", children: "RAW Production Cost" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-4 text-[10px] text-slate-500", children: [
                     "Material + Proses Pabrik + Packing (",
                     cogsConfig.packingJalur,
                     ")"
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-4 text-right" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-4 text-right font-black text-slate-800 text-sm", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-4 text-right" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-4 text-right font-black text-slate-800 text-sm", children: [
                     "Rp ",
                     formatIDR(cogsData.productionCost)
                   ] })
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { className: "border-b border-slate-100 hover:bg-slate-50/50 bg-amber-50/10", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-4 text-center font-black text-amber-400", children: "4" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-4 font-bold text-amber-900", children: "Factory Overhead" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-4 text-[10px] text-slate-500 leading-tight", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "inline-flex items-center gap-1.5 flex-wrap", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { className: "border-b border-slate-100 hover:bg-slate-50/50 bg-amber-50/10", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-4 text-center font-black text-amber-400", children: "4" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-4 font-bold text-amber-900", children: "Factory Overhead" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-4 text-[10px] text-slate-500 leading-tight", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "inline-flex items-center gap-1.5 flex-wrap", children: [
                     "Production Cost \xD7",
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(
                       "input",
                       {
                         type: "number",
@@ -29614,21 +30730,21 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
                     ),
                     "%"
                   ] }) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-4 text-right font-black text-amber-700", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-4 text-right font-black text-amber-700", children: [
                     "+ Rp ",
                     formatIDR(cogsData.factoryOh)
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-4 text-right font-bold text-amber-400", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-4 text-right font-bold text-amber-400", children: [
                     "Rp ",
                     formatIDR(cogsData.productionCost + cogsData.factoryOh)
                   ] })
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { className: "border-b border-slate-100 hover:bg-slate-50/50 bg-amber-50/10", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-4 text-center font-black text-amber-400", children: "5" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-4 font-bold text-amber-900", children: "Management Overhead" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-4 text-[10px] text-slate-500 leading-tight", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "inline-flex items-center gap-1.5 flex-wrap", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { className: "border-b border-slate-100 hover:bg-slate-50/50 bg-amber-50/10", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-4 text-center font-black text-amber-400", children: "5" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-4 font-bold text-amber-900", children: "Management Overhead" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-4 text-[10px] text-slate-500 leading-tight", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "inline-flex items-center gap-1.5 flex-wrap", children: [
                     "Production Cost \xD7",
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(
                       "input",
                       {
                         type: "number",
@@ -29641,48 +30757,48 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
                     ),
                     "%"
                   ] }) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-4 text-right font-black text-amber-700", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-4 text-right font-black text-amber-700", children: [
                     "+ Rp ",
                     formatIDR(cogsData.managementOh)
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-4 text-right font-bold text-amber-400", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-4 text-right font-bold text-amber-400", children: [
                     "Rp ",
                     formatIDR(cogsData.totalCogs)
                   ] })
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { className: "border-b-[3px] border-indigo-200 bg-indigo-50/40", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-5 text-center font-black text-indigo-500", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Activity, { className: "w-5 h-5 mx-auto" }) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-5 font-black text-indigo-900 text-base uppercase tracking-widest", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { className: "border-b-[3px] border-indigo-200 bg-indigo-50/40", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-5 text-center font-black text-indigo-500", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Activity, { className: "w-5 h-5 mx-auto" }) }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-5 font-black text-indigo-900 text-base uppercase tracking-widest", children: [
                     "TOTAL COGS (",
                     cogsConfig.packingJalur,
                     ")"
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-5 text-[10px] text-indigo-600/80 leading-tight font-bold", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-5 text-[10px] text-indigo-600/80 leading-tight font-bold", children: [
                     "Production Cost + Factory OH (",
                     EXCEL_FACTORY_OH_PCT,
                     "%) + Management OH",
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("br", {}),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-indigo-400 italic", children: "Struktur SUMMARY COST \u2014 ELB-555-98" })
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("br", {}),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-indigo-400 italic", children: "Struktur SUMMARY COST \u2014 ELB-555-98" })
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-5 text-right font-black text-indigo-800 text-lg", colSpan: 2, children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-5 text-right font-black text-indigo-800 text-lg", colSpan: 2, children: [
                     "Rp ",
                     formatIDR(cogsData.totalCogs)
                   ] })
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("tr", { className: "bg-emerald-50/40", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-5 text-center font-black text-emerald-500", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(DollarSign, { className: "w-5 h-5 mx-auto" }) }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("td", { className: "px-6 py-5 font-black text-emerald-900 text-base uppercase tracking-widest", children: "Harga Jual FOB" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-5 text-[10px] text-emerald-600/80 leading-tight font-bold", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("tr", { className: "bg-emerald-50/40", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-5 text-center font-black text-emerald-500", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(DollarSign, { className: "w-5 h-5 mx-auto" }) }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("td", { className: "px-6 py-5 font-black text-emerald-900 text-base uppercase tracking-widest", children: "Harga Jual FOB" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-5 text-[10px] text-emerald-600/80 leading-tight font-bold", children: [
                     "COGS \xD7 (1 + ",
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("span", { className: "text-emerald-700", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("span", { className: "text-emerald-700", children: [
                       cogsConfig.markupPct,
                       "%"
                     ] }),
                     " Markup) ",
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("br", {}),
-                    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-emerald-500 italic", children: "Dibulatkan ke ribuan (ROUNDDOWN -3)" })
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("br", {}),
+                    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("span", { className: "text-emerald-500 italic", children: "Dibulatkan ke ribuan (ROUNDDOWN -3)" })
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("td", { className: "px-6 py-5 text-right font-black text-emerald-700 text-xl", colSpan: 2, children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("td", { className: "px-6 py-5 text-right font-black text-emerald-700 text-xl", colSpan: 2, children: [
                     "Rp ",
                     formatIDR(Math.floor(cogsData.sellingPrice / 1e3) * 1e3)
                   ] })
@@ -29697,12 +30813,12 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur }) {
 }
 
 // src/App.jsx
-var import_jsx_runtime15 = __toESM(require_jsx_runtime(), 1);
+var import_jsx_runtime18 = __toESM(require_jsx_runtime(), 1);
 function App() {
-  const [currentRoute, setCurrentRoute] = (0, import_react7.useState)("dashboard");
-  const [kursUsd, setKursUsd] = (0, import_react7.useState)(16004);
-  const [kursEur, setKursEur] = (0, import_react7.useState)(17500);
-  return /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("div", { className: "viewport-shell", children: currentRoute === "editor" ? /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(
+  const [currentRoute, setCurrentRoute] = (0, import_react9.useState)("dashboard");
+  const [kursUsd, setKursUsd] = (0, import_react9.useState)(16004);
+  const [kursEur, setKursEur] = (0, import_react9.useState)(17500);
+  return /* @__PURE__ */ (0, import_jsx_runtime18.jsx)("div", { className: "viewport-shell flex flex-col", children: currentRoute === "editor" ? /* @__PURE__ */ (0, import_jsx_runtime18.jsx)(
     BOMEditor,
     {
       onBack: () => setCurrentRoute("dashboard"),
@@ -29711,7 +30827,7 @@ function App() {
       kursEur,
       setKursEur
     }
-  ) : /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(
+  ) : /* @__PURE__ */ (0, import_jsx_runtime18.jsx)(
     Dashboard,
     {
       onNewProject: () => setCurrentRoute("editor"),
@@ -29724,9 +30840,9 @@ function App() {
 }
 
 // src/main.jsx
-var import_jsx_runtime16 = __toESM(require_jsx_runtime(), 1);
+var import_jsx_runtime19 = __toESM(require_jsx_runtime(), 1);
 (0, import_client.createRoot)(document.getElementById("root")).render(
-  /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(import_react8.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(App, {}) })
+  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)(import_react10.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime19.jsx)(App, {}) })
 );
 /*! Bundled license information:
 
@@ -29800,6 +30916,7 @@ lucide-react/dist/esm/icons/chart-pie.js:
 lucide-react/dist/esm/icons/chevron-down.js:
 lucide-react/dist/esm/icons/chevron-right.js:
 lucide-react/dist/esm/icons/circle-check.js:
+lucide-react/dist/esm/icons/clock.js:
 lucide-react/dist/esm/icons/dollar-sign.js:
 lucide-react/dist/esm/icons/euro.js:
 lucide-react/dist/esm/icons/eye-off.js:
@@ -29809,6 +30926,7 @@ lucide-react/dist/esm/icons/grid-3x3.js:
 lucide-react/dist/esm/icons/image.js:
 lucide-react/dist/esm/icons/link.js:
 lucide-react/dist/esm/icons/maximize.js:
+lucide-react/dist/esm/icons/minus.js:
 lucide-react/dist/esm/icons/network.js:
 lucide-react/dist/esm/icons/package.js:
 lucide-react/dist/esm/icons/panel-top-close.js:

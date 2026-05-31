@@ -4,6 +4,8 @@ import {
 import { tipeStyles } from '../../design/tipeStyles';
 import { formatIDR } from '../../utils/formatters';
 import { calcProsesCosts, LABOR_RATE_PER_MIN } from '../../utils/operationCosts';
+import { getProsesById } from '../../data/routingCatalog';
+import OperasiDetailCell from '../ui/OperasiDetailCell';
 
 export default function SummaryDetailModal({ node, onClose }) {
   if (!node) return null;
@@ -129,16 +131,19 @@ export default function SummaryDetailModal({ node, onClose }) {
                 <thead className="bg-brand-50 border-b border-brand-100 text-brand-800 text-[10px] uppercase tracking-widest font-extrabold">
                   <tr>
                     <th className="px-4 py-3 border-r border-brand-100 text-center w-16">Visual</th>
+                    <th className="px-4 py-3 border-r border-brand-100 text-center w-20">Proses</th>
                     <th className="px-4 py-3 border-r border-brand-100">Tahap & Nama Operasi</th>
                     <th className="px-4 py-3 border-r border-brand-100 text-center">Durasi</th>
                     <th className="px-4 py-3 border-r border-brand-100 text-right">Biaya Mesin</th>
-                    <th className="px-4 py-3 border-r border-brand-100 text-right">Biaya Pekerja</th>
+                    <th className="px-4 py-3 border-r border-brand-100 text-right">Jumlah Pekerja & Biaya</th>
+                    <th className="px-4 py-3 border-r border-brand-100 text-left">Detail</th>
                     <th className="px-4 py-3 text-right">Subtotal</th>
                   </tr>
                 </thead>
                 <tbody>
                   {d.proses && d.proses.length > 0 ? d.proses.map((p, idx) => {
-                    const { waktu, person: totalPerson, mesin: biayaMesin, pekerja: biayaPekerja, total: subtotal, rate } = calcProsesCosts(p);
+                    const { waktu, person: totalPerson, mesin: biayaMesin, pekerja: biayaPekerja, total: subtotal, rate, ratePekerja } = calcProsesCosts(p);
+                    const prosesLabel = p.proses ? getProsesById(p.proses).label : (p.mfgProcess || '—');
 
                     return (
                       <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
@@ -148,8 +153,20 @@ export default function SummaryDetailModal({ node, onClose }) {
                           </div>
                           <span className="text-[9px] font-black bg-slate-100 text-slate-600 px-2 py-0.5 rounded uppercase tracking-wider">{p.posisiOperasi || '-'}</span>
                         </td>
+                        <td className="px-4 py-3 border-r border-slate-100 text-center align-middle">
+                          <span className="inline-block text-[9px] font-black uppercase tracking-wide text-violet-700 bg-violet-50 border border-violet-100 px-2 py-0.5 rounded">
+                            {prosesLabel}
+                          </span>
+                        </td>
                         <td className="px-4 py-3 border-r border-slate-100 align-middle">
-                          <div className="font-black text-brand-900 text-sm mb-1">{p.nama}</div>
+                          <div className="font-black text-brand-900 text-sm mb-1 flex flex-wrap items-center gap-1.5">
+                            {p.nama}
+                            {p.inputMode === 'routing' && (
+                              <span className="text-[8px] font-black uppercase px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700 border border-indigo-200">
+                                RT{p.routingSteps?.length ? ` · ${p.routingSteps.length} langkah` : ''}
+                              </span>
+                            )}
+                          </div>
                           <div className="text-[10px] font-bold text-slate-500 bg-slate-100 inline-block px-2 py-0.5 rounded border border-slate-200">{p.mfgProcess || '-'}</div>
                         </td>
                         <td className="px-4 py-3 border-r border-slate-100 text-center align-middle">
@@ -162,11 +179,12 @@ export default function SummaryDetailModal({ node, onClose }) {
                           <div className="font-bold text-slate-700">Rp {formatIDR(biayaMesin)}</div>
                         </td>
                         <td className="px-4 py-3 border-r border-slate-100 text-right align-middle">
-                          <div className="flex items-center justify-end gap-1.5 mb-1">
-                            <span className="text-[9px] font-black bg-amber-100 text-amber-700 px-1.5 rounded">{totalPerson} Org</span>
-                            <span className="text-[9px] text-slate-400 font-bold">@ Rp {formatIDR(LABOR_RATE_PER_MIN)} / mnt</span>
-                          </div>
-                          <div className="font-bold text-slate-700">Rp {formatIDR(biayaPekerja)}</div>
+                          <div className="font-black text-amber-600 text-sm mb-0.5">{totalPerson} org</div>
+                          <div className="text-[9px] text-slate-400 font-bold mb-1">@ Rp {formatIDR(ratePekerja || LABOR_RATE_PER_MIN)} / mnt</div>
+                          <div className="font-bold text-emerald-700">Rp {formatIDR(biayaPekerja)}</div>
+                        </td>
+                        <td className="px-4 py-3 border-r border-slate-100 align-top min-w-[7rem]">
+                          <OperasiDetailCell operasi={p} operasiIndex={idx} className="text-xs" />
                         </td>
                         <td className="px-4 py-3 text-right align-middle bg-brand-50/20">
                           <div className="font-black text-brand-700">Rp {formatIDR(subtotal)}</div>
@@ -175,7 +193,7 @@ export default function SummaryDetailModal({ node, onClose }) {
                     );
                   }) : (
                     <tr>
-                      <td colSpan={6} className="px-4 py-8 text-center text-slate-400 italic text-xs bg-slate-50/50">
+                      <td colSpan={8} className="px-4 py-8 text-center text-slate-400 italic text-xs bg-slate-50/50">
                         Belum ada operasi manufaktur terperinci. 
                         {d.proses_count > 0 && <span className="block mt-1 font-bold text-brand-400">Total estimasi biaya kasar tersedia: Rp {formatIDR(totalMesinAll)}</span>}
                       </td>

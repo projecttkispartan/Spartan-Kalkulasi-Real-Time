@@ -28,15 +28,17 @@ export function computePartCostRow(d) {
   const matAdjusted = matBase + sfAmt + wfAmt;
 
   let mesin = 0;
+  let wc = 0;
   let pekerja = 0;
   let waktu = 0;
   expandProsesList(d).forEach((p) => {
     const c = calcProsesCosts(p);
     mesin += c.mesin;
+    wc += c.wc || 0;
     pekerja += c.pekerja;
     waktu += c.waktu;
   });
-  const prosesTotal = mesin + pekerja;
+  const prosesTotal = mesin + wc + pekerja;
 
   return {
     sf,
@@ -47,6 +49,7 @@ export function computePartCostRow(d) {
     wfAmt,
     matAdjusted,
     mesin,
+    wc,
     pekerja,
     prosesTotal,
     waktu,
@@ -60,6 +63,7 @@ const EMPTY_ROLLUP = {
   wfAmt: 0,
   matAdjusted: 0,
   mesin: 0,
+  wc: 0,
   pekerja: 0,
   prosesTotal: 0,
   waktu: 0,

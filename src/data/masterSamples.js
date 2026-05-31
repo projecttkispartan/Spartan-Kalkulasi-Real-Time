@@ -21,6 +21,12 @@ export const PRODUCT_NAME_SAMPLES = [
 /** Mark up % — referensi kolom Excel (step 2,5%) */
 export const MARKUP_PRESETS = [15, 17.5, 20, 22.5, 25, 27.5, 30, 32.5, 35];
 
+/** Label tipe gaji work center */
+export const TIPE_GAJI_OPTIONS = ['Harian', 'Borongan', 'Kontrak', 'Piece Rate'];
+
+/** Unit kapasitas work center */
+export const CAPACITY_UNIT_OPTIONS = ['m³', 'Meter (M)', 'Pcs', 'Jam', 'Lembar'];
+
 /** Master rate pekerja per menit */
 export const LABOR_RATE_PRESETS = [
   { id: '450', label: 'Rate A — Rp 450 / menit', value: 450 },
