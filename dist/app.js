@@ -84233,7 +84233,139 @@ try {
 var anyWindow;
 var jsPDF;
 
+// src/utils/partCostHelpers.js
+function calcStrukturProdFinancials(d2, kursUsd, kursEur) {
+  let totalProcess = 0;
+  expandProsesList(d2).forEach((p3) => {
+    totalProcess += calcProsesCosts(p3).total;
+  });
+  if (!d2.proses?.length && d2.proses_count > 0) {
+    totalProcess += d2.proses_count * 11e4;
+  }
+  const qty = Number(d2.qty) || 1;
+  const unitMat = Number(d2.biaya) || 0;
+  const prodTotal = unitMat * qty + totalProcess;
+  const prodUnit = qty ? prodTotal / qty : prodTotal;
+  const usd = (v3) => Number(kursUsd) ? (v3 / kursUsd).toFixed(2) : "0.00";
+  const eur = (v3) => Number(kursEur) ? (v3 / kursEur).toFixed(2) : "0.00";
+  return {
+    qty,
+    unitMat,
+    usdMat: usd(unitMat),
+    eurMat: eur(unitMat),
+    prodTotal,
+    prodUnit,
+    usdProd: usd(prodTotal),
+    eurProd: eur(prodTotal),
+    usdProdUnit: usd(prodUnit),
+    eurProdUnit: eur(prodUnit)
+  };
+}
+function calcPartRowFinancials(d2, kursUsd, kursEur) {
+  const sf = Number(d2.sf) || 0;
+  const wf = Number(d2.wf) || 0;
+  const qty = Number(d2.qty) || 1;
+  const unitMat = Number(d2.biaya) || 0;
+  let totalProcess = 0;
+  expandProsesList(d2).forEach((p3) => {
+    totalProcess += calcProsesCosts(p3).total;
+  });
+  const matTotal = unitMat * qty * (1 + sf / 100 + wf / 100);
+  const prodTotal = matTotal + totalProcess;
+  const prodUnit = qty ? prodTotal / qty : prodTotal;
+  const usd = (v3) => Number(kursUsd) ? (v3 / kursUsd).toFixed(2) : "0.00";
+  const eur = (v3) => Number(kursEur) ? (v3 / kursEur).toFixed(2) : "0.00";
+  return {
+    qty,
+    unitMat,
+    usdMat: usd(unitMat),
+    eurMat: eur(unitMat),
+    matTotal,
+    prodTotal,
+    prodUnit,
+    usdProd: usd(prodTotal),
+    eurProd: eur(prodTotal),
+    usdProdUnit: usd(prodUnit),
+    eurProdUnit: eur(prodUnit)
+  };
+}
+
 // src/utils/bomExport.js
+function fxUsd(value, kursUsd) {
+  return Number(kursUsd) ? (Number(value) / kursUsd).toFixed(2) : "0.00";
+}
+function fxEur(value, kursEur) {
+  return Number(kursEur) ? (Number(value) / kursEur).toFixed(2) : "0.00";
+}
+function buildCogsWaterfallRows(cogsData, cogsConfig) {
+  const cd = cogsData || {};
+  const cc = cogsConfig || {};
+  const jalur = cc.packingJalur || "BOX";
+  const afterMat = cd.totalMaterial || 0;
+  const afterProc = afterMat + (cd.totalProcess || 0);
+  const sellingRounded = Math.floor((cd.sellingPrice || 0) / 1e3) * 1e3;
+  return [
+    {
+      step: 1,
+      komponen: "Bahan Baku & Material (RAW)",
+      sumber: "Harga Part \xD7 Qty + Penyesuaian SF/WF | Engine BOM Rollup",
+      nilai: afterMat,
+      running: afterMat
+    },
+    {
+      step: 2,
+      komponen: "Proses Pabrik (Work Center & Labor)",
+      sumber: "Total Waktu \xD7 (Tarif Mesin + Upah Karyawan) | Costing Studio (Proses)",
+      nilai: cd.totalProcess || 0,
+      running: afterProc
+    },
+    {
+      step: 3,
+      komponen: `Biaya Packing (${jalur})`,
+      sumber: `Material ${jalur === "BOX" ? "Karton Luar" : "Single Face"} + Tenaga Packing | Mat: ${cd.packingMat ?? 0} | Labor: ${cd.packingLab ?? 0}`,
+      nilai: cd.packingCost || 0,
+      running: cd.productionCost || 0
+    },
+    {
+      step: "",
+      komponen: "RAW Production Cost",
+      sumber: `Material + Proses Pabrik + Packing (${jalur})`,
+      nilai: "",
+      running: cd.productionCost || 0,
+      highlight: "subtotal"
+    },
+    {
+      step: 4,
+      komponen: "Factory Overhead",
+      sumber: `Production Cost \xD7 ${cc.factoryOhPct ?? 0}%`,
+      nilai: cd.factoryOh || 0,
+      running: (cd.productionCost || 0) + (cd.factoryOh || 0)
+    },
+    {
+      step: 5,
+      komponen: "Management Overhead",
+      sumber: `Production Cost \xD7 ${cc.managementOhPct ?? 0}%`,
+      nilai: cd.managementOh || 0,
+      running: cd.totalCogs || 0
+    },
+    {
+      step: "",
+      komponen: `TOTAL COGS (${jalur})`,
+      sumber: "Production Cost + Factory OH + Management OH",
+      nilai: "",
+      running: cd.totalCogs || 0,
+      highlight: "total"
+    },
+    {
+      step: "",
+      komponen: "Harga Jual FOB",
+      sumber: `COGS \xD7 (1 + ${cc.markupPct ?? 0}% Markup) | Dibulatkan ribuan`,
+      nilai: "",
+      running: sellingRounded,
+      highlight: "selling"
+    }
+  ];
+}
 function safeFilename(base) {
   return String(base || "BOM").replace(/[^\w\-]+/g, "_").replace(/_+/g, "_").slice(0, 80);
 }
@@ -84344,6 +84476,7 @@ function buildPackingPayload({
 function buildBomExportPayload({
   productInfo,
   productMeta,
+  productImage,
   dimensi,
   bomData,
   flatNodes,
@@ -84360,6 +84493,12 @@ function buildBomExportPayload({
   packingSpec,
   containerCapacity
 }) {
+  const dim = dimensi || {};
+  const volProduk = (Number(dim.w) || 0) * (Number(dim.d) || 0) * (Number(dim.h) || 0) / 1e9;
+  const partQtyByKode = {};
+  flatNodes.filter((n2) => n2.data.tipe === "PART").forEach((n2) => {
+    partQtyByKode[n2.data.kode] = Number(n2.data.qty) || 1;
+  });
   const prosesEntries = [];
   flatNodes.forEach((node2) => {
     expandProsesList(node2.data).forEach((p3) => {
@@ -84375,26 +84514,27 @@ function buildBomExportPayload({
   const prosesTotals = sumProsesLineItems(prosesLines);
   const strukturRows = flatNodes.map((node2, i3) => {
     const d2 = node2.data;
-    let totalProcess = 0;
-    expandProsesList(d2).forEach((p3) => {
-      totalProcess += calcProsesCosts(p3).total;
-    });
-    const hargaProduksi = (Number(d2.biaya) || 0) * (Number(d2.qty) || 1) + totalProcess;
+    const fin = calcStrukturProdFinancials(d2, kursUsd, kursEur);
     return {
       no: i3 + 1,
       level: node2.level,
       tipe: d2.tipe,
+      materialType: d2.tipe === "PART" ? getMaterialTypeLabel(d2.materialType) : "",
       kode: d2.kode || "",
       nama: d2.nama || "",
       qty: d2.qty ?? "",
+      unit: d2.unit || (d2.tipe === "PART" ? "EA" : ""),
       dimensi: d2.p && d2.l && d2.t ? `${d2.p} x ${d2.l} x ${d2.t}` : "",
       vol: d2.vol ?? "",
-      biayaIdr: Number(d2.biaya) || 0,
-      biayaUsd: ((Number(d2.biaya) || 0) / kursUsd).toFixed(2),
-      biayaEur: ((Number(d2.biaya) || 0) / kursEur).toFixed(2),
-      prodIdr: hargaProduksi,
-      prodUsd: (hargaProduksi / kursUsd).toFixed(2),
-      prodEur: (hargaProduksi / kursEur).toFixed(2),
+      biayaIdr: fin.unitMat,
+      biayaUsd: fin.usdMat,
+      biayaEur: fin.eurMat,
+      prodIdr: fin.prodTotal,
+      prodUsd: fin.usdProd,
+      prodEur: fin.eurProd,
+      prodUnitIdr: d2.tipe === "PART" ? fin.prodUnit : "",
+      prodUnitUsd: d2.tipe === "PART" ? fin.usdProdUnit : "",
+      prodUnitEur: d2.tipe === "PART" ? fin.eurProdUnit : "",
       sf: Number(d2.sf) || 0,
       wf: Number(d2.wf) || 0,
       prosesCount: d2.proses?.length || d2.proses_count || 0,
@@ -84413,14 +84553,9 @@ function buildBomExportPayload({
     const hierarchy = getPartHierarchyLabels(bomData, node2.id);
     const sf = Number(d2.sf) || 0;
     const wf = Number(d2.wf) || 0;
+    const fin = calcPartRowFinancials(d2, kursUsd, kursEur);
     const base = (Number(d2.biaya) || 0) * (Number(d2.qty) || 1);
-    let totalProcess = 0;
-    expandProsesList(d2).forEach((p3) => {
-      totalProcess += calcProsesCosts(p3).total;
-    });
-    const hargaBeli = Number(d2.biaya) || 0;
     const matTotal = base * (1 + sf / 100 + wf / 100);
-    const hargaProd = matTotal + totalProcess;
     return {
       no: i3 + 1,
       modul: hierarchy.modul?.nama || "",
@@ -84439,13 +84574,16 @@ function buildBomExportPayload({
       vol: d2.vol ?? "",
       qty: d2.qty ?? "",
       unit: d2.unit || "EA",
-      matIdr: hargaBeli,
+      matIdr: fin.unitMat,
       matTotalIdr: matTotal,
-      matUsd: (hargaBeli / kursUsd).toFixed(2),
-      matEur: (hargaBeli / kursEur).toFixed(2),
-      prodIdr: hargaProd,
-      prodUsd: (hargaProd / kursUsd).toFixed(2),
-      prodEur: (hargaProd / kursEur).toFixed(2)
+      matUsd: fin.usdMat,
+      matEur: fin.eurMat,
+      prodIdr: fin.prodTotal,
+      prodUsd: fin.usdProd,
+      prodEur: fin.eurProd,
+      prodUnitIdr: fin.prodUnit,
+      prodUnitUsd: fin.usdProdUnit,
+      prodUnitEur: fin.eurProdUnit
     };
   });
   const materialTotals = {
@@ -84455,22 +84593,33 @@ function buildBomExportPayload({
     partCount: materialRows.length,
     totalQty: materialRows.reduce((s3, r2) => s3 + (Number(r2.qty) || 0), 0)
   };
-  const prosesRows = prosesLines.map((ln2, i3) => ({
-    no: i3 + 1,
-    partKode: ln2.nodeKode,
-    partNama: ln2.nodeNama,
-    operasi: ln2.opNama,
-    tipe: ln2.inputMode === "routing" ? "Routing" : "Work Center",
-    tahap: ln2.mfgProcess || "",
-    wcLangkah: ln2.stepUrutan != null ? `#${ln2.stepUrutan} ${ln2.wcNama}` : ln2.wcNama,
-    durasi: ln2.waktu,
-    pekerja: ln2.person,
-    orgMenit: ln2.waktu * ln2.person,
-    biayaWc: ln2.biayaMesin,
-    biayaTk: ln2.biayaPekerja,
-    subtotal: ln2.biayaTotal,
-    detail: ln2.note || ""
-  }));
+  const prosesRows = prosesLines.map((ln2, i3) => {
+    const partQty = partQtyByKode[ln2.nodeKode] || 1;
+    const prodUnit = ln2.biayaTotal / partQty;
+    return {
+      no: i3 + 1,
+      partKode: ln2.nodeKode,
+      partNama: ln2.nodeNama,
+      partQty,
+      operasi: ln2.opNama,
+      tipe: ln2.inputMode === "routing" ? "Routing" : "Work Center",
+      tahap: ln2.mfgProcess || "",
+      wcLangkah: ln2.stepUrutan != null ? `#${ln2.stepUrutan} ${ln2.wcNama}` : ln2.wcNama,
+      durasi: ln2.waktu,
+      pekerja: ln2.person,
+      orgMenit: ln2.waktu * ln2.person,
+      biayaWc: ln2.biayaMesin,
+      biayaTk: ln2.biayaPekerja,
+      subtotal: ln2.biayaTotal,
+      subtotalUsd: fxUsd(ln2.biayaTotal, kursUsd),
+      subtotalEur: fxEur(ln2.biayaTotal, kursEur),
+      prodUnitIdr: prodUnit,
+      prodUnitUsd: fxUsd(prodUnit, kursUsd),
+      prodUnitEur: fxEur(prodUnit, kursEur),
+      detail: ln2.note || ""
+    };
+  });
+  const cogsWaterfall = buildCogsWaterfallRows(cogsData, cogsConfig);
   const packing = buildPackingPayload({
     dimensi,
     packingDimensions,
@@ -84486,13 +84635,16 @@ function buildBomExportPayload({
     },
     productInfo,
     productMeta,
+    productImage: productImage || "",
     dimensi,
+    volProduk: Number(volProduk.toFixed(6)),
     volBoxPacking,
     volSFPacking,
     kursUsd,
     kursEur,
     cogsData,
     cogsConfig,
+    cogsWaterfall,
     summaryTotals,
     materialTabTotals,
     prosesTabTotals,
@@ -84519,10 +84671,13 @@ function exportBomToExcel(payload) {
   const mt2 = payload.materialTabTotals || {};
   const pt2 = payload.prosesTabTotals || payload.prosesTotals || {};
   const pk = payload.packing || {};
+  const sellingRounded = Math.floor((payload.cogsData?.sellingPrice || 0) / 1e3) * 1e3;
   appendSheet(wb, "Ringkasan", [
     ["LAPORAN BOM \u2014 MANUFAKTUR"],
     ["Diekspor", payload.meta.exportedAt],
     [],
+    ["\u2014 DATA PRODUK \u2014"],
+    ["URL / Referensi Gambar", payload.productImage || "\u2014"],
     ["Kode Produk", pi.kode],
     ["Nama Produk", pi.nama],
     ["Varian", pi.varian],
@@ -84535,10 +84690,21 @@ function exportBomToExcel(payload) {
     ["Coating", pm.coating],
     [],
     ["Dimensi Nett W x D x H (mm)", `${dim.w} x ${dim.d} x ${dim.h}`],
+    ["Volume Produk Nett (m\xB3)", payload.volProduk ?? ""],
     ["Volume Box (m\xB3)", payload.volBoxPacking],
     ["Volume Single Face (m\xB3)", payload.volSFPacking],
     ["Kurs USD", payload.kursUsd],
     ["Kurs EUR", payload.kursEur],
+    [],
+    ["\u2014 LANGKAH DEMI LANGKAH PEMBENTUKAN COGS \u2014"],
+    ["Step", "Komponen Cost", "Sumber & Referensi", "Nilai Akumulasi (IDR)", "Running Total (IDR)"],
+    ...(payload.cogsWaterfall || []).map((r2) => [
+      r2.step,
+      r2.komponen,
+      r2.sumber,
+      r2.nilai === "" ? "" : r2.nilai,
+      r2.running
+    ]),
     [],
     ["\u2014 RINGKASAN MATERIAL \u2014"],
     ["Total Material (SF & WF)", payload.summaryTotals?.material ?? mt2.material ?? 0],
@@ -84558,24 +84724,29 @@ function exportBomToExcel(payload) {
     ["Packing Material", pk.totals?.packMat ?? 0],
     ["Packing Tenaga Kerja", pk.totals?.packLab ?? 0],
     ["TOTAL COGS", payload.cogsData?.totalCogs ?? 0],
-    ["Harga Jual", payload.cogsData?.sellingPrice ?? 0]
+    ["Harga Jual (dibulatkan ribuan)", sellingRounded]
   ]);
   appendSheet(wb, "Struktur BOM", [
     [
       "No",
       "Level",
       "Tipe",
+      "Tipe Material",
       "Kode",
       "Nama",
       "Qty",
+      "Unit",
       "Dimensi",
       "Vol m\xB3",
-      "MAT IDR",
+      "Harga Material / Unit IDR",
       "MAT USD",
       "MAT EUR",
-      "PROD IDR",
+      "Harga Produksi Total IDR",
       "PROD USD",
       "PROD EUR",
+      "Harga Produksi / Unit IDR",
+      "PROD/U USD",
+      "PROD/U EUR",
       "SF%",
       "WF%",
       "Proses",
@@ -84585,9 +84756,11 @@ function exportBomToExcel(payload) {
       r2.no,
       r2.level,
       r2.tipe,
+      r2.materialType,
       r2.kode,
       r2.nama,
       r2.qty,
+      r2.unit,
       r2.dimensi,
       r2.vol,
       r2.biayaIdr,
@@ -84596,13 +84769,40 @@ function exportBomToExcel(payload) {
       r2.prodIdr,
       r2.prodUsd,
       r2.prodEur,
+      r2.prodUnitIdr,
+      r2.prodUnitUsd,
+      r2.prodUnitEur,
       r2.sf,
       r2.wf,
       r2.prosesCount,
       r2.catatan
     ]),
     [],
-    ["TOTAL (PART)", "", "", "", "", "", "", "", payload.strukturTotals?.matIdr ?? 0, "", "", payload.strukturTotals?.prodIdr ?? 0, "", "", "", "", "", ""]
+    [
+      "TOTAL (PART)",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      payload.strukturTotals?.matIdr ?? 0,
+      "",
+      "",
+      payload.strukturTotals?.prodIdr ?? 0,
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
   ]);
   appendSheet(wb, "Kebutuhan Material", [
     [
@@ -84626,9 +84826,12 @@ function exportBomToExcel(payload) {
       "MAT Total IDR",
       "MAT USD",
       "MAT EUR",
-      "PROD IDR",
+      "PROD Total IDR",
       "PROD USD",
-      "PROD EUR"
+      "PROD EUR",
+      "PROD/Unit IDR",
+      "PROD/Unit USD",
+      "PROD/Unit EUR"
     ],
     ...payload.materialRows.map((r2) => [
       r2.no,
@@ -84653,7 +84856,10 @@ function exportBomToExcel(payload) {
       r2.matEur,
       r2.prodIdr,
       r2.prodUsd,
-      r2.prodEur
+      r2.prodEur,
+      r2.prodUnitIdr,
+      r2.prodUnitUsd,
+      r2.prodUnitEur
     ]),
     [],
     [
@@ -84680,6 +84886,9 @@ function exportBomToExcel(payload) {
       "",
       payload.materialTotals?.prodIdr ?? 0,
       "",
+      "",
+      "",
+      "",
       ""
     ]
   ]);
@@ -84698,6 +84907,12 @@ function exportBomToExcel(payload) {
       "Biaya Proses IDR",
       "Biaya TK IDR",
       "Subtotal IDR",
+      "Subtotal USD",
+      "Subtotal EUR",
+      "PROD/Unit IDR",
+      "PROD/Unit USD",
+      "PROD/Unit EUR",
+      "Qty Part",
       "Detail"
     ],
     ...payload.prosesRows.map((r2) => [
@@ -84714,6 +84929,12 @@ function exportBomToExcel(payload) {
       r2.biayaWc,
       r2.biayaTk,
       r2.subtotal,
+      r2.subtotalUsd,
+      r2.subtotalEur,
+      r2.prodUnitIdr,
+      r2.prodUnitUsd,
+      r2.prodUnitEur,
+      r2.partQty,
       r2.detail
     ]),
     [],
@@ -84731,6 +84952,12 @@ function exportBomToExcel(payload) {
       payload.prosesTotals?.mesin ?? 0,
       payload.prosesTotals?.pekerja ?? 0,
       payload.prosesTotals?.total ?? 0,
+      fxUsd(payload.prosesTotals?.total ?? 0, payload.kursUsd),
+      fxEur(payload.prosesTotals?.total ?? 0, payload.kursEur),
+      "",
+      "",
+      "",
+      "",
       ""
     ]
   ]);
@@ -84947,13 +85174,18 @@ function exportBomToPdf(payload) {
 
 // src/pages/BOMEditor.jsx
 var import_jsx_runtime19 = __toESM(require_jsx_runtime(), 1);
-function MaterialTypeField({ value, onChange }) {
+function MaterialTypeDisplay({ value }) {
+  const label = getMaterialTypeLabel(value);
+  return /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("span", { className: "inline-block px-2 py-1 rounded text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-600 border border-slate-200 min-w-[72px]", children: label });
+}
+function MaterialTypeField({ value, onChange, disabled = false }) {
   return /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)(
     "select",
     {
       value: value || "",
       onChange: (e2) => onChange(e2.target.value),
-      className: "w-full min-w-[120px] border border-emerald-200 rounded-lg px-2 py-1.5 text-[10px] font-bold bg-emerald-50/50 text-emerald-800 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-100 outline-none uppercase tracking-wide",
+      disabled,
+      className: "w-full min-w-[120px] border border-emerald-200 rounded-lg px-2 py-1.5 text-[10px] font-bold bg-emerald-50/50 text-emerald-800 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-100 outline-none uppercase tracking-wide disabled:bg-slate-100 disabled:text-slate-500 disabled:border-slate-200 disabled:cursor-not-allowed",
       children: [
         /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("option", { value: "", children: "\u2014 Pilih \u2014" }),
         MATERIAL_TYPE_OPTIONS.map((opt) => /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("option", { value: opt.key, children: opt.label }, opt.key))
@@ -85205,7 +85437,7 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur, fontCase,
   const [showMarkupPreview, setShowMarkupPreview] = (0, import_react9.useState)(false);
   const [detailSummaryNode, setDetailSummaryNode] = (0, import_react9.useState)(null);
   const [showProductPanel, setShowProductPanel] = (0, import_react9.useState)(true);
-  const [priceDisplay, setPriceDisplay] = (0, import_react9.useState)("IDR");
+  const [priceDisplay] = (0, import_react9.useState)("IDR");
   const [showHiddenContainers, setShowHiddenContainers] = (0, import_react9.useState)(false);
   const [editorTab, setEditorTab] = (0, import_react9.useState)("struktur");
   const [materialHierarchyCols, setMaterialHierarchyCols] = (0, import_react9.useState)({
@@ -85557,6 +85789,13 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur, fontCase,
   }, [flatNodes]);
   const prosesLineItems = (0, import_react9.useMemo)(() => flattenProsesLineItems(allProses), [allProses]);
   const prosesLineTotals = (0, import_react9.useMemo)(() => sumProsesLineItems(prosesLineItems), [prosesLineItems]);
+  const partQtyByKode = (0, import_react9.useMemo)(() => {
+    const m4 = {};
+    flatNodes.filter((n2) => n2.data.tipe === "PART").forEach((n2) => {
+      m4[n2.data.kode] = Number(n2.data.qty) || 1;
+    });
+    return m4;
+  }, [flatNodes]);
   const prosesSummary = (0, import_react9.useMemo)(() => {
     const summary = {};
     let totalWaktu = 0, totalMesin = 0, totalPekerja = 0, grandTotal = 0;
@@ -85654,6 +85893,7 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur, fontCase,
   const buildExportPayload = () => buildBomExportPayload({
     productInfo,
     productMeta,
+    productImage: resolveNodeFoto(bomData),
     dimensi,
     bomData,
     flatNodes,
@@ -85683,6 +85923,7 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur, fontCase,
           /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { colSpan: 4, className: "border-b-[3px] border-b-blue-500 text-center py-2 px-1 text-[10px] text-blue-700 font-bold uppercase tracking-wider border-r border-slate-200 bg-blue-50/30", children: "SPESIFIKASI FISIK (DIMENSI & VOL)" }),
           /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { colSpan: 3, className: "border-b-[3px] border-b-amber-400 text-center py-2 px-1 text-[10px] text-amber-700 font-bold uppercase tracking-wider border-r border-slate-200 bg-amber-50/30", children: "HARGA MATERIAL (SATUAN)" }),
           /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { colSpan: 3, className: "border-b-[3px] border-b-indigo-400 text-center py-2 px-1 text-[10px] text-indigo-700 font-bold uppercase tracking-wider border-r border-slate-200 bg-indigo-50/30", children: "BIAYA PRODUKSI (TOTAL)" }),
+          /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { colSpan: 3, className: "border-b-[3px] border-b-violet-400 text-center py-2 px-1 text-[10px] text-violet-700 font-bold uppercase tracking-wider border-r border-slate-200 bg-violet-50/30", children: "HARGA PRODUKSI (SATUAN)" }),
           /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { colSpan: 1, className: "border-b-[3px] border-b-slate-200 text-center py-3 px-2 text-[10px] text-slate-500 font-bold uppercase tracking-wider border-r border-slate-200 bg-slate-50/50", children: "MANUFAKTUR" }),
           /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { colSpan: 1, className: "border-b-[3px] border-b-slate-200 text-center py-3 px-2 text-[10px] text-slate-500 font-bold uppercase tracking-wider bg-slate-50/50", children: "LAIN-LAIN" })
         ] }),
@@ -85705,25 +85946,17 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur, fontCase,
           /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "py-2 px-1.5 text-right text-indigo-600 min-w-[6.5rem]", children: "PROD (IDR)" }),
           /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "py-2 px-1.5 text-right text-indigo-600 w-[4.5rem]", children: "PROD (USD)" }),
           /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "py-2 px-1.5 border-r border-slate-200 text-right text-indigo-600 w-[4.5rem]", children: "PROD (EUR)" }),
+          /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "py-2 px-1.5 text-right text-violet-700 min-w-[6.5rem]", children: "PROD/U (IDR)" }),
+          /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "py-2 px-1.5 text-right text-violet-600 w-[4.5rem]", children: "PROD/U (USD)" }),
+          /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "py-2 px-1.5 border-r border-slate-200 text-right text-violet-600 w-[4.5rem]", children: "PROD/U (EUR)" }),
           /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "py-2 px-1.5 border-r border-slate-200", children: "PENGATURAN PROSES LENGKAP" }),
           /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "py-2 px-1.5 min-w-[200px]", children: "CATATAN" })
         ] })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("tbody", { children: flatNodes.map((node2) => {
         const d2 = node2.data;
-        const usdMat = ((Number(d2.biaya) || 0) / kursUsd).toFixed(2);
-        const eurMat = ((Number(d2.biaya) || 0) / kursEur).toFixed(2);
-        let totalProcess = 0;
-        if (d2.proses && d2.proses.length > 0) {
-          d2.proses.forEach((p3) => {
-            totalProcess += calcProsesCosts(p3).total;
-          });
-        } else if (d2.proses_count > 0) {
-          totalProcess += d2.proses_count * 11e4;
-        }
-        const hargaProduksiIDR = (d2.biaya || 0) * (d2.qty || 1) + totalProcess;
-        const usdProd = (hargaProduksiIDR / kursUsd).toFixed(2);
-        const eurProd = (hargaProduksiIDR / kursEur).toFixed(2);
+        const fin = calcStrukturProdFinancials(d2, kursUsd, kursEur);
+        const { usdMat, eurMat, prodTotal: hargaProduksiIDR, usdProd, eurProd, prodUnit, usdProdUnit, eurProdUnit } = fin;
         const style = tipeStyles[d2.tipe] || tipeStyles.PART;
         return /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("tr", { className: "border-b border-slate-100 bg-white hover:bg-slate-50/70 transition-colors text-xs text-slate-700 group", children: [
           /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "sticky left-0 z-10 bg-inherit py-3 px-4 text-center font-bold text-slate-400 border-r border-slate-100", children: d2.no }),
@@ -85767,13 +86000,7 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur, fontCase,
           /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "sticky left-[460px] z-10 bg-inherit py-2 px-2 border-r border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("input", { type: "text", value: d2.kode, onChange: (e2) => handleUpdateNode(node2.id, "kode", e2.target.value), className: `${inputClasses} font-mono text-slate-600 min-w-[120px]` }) }),
           /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "sticky left-[600px] z-10 bg-inherit py-2 px-2 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] border-r border-slate-100", children: /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("input", { type: "text", value: d2.nama, onChange: (e2) => handleUpdateNode(node2.id, "nama", e2.target.value), className: `${inputClasses} font-bold text-slate-800 min-w-[220px]` }) }),
           /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "py-2 px-4 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("div", { className: "w-10 h-10 rounded-lg border border-slate-200 overflow-hidden bg-slate-50 flex items-center justify-center mx-auto shadow-sm", children: d2.foto ? /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("img", { src: d2.foto, alt: "pic", className: "w-full h-full object-cover" }) : /* @__PURE__ */ (0, import_jsx_runtime19.jsx)(Image2, { className: "w-4 h-4 text-slate-300" }) }) }),
-          /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "py-2 px-2 border-r border-slate-100 text-center", children: d2.tipe === "PART" ? /* @__PURE__ */ (0, import_jsx_runtime19.jsx)(
-            MaterialTypeField,
-            {
-              value: d2.materialType || "",
-              onChange: (val) => handleUpdateNode(node2.id, "materialType", val)
-            }
-          ) : /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("span", { className: "text-slate-300 text-[10px]", children: "\u2014" }) }),
+          /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "py-2 px-2 border-r border-slate-100 text-center", children: d2.tipe === "PART" ? /* @__PURE__ */ (0, import_jsx_runtime19.jsx)(MaterialTypeDisplay, { value: d2.materialType || "" }) : /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("span", { className: "text-slate-300 text-[10px]", children: "\u2014" }) }),
           /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "py-2 px-2 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("input", { type: "number", value: d2.qty, onChange: (e2) => handleUpdateNode(node2.id, "qty", Number(e2.target.value)), className: `${inputClasses} font-bold text-center w-16 text-slate-700` }) }),
           /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "py-2 px-1.5 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("input", { type: "number", value: d2.p || "", onChange: (e2) => handleUpdateNode(node2.id, "p", Number(e2.target.value)), placeholder: "-", className: `${inputClasses} text-center w-14 text-slate-600` }) }),
           /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "py-2 px-1.5 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("input", { type: "number", value: d2.l || "", onChange: (e2) => handleUpdateNode(node2.id, "l", Number(e2.target.value)), placeholder: "-", className: `${inputClasses} text-center w-14 text-slate-600` }) }),
@@ -85797,6 +86024,9 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur, fontCase,
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "py-2 px-1.5 text-right font-bold text-indigo-600 bg-indigo-50/10 tabular-nums text-[11px]", children: usdProd }),
           /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "py-2 px-1.5 border-r border-slate-100 text-right font-bold text-indigo-600 bg-indigo-50/10 tabular-nums text-[11px]", children: eurProd }),
+          /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "py-2 px-1.5 text-right font-bold text-violet-700 bg-violet-50/10 tabular-nums text-[11px]", children: d2.tipe === "PART" ? `Rp ${formatIDR(prodUnit)}` : "\u2014" }),
+          /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "py-2 px-1.5 text-right font-bold text-violet-600 bg-violet-50/10 tabular-nums text-[11px]", children: d2.tipe === "PART" ? usdProdUnit : "\u2014" }),
+          /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "py-2 px-1.5 border-r border-slate-100 text-right font-bold text-violet-600 bg-violet-50/10 tabular-nums text-[11px]", children: d2.tipe === "PART" ? eurProdUnit : "\u2014" }),
           /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "py-3 px-4 border-r border-slate-100", children: d2.proses_count > 0 ? /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("div", { onClick: () => setRoutingNode(node2), className: "flex items-center gap-1.5 text-blue-600 font-bold cursor-pointer hover:underline hover:text-blue-800 transition-colors", children: [
             /* @__PURE__ */ (0, import_jsx_runtime19.jsx)(Link, { className: "w-3.5 h-3.5" }),
             /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("span", { children: [
@@ -85854,16 +86084,6 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur, fontCase,
           }
         ),
         /* @__PURE__ */ (0, import_jsx_runtime19.jsx)(FontCaseToggle, { value: fontCase, onChange: setFontCase }),
-        /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("div", { className: "flex items-center bg-slate-100 rounded-lg p-0.5 border border-slate-200", children: ["IDR", "USD", "EUR"].map((mode) => /* @__PURE__ */ (0, import_jsx_runtime19.jsx)(
-          "button",
-          {
-            type: "button",
-            onClick: () => setPriceDisplay(mode),
-            className: `px-3 py-1.5 text-[10px] font-black rounded-md transition-all ${priceDisplay === mode ? mode === "IDR" ? "bg-emerald-600 text-white shadow-sm" : mode === "USD" ? "bg-amber-500 text-white shadow-sm" : "bg-brand-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-800"}`,
-            children: mode
-          },
-          mode
-        )) }),
         /* @__PURE__ */ (0, import_jsx_runtime19.jsx)(CurrencyGroup, { kursUsd, setKursUsd, kursEur, setKursEur, className: "mr-1" }),
         /* @__PURE__ */ (0, import_jsx_runtime19.jsx)(ExportMenu, { onExportExcel: handleExportExcel, onExportPdf: handleExportPdf }),
         /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("button", { onClick: () => setShowKalkulasi(true), className: "bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors shadow-sm", children: [
@@ -86411,6 +86631,7 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur, fontCase,
                   /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { rowSpan: 2, className: "px-4 py-3 border-r border-slate-100 text-amber-600 border-b border-slate-200 align-middle", children: "UNIT" }),
                   /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { colSpan: 3, className: "px-2 py-2 border-r border-slate-200 border-b border-amber-200 text-amber-700 bg-amber-50/40", children: "HARGA MATERIAL (SATUAN)" }),
                   /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { colSpan: 3, className: "px-2 py-2 border-r border-slate-200 border-b border-indigo-200 text-indigo-700 bg-indigo-50/40", children: "BIAYA PRODUKSI (TOTAL)" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { colSpan: 3, className: "px-2 py-2 border-r border-slate-200 border-b border-violet-200 text-violet-700 bg-violet-50/40", children: "HARGA PRODUKSI (SATUAN)" }),
                   /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { rowSpan: 2, className: "px-4 py-3 border-r border-slate-100 border-b border-slate-200 align-middle", children: "STOCK GUDANG" }),
                   /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { rowSpan: 2, className: "px-4 py-3 border-r border-slate-100 border-b border-slate-200 align-middle", children: "STATUS" }),
                   /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { rowSpan: 2, className: "px-4 py-3 w-16 border-b border-slate-200 align-middle", children: "ACTION" })
@@ -86421,24 +86642,20 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur, fontCase,
                   /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "py-2 px-1.5 border-r border-slate-200 text-right text-amber-600 w-[4.5rem]", children: "MAT (EUR)" }),
                   /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "py-2 px-1.5 text-right text-indigo-600 min-w-[6.5rem]", children: "PROD (IDR)" }),
                   /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "py-2 px-1.5 text-right text-indigo-600 w-[4.5rem]", children: "PROD (USD)" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "py-2 px-1.5 border-r border-slate-200 text-right text-indigo-600 w-[4.5rem]", children: "PROD (EUR)" })
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "py-2 px-1.5 border-r border-slate-200 text-right text-indigo-600 w-[4.5rem]", children: "PROD (EUR)" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "py-2 px-1.5 text-right text-violet-700 min-w-[6.5rem]", children: "PROD/U (IDR)" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "py-2 px-1.5 text-right text-violet-600 w-[4.5rem]", children: "PROD/U (USD)" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "py-2 px-1.5 border-r border-slate-200 text-right text-violet-600 w-[4.5rem]", children: "PROD/U (EUR)" })
                 ] })
               ] }),
               /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("tbody", { className: "font-medium text-slate-700 divide-y divide-slate-100", children: flatNodes.filter((n2) => n2.data.tipe === "PART").map((node2, i3) => {
                 const d2 = node2.data;
                 const hierarchy = getPartHierarchyLabels(bomData, node2.id);
                 const hargaBeliIDR = d2.biaya || 0;
-                const usdMat = (hargaBeliIDR / kursUsd).toFixed(2);
-                const eurMat = (hargaBeliIDR / kursEur).toFixed(2);
                 const sf = Number(d2.sf) || 0;
                 const wf = Number(d2.wf) || 0;
-                let totalProcess = 0;
-                expandProsesList2(d2).forEach((p3) => {
-                  totalProcess += calcProsesCosts(p3).total;
-                });
-                const hargaProduksiIDR = hargaBeliIDR * (d2.qty || 1) * (1 + sf / 100 + wf / 100) + totalProcess;
-                const usdProd = (hargaProduksiIDR / kursUsd).toFixed(2);
-                const eurProd = (hargaProduksiIDR / kursEur).toFixed(2);
+                const fin = calcPartRowFinancials(d2, kursUsd, kursEur);
+                const { usdMat, eurMat, prodTotal: hargaProduksiIDR, usdProd, eurProd, prodUnit, usdProdUnit, eurProdUnit } = fin;
                 return /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("tr", { className: "hover:bg-slate-50 transition-colors", children: [
                   /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-4 py-3 text-center border-r border-slate-100 text-slate-400 font-bold", children: i3 + 1 }),
                   /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("div", { className: "w-8 h-8 rounded border border-slate-200 overflow-hidden bg-slate-50 flex items-center justify-center mx-auto", children: d2.foto ? /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("img", { src: d2.foto, alt: "pic", className: "w-full h-full object-cover" }) : /* @__PURE__ */ (0, import_jsx_runtime19.jsx)(Image2, { className: "w-4 h-4 text-slate-300" }) }) }),
@@ -86515,6 +86732,12 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur, fontCase,
                   ] }),
                   /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "py-2 px-1.5 text-right font-bold text-indigo-600 bg-indigo-50/10 tabular-nums text-[11px]", children: usdProd }),
                   /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "py-2 px-1.5 border-r border-slate-100 text-right font-bold text-indigo-600 bg-indigo-50/10 tabular-nums text-[11px]", children: eurProd }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("td", { className: "py-2 px-1.5 text-right font-black text-violet-700 bg-violet-50/10 tabular-nums text-[11px]", children: [
+                    "Rp ",
+                    formatIDR(prodUnit)
+                  ] }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "py-2 px-1.5 text-right font-bold text-violet-600 bg-violet-50/10 tabular-nums text-[11px]", children: usdProdUnit }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "py-2 px-1.5 border-r border-slate-100 text-right font-bold text-violet-600 bg-violet-50/10 tabular-nums text-[11px]", children: eurProdUnit }),
                   /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("input", { type: "text", defaultValue: "0", className: "w-12 text-center border border-slate-200 rounded px-1 py-1 outline-none focus:border-blue-400 font-bold text-slate-600" }) }),
                   /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-4 py-3 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("span", { className: "inline-flex items-center gap-1 bg-amber-50 text-amber-600 border border-amber-200 px-2 py-1 rounded text-[9px] font-black tracking-wider uppercase", children: [
                     /* @__PURE__ */ (0, import_jsx_runtime19.jsx)(TriangleAlert, { className: "w-3 h-3" }),
@@ -86594,55 +86817,80 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur, fontCase,
               " Detail Kebutuhan Proses"
             ] }) }),
             /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("div", { className: "overflow-x-auto", children: /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("table", { className: "w-full text-left text-xs whitespace-nowrap border-collapse", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("thead", { className: "bg-slate-50 border-b border-slate-200 text-slate-500 font-extrabold uppercase text-[9px] tracking-wider text-center", children: /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("tr", { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "px-3 py-3 border-r border-slate-100 w-10", children: "NO" }),
-                /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "px-3 py-3 border-r border-slate-100 text-left min-w-[120px]", children: "KODE PART" }),
-                /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "px-3 py-3 border-r border-slate-100 text-left min-w-[140px]", children: "NAMA PART" }),
-                /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "px-3 py-3 border-r border-slate-100 text-left min-w-[120px]", children: "OPERASI" }),
-                /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "px-3 py-3 border-r border-slate-100 w-24", children: "TIPE" }),
-                /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "px-3 py-3 border-r border-slate-100 text-left min-w-[100px]", children: "TAHAP" }),
-                /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "px-3 py-3 border-r border-slate-100 text-left min-w-[140px]", children: "WC / LANGKAH" }),
-                /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "px-3 py-3 border-r border-slate-100 text-blue-600 w-16", children: "DURASI" }),
-                /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "px-3 py-3 border-r border-slate-100 text-amber-600 w-14", children: "ORG" }),
-                /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "px-3 py-3 border-r border-slate-100 w-20", children: "ORG\xB7MNT" }),
-                /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "px-3 py-3 border-r border-slate-100 text-right min-w-[100px]", children: "BIAYA WC" }),
-                /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "px-3 py-3 border-r border-slate-100 text-right min-w-[100px]", children: "BIAYA TK" }),
-                /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "px-3 py-3 border-r border-slate-100 text-right text-indigo-600 min-w-[100px]", children: "SUBTOTAL" }),
-                /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "px-3 py-3 text-left min-w-[140px]", children: "DETAIL" })
-              ] }) }),
-              /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("tbody", { className: "font-medium text-slate-700 divide-y divide-slate-100", children: prosesLineItems.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("tr", { children: /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { colSpan: 14, className: "px-6 py-10 text-center text-slate-400 text-xs italic", children: "Belum ada operasi manufaktur \u2014 tambahkan proses pada part di tab Struktur atau buka Routing." }) }) : prosesLineItems.map((ln2, i3) => /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("tr", { className: "hover:bg-slate-50 transition-colors align-top", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-3 py-2.5 text-center border-r border-slate-100 text-slate-400 font-bold", children: i3 + 1 }),
-                /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-3 py-2.5 border-r border-slate-100 font-mono text-[10px] text-slate-500", children: ln2.nodeKode || "\u2014" }),
-                /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-3 py-2.5 border-r border-slate-100 font-bold text-slate-800 text-[11px]", children: ln2.nodeNama || "\u2014" }),
-                /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-3 py-2.5 border-r border-slate-100 font-bold text-slate-700", children: ln2.opNama || "\u2014" }),
-                /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-3 py-2.5 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("span", { className: `inline-block text-[8px] font-black uppercase px-1.5 py-0.5 rounded border ${ln2.inputMode === "routing" ? "bg-indigo-50 text-indigo-700 border-indigo-200" : "bg-blue-50 text-blue-700 border-blue-200"}`, children: ln2.inputMode === "routing" ? "Routing" : "Work Center" }) }),
-                /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-3 py-2.5 border-r border-slate-100 text-[10px] text-slate-500", children: ln2.mfgProcess || "\u2014" }),
-                /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-3 py-2.5 border-r border-slate-100", children: ln2.stepUrutan != null ? /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("span", { className: "font-bold text-indigo-700 text-[10px]", children: [
-                  "#",
-                  ln2.stepUrutan,
-                  " ",
-                  ln2.wcNama
-                ] }) : /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("span", { className: "font-bold text-blue-700 text-[10px]", children: ln2.wcNama }) }),
-                /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("td", { className: "px-3 py-2.5 border-r border-slate-100 text-center font-black text-blue-600", children: [
-                  ln2.waktu,
-                  " mnt"
+              /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("thead", { className: "bg-slate-50 border-b border-slate-200 text-slate-500 font-extrabold uppercase text-[9px] tracking-wider text-center", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("tr", { children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "px-3 py-3 border-r border-slate-100 w-10", children: "NO" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "px-3 py-3 border-r border-slate-100 text-left min-w-[120px]", children: "KODE PART" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "px-3 py-3 border-r border-slate-100 text-left min-w-[140px]", children: "NAMA PART" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "px-3 py-3 border-r border-slate-100 text-left min-w-[120px]", children: "OPERASI" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "px-3 py-3 border-r border-slate-100 w-24", children: "TIPE" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "px-3 py-3 border-r border-slate-100 text-left min-w-[100px]", children: "TAHAP" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "px-3 py-3 border-r border-slate-100 text-left min-w-[140px]", children: "WC / LANGKAH" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "px-3 py-3 border-r border-slate-100 text-blue-600 w-16", children: "DURASI" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "px-3 py-3 border-r border-slate-100 text-amber-600 w-14", children: "ORG" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "px-3 py-3 border-r border-slate-100 w-20", children: "ORG\xB7MNT" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "px-3 py-3 border-r border-slate-100 text-right min-w-[100px]", children: "BIAYA WC" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "px-3 py-3 border-r border-slate-100 text-right min-w-[100px]", children: "BIAYA TK" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { colSpan: 3, className: "px-2 py-2 border-r border-slate-200 border-b border-indigo-200 text-indigo-700 bg-indigo-50/40", children: "SUBTOTAL BIAYA" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { colSpan: 3, className: "px-2 py-2 border-r border-slate-200 border-b border-violet-200 text-violet-700 bg-violet-50/40", children: "HARGA PRODUKSI (SATUAN)" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "px-3 py-3 text-left min-w-[140px]", children: "DETAIL" })
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-3 py-2.5 border-r border-slate-100 text-center font-black text-amber-700", children: ln2.person }),
-                /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-3 py-2.5 border-r border-slate-100 text-center text-[10px] text-slate-500", children: ln2.waktu * ln2.person }),
-                /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("td", { className: "px-3 py-2.5 border-r border-slate-100 text-right font-bold text-slate-700 tabular-nums", children: [
-                  "Rp ",
-                  formatIDR(ln2.biayaMesin)
-                ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("td", { className: "px-3 py-2.5 border-r border-slate-100 text-right font-bold text-emerald-700 tabular-nums", children: [
-                  "Rp ",
-                  formatIDR(ln2.biayaPekerja)
-                ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("td", { className: "px-3 py-2.5 border-r border-slate-100 text-right font-black text-indigo-700 bg-indigo-50/10 tabular-nums", children: [
-                  "Rp ",
-                  formatIDR(ln2.biayaTotal)
-                ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-3 py-2.5 text-left align-top", children: ln2.inputMode === "routing" && ln2.stepUrutan === 1 ? /* @__PURE__ */ (0, import_jsx_runtime19.jsx)(OperasiDetailCell, { operasi: ln2.parentOp, operasiIndex: ln2.opIndex }) : /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("span", { className: "text-[10px] text-slate-500", children: ln2.note || "\u2014" }) })
-              ] }, ln2.key)) }),
+                /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("tr", { className: "bg-white border-b border-slate-200 text-[9px] font-extrabold uppercase text-slate-500", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { colSpan: 12, className: "border-r border-slate-100" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "py-2 px-1.5 text-right text-indigo-700", children: "IDR" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "py-2 px-1.5 text-right text-amber-600", children: "USD" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "py-2 px-1.5 border-r border-slate-200 text-right text-brand-600", children: "EUR" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "py-2 px-1.5 text-right text-violet-700", children: "IDR" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "py-2 px-1.5 text-right text-violet-600", children: "USD" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", { className: "py-2 px-1.5 border-r border-slate-200 text-right text-violet-600", children: "EUR" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("th", {})
+                ] })
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("tbody", { className: "font-medium text-slate-700 divide-y divide-slate-100", children: prosesLineItems.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("tr", { children: /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { colSpan: 19, className: "px-6 py-10 text-center text-slate-400 text-xs italic", children: "Belum ada operasi manufaktur \u2014 tambahkan proses pada part di tab Struktur atau buka Routing." }) }) : prosesLineItems.map((ln2, i3) => {
+                const partQty = partQtyByKode[ln2.nodeKode] || 1;
+                const prodUnit = ln2.biayaTotal / partQty;
+                return /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("tr", { className: "hover:bg-slate-50 transition-colors align-top", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-3 py-2.5 text-center border-r border-slate-100 text-slate-400 font-bold", children: i3 + 1 }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-3 py-2.5 border-r border-slate-100 font-mono text-[10px] text-slate-500", children: ln2.nodeKode || "\u2014" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-3 py-2.5 border-r border-slate-100 font-bold text-slate-800 text-[11px]", children: ln2.nodeNama || "\u2014" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-3 py-2.5 border-r border-slate-100 font-bold text-slate-700", children: ln2.opNama || "\u2014" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-3 py-2.5 border-r border-slate-100 text-center", children: /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("span", { className: `inline-block text-[8px] font-black uppercase px-1.5 py-0.5 rounded border ${ln2.inputMode === "routing" ? "bg-indigo-50 text-indigo-700 border-indigo-200" : "bg-blue-50 text-blue-700 border-blue-200"}`, children: ln2.inputMode === "routing" ? "Routing" : "Work Center" }) }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-3 py-2.5 border-r border-slate-100 text-[10px] text-slate-500", children: ln2.mfgProcess || "\u2014" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-3 py-2.5 border-r border-slate-100", children: ln2.stepUrutan != null ? /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("span", { className: "font-bold text-indigo-700 text-[10px]", children: [
+                    "#",
+                    ln2.stepUrutan,
+                    " ",
+                    ln2.wcNama
+                  ] }) : /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("span", { className: "font-bold text-blue-700 text-[10px]", children: ln2.wcNama }) }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("td", { className: "px-3 py-2.5 border-r border-slate-100 text-center font-black text-blue-600", children: [
+                    ln2.waktu,
+                    " mnt"
+                  ] }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-3 py-2.5 border-r border-slate-100 text-center font-black text-amber-700", children: ln2.person }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-3 py-2.5 border-r border-slate-100 text-center text-[10px] text-slate-500", children: ln2.waktu * ln2.person }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("td", { className: "px-3 py-2.5 border-r border-slate-100 text-right font-bold text-slate-700 tabular-nums", children: [
+                    "Rp ",
+                    formatIDR(ln2.biayaMesin)
+                  ] }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("td", { className: "px-3 py-2.5 border-r border-slate-100 text-right font-bold text-emerald-700 tabular-nums", children: [
+                    "Rp ",
+                    formatIDR(ln2.biayaPekerja)
+                  ] }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("td", { className: "px-3 py-2.5 text-right font-black text-indigo-700 bg-indigo-50/10 tabular-nums", children: [
+                    "Rp ",
+                    formatIDR(ln2.biayaTotal)
+                  ] }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-3 py-2.5 text-right font-bold text-amber-700 tabular-nums text-[11px]", children: (ln2.biayaTotal / kursUsd).toFixed(2) }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-3 py-2.5 border-r border-slate-100 text-right font-bold text-brand-700 tabular-nums text-[11px]", children: (ln2.biayaTotal / kursEur).toFixed(2) }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("td", { className: "px-3 py-2.5 text-right font-bold text-violet-700 tabular-nums text-[11px]", children: [
+                    "Rp ",
+                    formatIDR(prodUnit)
+                  ] }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-3 py-2.5 text-right font-bold text-violet-600 tabular-nums text-[11px]", children: (prodUnit / kursUsd).toFixed(2) }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-3 py-2.5 border-r border-slate-100 text-right font-bold text-violet-600 tabular-nums text-[11px]", children: (prodUnit / kursEur).toFixed(2) }),
+                  /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-3 py-2.5 text-left align-top", children: ln2.inputMode === "routing" && ln2.stepUrutan === 1 ? /* @__PURE__ */ (0, import_jsx_runtime19.jsx)(OperasiDetailCell, { operasi: ln2.parentOp, operasiIndex: ln2.opIndex }) : /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("span", { className: "text-[10px] text-slate-500", children: ln2.note || "\u2014" }) })
+                ] }, ln2.key);
+              }) }),
               prosesLineItems.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("tfoot", { className: "bg-slate-50 border-t-2 border-slate-200 text-[10px] font-black", children: /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("tr", { children: [
                 /* @__PURE__ */ (0, import_jsx_runtime19.jsxs)("td", { colSpan: 7, className: "px-3 py-3 text-right uppercase tracking-widest text-slate-500", children: [
                   "Total (",
@@ -86667,6 +86915,9 @@ function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur, fontCase,
                   "Rp ",
                   formatIDR(prosesLineTotals.total)
                 ] }),
+                /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-3 py-3 text-right text-amber-700 tabular-nums", children: (prosesLineTotals.total / kursUsd).toFixed(2) }),
+                /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { className: "px-3 py-3 border-r border-slate-100 text-right text-brand-700 tabular-nums", children: (prosesLineTotals.total / kursEur).toFixed(2) }),
+                /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", { colSpan: 3 }),
                 /* @__PURE__ */ (0, import_jsx_runtime19.jsx)("td", {})
               ] }) })
             ] }) })

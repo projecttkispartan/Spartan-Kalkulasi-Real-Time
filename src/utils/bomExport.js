@@ -7,6 +7,87 @@ import { calcProsesCosts } from './operationCosts';
 import { flattenProsesLineItems, sumProsesLineItems } from './prosesLineItems';
 import { getPartHierarchyLabels } from './treeHelpers';
 import { getMaterialTypeLabel } from '../data/excelReference';
+import { calcPartRowFinancials, calcStrukturProdFinancials } from './partCostHelpers';
+
+function fxUsd(value, kursUsd) {
+  return Number(kursUsd) ? (Number(value) / kursUsd).toFixed(2) : '0.00';
+}
+
+function fxEur(value, kursEur) {
+  return Number(kursEur) ? (Number(value) / kursEur).toFixed(2) : '0.00';
+}
+
+/** Baris waterfall COGS — sama dengan UI Langkah Demi Langkah */
+function buildCogsWaterfallRows(cogsData, cogsConfig) {
+  const cd = cogsData || {};
+  const cc = cogsConfig || {};
+  const jalur = cc.packingJalur || 'BOX';
+  const afterMat = cd.totalMaterial || 0;
+  const afterProc = afterMat + (cd.totalProcess || 0);
+  const sellingRounded = Math.floor((cd.sellingPrice || 0) / 1000) * 1000;
+
+  return [
+    {
+      step: 1,
+      komponen: 'Bahan Baku & Material (RAW)',
+      sumber: 'Harga Part × Qty + Penyesuaian SF/WF | Engine BOM Rollup',
+      nilai: afterMat,
+      running: afterMat,
+    },
+    {
+      step: 2,
+      komponen: 'Proses Pabrik (Work Center & Labor)',
+      sumber: 'Total Waktu × (Tarif Mesin + Upah Karyawan) | Costing Studio (Proses)',
+      nilai: cd.totalProcess || 0,
+      running: afterProc,
+    },
+    {
+      step: 3,
+      komponen: `Biaya Packing (${jalur})`,
+      sumber: `Material ${jalur === 'BOX' ? 'Karton Luar' : 'Single Face'} + Tenaga Packing | Mat: ${cd.packingMat ?? 0} | Labor: ${cd.packingLab ?? 0}`,
+      nilai: cd.packingCost || 0,
+      running: cd.productionCost || 0,
+    },
+    {
+      step: '',
+      komponen: 'RAW Production Cost',
+      sumber: `Material + Proses Pabrik + Packing (${jalur})`,
+      nilai: '',
+      running: cd.productionCost || 0,
+      highlight: 'subtotal',
+    },
+    {
+      step: 4,
+      komponen: 'Factory Overhead',
+      sumber: `Production Cost × ${cc.factoryOhPct ?? 0}%`,
+      nilai: cd.factoryOh || 0,
+      running: (cd.productionCost || 0) + (cd.factoryOh || 0),
+    },
+    {
+      step: 5,
+      komponen: 'Management Overhead',
+      sumber: `Production Cost × ${cc.managementOhPct ?? 0}%`,
+      nilai: cd.managementOh || 0,
+      running: cd.totalCogs || 0,
+    },
+    {
+      step: '',
+      komponen: `TOTAL COGS (${jalur})`,
+      sumber: 'Production Cost + Factory OH + Management OH',
+      nilai: '',
+      running: cd.totalCogs || 0,
+      highlight: 'total',
+    },
+    {
+      step: '',
+      komponen: 'Harga Jual FOB',
+      sumber: `COGS × (1 + ${cc.markupPct ?? 0}% Markup) | Dibulatkan ribuan`,
+      nilai: '',
+      running: sellingRounded,
+      highlight: 'selling',
+    },
+  ];
+}
 
 function safeFilename(base) {
   return String(base || 'BOM')
@@ -138,6 +219,7 @@ function buildPackingPayload({
 export function buildBomExportPayload({
   productInfo,
   productMeta,
+  productImage,
   dimensi,
   bomData,
   flatNodes,
@@ -154,6 +236,16 @@ export function buildBomExportPayload({
   packingSpec,
   containerCapacity,
 }) {
+  const dim = dimensi || {};
+  const volProduk =
+    ((Number(dim.w) || 0) * (Number(dim.d) || 0) * (Number(dim.h) || 0)) / 1_000_000_000;
+
+  const partQtyByKode = {};
+  flatNodes
+    .filter((n) => n.data.tipe === 'PART')
+    .forEach((n) => {
+      partQtyByKode[n.data.kode] = Number(n.data.qty) || 1;
+    });
   const prosesEntries = [];
   flatNodes.forEach((node) => {
     expandProsesList(node.data).forEach((p) => {
@@ -170,26 +262,27 @@ export function buildBomExportPayload({
 
   const strukturRows = flatNodes.map((node, i) => {
     const d = node.data;
-    let totalProcess = 0;
-    expandProsesList(d).forEach((p) => {
-      totalProcess += calcProsesCosts(p).total;
-    });
-    const hargaProduksi = (Number(d.biaya) || 0) * (Number(d.qty) || 1) + totalProcess;
+    const fin = calcStrukturProdFinancials(d, kursUsd, kursEur);
     return {
       no: i + 1,
       level: node.level,
       tipe: d.tipe,
+      materialType: d.tipe === 'PART' ? getMaterialTypeLabel(d.materialType) : '',
       kode: d.kode || '',
       nama: d.nama || '',
       qty: d.qty ?? '',
+      unit: d.unit || (d.tipe === 'PART' ? 'EA' : ''),
       dimensi: d.p && d.l && d.t ? `${d.p} x ${d.l} x ${d.t}` : '',
       vol: d.vol ?? '',
-      biayaIdr: Number(d.biaya) || 0,
-      biayaUsd: ((Number(d.biaya) || 0) / kursUsd).toFixed(2),
-      biayaEur: ((Number(d.biaya) || 0) / kursEur).toFixed(2),
-      prodIdr: hargaProduksi,
-      prodUsd: (hargaProduksi / kursUsd).toFixed(2),
-      prodEur: (hargaProduksi / kursEur).toFixed(2),
+      biayaIdr: fin.unitMat,
+      biayaUsd: fin.usdMat,
+      biayaEur: fin.eurMat,
+      prodIdr: fin.prodTotal,
+      prodUsd: fin.usdProd,
+      prodEur: fin.eurProd,
+      prodUnitIdr: d.tipe === 'PART' ? fin.prodUnit : '',
+      prodUnitUsd: d.tipe === 'PART' ? fin.usdProdUnit : '',
+      prodUnitEur: d.tipe === 'PART' ? fin.eurProdUnit : '',
       sf: Number(d.sf) || 0,
       wf: Number(d.wf) || 0,
       prosesCount: d.proses?.length || d.proses_count || 0,
@@ -212,14 +305,9 @@ export function buildBomExportPayload({
       const hierarchy = getPartHierarchyLabels(bomData, node.id);
       const sf = Number(d.sf) || 0;
       const wf = Number(d.wf) || 0;
+      const fin = calcPartRowFinancials(d, kursUsd, kursEur);
       const base = (Number(d.biaya) || 0) * (Number(d.qty) || 1);
-      let totalProcess = 0;
-      expandProsesList(d).forEach((p) => {
-        totalProcess += calcProsesCosts(p).total;
-      });
-      const hargaBeli = Number(d.biaya) || 0;
       const matTotal = base * (1 + sf / 100 + wf / 100);
-      const hargaProd = matTotal + totalProcess;
       return {
         no: i + 1,
         modul: hierarchy.modul?.nama || '',
@@ -238,13 +326,16 @@ export function buildBomExportPayload({
         vol: d.vol ?? '',
         qty: d.qty ?? '',
         unit: d.unit || 'EA',
-        matIdr: hargaBeli,
+        matIdr: fin.unitMat,
         matTotalIdr: matTotal,
-        matUsd: (hargaBeli / kursUsd).toFixed(2),
-        matEur: (hargaBeli / kursEur).toFixed(2),
-        prodIdr: hargaProd,
-        prodUsd: (hargaProd / kursUsd).toFixed(2),
-        prodEur: (hargaProd / kursEur).toFixed(2),
+        matUsd: fin.usdMat,
+        matEur: fin.eurMat,
+        prodIdr: fin.prodTotal,
+        prodUsd: fin.usdProd,
+        prodEur: fin.eurProd,
+        prodUnitIdr: fin.prodUnit,
+        prodUnitUsd: fin.usdProdUnit,
+        prodUnitEur: fin.eurProdUnit,
       };
     });
 
@@ -256,22 +347,34 @@ export function buildBomExportPayload({
     totalQty: materialRows.reduce((s, r) => s + (Number(r.qty) || 0), 0),
   };
 
-  const prosesRows = prosesLines.map((ln, i) => ({
-    no: i + 1,
-    partKode: ln.nodeKode,
-    partNama: ln.nodeNama,
-    operasi: ln.opNama,
-    tipe: ln.inputMode === 'routing' ? 'Routing' : 'Work Center',
-    tahap: ln.mfgProcess || '',
-    wcLangkah: ln.stepUrutan != null ? `#${ln.stepUrutan} ${ln.wcNama}` : ln.wcNama,
-    durasi: ln.waktu,
-    pekerja: ln.person,
-    orgMenit: ln.waktu * ln.person,
-    biayaWc: ln.biayaMesin,
-    biayaTk: ln.biayaPekerja,
-    subtotal: ln.biayaTotal,
-    detail: ln.note || '',
-  }));
+  const prosesRows = prosesLines.map((ln, i) => {
+    const partQty = partQtyByKode[ln.nodeKode] || 1;
+    const prodUnit = ln.biayaTotal / partQty;
+    return {
+      no: i + 1,
+      partKode: ln.nodeKode,
+      partNama: ln.nodeNama,
+      partQty,
+      operasi: ln.opNama,
+      tipe: ln.inputMode === 'routing' ? 'Routing' : 'Work Center',
+      tahap: ln.mfgProcess || '',
+      wcLangkah: ln.stepUrutan != null ? `#${ln.stepUrutan} ${ln.wcNama}` : ln.wcNama,
+      durasi: ln.waktu,
+      pekerja: ln.person,
+      orgMenit: ln.waktu * ln.person,
+      biayaWc: ln.biayaMesin,
+      biayaTk: ln.biayaPekerja,
+      subtotal: ln.biayaTotal,
+      subtotalUsd: fxUsd(ln.biayaTotal, kursUsd),
+      subtotalEur: fxEur(ln.biayaTotal, kursEur),
+      prodUnitIdr: prodUnit,
+      prodUnitUsd: fxUsd(prodUnit, kursUsd),
+      prodUnitEur: fxEur(prodUnit, kursEur),
+      detail: ln.note || '',
+    };
+  });
+
+  const cogsWaterfall = buildCogsWaterfallRows(cogsData, cogsConfig);
 
   const packing = buildPackingPayload({
     dimensi,
@@ -289,13 +392,16 @@ export function buildBomExportPayload({
     },
     productInfo,
     productMeta,
+    productImage: productImage || '',
     dimensi,
+    volProduk: Number(volProduk.toFixed(6)),
     volBoxPacking,
     volSFPacking,
     kursUsd,
     kursEur,
     cogsData,
     cogsConfig,
+    cogsWaterfall,
     summaryTotals,
     materialTabTotals,
     prosesTabTotals,
@@ -327,10 +433,14 @@ export function exportBomToExcel(payload) {
   const pt = payload.prosesTabTotals || payload.prosesTotals || {};
   const pk = payload.packing || {};
 
+  const sellingRounded = Math.floor((payload.cogsData?.sellingPrice || 0) / 1000) * 1000;
+
   appendSheet(wb, 'Ringkasan', [
     ['LAPORAN BOM — MANUFAKTUR'],
     ['Diekspor', payload.meta.exportedAt],
     [],
+    ['— DATA PRODUK —'],
+    ['URL / Referensi Gambar', payload.productImage || '—'],
     ['Kode Produk', pi.kode],
     ['Nama Produk', pi.nama],
     ['Varian', pi.varian],
@@ -343,10 +453,21 @@ export function exportBomToExcel(payload) {
     ['Coating', pm.coating],
     [],
     ['Dimensi Nett W x D x H (mm)', `${dim.w} x ${dim.d} x ${dim.h}`],
+    ['Volume Produk Nett (m³)', payload.volProduk ?? ''],
     ['Volume Box (m³)', payload.volBoxPacking],
     ['Volume Single Face (m³)', payload.volSFPacking],
     ['Kurs USD', payload.kursUsd],
     ['Kurs EUR', payload.kursEur],
+    [],
+    ['— LANGKAH DEMI LANGKAH PEMBENTUKAN COGS —'],
+    ['Step', 'Komponen Cost', 'Sumber & Referensi', 'Nilai Akumulasi (IDR)', 'Running Total (IDR)'],
+    ...(payload.cogsWaterfall || []).map((r) => [
+      r.step,
+      r.komponen,
+      r.sumber,
+      r.nilai === '' ? '' : r.nilai,
+      r.running,
+    ]),
     [],
     ['— RINGKASAN MATERIAL —'],
     ['Total Material (SF & WF)', payload.summaryTotals?.material ?? mt.material ?? 0],
@@ -366,7 +487,7 @@ export function exportBomToExcel(payload) {
     ['Packing Material', pk.totals?.packMat ?? 0],
     ['Packing Tenaga Kerja', pk.totals?.packLab ?? 0],
     ['TOTAL COGS', payload.cogsData?.totalCogs ?? 0],
-    ['Harga Jual', payload.cogsData?.sellingPrice ?? 0],
+    ['Harga Jual (dibulatkan ribuan)', sellingRounded],
   ]);
 
   appendSheet(wb, 'Struktur BOM', [
@@ -374,17 +495,22 @@ export function exportBomToExcel(payload) {
       'No',
       'Level',
       'Tipe',
+      'Tipe Material',
       'Kode',
       'Nama',
       'Qty',
+      'Unit',
       'Dimensi',
       'Vol m³',
-      'MAT IDR',
+      'Harga Material / Unit IDR',
       'MAT USD',
       'MAT EUR',
-      'PROD IDR',
+      'Harga Produksi Total IDR',
       'PROD USD',
       'PROD EUR',
+      'Harga Produksi / Unit IDR',
+      'PROD/U USD',
+      'PROD/U EUR',
       'SF%',
       'WF%',
       'Proses',
@@ -394,9 +520,11 @@ export function exportBomToExcel(payload) {
       r.no,
       r.level,
       r.tipe,
+      r.materialType,
       r.kode,
       r.nama,
       r.qty,
+      r.unit,
       r.dimensi,
       r.vol,
       r.biayaIdr,
@@ -405,13 +533,40 @@ export function exportBomToExcel(payload) {
       r.prodIdr,
       r.prodUsd,
       r.prodEur,
+      r.prodUnitIdr,
+      r.prodUnitUsd,
+      r.prodUnitEur,
       r.sf,
       r.wf,
       r.prosesCount,
       r.catatan,
     ]),
     [],
-    ['TOTAL (PART)', '', '', '', '', '', '', '', payload.strukturTotals?.matIdr ?? 0, '', '', payload.strukturTotals?.prodIdr ?? 0, '', '', '', '', '', ''],
+    [
+      'TOTAL (PART)',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      payload.strukturTotals?.matIdr ?? 0,
+      '',
+      '',
+      payload.strukturTotals?.prodIdr ?? 0,
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+    ],
   ]);
 
   appendSheet(wb, 'Kebutuhan Material', [
@@ -436,9 +591,12 @@ export function exportBomToExcel(payload) {
       'MAT Total IDR',
       'MAT USD',
       'MAT EUR',
-      'PROD IDR',
+      'PROD Total IDR',
       'PROD USD',
       'PROD EUR',
+      'PROD/Unit IDR',
+      'PROD/Unit USD',
+      'PROD/Unit EUR',
     ],
     ...payload.materialRows.map((r) => [
       r.no,
@@ -464,6 +622,9 @@ export function exportBomToExcel(payload) {
       r.prodIdr,
       r.prodUsd,
       r.prodEur,
+      r.prodUnitIdr,
+      r.prodUnitUsd,
+      r.prodUnitEur,
     ]),
     [],
     [
@@ -491,6 +652,9 @@ export function exportBomToExcel(payload) {
       payload.materialTotals?.prodIdr ?? 0,
       '',
       '',
+      '',
+      '',
+      '',
     ],
   ]);
 
@@ -509,6 +673,12 @@ export function exportBomToExcel(payload) {
       'Biaya Proses IDR',
       'Biaya TK IDR',
       'Subtotal IDR',
+      'Subtotal USD',
+      'Subtotal EUR',
+      'PROD/Unit IDR',
+      'PROD/Unit USD',
+      'PROD/Unit EUR',
+      'Qty Part',
       'Detail',
     ],
     ...payload.prosesRows.map((r) => [
@@ -525,6 +695,12 @@ export function exportBomToExcel(payload) {
       r.biayaWc,
       r.biayaTk,
       r.subtotal,
+      r.subtotalUsd,
+      r.subtotalEur,
+      r.prodUnitIdr,
+      r.prodUnitUsd,
+      r.prodUnitEur,
+      r.partQty,
       r.detail,
     ]),
     [],
@@ -542,6 +718,12 @@ export function exportBomToExcel(payload) {
       payload.prosesTotals?.mesin ?? 0,
       payload.prosesTotals?.pekerja ?? 0,
       payload.prosesTotals?.total ?? 0,
+      fxUsd(payload.prosesTotals?.total ?? 0, payload.kursUsd),
+      fxEur(payload.prosesTotals?.total ?? 0, payload.kursEur),
+      '',
+      '',
+      '',
+      '',
       '',
     ],
   ]);

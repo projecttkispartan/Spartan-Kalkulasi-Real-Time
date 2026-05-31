@@ -15,7 +15,12 @@ import {
   calcPackingVolume,
   findPackingByType,
 } from '../utils/packingVolume';
-import { ELBA_CHAIR_REFERENCE, EXCEL_FACTORY_OH_PCT, MATERIAL_TYPE_OPTIONS } from '../data/excelReference';
+import {
+  ELBA_CHAIR_REFERENCE,
+  EXCEL_FACTORY_OH_PCT,
+  MATERIAL_TYPE_OPTIONS,
+  getMaterialTypeLabel,
+} from '../data/excelReference';
 import { calcProsesCosts, LABOR_RATE_PER_MIN } from '../utils/operationCosts';
 import { getProsesById } from '../data/routingCatalog';
 import { tipeStyles } from '../design/tipeStyles';
@@ -35,13 +40,24 @@ import { buildBomExportPayload, exportBomToExcel, exportBomToPdf } from '../util
 import { VENDOR_SAMPLES } from '../data/masterSamples';
 import { resolveNodeFoto } from '../utils/images';
 import { flattenProsesLineItems, sumProsesLineItems } from '../utils/prosesLineItems';
+import { calcPartRowFinancials, calcStrukturProdFinancials } from '../utils/partCostHelpers';
 
-function MaterialTypeField({ value, onChange }) {
+function MaterialTypeDisplay({ value }) {
+  const label = getMaterialTypeLabel(value);
+  return (
+    <span className="inline-block px-2 py-1 rounded text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-600 border border-slate-200 min-w-[72px]">
+      {label}
+    </span>
+  );
+}
+
+function MaterialTypeField({ value, onChange, disabled = false }) {
   return (
     <select
       value={value || ''}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full min-w-[120px] border border-emerald-200 rounded-lg px-2 py-1.5 text-[10px] font-bold bg-emerald-50/50 text-emerald-800 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-100 outline-none uppercase tracking-wide"
+      disabled={disabled}
+      className="w-full min-w-[120px] border border-emerald-200 rounded-lg px-2 py-1.5 text-[10px] font-bold bg-emerald-50/50 text-emerald-800 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-100 outline-none uppercase tracking-wide disabled:bg-slate-100 disabled:text-slate-500 disabled:border-slate-200 disabled:cursor-not-allowed"
     >
       <option value="">— Pilih —</option>
       {MATERIAL_TYPE_OPTIONS.map((opt) => (
@@ -346,7 +362,7 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
   const [showMarkupPreview, setShowMarkupPreview] = useState(false);
   const [detailSummaryNode, setDetailSummaryNode] = useState(null);
   const [showProductPanel, setShowProductPanel] = useState(true);
-  const [priceDisplay, setPriceDisplay] = useState('IDR');
+  const [priceDisplay] = useState('IDR');
   const [showHiddenContainers, setShowHiddenContainers] = useState(false);
 
   const [editorTab, setEditorTab] = useState('struktur');
@@ -749,6 +765,16 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
   const prosesLineItems = useMemo(() => flattenProsesLineItems(allProses), [allProses]);
   const prosesLineTotals = useMemo(() => sumProsesLineItems(prosesLineItems), [prosesLineItems]);
 
+  const partQtyByKode = useMemo(() => {
+    const m = {};
+    flatNodes
+      .filter((n) => n.data.tipe === 'PART')
+      .forEach((n) => {
+        m[n.data.kode] = Number(n.data.qty) || 1;
+      });
+    return m;
+  }, [flatNodes]);
+
   // SUMMARY REKAPITULASI PROSES (TABEL BARU)
   const prosesSummary = useMemo(() => {
     const summary = {};
@@ -861,6 +887,7 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
     buildBomExportPayload({
       productInfo,
       productMeta,
+      productImage: resolveNodeFoto(bomData),
       dimensi,
       bomData,
       flatNodes,
@@ -898,6 +925,7 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                   <th colSpan={4} className="border-b-[3px] border-b-blue-500 text-center py-2 px-1 text-[10px] text-blue-700 font-bold uppercase tracking-wider border-r border-slate-200 bg-blue-50/30">SPESIFIKASI FISIK (DIMENSI & VOL)</th>
                   <th colSpan={3} className="border-b-[3px] border-b-amber-400 text-center py-2 px-1 text-[10px] text-amber-700 font-bold uppercase tracking-wider border-r border-slate-200 bg-amber-50/30">HARGA MATERIAL (SATUAN)</th>
                   <th colSpan={3} className="border-b-[3px] border-b-indigo-400 text-center py-2 px-1 text-[10px] text-indigo-700 font-bold uppercase tracking-wider border-r border-slate-200 bg-indigo-50/30">BIAYA PRODUKSI (TOTAL)</th>
+                  <th colSpan={3} className="border-b-[3px] border-b-violet-400 text-center py-2 px-1 text-[10px] text-violet-700 font-bold uppercase tracking-wider border-r border-slate-200 bg-violet-50/30">HARGA PRODUKSI (SATUAN)</th>
                   <th colSpan={1} className="border-b-[3px] border-b-slate-200 text-center py-3 px-2 text-[10px] text-slate-500 font-bold uppercase tracking-wider border-r border-slate-200 bg-slate-50/50">MANUFAKTUR</th>
                   <th colSpan={1} className="border-b-[3px] border-b-slate-200 text-center py-3 px-2 text-[10px] text-slate-500 font-bold uppercase tracking-wider bg-slate-50/50">LAIN-LAIN</th>
                 </tr>
@@ -921,6 +949,9 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                   <th className="py-2 px-1.5 text-right text-indigo-600 min-w-[6.5rem]">PROD (IDR)</th>
                   <th className="py-2 px-1.5 text-right text-indigo-600 w-[4.5rem]">PROD (USD)</th>
                   <th className="py-2 px-1.5 border-r border-slate-200 text-right text-indigo-600 w-[4.5rem]">PROD (EUR)</th>
+                  <th className="py-2 px-1.5 text-right text-violet-700 min-w-[6.5rem]">PROD/U (IDR)</th>
+                  <th className="py-2 px-1.5 text-right text-violet-600 w-[4.5rem]">PROD/U (USD)</th>
+                  <th className="py-2 px-1.5 border-r border-slate-200 text-right text-violet-600 w-[4.5rem]">PROD/U (EUR)</th>
                   <th className="py-2 px-1.5 border-r border-slate-200">PENGATURAN PROSES LENGKAP</th>
                   <th className="py-2 px-1.5 min-w-[200px]">CATATAN</th>
                 </tr>
@@ -928,23 +959,8 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
               <tbody>
                 {flatNodes.map((node) => {
                   const d = node.data;
-                  const usdMat = ((Number(d.biaya) || 0) / kursUsd).toFixed(2);
-                  const eurMat = ((Number(d.biaya) || 0) / kursEur).toFixed(2);
-
-                  // Hitung total proses
-                  let totalProcess = 0;
-                  if (d.proses && d.proses.length > 0) {
-                    d.proses.forEach(p => {
-                      totalProcess += calcProsesCosts(p).total;
-                    });
-                  } else if (d.proses_count > 0) {
-                    totalProcess += d.proses_count * 110000;
-                  }
-
-                  // Hitung total produksi (Material * Qty + Biaya Proses)
-                  const hargaProduksiIDR = (d.biaya || 0) * (d.qty || 1) + totalProcess;
-                  const usdProd = (hargaProduksiIDR / kursUsd).toFixed(2);
-                  const eurProd = (hargaProduksiIDR / kursEur).toFixed(2);
+                  const fin = calcStrukturProdFinancials(d, kursUsd, kursEur);
+                  const { usdMat, eurMat, prodTotal: hargaProduksiIDR, usdProd, eurProd, prodUnit, usdProdUnit, eurProdUnit } = fin;
 
                   const style = tipeStyles[d.tipe] || tipeStyles.PART;
 
@@ -1026,10 +1042,7 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                       </td>
                       <td className="py-2 px-2 border-r border-slate-100 text-center">
                         {d.tipe === 'PART' ? (
-                          <MaterialTypeField
-                            value={d.materialType || ''}
-                            onChange={(val) => handleUpdateNode(node.id, 'materialType', val)}
-                          />
+                          <MaterialTypeDisplay value={d.materialType || ''} />
                         ) : (
                           <span className="text-slate-300 text-[10px]">—</span>
                         )}
@@ -1063,6 +1076,15 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                       <td className="py-2 px-1.5 text-right font-black text-indigo-700 bg-indigo-50/10 tabular-nums text-[11px]">Rp {formatIDR(hargaProduksiIDR)}</td>
                       <td className="py-2 px-1.5 text-right font-bold text-indigo-600 bg-indigo-50/10 tabular-nums text-[11px]">{usdProd}</td>
                       <td className="py-2 px-1.5 border-r border-slate-100 text-right font-bold text-indigo-600 bg-indigo-50/10 tabular-nums text-[11px]">{eurProd}</td>
+                      <td className="py-2 px-1.5 text-right font-bold text-violet-700 bg-violet-50/10 tabular-nums text-[11px]">
+                        {d.tipe === 'PART' ? `Rp ${formatIDR(prodUnit)}` : '—'}
+                      </td>
+                      <td className="py-2 px-1.5 text-right font-bold text-violet-600 bg-violet-50/10 tabular-nums text-[11px]">
+                        {d.tipe === 'PART' ? usdProdUnit : '—'}
+                      </td>
+                      <td className="py-2 px-1.5 border-r border-slate-100 text-right font-bold text-violet-600 bg-violet-50/10 tabular-nums text-[11px]">
+                        {d.tipe === 'PART' ? eurProdUnit : '—'}
+                      </td>
                       
                       <td className="py-3 px-4 border-r border-slate-100">
                         {d.proses_count > 0 ? (
@@ -1136,26 +1158,6 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
             {showProductPanel ? 'Sembunyikan Produk' : 'Tampilkan Produk'}
           </button>
           <FontCaseToggle value={fontCase} onChange={setFontCase} />
-          <div className="flex items-center bg-slate-100 rounded-lg p-0.5 border border-slate-200">
-            {['IDR', 'USD', 'EUR'].map((mode) => (
-              <button
-                key={mode}
-                type="button"
-                onClick={() => setPriceDisplay(mode)}
-                className={`px-3 py-1.5 text-[10px] font-black rounded-md transition-all ${
-                  priceDisplay === mode
-                    ? mode === 'IDR'
-                      ? 'bg-emerald-600 text-white shadow-sm'
-                      : mode === 'USD'
-                        ? 'bg-amber-500 text-white shadow-sm'
-                        : 'bg-brand-600 text-white shadow-sm'
-                    : 'text-slate-500 hover:text-slate-800'
-                }`}
-              >
-                {mode}
-              </button>
-            ))}
-          </div>
           <CurrencyGroup kursUsd={kursUsd} setKursUsd={setKursUsd} kursEur={kursEur} setKursEur={setKursEur} className="mr-1" />
           <ExportMenu onExportExcel={handleExportExcel} onExportPdf={handleExportPdf} />
           <button onClick={() => setShowKalkulasi(true)} className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors shadow-sm">
@@ -1813,6 +1815,7 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                         <th rowSpan={2} className="px-4 py-3 border-r border-slate-100 text-amber-600 border-b border-slate-200 align-middle">UNIT</th>
                         <th colSpan={3} className="px-2 py-2 border-r border-slate-200 border-b border-amber-200 text-amber-700 bg-amber-50/40">HARGA MATERIAL (SATUAN)</th>
                         <th colSpan={3} className="px-2 py-2 border-r border-slate-200 border-b border-indigo-200 text-indigo-700 bg-indigo-50/40">BIAYA PRODUKSI (TOTAL)</th>
+                        <th colSpan={3} className="px-2 py-2 border-r border-slate-200 border-b border-violet-200 text-violet-700 bg-violet-50/40">HARGA PRODUKSI (SATUAN)</th>
                         <th rowSpan={2} className="px-4 py-3 border-r border-slate-100 border-b border-slate-200 align-middle">STOCK GUDANG</th>
                         <th rowSpan={2} className="px-4 py-3 border-r border-slate-100 border-b border-slate-200 align-middle">STATUS</th>
                         <th rowSpan={2} className="px-4 py-3 w-16 border-b border-slate-200 align-middle">ACTION</th>
@@ -1824,6 +1827,9 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                         <th className="py-2 px-1.5 text-right text-indigo-600 min-w-[6.5rem]">PROD (IDR)</th>
                         <th className="py-2 px-1.5 text-right text-indigo-600 w-[4.5rem]">PROD (USD)</th>
                         <th className="py-2 px-1.5 border-r border-slate-200 text-right text-indigo-600 w-[4.5rem]">PROD (EUR)</th>
+                        <th className="py-2 px-1.5 text-right text-violet-700 min-w-[6.5rem]">PROD/U (IDR)</th>
+                        <th className="py-2 px-1.5 text-right text-violet-600 w-[4.5rem]">PROD/U (USD)</th>
+                        <th className="py-2 px-1.5 border-r border-slate-200 text-right text-violet-600 w-[4.5rem]">PROD/U (EUR)</th>
                       </tr>
                     </thead>
                     <tbody className="font-medium text-slate-700 divide-y divide-slate-100">
@@ -1831,18 +1837,10 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                         const d = node.data;
                         const hierarchy = getPartHierarchyLabels(bomData, node.id);
                         const hargaBeliIDR = d.biaya || 0;
-                        const usdMat = (hargaBeliIDR / kursUsd).toFixed(2);
-                        const eurMat = (hargaBeliIDR / kursEur).toFixed(2);
                         const sf = Number(d.sf) || 0;
                         const wf = Number(d.wf) || 0;
-                        let totalProcess = 0;
-                        expandProsesList(d).forEach((p) => {
-                          totalProcess += calcProsesCosts(p).total;
-                        });
-                        const hargaProduksiIDR =
-                          hargaBeliIDR * (d.qty || 1) * (1 + sf / 100 + wf / 100) + totalProcess;
-                        const usdProd = (hargaProduksiIDR / kursUsd).toFixed(2);
-                        const eurProd = (hargaProduksiIDR / kursEur).toFixed(2);
+                        const fin = calcPartRowFinancials(d, kursUsd, kursEur);
+                        const { usdMat, eurMat, prodTotal: hargaProduksiIDR, usdProd, eurProd, prodUnit, usdProdUnit, eurProdUnit } = fin;
 
                         return (
                           <tr key={node.id} className="hover:bg-slate-50 transition-colors">
@@ -1915,6 +1913,9 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                             <td className="py-2 px-1.5 text-right font-black text-indigo-700 bg-indigo-50/10 tabular-nums text-[11px]">Rp {formatIDR(hargaProduksiIDR)}</td>
                             <td className="py-2 px-1.5 text-right font-bold text-indigo-600 bg-indigo-50/10 tabular-nums text-[11px]">{usdProd}</td>
                             <td className="py-2 px-1.5 border-r border-slate-100 text-right font-bold text-indigo-600 bg-indigo-50/10 tabular-nums text-[11px]">{eurProd}</td>
+                            <td className="py-2 px-1.5 text-right font-black text-violet-700 bg-violet-50/10 tabular-nums text-[11px]">Rp {formatIDR(prodUnit)}</td>
+                            <td className="py-2 px-1.5 text-right font-bold text-violet-600 bg-violet-50/10 tabular-nums text-[11px]">{usdProdUnit}</td>
+                            <td className="py-2 px-1.5 border-r border-slate-100 text-right font-bold text-violet-600 bg-violet-50/10 tabular-nums text-[11px]">{eurProdUnit}</td>
 
                             <td className="px-4 py-3 border-r border-slate-100 text-center">
                               <input type="text" defaultValue="0" className="w-12 text-center border border-slate-200 rounded px-1 py-1 outline-none focus:border-blue-400 font-bold text-slate-600" />
@@ -2021,18 +2022,32 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                         <th className="px-3 py-3 border-r border-slate-100 w-20">ORG·MNT</th>
                         <th className="px-3 py-3 border-r border-slate-100 text-right min-w-[100px]">BIAYA WC</th>
                         <th className="px-3 py-3 border-r border-slate-100 text-right min-w-[100px]">BIAYA TK</th>
-                        <th className="px-3 py-3 border-r border-slate-100 text-right text-indigo-600 min-w-[100px]">SUBTOTAL</th>
+                        <th colSpan={3} className="px-2 py-2 border-r border-slate-200 border-b border-indigo-200 text-indigo-700 bg-indigo-50/40">SUBTOTAL BIAYA</th>
+                        <th colSpan={3} className="px-2 py-2 border-r border-slate-200 border-b border-violet-200 text-violet-700 bg-violet-50/40">HARGA PRODUKSI (SATUAN)</th>
                         <th className="px-3 py-3 text-left min-w-[140px]">DETAIL</th>
+                      </tr>
+                      <tr className="bg-white border-b border-slate-200 text-[9px] font-extrabold uppercase text-slate-500">
+                        <th colSpan={12} className="border-r border-slate-100" />
+                        <th className="py-2 px-1.5 text-right text-indigo-700">IDR</th>
+                        <th className="py-2 px-1.5 text-right text-amber-600">USD</th>
+                        <th className="py-2 px-1.5 border-r border-slate-200 text-right text-brand-600">EUR</th>
+                        <th className="py-2 px-1.5 text-right text-violet-700">IDR</th>
+                        <th className="py-2 px-1.5 text-right text-violet-600">USD</th>
+                        <th className="py-2 px-1.5 border-r border-slate-200 text-right text-violet-600">EUR</th>
+                        <th />
                       </tr>
                     </thead>
                     <tbody className="font-medium text-slate-700 divide-y divide-slate-100">
                       {prosesLineItems.length === 0 ? (
                         <tr>
-                          <td colSpan={14} className="px-6 py-10 text-center text-slate-400 text-xs italic">
+                          <td colSpan={19} className="px-6 py-10 text-center text-slate-400 text-xs italic">
                             Belum ada operasi manufaktur — tambahkan proses pada part di tab Struktur atau buka Routing.
                           </td>
                         </tr>
-                      ) : prosesLineItems.map((ln, i) => (
+                      ) : prosesLineItems.map((ln, i) => {
+                        const partQty = partQtyByKode[ln.nodeKode] || 1;
+                        const prodUnit = ln.biayaTotal / partQty;
+                        return (
                         <tr key={ln.key} className="hover:bg-slate-50 transition-colors align-top">
                           <td className="px-3 py-2.5 text-center border-r border-slate-100 text-slate-400 font-bold">{i + 1}</td>
                           <td className="px-3 py-2.5 border-r border-slate-100 font-mono text-[10px] text-slate-500">{ln.nodeKode || '—'}</td>
@@ -2060,7 +2075,16 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                           <td className="px-3 py-2.5 border-r border-slate-100 text-center text-[10px] text-slate-500">{ln.waktu * ln.person}</td>
                           <td className="px-3 py-2.5 border-r border-slate-100 text-right font-bold text-slate-700 tabular-nums">Rp {formatIDR(ln.biayaMesin)}</td>
                           <td className="px-3 py-2.5 border-r border-slate-100 text-right font-bold text-emerald-700 tabular-nums">Rp {formatIDR(ln.biayaPekerja)}</td>
-                          <td className="px-3 py-2.5 border-r border-slate-100 text-right font-black text-indigo-700 bg-indigo-50/10 tabular-nums">Rp {formatIDR(ln.biayaTotal)}</td>
+                          <td className="px-3 py-2.5 text-right font-black text-indigo-700 bg-indigo-50/10 tabular-nums">Rp {formatIDR(ln.biayaTotal)}</td>
+                          <td className="px-3 py-2.5 text-right font-bold text-amber-700 tabular-nums text-[11px]">
+                            {(ln.biayaTotal / kursUsd).toFixed(2)}
+                          </td>
+                          <td className="px-3 py-2.5 border-r border-slate-100 text-right font-bold text-brand-700 tabular-nums text-[11px]">
+                            {(ln.biayaTotal / kursEur).toFixed(2)}
+                          </td>
+                          <td className="px-3 py-2.5 text-right font-bold text-violet-700 tabular-nums text-[11px]">Rp {formatIDR(prodUnit)}</td>
+                          <td className="px-3 py-2.5 text-right font-bold text-violet-600 tabular-nums text-[11px]">{(prodUnit / kursUsd).toFixed(2)}</td>
+                          <td className="px-3 py-2.5 border-r border-slate-100 text-right font-bold text-violet-600 tabular-nums text-[11px]">{(prodUnit / kursEur).toFixed(2)}</td>
                           <td className="px-3 py-2.5 text-left align-top">
                             {ln.inputMode === 'routing' && ln.stepUrutan === 1 ? (
                               <OperasiDetailCell operasi={ln.parentOp} operasiIndex={ln.opIndex} />
@@ -2069,7 +2093,7 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                             )}
                           </td>
                         </tr>
-                      ))}
+                      );})}
                     </tbody>
                     {prosesLineItems.length > 0 && (
                       <tfoot className="bg-slate-50 border-t-2 border-slate-200 text-[10px] font-black">
@@ -2081,6 +2105,9 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                           <td className="px-3 py-3 text-right text-slate-800 tabular-nums">Rp {formatIDR(prosesLineTotals.mesin)}</td>
                           <td className="px-3 py-3 text-right text-emerald-700 tabular-nums">Rp {formatIDR(prosesLineTotals.pekerja)}</td>
                           <td className="px-3 py-3 text-right text-indigo-700 tabular-nums">Rp {formatIDR(prosesLineTotals.total)}</td>
+                          <td className="px-3 py-3 text-right text-amber-700 tabular-nums">{(prosesLineTotals.total / kursUsd).toFixed(2)}</td>
+                          <td className="px-3 py-3 border-r border-slate-100 text-right text-brand-700 tabular-nums">{(prosesLineTotals.total / kursEur).toFixed(2)}</td>
+                          <td colSpan={3} />
                           <td />
                         </tr>
                       </tfoot>
