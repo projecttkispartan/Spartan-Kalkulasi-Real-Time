@@ -18,7 +18,12 @@ export function computeWoodBiayaFromMaster(partData, materialId) {
   const vol = Number(partData.vol) || 0;
   if (!vol) return null;
 
-  const priceM3 = Number(mat.pricePerM3Supplier) || Number(mat.pricePerM3Buyer) || 0;
+  const priceM3 =
+    Number(mat.hargaMaterialSupplier) ||
+    Number(mat.pricePerM3Supplier) ||
+    Number(mat.hargaMaterialBuyer) ||
+    Number(mat.pricePerM3Buyer) ||
+    0;
   const ratio = ratios.find((r) => r.materialType === 'kayu' && r.aktif !== false) || { sf: 0, wf: 30 };
   const sf = Number(ratio.sf) || 0;
   const wf = Number(ratio.wf) ?? 30;
@@ -210,12 +215,25 @@ export function aggregateCoatingSurfaceM2(bomData, { coatingId } = {}) {
   return total;
 }
 
+function aggregateAllPartSurfaceM2(bomData) {
+  let total = 0;
+  const walk = (node) => {
+    if (node.tipe === 'PART') {
+      total += partSurfaceM2(node) * (Number(node.qty) || 1);
+    }
+    (node.children || []).forEach(walk);
+  };
+  if (bomData) walk(bomData);
+  return total;
+}
+
 export function resolveProductCoatingCost(bomData, productMeta) {
   const coatingId = productMeta?.coatingId;
   if (!coatingId) return { coatingCost: 0, surfaceM2: 0 };
-  const surfaceM2 = aggregateCoatingSurfaceM2(bomData, { coatingId });
+  const byType = aggregateCoatingSurfaceM2(bomData, { coatingId });
+  const allParts = aggregateAllPartSurfaceM2(bomData);
   const fallbackM2 = Number(productMeta?.surfaceM2Coating) || 0;
-  const m2 = surfaceM2 > 0 ? surfaceM2 : fallbackM2;
+  const m2 = Math.max(byType, allParts, fallbackM2);
   return {
     surfaceM2: m2,
     coatingCost: computeCoatingCost(coatingId, m2),

@@ -141,6 +141,9 @@ export function normalizeProject(doc) {
     },
     kursUsd: doc.kursUsd ?? 16004,
     kursEur: doc.kursEur ?? 17500,
+    excelMirror: doc.excelMirror ?? null,
+    importSheets: doc.importSheets ?? [],
+    importedFromExcel: doc.importedFromExcel ?? false,
   };
 }
 
@@ -172,6 +175,9 @@ export function createEmptyProject(overrides = {}) {
     kursUsd: overrides.kursUsd ?? 16004,
     kursEur: overrides.kursEur ?? 17500,
     customErp: overrides.customErp ?? createDefaultCustomErp(),
+    excelMirror: overrides.excelMirror ?? null,
+    importSheets: overrides.importSheets ?? [],
+    importedFromExcel: overrides.importedFromExcel ?? false,
   };
 }
 

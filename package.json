@@ -6,15 +6,18 @@
   "scripts": {
     "dev": "node scripts/dev.mjs",
     "build": "node scripts/build.mjs",
-    "test": "node scripts/runElbaTests.mjs && node scripts/testFormulaEngine.mjs && node scripts/testRoundingEngine.mjs && node scripts/testCoatingCost.mjs && node scripts/verifyZanCogs.mjs",
+    "test": "node scripts/runElbaTests.mjs && node scripts/testFormulaEngine.mjs && node scripts/testRoundingEngine.mjs && node scripts/testCoatingCost.mjs && node scripts/verifyZanCogs.mjs && node scripts/verifyImportedZanCogs.mjs",
     "import:masters": "node scripts/importZanMasters.mjs",
     "import:samples": "node scripts/importAllSampleProjects.mjs",
     "import:all": "node scripts/importZanMasters.mjs && node scripts/importAllSampleProjects.mjs",
-    "import:bom": "node scripts/importBomFromExcel.mjs"
+    "import:bom": "node scripts/importBomFromExcel.mjs",
+    "export:images": "node scripts/exportExcelImages.mjs --all",
+    "build:posisi-combo": "node scripts/buildPosisiComboCatalog.mjs"
   },
   "dependencies": {
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.8",
+    "jszip": "^3.10.1",
     "lucide-react": "^0.468.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

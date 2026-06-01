@@ -1,5 +1,5 @@
-import { useEffect, useState, useCallback } from 'react';
-import { X, Database, RefreshCw, Save } from 'lucide-react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
+import { Database, RefreshCw, Save } from 'lucide-react';
 import {
   getMaterials,
   getNonWoodMaterials,
@@ -22,10 +22,32 @@ import {
   saveWoodLaborRows,
   saveFormulaDataRows,
   saveRoundComponentPresets,
+  getMaterialCatalog,
+  saveMaterialCatalog,
   reimportMastersFromSeedFiles,
 } from '../../services/masterStorage';
+import { dimensiLabel } from '../../utils/buildMaterialCatalog.js';
+import FullPageShell from '../ui/FullPageShell.jsx';
+import {
+  CellInput,
+  RpInput,
+  PctInput,
+  TypeChip,
+  MasterTabBar,
+  MasterPanel,
+  MasterTableWrap,
+  MasterThead,
+  MasterTh,
+  MasterTr,
+  MasterTd,
+  MasterLoading,
+  MasterSearch,
+  MasterSectionTitle,
+  filterMasterRows,
+} from '../master/MasterTable.jsx';
 
 const TABS = [
+  { id: 'catalog', label: 'Katalog Material' },
   { id: 'materials', label: 'DATA BASE' },
   { id: 'nonWood', label: 'Non-Kayu' },
   { id: 'ratios', label: 'MASTER RATIO' },
@@ -37,16 +59,18 @@ const TABS = [
   { id: 'workCenters', label: 'WORK CENTER' },
 ];
 
-function CellInput({ value, onChange, type = 'text', className = '' }) {
-  return (
-    <input
-      type={type}
-      value={value ?? ''}
-      onChange={(e) => onChange(type === 'number' ? Number(e.target.value) : e.target.value)}
-      className={`w-full border border-slate-200 rounded px-1.5 py-1 text-xs focus:border-emerald-400 outline-none ${className}`}
-    />
-  );
-}
+const TAB_COUNTS = {
+  catalog: (s) => s.catalog.length,
+  materials: (s) => s.materials.length,
+  nonWood: (s) => s.nonWood.length,
+  ratios: (s) => s.ratios.length,
+  woodLabor: (s) => s.woodLabor.length,
+  coatings: (s) => s.coatings.length,
+  formulaRows: (s) => s.formulaRows.length,
+  formulas: (s) => s.formulas.length,
+  rounding: (s) => s.rounding.length + s.roundPresets.length,
+  workCenters: (s) => s.workCenters.length,
+};
 
 export default function MasterMaterialsModal({ isOpen, onClose, onReimported }) {
   const [tab, setTab] = useState('materials');
@@ -60,14 +84,16 @@ export default function MasterMaterialsModal({ isOpen, onClose, onReimported }) 
   const [woodLabor, setWoodLabor] = useState([]);
   const [formulaRows, setFormulaRows] = useState([]);
   const [roundPresets, setRoundPresets] = useState([]);
+  const [catalog, setCatalog] = useState([]);
   const [meta, setMeta] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState('');
+  const [search, setSearch] = useState('');
 
   const load = useCallback(async () => {
     setLoading(true);
-    const [m, nw, r, c, f, rd, metaDoc, wc, wl, fr, rp] = await Promise.all([
+    const [m, nw, r, c, f, rd, metaDoc, wc, wl, fr, rp, cat] = await Promise.all([
       getMaterials(),
       getNonWoodMaterials(),
       getWasteRatios(),
@@ -79,6 +105,7 @@ export default function MasterMaterialsModal({ isOpen, onClose, onReimported }) 
       getWoodLaborRows(),
       getFormulaDataRows(),
       getRoundComponentPresets(),
+      getMaterialCatalog(),
     ]);
     setMaterials(m);
     setNonWood(nw);
@@ -91,12 +118,40 @@ export default function MasterMaterialsModal({ isOpen, onClose, onReimported }) 
     setWoodLabor(wl);
     setFormulaRows(fr);
     setRoundPresets(rp);
+    setCatalog(cat);
     setLoading(false);
   }, []);
 
   useEffect(() => {
-    if (isOpen) load();
+    if (isOpen) {
+      setSearch('');
+      load();
+    }
   }, [isOpen, load]);
+
+  const catalogFiltered = useMemo(
+    () => filterMasterRows(catalog, search, ['kode', 'nama', 'vendorSupplier', 'materialType']),
+    [catalog, search],
+  );
+
+  const materialsFiltered = useMemo(
+    () => filterMasterRows(materials, search, ['kode', 'woodName', 'specification', 'vendorSupplier']),
+    [materials, search],
+  );
+
+  const stateSnap = useMemo(
+    () => ({ catalog, materials, nonWood, ratios, woodLabor, coatings, formulaRows, formulas, rounding, roundPresets, workCenters }),
+    [catalog, materials, nonWood, ratios, woodLabor, coatings, formulaRows, formulas, rounding, roundPresets, workCenters],
+  );
+
+  const tabsWithCount = useMemo(
+    () =>
+      TABS.map((t) => ({
+        ...t,
+        count: TAB_COUNTS[t.id]?.(stateSnap) ?? null,
+      })),
+    [stateSnap],
+  );
 
   if (!isOpen) return null;
 
@@ -111,19 +166,18 @@ export default function MasterMaterialsModal({ isOpen, onClose, onReimported }) 
     setSaving(true);
     setMsg('');
     try {
-      if (tab === 'materials') await saveMaterials(materials);
+      if (tab === 'catalog') await saveMaterialCatalog(catalog);
+      else if (tab === 'materials') await saveMaterials(materials);
       else if (tab === 'nonWood') await saveNonWoodMaterials(nonWood);
       else if (tab === 'ratios') await saveWasteRatios(ratios);
       else if (tab === 'coatings') await saveCoatings(coatings);
       else if (tab === 'formulas') await saveFormulas(formulas);
-      else if (tab === 'rounding') await saveRoundingRules(rounding);
-      else if (tab === 'workCenters') await saveWorkCenters(workCenters);
-      else if (tab === 'woodLabor') await saveWoodLaborRows(woodLabor);
-      else if (tab === 'formulaRows') await saveFormulaDataRows(formulaRows);
       else if (tab === 'rounding') {
         await saveRoundingRules(rounding);
         await saveRoundComponentPresets(roundPresets);
-      }
+      } else if (tab === 'workCenters') await saveWorkCenters(workCenters);
+      else if (tab === 'woodLabor') await saveWoodLaborRows(woodLabor);
+      else if (tab === 'formulaRows') await saveFormulaDataRows(formulaRows);
       setMsg('Tersimpan.');
       onReimported?.();
     } catch (e) {
@@ -136,338 +190,444 @@ export default function MasterMaterialsModal({ isOpen, onClose, onReimported }) 
     setter((prev) => prev.map((row) => (row.id === id ? { ...row, [field]: value } : row)));
   };
 
+  const subtitle = meta
+    ? `${meta.sourceFile} · v${meta.importScriptVersion || '1'} · checksum ${meta.checksum} · ${catalog.length} katalog · ${materials.length} kayu · ${coatings.length} coating · ${workCenters.length} WC`
+    : 'DATA BASE, ratio, coating, formula — edit lalu simpan ke browser';
+
   return (
-    <div className="fixed inset-0 z-[140] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden">
-        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between shrink-0">
-          <div>
-            <h2 className="text-lg font-black text-slate-800 flex items-center gap-2">
-              <Database className="w-5 h-5 text-emerald-500" /> Master Data Excel
-            </h2>
-            {meta && (
-              <p className="text-[10px] text-slate-500 mt-1">
-                {meta.sourceFile} · v{meta.importScriptVersion || '1'} · checksum {meta.checksum} ·{' '}
-                {materials.length} kayu · {ratios.length} ratio · {coatings.length} coating · {workCenters.length} WC
-              </p>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handleReimport}
-              className="text-xs font-bold text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-lg hover:bg-emerald-50 flex items-center gap-1"
-            >
-              <RefreshCw className="w-3.5 h-3.5" /> Reset import
-            </button>
-            <button type="button" onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 rounded-lg">
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap gap-1 px-4 pt-3 border-b border-slate-100 shrink-0">
-          {TABS.map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              onClick={() => setTab(t.id)}
-              className={`px-3 py-2 text-[10px] font-bold rounded-t-lg transition-colors ${
-                tab === t.id ? 'bg-emerald-100 text-emerald-800' : 'text-slate-500 hover:bg-slate-50'
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="flex-1 overflow-auto p-4">
-          {loading ? (
-            <p className="text-center text-slate-400 py-12">Memuat master…</p>
-          ) : tab === 'materials' ? (
-            <table className="w-full text-left text-xs">
-              <thead className="text-[10px] uppercase text-slate-500 font-bold border-b sticky top-0 bg-white">
-                <tr>
-                  <th className="py-2 pr-2">No</th>
-                  <th className="py-2 pr-2">Specification</th>
-                  <th className="py-2 pr-2">Nama</th>
-                  <th className="py-2 pr-2 text-right">Rp/m³ supplier</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {materials.map((m) => (
-                  <tr key={m.id}>
-                    <td className="py-1 pr-2 font-mono">{m.no}</td>
-                    <td className="py-1 pr-2">
-                      <CellInput value={m.specification} onChange={(v) => patchList(setMaterials, m.id, 'specification', v)} />
-                    </td>
-                    <td className="py-1 pr-2">
-                      <CellInput value={m.woodName} onChange={(v) => patchList(setMaterials, m.id, 'woodName', v)} />
-                    </td>
-                    <td className="py-1 pr-2">
-                      <CellInput type="number" value={m.pricePerM3Supplier} onChange={(v) => patchList(setMaterials, m.id, 'pricePerM3Supplier', v)} className="text-right" />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : tab === 'nonWood' ? (
-            <table className="w-full text-left text-xs">
-              <thead className="text-[10px] uppercase text-slate-500 font-bold border-b sticky top-0 bg-white">
-                <tr>
-                  <th className="py-2">Jenis</th>
-                  <th className="py-2">Material type</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {nonWood.map((m) => (
-                  <tr key={m.id}>
-                    <td className="py-1">
-                      <CellInput value={m.specification} onChange={(v) => patchList(setNonWood, m.id, 'specification', v)} />
-                    </td>
-                    <td className="py-1">
-                      <CellInput value={m.materialType} onChange={(v) => patchList(setNonWood, m.id, 'materialType', v)} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : tab === 'ratios' ? (
-            <table className="w-full text-left text-xs">
-              <thead className="text-[10px] uppercase text-slate-500 font-bold border-b sticky top-0 bg-white">
-                <tr>
-                  <th className="py-2">Label</th>
-                  <th className="py-2">Tipe</th>
-                  <th className="py-2 text-center">SF %</th>
-                  <th className="py-2 text-center">WF %</th>
-                  <th className="py-2">Sumber</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {ratios.map((r) => (
-                  <tr key={r.id}>
-                    <td className="py-1 font-bold">{r.label}</td>
-                    <td className="py-1">{r.materialType}</td>
-                    <td className="py-1">
-                      <CellInput type="number" value={r.sf} onChange={(v) => patchList(setRatios, r.id, 'sf', v)} className="text-center" />
-                    </td>
-                    <td className="py-1">
-                      <CellInput type="number" value={r.wf} onChange={(v) => patchList(setRatios, r.id, 'wf', v)} className="text-center" />
-                    </td>
-                    <td className="py-1 text-[10px] text-slate-500">{r.source}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : tab === 'woodLabor' ? (
-            <table className="w-full text-left text-xs">
-              <thead className="text-[10px] uppercase text-slate-500 font-bold border-b sticky top-0 bg-white">
-                <tr>
-                  <th className="py-2">No</th>
-                  <th className="py-2">Job</th>
-                  <th className="py-2 text-right">Min/m³</th>
-                  <th className="py-2 text-right">Hour/m³</th>
-                  <th className="py-2 text-right">Cost/m³ (IDR)</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {woodLabor.map((w) => (
-                  <tr key={w.id}>
-                    <td className="py-1">{w.no}</td>
-                    <td className="py-1">
-                      <CellInput value={w.jobDescription} onChange={(v) => patchList(setWoodLabor, w.id, 'jobDescription', v)} />
-                    </td>
-                    <td className="py-1">
-                      <CellInput type="number" value={w.laborMinPerM3} onChange={(v) => patchList(setWoodLabor, w.id, 'laborMinPerM3', v)} className="text-right" />
-                    </td>
-                    <td className="py-1">
-                      <CellInput type="number" value={w.laborHourPerM3} onChange={(v) => patchList(setWoodLabor, w.id, 'laborHourPerM3', v)} className="text-right" />
-                    </td>
-                    <td className="py-1">
-                      <CellInput type="number" value={w.laborCostPerM3} onChange={(v) => patchList(setWoodLabor, w.id, 'laborCostPerM3', v)} className="text-right" />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : tab === 'coatings' ? (
-            <table className="w-full text-left text-xs">
-              <thead className="text-[10px] uppercase text-slate-500 font-bold border-b sticky top-0 bg-white">
-                <tr>
-                  <th className="py-2 pr-2">No</th>
-                  <th className="py-2 pr-2">Finishing</th>
-                  <th className="py-2 pr-2 text-right">Rounded / m²</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {coatings.map((c) => (
-                  <tr key={c.id}>
-                    <td className="py-1 pr-2">{c.no}</td>
-                    <td className="py-1 pr-2">
-                      <CellInput value={c.name} onChange={(v) => patchList(setCoatings, c.id, 'name', v)} />
-                    </td>
-                    <td className="py-1 pr-2">
-                      <CellInput type="number" value={c.roundedCostM2} onChange={(v) => patchList(setCoatings, c.id, 'roundedCostM2', v)} className="text-right" />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : tab === 'formulaRows' ? (
-            <table className="w-full text-left text-xs">
-              <thead className="text-[10px] uppercase text-slate-500 font-bold border-b sticky top-0 bg-white">
-                <tr>
-                  <th className="py-2">Material</th>
-                  <th className="py-2">Proses</th>
-                  <th className="py-2 text-center">WF%</th>
-                  <th className="py-2 text-center">SF%</th>
-                  <th className="py-2 text-center">T (mm)</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {formulaRows.map((f) => (
-                  <tr key={f.id}>
-                    <td className="py-1 font-bold">{f.materialType}</td>
-                    <td className="py-1">{f.proses}</td>
-                    <td className="py-1">
-                      <CellInput type="number" value={f.wfPct} onChange={(v) => patchList(setFormulaRows, f.id, 'wfPct', v)} className="text-center" />
-                    </td>
-                    <td className="py-1">
-                      <CellInput type="number" value={f.sfPct} onChange={(v) => patchList(setFormulaRows, f.id, 'sfPct', v)} className="text-center" />
-                    </td>
-                    <td className="py-1">
-                      <CellInput type="number" value={f.thicknessMm} onChange={(v) => patchList(setFormulaRows, f.id, 'thicknessMm', v)} className="text-center" />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : tab === 'formulas' ? (
-            <table className="w-full text-left text-xs">
-              <thead className="text-[10px] uppercase text-slate-500 font-bold border-b sticky top-0 bg-white">
-                <tr>
-                  <th className="py-2">ID</th>
-                  <th className="py-2">Label</th>
-                  <th className="py-2">Deskripsi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {formulas.map((f) => (
-                  <tr key={f.id}>
-                    <td className="py-1 font-mono text-[10px]">{f.id}</td>
-                    <td className="py-1">
-                      <CellInput value={f.label} onChange={(v) => patchList(setFormulas, f.id, 'label', v)} />
-                    </td>
-                    <td className="py-1">
-                      <CellInput value={f.description} onChange={(v) => patchList(setFormulas, f.id, 'description', v)} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : tab === 'rounding' ? (
-            <div className="space-y-6">
-              <table className="w-full text-left text-xs">
-                <thead className="text-[10px] uppercase text-slate-500 font-bold border-b">
-                  <tr>
-                    <th className="py-2">Target</th>
-                    <th className="py-2">Method</th>
-                    <th className="py-2">Step</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {rounding.map((r) => (
-                    <tr key={r.id}>
-                      <td className="py-1 font-bold">{r.target}</td>
-                      <td className="py-1">
-                        <CellInput value={r.method} onChange={(v) => patchList(setRounding, r.id, 'method', v)} />
-                      </td>
-                      <td className="py-1">
-                        <CellInput type="number" value={r.step} onChange={(v) => patchList(setRounding, r.id, 'step', v)} />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <div>
-                <h3 className="text-xs font-black text-slate-700 mb-2">Round Table Presets (Excel)</h3>
-                <table className="w-full text-left text-xs">
-                  <thead className="text-[10px] uppercase text-slate-500 font-bold border-b">
-                    <tr>
-                      <th className="py-2">Label</th>
-                      <th className="py-2 text-center">Sections</th>
-                      <th className="py-2 text-center">Ø luar (mm)</th>
-                      <th className="py-2 text-center">Lebar radial</th>
-                      <th className="py-2 text-center">T (mm)</th>
-                      <th className="py-2 text-right">m³</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {roundPresets.map((p) => (
-                      <tr key={p.id}>
-                        <td className="py-1">{p.label}</td>
-                        <td className="py-1">
-                          <CellInput type="number" value={p.sections} onChange={(v) => patchList(setRoundPresets, p.id, 'sections', v)} className="text-center" />
-                        </td>
-                        <td className="py-1">
-                          <CellInput type="number" value={p.outerDiameterMm} onChange={(v) => patchList(setRoundPresets, p.id, 'outerDiameterMm', v)} className="text-center" />
-                        </td>
-                        <td className="py-1">
-                          <CellInput type="number" value={p.radialWidthMm} onChange={(v) => patchList(setRoundPresets, p.id, 'radialWidthMm', v)} className="text-center" />
-                        </td>
-                        <td className="py-1">
-                          <CellInput type="number" value={p.thicknessMm} onChange={(v) => patchList(setRoundPresets, p.id, 'thicknessMm', v)} className="text-center" />
-                        </td>
-                        <td className="py-1 text-right tabular-nums">{Number(p.cubicMeter || 0).toFixed(6)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          ) : tab === 'workCenters' ? (
-            <table className="w-full text-left text-xs">
-              <thead className="text-[10px] uppercase text-slate-500 font-bold border-b sticky top-0 bg-white">
-                <tr>
-                  <th className="py-2">Kode</th>
-                  <th className="py-2">Nama</th>
-                  <th className="py-2 text-right">Rate/mnt</th>
-                  <th className="py-2">Mesin</th>
-                  <th className="py-2">Sumber</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {workCenters.map((wc) => (
-                  <tr key={wc.id}>
-                    <td className="py-1 font-mono">{wc.kode}</td>
-                    <td className="py-1">
-                      <CellInput value={wc.nama} onChange={(v) => patchList(setWorkCenters, wc.id, 'nama', v)} />
-                    </td>
-                    <td className="py-1">
-                      <CellInput type="number" value={Math.round(wc.ratePerMin || 0)} onChange={(v) => patchList(setWorkCenters, wc.id, 'ratePerMin', v)} className="text-right" />
-                    </td>
-                    <td className="py-1">
-                      <CellInput value={wc.mesin} onChange={(v) => patchList(setWorkCenters, wc.id, 'mesin', v)} />
-                    </td>
-                    <td className="py-1 text-[10px] text-slate-500">{wc.source || wc.category || '—'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : null}
-        </div>
-
-        <div className="px-6 py-3 border-t border-slate-200 flex items-center justify-between shrink-0 bg-slate-50">
-          <span className="text-[10px] text-slate-500">{msg || 'Edit sel lalu klik Simpan — disimpan di browser (IndexedDB).'}</span>
+    <FullPageShell
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Master Data Excel"
+      icon={Database}
+      subtitle={subtitle}
+      accent="emerald"
+      headerActions={
+        <button
+          type="button"
+          onClick={handleReimport}
+          className="text-xs font-bold text-emerald-700 border border-emerald-200 px-3 py-2 rounded-lg hover:bg-emerald-50 flex items-center gap-1.5 bg-white shadow-sm"
+        >
+          <RefreshCw className="w-3.5 h-3.5" /> Reset import
+        </button>
+      }
+      footer={
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <span className={`text-xs ${msg ? 'text-emerald-700 font-medium' : 'text-slate-500'}`}>
+            {msg || 'Edit sel lalu klik Simpan — disimpan di browser (IndexedDB).'}
+          </span>
           <button
             type="button"
             onClick={handleSaveTab}
             disabled={saving || loading}
-            className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 disabled:opacity-50"
+            className="flex items-center gap-1.5 px-5 py-2.5 text-sm font-bold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 disabled:opacity-50 shadow-sm"
           >
-            <Save className="w-3.5 h-3.5" /> {saving ? 'Menyimpan…' : 'Simpan tab ini'}
+            <Save className="w-4 h-4" /> {saving ? 'Menyimpan…' : 'Simpan tab ini'}
           </button>
         </div>
-      </div>
-    </div>
+      }
+    >
+      <MasterPanel>
+        <div className="shrink-0 p-4 border-b border-slate-100 bg-gradient-to-b from-white to-slate-50/50 space-y-3">
+          <MasterTabBar tabs={tabsWithCount} active={tab} onChange={(id) => { setTab(id); setSearch(''); }} />
+          {(tab === 'catalog' || tab === 'materials') && !loading && (
+            <MasterSearch
+              value={search}
+              onChange={setSearch}
+              placeholder={tab === 'catalog' ? 'Cari katalog: kode, nama, vendor…' : 'Cari kayu: kode, nama, grade…'}
+            />
+          )}
+        </div>
+
+        <div className="flex-1 overflow-auto p-4 sm:p-5 min-h-0">
+          {loading ? (
+            <MasterLoading />
+          ) : tab === 'catalog' ? (
+            <MasterTableWrap minWidth="960px">
+              <MasterThead>
+                <tr>
+                  <MasterTh>Kode</MasterTh>
+                  <MasterTh>Nama</MasterTh>
+                  <MasterTh>Jenis</MasterTh>
+                  <MasterTh>Dimensi</MasterTh>
+                  <MasterTh align="right" money>Harga log</MasterTh>
+                  <MasterTh align="right" money>Safety factor</MasterTh>
+                  <MasterTh align="right" money>Harga material</MasterTh>
+                  <MasterTh>Vendor / supplier</MasterTh>
+                  <MasterTh>Satuan</MasterTh>
+                  <MasterTh>Sumber</MasterTh>
+                </tr>
+              </MasterThead>
+              <tbody>
+                {catalogFiltered.map((row, i) => (
+                  <MasterTr key={row.id} index={i}>
+                    <MasterTd mono>
+                      <CellInput value={row.kode} onChange={(v) => patchList(setCatalog, row.id, 'kode', v)} mono />
+                    </MasterTd>
+                    <MasterTd>
+                      <CellInput value={row.nama} onChange={(v) => patchList(setCatalog, row.id, 'nama', v)} />
+                    </MasterTd>
+                    <MasterTd>
+                      <TypeChip type={row.materialType} />
+                    </MasterTd>
+                    <MasterTd className="text-slate-600 whitespace-nowrap text-xs">
+                      {dimensiLabel(row.dimensi)}
+                    </MasterTd>
+                    <MasterTd align="right">
+                      <RpInput
+                        value={row.hargaLog ?? row.hargaLogBuyer ?? 0}
+                        onChange={(v) => patchList(setCatalog, row.id, 'hargaLog', v)}
+                        suffix="log"
+                      />
+                    </MasterTd>
+                    <MasterTd align="right">
+                      <RpInput
+                        value={row.safetyFactor ?? 0}
+                        onChange={(v) => patchList(setCatalog, row.id, 'safetyFactor', v)}
+                      />
+                    </MasterTd>
+                    <MasterTd align="right">
+                      <RpInput
+                        emphasize
+                        value={row.hargaMaterial ?? row.hargaMaterialSupplier ?? 0}
+                        onChange={(v) => patchList(setCatalog, row.id, 'hargaMaterial', v)}
+                      />
+                    </MasterTd>
+                    <MasterTd>
+                      <CellInput
+                        value={row.vendorSupplier ?? ''}
+                        onChange={(v) => patchList(setCatalog, row.id, 'vendorSupplier', v)}
+                      />
+                    </MasterTd>
+                    <MasterTd className="text-xs text-slate-500">{row.unit || '—'}</MasterTd>
+                    <MasterTd className="text-[10px] text-slate-400 max-w-[90px] truncate" title={row.source}>
+                      {row.source}
+                    </MasterTd>
+                  </MasterTr>
+                ))}
+              </tbody>
+            </MasterTableWrap>
+          ) : tab === 'materials' ? (
+            <MasterTableWrap minWidth="900px">
+              <MasterThead>
+                <tr>
+                  <MasterTh>No</MasterTh>
+                  <MasterTh>Kode</MasterTh>
+                  <MasterTh>Specification</MasterTh>
+                  <MasterTh>Nama kayu</MasterTh>
+                  <MasterTh>Grade / vendor</MasterTh>
+                  <MasterTh align="right" money>Harga log buyer</MasterTh>
+                  <MasterTh align="right" money>Safety factor</MasterTh>
+                  <MasterTh align="right" money>Harga material buyer</MasterTh>
+                  <MasterTh align="right" money>Harga supplier / m³</MasterTh>
+                </tr>
+              </MasterThead>
+              <tbody>
+                {materialsFiltered.map((m, i) => (
+                  <MasterTr key={m.id} index={i}>
+                    <MasterTd mono>{m.no}</MasterTd>
+                    <MasterTd mono>
+                      <CellInput value={m.kode} onChange={(v) => patchList(setMaterials, m.id, 'kode', v)} mono />
+                    </MasterTd>
+                    <MasterTd>
+                      <CellInput value={m.specification} onChange={(v) => patchList(setMaterials, m.id, 'specification', v)} />
+                    </MasterTd>
+                    <MasterTd>
+                      <CellInput value={m.woodName} onChange={(v) => patchList(setMaterials, m.id, 'woodName', v)} />
+                    </MasterTd>
+                    <MasterTd>
+                      <CellInput
+                        value={m.vendorSupplier || m.diameterGrade}
+                        onChange={(v) => patchList(setMaterials, m.id, 'vendorSupplier', v)}
+                      />
+                    </MasterTd>
+                    <MasterTd align="right">
+                      <RpInput
+                        value={m.hargaLogBuyer ?? m.pricePerM3Buyer}
+                        onChange={(v) => patchList(setMaterials, m.id, 'hargaLogBuyer', v)}
+                      />
+                    </MasterTd>
+                    <MasterTd align="right">
+                      <RpInput
+                        value={m.safetyFactorBuyer ?? m.priceSafetyFactorBuyer ?? 0}
+                        onChange={(v) => patchList(setMaterials, m.id, 'safetyFactorBuyer', v)}
+                      />
+                    </MasterTd>
+                    <MasterTd align="right">
+                      <RpInput
+                        emphasize
+                        value={m.hargaMaterialBuyer ?? m.buyerTotalPerM3}
+                        onChange={(v) => patchList(setMaterials, m.id, 'hargaMaterialBuyer', v)}
+                        suffix="m³"
+                      />
+                    </MasterTd>
+                    <MasterTd align="right">
+                      <RpInput
+                        value={m.hargaMaterialSupplier ?? m.pricePerM3Supplier}
+                        onChange={(v) => patchList(setMaterials, m.id, 'hargaMaterialSupplier', v)}
+                        suffix="m³"
+                      />
+                    </MasterTd>
+                  </MasterTr>
+                ))}
+              </tbody>
+            </MasterTableWrap>
+          ) : tab === 'nonWood' ? (
+            <MasterTableWrap minWidth="480px">
+              <MasterThead>
+                <tr>
+                  <MasterTh>Jenis</MasterTh>
+                  <MasterTh>Material type</MasterTh>
+                </tr>
+              </MasterThead>
+              <tbody>
+                {nonWood.map((m) => (
+                  <MasterTr key={m.id}>
+                    <MasterTd>
+                      <CellInput value={m.specification} onChange={(v) => patchList(setNonWood, m.id, 'specification', v)} />
+                    </MasterTd>
+                    <MasterTd>
+                      <CellInput value={m.materialType} onChange={(v) => patchList(setNonWood, m.id, 'materialType', v)} />
+                    </MasterTd>
+                  </MasterTr>
+                ))}
+              </tbody>
+            </MasterTableWrap>
+          ) : tab === 'ratios' ? (
+            <MasterTableWrap minWidth="640px">
+              <MasterThead>
+                <tr>
+                  <MasterTh>Label</MasterTh>
+                  <MasterTh>Tipe</MasterTh>
+                  <MasterTh align="center">SF %</MasterTh>
+                  <MasterTh align="center">WF %</MasterTh>
+                  <MasterTh>Sumber</MasterTh>
+                </tr>
+              </MasterThead>
+              <tbody>
+                {ratios.map((r, i) => (
+                  <MasterTr key={r.id} index={i}>
+                    <MasterTd className="font-semibold text-slate-800">{r.label}</MasterTd>
+                    <MasterTd>
+                      <TypeChip type={r.materialType} />
+                    </MasterTd>
+                    <MasterTd align="center">
+                      <PctInput value={r.sf} onChange={(v) => patchList(setRatios, r.id, 'sf', v)} />
+                    </MasterTd>
+                    <MasterTd align="center">
+                      <PctInput value={r.wf} onChange={(v) => patchList(setRatios, r.id, 'wf', v)} />
+                    </MasterTd>
+                    <MasterTd className="text-xs text-slate-500">{r.source}</MasterTd>
+                  </MasterTr>
+                ))}
+              </tbody>
+            </MasterTableWrap>
+          ) : tab === 'woodLabor' ? (
+            <MasterTableWrap minWidth="720px">
+              <MasterThead>
+                <tr>
+                  <MasterTh>No</MasterTh>
+                  <MasterTh>Job</MasterTh>
+                  <MasterTh align="right">Min/m³</MasterTh>
+                  <MasterTh align="right">Hour/m³</MasterTh>
+                  <MasterTh align="right" money>Biaya/m³</MasterTh>
+                </tr>
+              </MasterThead>
+              <tbody>
+                {woodLabor.map((w) => (
+                  <MasterTr key={w.id}>
+                    <MasterTd>{w.no}</MasterTd>
+                    <MasterTd>
+                      <CellInput value={w.jobDescription} onChange={(v) => patchList(setWoodLabor, w.id, 'jobDescription', v)} />
+                    </MasterTd>
+                    <MasterTd align="right">
+                      <CellInput type="number" value={w.laborMinPerM3} onChange={(v) => patchList(setWoodLabor, w.id, 'laborMinPerM3', v)} className="text-right tabular-nums" />
+                    </MasterTd>
+                    <MasterTd align="right">
+                      <CellInput type="number" value={w.laborHourPerM3} onChange={(v) => patchList(setWoodLabor, w.id, 'laborHourPerM3', v)} className="text-right tabular-nums" />
+                    </MasterTd>
+                    <MasterTd align="right">
+                      <RpInput value={w.laborCostPerM3} onChange={(v) => patchList(setWoodLabor, w.id, 'laborCostPerM3', v)} emphasize />
+                    </MasterTd>
+                  </MasterTr>
+                ))}
+              </tbody>
+            </MasterTableWrap>
+          ) : tab === 'coatings' ? (
+            <MasterTableWrap minWidth="520px">
+              <MasterThead>
+                <tr>
+                  <MasterTh>No</MasterTh>
+                  <MasterTh>Finishing</MasterTh>
+                  <MasterTh align="right" money>Biaya / m²</MasterTh>
+                </tr>
+              </MasterThead>
+              <tbody>
+                {coatings.map((c) => (
+                  <MasterTr key={c.id}>
+                    <MasterTd>{c.no}</MasterTd>
+                    <MasterTd>
+                      <CellInput value={c.name} onChange={(v) => patchList(setCoatings, c.id, 'name', v)} />
+                    </MasterTd>
+                    <MasterTd align="right">
+                      <RpInput value={c.roundedCostM2} onChange={(v) => patchList(setCoatings, c.id, 'roundedCostM2', v)} emphasize />
+                    </MasterTd>
+                  </MasterTr>
+                ))}
+              </tbody>
+            </MasterTableWrap>
+          ) : tab === 'formulaRows' ? (
+            <MasterTableWrap minWidth="640px">
+              <MasterThead>
+                <tr>
+                  <MasterTh>Material</MasterTh>
+                  <MasterTh>Proses</MasterTh>
+                  <MasterTh align="center">WF%</MasterTh>
+                  <MasterTh align="center">SF%</MasterTh>
+                  <MasterTh align="center">T (mm)</MasterTh>
+                </tr>
+              </MasterThead>
+              <tbody>
+                {formulaRows.map((f) => (
+                  <MasterTr key={f.id}>
+                    <MasterTd className="font-semibold">{f.materialType}</MasterTd>
+                    <MasterTd>{f.proses}</MasterTd>
+                    <MasterTd align="center">
+                      <CellInput type="number" value={f.wfPct} onChange={(v) => patchList(setFormulaRows, f.id, 'wfPct', v)} className="text-center" />
+                    </MasterTd>
+                    <MasterTd align="center">
+                      <CellInput type="number" value={f.sfPct} onChange={(v) => patchList(setFormulaRows, f.id, 'sfPct', v)} className="text-center" />
+                    </MasterTd>
+                    <MasterTd align="center">
+                      <CellInput type="number" value={f.thicknessMm} onChange={(v) => patchList(setFormulaRows, f.id, 'thicknessMm', v)} className="text-center" />
+                    </MasterTd>
+                  </MasterTr>
+                ))}
+              </tbody>
+            </MasterTableWrap>
+          ) : tab === 'formulas' ? (
+            <MasterTableWrap minWidth="560px">
+              <MasterThead>
+                <tr>
+                  <MasterTh>ID</MasterTh>
+                  <MasterTh>Label</MasterTh>
+                  <MasterTh>Deskripsi</MasterTh>
+                </tr>
+              </MasterThead>
+              <tbody>
+                {formulas.map((f) => (
+                  <MasterTr key={f.id}>
+                    <MasterTd mono>{f.id}</MasterTd>
+                    <MasterTd>
+                      <CellInput value={f.label} onChange={(v) => patchList(setFormulas, f.id, 'label', v)} />
+                    </MasterTd>
+                    <MasterTd>
+                      <CellInput value={f.description} onChange={(v) => patchList(setFormulas, f.id, 'description', v)} />
+                    </MasterTd>
+                  </MasterTr>
+                ))}
+              </tbody>
+            </MasterTableWrap>
+          ) : tab === 'rounding' ? (
+            <div className="space-y-8">
+              <section>
+                <MasterSectionTitle>Aturan pembulatan</MasterSectionTitle>
+                <MasterTableWrap minWidth="480px">
+                  <MasterThead>
+                    <tr>
+                      <MasterTh>Target</MasterTh>
+                      <MasterTh>Method</MasterTh>
+                      <MasterTh>Step</MasterTh>
+                    </tr>
+                  </MasterThead>
+                  <tbody>
+                    {rounding.map((r) => (
+                      <MasterTr key={r.id}>
+                        <MasterTd className="font-semibold">{r.target}</MasterTd>
+                        <MasterTd>
+                          <CellInput value={r.method} onChange={(v) => patchList(setRounding, r.id, 'method', v)} />
+                        </MasterTd>
+                        <MasterTd>
+                          <CellInput type="number" value={r.step} onChange={(v) => patchList(setRounding, r.id, 'step', v)} />
+                        </MasterTd>
+                      </MasterTr>
+                    ))}
+                  </tbody>
+                </MasterTableWrap>
+              </section>
+              <section>
+                <MasterSectionTitle>Round table presets (Excel)</MasterSectionTitle>
+                <MasterTableWrap minWidth="720px">
+                  <MasterThead>
+                    <tr>
+                      <MasterTh>Label</MasterTh>
+                      <MasterTh align="center">Sections</MasterTh>
+                      <MasterTh align="center">Ø luar (mm)</MasterTh>
+                      <MasterTh align="center">Lebar radial</MasterTh>
+                      <MasterTh align="center">T (mm)</MasterTh>
+                      <MasterTh align="right">m³</MasterTh>
+                    </tr>
+                  </MasterThead>
+                  <tbody>
+                    {roundPresets.map((p) => (
+                      <MasterTr key={p.id}>
+                        <MasterTd>{p.label}</MasterTd>
+                        <MasterTd align="center">
+                          <CellInput type="number" value={p.sections} onChange={(v) => patchList(setRoundPresets, p.id, 'sections', v)} className="text-center" />
+                        </MasterTd>
+                        <MasterTd align="center">
+                          <CellInput type="number" value={p.outerDiameterMm} onChange={(v) => patchList(setRoundPresets, p.id, 'outerDiameterMm', v)} className="text-center" />
+                        </MasterTd>
+                        <MasterTd align="center">
+                          <CellInput type="number" value={p.radialWidthMm} onChange={(v) => patchList(setRoundPresets, p.id, 'radialWidthMm', v)} className="text-center" />
+                        </MasterTd>
+                        <MasterTd align="center">
+                          <CellInput type="number" value={p.thicknessMm} onChange={(v) => patchList(setRoundPresets, p.id, 'thicknessMm', v)} className="text-center" />
+                        </MasterTd>
+                        <MasterTd align="right" className="tabular-nums text-slate-600">
+                          {Number(p.cubicMeter || 0).toFixed(6)}
+                        </MasterTd>
+                      </MasterTr>
+                    ))}
+                  </tbody>
+                </MasterTableWrap>
+              </section>
+            </div>
+          ) : tab === 'workCenters' ? (
+            <MasterTableWrap minWidth="640px">
+              <MasterThead>
+                <tr>
+                  <MasterTh>Kode</MasterTh>
+                  <MasterTh>Nama</MasterTh>
+                  <MasterTh align="right" money>Rate / menit</MasterTh>
+                  <MasterTh>Mesin</MasterTh>
+                  <MasterTh>Sumber</MasterTh>
+                </tr>
+              </MasterThead>
+              <tbody>
+                {workCenters.map((wc) => (
+                  <MasterTr key={wc.id}>
+                    <MasterTd mono>{wc.kode}</MasterTd>
+                    <MasterTd>
+                      <CellInput value={wc.nama} onChange={(v) => patchList(setWorkCenters, wc.id, 'nama', v)} />
+                    </MasterTd>
+                    <MasterTd align="right">
+                      <RpInput
+                        value={Math.round(wc.ratePerMin || 0)}
+                        onChange={(v) => patchList(setWorkCenters, wc.id, 'ratePerMin', v)}
+                      />
+                    </MasterTd>
+                    <MasterTd>
+                      <CellInput value={wc.mesin} onChange={(v) => patchList(setWorkCenters, wc.id, 'mesin', v)} />
+                    </MasterTd>
+                    <MasterTd className="text-xs text-slate-500">{wc.source || wc.category || '—'}</MasterTd>
+                  </MasterTr>
+                ))}
+              </tbody>
+            </MasterTableWrap>
+          ) : null}
+        </div>
+      </MasterPanel>
+    </FullPageShell>
   );
 }

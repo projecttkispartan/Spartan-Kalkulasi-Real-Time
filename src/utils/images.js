@@ -1,4 +1,5 @@
 import { posisiGambarMap } from '../data/mockData.js';
+import { resolveComboGambar } from '../data/posisiComboCatalog.js';
 
 /** Gambar default per tipe hierarki — wireframe selalu punya visual */
 export const defaultImagesByTipe = {
@@ -18,6 +19,8 @@ export function resolveNodeFoto(data) {
 export function resolveProsesGambar(proses) {
   if (proses?.gambar) return proses.gambar;
   const pos = proses?.posisiOperasi;
+  const combo = resolveComboGambar(pos);
+  if (combo) return combo;
   if (pos && posisiGambarMap[pos]) return posisiGambarMap[pos];
   return defaultImagesByTipe.operasi;
 }

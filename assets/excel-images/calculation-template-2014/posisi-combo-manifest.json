@@ -1,0 +1,491 @@
+{
+  "generatedAt": "2026-06-01T22:42:30.707Z",
+  "total": 74,
+  "missing": 0,
+  "groups": [
+    {
+      "id": "finishing",
+      "label": "FINISHING CODE",
+      "count": 12,
+      "range": "image30–image41",
+      "items": [
+        {
+          "value": "F:A",
+          "code": "A",
+          "image": "image30.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image30.jpeg"
+        },
+        {
+          "value": "F:B",
+          "code": "B",
+          "image": "image31.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image31.jpeg"
+        },
+        {
+          "value": "F:C",
+          "code": "C",
+          "image": "image32.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image32.jpeg"
+        },
+        {
+          "value": "F:D",
+          "code": "D",
+          "image": "image33.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image33.jpeg"
+        },
+        {
+          "value": "F:E",
+          "code": "E",
+          "image": "image34.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image34.jpeg"
+        },
+        {
+          "value": "F:F",
+          "code": "F",
+          "image": "image35.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image35.jpeg"
+        },
+        {
+          "value": "F:G",
+          "code": "G",
+          "image": "image36.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image36.jpeg"
+        },
+        {
+          "value": "F:H",
+          "code": "H",
+          "image": "image37.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image37.jpeg"
+        },
+        {
+          "value": "F:I",
+          "code": "I",
+          "image": "image38.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image38.jpeg"
+        },
+        {
+          "value": "F:J",
+          "code": "J",
+          "image": "image39.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image39.jpeg"
+        },
+        {
+          "value": "F:K",
+          "code": "K",
+          "image": "image40.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image40.jpeg"
+        },
+        {
+          "value": "F:L",
+          "code": "L",
+          "image": "image41.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image41.jpeg"
+        }
+      ]
+    },
+    {
+      "id": "assembling",
+      "label": "ASSEMBLING CODE",
+      "count": 11,
+      "range": "image42–image52",
+      "items": [
+        {
+          "value": "ASM:A",
+          "code": "A",
+          "image": "image42.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image42.jpeg"
+        },
+        {
+          "value": "ASM:B",
+          "code": "B",
+          "image": "image43.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image43.jpeg"
+        },
+        {
+          "value": "ASM:C",
+          "code": "C",
+          "image": "image44.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image44.jpeg"
+        },
+        {
+          "value": "ASM:D",
+          "code": "D",
+          "image": "image45.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image45.jpeg"
+        },
+        {
+          "value": "ASM:E",
+          "code": "E",
+          "image": "image46.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image46.jpeg"
+        },
+        {
+          "value": "ASM:F",
+          "code": "F",
+          "image": "image47.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image47.jpeg"
+        },
+        {
+          "value": "ASM:G",
+          "code": "G",
+          "image": "image48.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image48.jpeg"
+        },
+        {
+          "value": "ASM:H",
+          "code": "H",
+          "image": "image49.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image49.jpeg"
+        },
+        {
+          "value": "ASM:I",
+          "code": "I",
+          "image": "image50.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image50.jpeg"
+        },
+        {
+          "value": "ASM:J",
+          "code": "J",
+          "image": "image51.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image51.jpeg"
+        },
+        {
+          "value": "ASM:K",
+          "code": "K",
+          "image": "image52.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image52.jpeg"
+        }
+      ]
+    },
+    {
+      "id": "laminating",
+      "label": "LAMINATING CODE",
+      "count": 11,
+      "range": "image53–image63",
+      "items": [
+        {
+          "value": "LAM:A",
+          "code": "A",
+          "image": "image53.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image53.jpeg"
+        },
+        {
+          "value": "LAM:B",
+          "code": "B",
+          "image": "image54.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image54.jpeg"
+        },
+        {
+          "value": "LAM:C",
+          "code": "C",
+          "image": "image55.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image55.jpeg"
+        },
+        {
+          "value": "LAM:D",
+          "code": "D",
+          "image": "image56.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image56.jpeg"
+        },
+        {
+          "value": "LAM:E",
+          "code": "E",
+          "image": "image57.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image57.jpeg"
+        },
+        {
+          "value": "LAM:F",
+          "code": "F",
+          "image": "image58.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image58.jpeg"
+        },
+        {
+          "value": "LAM:G",
+          "code": "G",
+          "image": "image59.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image59.jpeg"
+        },
+        {
+          "value": "LAM:H",
+          "code": "H",
+          "image": "image60.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image60.jpeg"
+        },
+        {
+          "value": "LAM:I",
+          "code": "I",
+          "image": "image61.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image61.jpeg"
+        },
+        {
+          "value": "LAM:J",
+          "code": "J",
+          "image": "image62.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image62.jpeg"
+        },
+        {
+          "value": "LAM:K",
+          "code": "K",
+          "image": "image63.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image63.jpeg"
+        }
+      ]
+    },
+    {
+      "id": "gluing",
+      "label": "GLUING SURFACE",
+      "count": 13,
+      "range": "image64–image76",
+      "items": [
+        {
+          "value": "GLU:1",
+          "code": "1",
+          "image": "image64.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image64.jpeg"
+        },
+        {
+          "value": "GLU:2",
+          "code": "2",
+          "image": "image65.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image65.jpeg"
+        },
+        {
+          "value": "GLU:3",
+          "code": "3",
+          "image": "image66.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image66.jpeg"
+        },
+        {
+          "value": "GLU:4",
+          "code": "4",
+          "image": "image67.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image67.jpeg"
+        },
+        {
+          "value": "GLU:5",
+          "code": "5",
+          "image": "image68.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image68.jpeg"
+        },
+        {
+          "value": "GLU:6",
+          "code": "6",
+          "image": "image69.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image69.jpeg"
+        },
+        {
+          "value": "GLU:7",
+          "code": "7",
+          "image": "image70.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image70.jpeg"
+        },
+        {
+          "value": "GLU:8",
+          "code": "8",
+          "image": "image71.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image71.jpeg"
+        },
+        {
+          "value": "GLU:9",
+          "code": "9",
+          "image": "image72.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image72.jpeg"
+        },
+        {
+          "value": "GLU:10",
+          "code": "10",
+          "image": "image73.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image73.jpeg"
+        },
+        {
+          "value": "GLU:11",
+          "code": "11",
+          "image": "image74.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image74.jpeg"
+        },
+        {
+          "value": "GLU:12",
+          "code": "12",
+          "image": "image75.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image75.jpeg"
+        },
+        {
+          "value": "GLU:13",
+          "code": "13",
+          "image": "image76.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image76.jpeg"
+        }
+      ]
+    },
+    {
+      "id": "reference",
+      "label": "REFERENSI",
+      "count": 27,
+      "range": "image77–image103",
+      "items": [
+        {
+          "value": "REF:77",
+          "code": "77",
+          "image": "image77.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image77.jpeg"
+        },
+        {
+          "value": "REF:78",
+          "code": "78",
+          "image": "image78.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image78.jpeg"
+        },
+        {
+          "value": "REF:79",
+          "code": "79",
+          "image": "image79.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image79.jpeg"
+        },
+        {
+          "value": "REF:80",
+          "code": "80",
+          "image": "image80.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image80.jpeg"
+        },
+        {
+          "value": "REF:81",
+          "code": "81",
+          "image": "image81.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image81.jpeg"
+        },
+        {
+          "value": "REF:82",
+          "code": "82",
+          "image": "image82.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image82.jpeg"
+        },
+        {
+          "value": "REF:83",
+          "code": "83",
+          "image": "image83.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image83.jpeg"
+        },
+        {
+          "value": "REF:84",
+          "code": "84",
+          "image": "image84.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image84.jpeg"
+        },
+        {
+          "value": "REF:85",
+          "code": "85",
+          "image": "image85.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image85.jpeg"
+        },
+        {
+          "value": "REF:86",
+          "code": "86",
+          "image": "image86.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image86.jpeg"
+        },
+        {
+          "value": "REF:87",
+          "code": "87",
+          "image": "image87.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image87.jpeg"
+        },
+        {
+          "value": "REF:88",
+          "code": "88",
+          "image": "image88.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image88.jpeg"
+        },
+        {
+          "value": "REF:89",
+          "code": "89",
+          "image": "image89.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image89.jpeg"
+        },
+        {
+          "value": "REF:90",
+          "code": "90",
+          "image": "image90.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image90.jpeg"
+        },
+        {
+          "value": "REF:91",
+          "code": "91",
+          "image": "image91.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image91.jpeg"
+        },
+        {
+          "value": "REF:92",
+          "code": "92",
+          "image": "image92.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image92.jpeg"
+        },
+        {
+          "value": "REF:93",
+          "code": "93",
+          "image": "image93.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image93.jpeg"
+        },
+        {
+          "value": "REF:94",
+          "code": "94",
+          "image": "image94.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image94.jpeg"
+        },
+        {
+          "value": "REF:95",
+          "code": "95",
+          "image": "image95.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image95.jpeg"
+        },
+        {
+          "value": "REF:96",
+          "code": "96",
+          "image": "image96.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image96.jpeg"
+        },
+        {
+          "value": "REF:97",
+          "code": "97",
+          "image": "image97.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image97.jpeg"
+        },
+        {
+          "value": "REF:98",
+          "code": "98",
+          "image": "image98.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image98.jpeg"
+        },
+        {
+          "value": "REF:99",
+          "code": "99",
+          "image": "image99.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image99.jpeg"
+        },
+        {
+          "value": "REF:100",
+          "code": "100",
+          "image": "image100.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image100.jpeg"
+        },
+        {
+          "value": "REF:101",
+          "code": "101",
+          "image": "image101.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image101.jpeg"
+        },
+        {
+          "value": "REF:102",
+          "code": "102",
+          "image": "image102.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image102.jpeg"
+        },
+        {
+          "value": "REF:103",
+          "code": "103",
+          "image": "image103.jpeg",
+          "src": "/assets/excel-images/calculation-template-2014/media/image103.jpeg"
+        }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { posisiGambarMap } from '../../data/mockData';
+import { DEFAULT_POSISI_COMBO, getPosisiComboItem, resolveComboGambar } from '../../data/posisiComboCatalog';
 import {
   WORK_CENTERS,
   ROUTING_TEMPLATES,
@@ -27,8 +28,8 @@ const defaultOperation = (id = 1, materialVol = 0) => {
     mfgProcess: meta.mfgProcess,
     nama: meta.label,
     position: id,
-    posisiOperasi: 'Depan',
-    gambar: posisiGambarMap.Depan,
+    posisiOperasi: DEFAULT_POSISI_COMBO,
+    gambar: resolveComboGambar(DEFAULT_POSISI_COMBO) || posisiGambarMap.Depan,
     waktuOperasi: 0,
     waktuManual: false,
     totalPerson: 2,
@@ -71,8 +72,12 @@ function mapSavedOp(p, i, materialVol) {
     mfgProcess: p.mfgProcess || meta.mfgProcess,
     nama: p.nama || meta.label,
     position: p.position ?? i + 1,
-    posisiOperasi: p.posisiOperasi || 'Depan',
-    gambar: p.gambar || posisiGambarMap[p.posisiOperasi] || posisiGambarMap.Depan,
+    posisiOperasi: p.posisiOperasi || DEFAULT_POSISI_COMBO,
+    gambar:
+      p.gambar ||
+      resolveComboGambar(p.posisiOperasi) ||
+      posisiGambarMap[p.posisiOperasi] ||
+      resolveComboGambar(DEFAULT_POSISI_COMBO),
     waktuOperasi: Number(p.waktuOperasi) || 0,
     waktuManual: Boolean(p.waktuManual),
     totalPerson: p.totalPerson ?? 2,
@@ -223,7 +228,13 @@ export default function RoutingModal({ node, onClose, kursUsd, kursEur, onSave }
               : op;
           } else {
             updated = { ...op, [field]: value };
-            if (field === 'posisiOperasi') updated.gambar = posisiGambarMap[value] || posisiGambarMap.Depan;
+            if (field === 'posisiOperasi') {
+              updated.gambar =
+                resolveComboGambar(value) ||
+                getPosisiComboItem(value)?.src ||
+                posisiGambarMap[value] ||
+                resolveComboGambar(DEFAULT_POSISI_COMBO);
+            }
             if (field === 'waktuOperasi') {
               updated.waktuManual = true;
             }

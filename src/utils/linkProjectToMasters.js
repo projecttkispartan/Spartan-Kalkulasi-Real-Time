@@ -64,7 +64,7 @@ export function resolveCoatingMeta({ coatingId, coating } = {}) {
 }
 
 function walkBomEnrich(node, ctx) {
-  const { productMeta, productInfo, applyBiaya = false } = ctx;
+  const { productMeta, productInfo, applyBiaya = false, skipBiayaIfExcel = false } = ctx;
   const defaultGradeId = resolveWoodGradeId(productMeta || {});
 
   let updated = enrichNodeFromMaster(node, { productInfo, productMeta });
@@ -98,7 +98,8 @@ function walkBomEnrich(node, ctx) {
     (updated.materialType === 'kayu' || updated.woodGradeId) &&
     updated.woodGradeId;
 
-  if (applyBiaya && isWoodPart && updated.vol) {
+  const skipBiaya = skipBiayaIfExcel && updated.biayaFromExcel && Number(updated.biaya) > 0;
+  if (applyBiaya && isWoodPart && updated.vol && !skipBiaya) {
     updated = applyMasterToWoodPart(updated, updated.woodGradeId);
   }
 

@@ -11,5 +11,5 @@ import p_fna_550 from './projects/fna-550.json' with { type: 'json' };
 import p_g557 from './projects/g557.json' with { type: 'json' };
 import p_pol_tab_3 from './projects/pol-tab-3.json' with { type: 'json' };
 
-export const SAMPLE_MANIFEST_VERSION = 3;
+export const SAMPLE_MANIFEST_VERSION = 4;
 export const SAMPLE_PROJECTS = [p_zan_100, p_mf081, p_dctvbs, p_svdt_120, p_mf056, p_elb_555_98, p_l_lou_nat, p_g632l_ro, p_fna_550, p_g557, p_pol_tab_3];

@@ -1,14 +1,20 @@
 /**
- * Parse BOM TEMPLATE sheet → BomProject skeleton
+ * Parse workbook Excel BOM → project lengkap (BOM + CALCULATION + SUMMARY + packing)
  */
 import * as XLSX from 'xlsx';
 import { linkProjectToMasters } from './linkProjectToMasters.js';
 import { createEmptyProject } from './emptyProject.js';
 import { calcPartVolume } from './packingVolume.js';
-
-function newProjectId() {
-  return `proj-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-}
+import {
+  readSheetRows,
+  parseFullWorkbookMirror,
+  parseCalculationPartsMap,
+  mergeCalculationIntoBom,
+  appendSummaryProcessParts,
+  buildPackingSpecFromSummary,
+  buildCogsConfigFromSummary,
+} from './excelWorkbookParsers.js';
+import { attachExcelImagesToProject } from './excelImageExtract.js';
 
 function createEmptyProductInfo() {
   return { kode: '', nama: '', varian: '', customer: '', kodeBom: '', namaBom: '', versi: '' };
@@ -18,12 +24,6 @@ function createEmptyProductMeta() {
   return { itemType: '', wood: '', woodGradeId: '', coating: '', coatingId: '' };
 }
 
-function readSheetRows(wb, name) {
-  const sh = wb.Sheets[name];
-  if (!sh) return [];
-  return XLSX.utils.sheet_to_json(sh, { header: 1, defval: '' });
-}
-
 function parseProductDimensi(rows) {
   for (let i = 4; i < Math.min(15, rows.length); i++) {
     const r = rows[i] || [];
@@ -31,6 +31,16 @@ function parseProductDimensi(rows) {
     const d = Number(r[21]);
     const h = Number(r[22]);
     if (w > 0 && d > 0 && h > 0) return { w, d, h };
+  }
+  for (let i = 0; i < Math.min(12, rows.length); i++) {
+    const r = rows[i] || [];
+    const label = String(r[12] ?? '').trim().toUpperCase();
+    if (label.includes('DIMENSION')) {
+      const w = Number(r[14] ?? r[5]);
+      const d = Number(r[15] ?? r[6]);
+      const h = Number(r[16] ?? r[7]);
+      if (w > 0 && d > 0 && h > 0) return { w, d, h };
+    }
   }
   return { w: 0, d: 0, h: 0 };
 }
@@ -59,16 +69,6 @@ function parseProductHeader(rows) {
   info.namaBom = info.nama;
   info.kodeBom = info.kode;
   return { productInfo: info, productMeta: meta, dimensi: parseProductDimensi(rows) };
-}
-
-function inferTipe(row) {
-  const mod = String(row[13] ?? '').trim();
-  const sub = String(row[14] ?? '').trim();
-  const partCode = String(row[12] ?? '').trim();
-  if (partCode && String(row[15] ?? '').trim()) return 'PART';
-  if (sub) return 'SUBMODUL 2';
-  if (mod) return 'SUBMODUL';
-  return 'MODUL';
 }
 
 function buildTreeFromFlatRows(partRows) {
@@ -121,7 +121,10 @@ function buildTreeFromFlatRows(partRows) {
       sf: 0,
       wf: 0,
       proses_count: 0,
+      proses: [],
       children: [],
+      excelRow: p.excelRow,
+      photoIndex: p.photoIndex,
     };
 
     const modKey = p.modulCode || p.modulName || 'default';
@@ -147,7 +150,7 @@ function buildTreeFromFlatRows(partRows) {
         no: subMap.size + 10,
         nama: p.submodulName || 'SUBMODUL',
         kode: p.submodulCode || '',
-        tipe: p.submodul2 ? 'SUBMODUL 2' : 'SUBMODUL',
+        tipe: 'SUBMODUL',
         qty: 1,
         unit: 'SET',
         children: [],
@@ -174,14 +177,23 @@ function parseBomTemplateRows(rows) {
     const materialType =
       mat === 'KAYU' ? 'kayu' : mat === 'PLYWOOD' ? 'plywood' : mat === 'HARDWARE' ? 'hardware' : mat ? 'komponen' : '';
 
-    const p = Number(r[36]) || Number(r[27]) || 0;
-    const l = Number(r[37]) || Number(r[28]) || 0;
-    const t = Number(r[38]) || Number(r[29]) || 0;
-    const vol = Number(r[41]) || 0;
+    let p = Number(r[36]) || Number(r[27]) || 0;
+    let l = Number(r[37]) || Number(r[28]) || 0;
+    let t = Number(r[38]) || Number(r[29]) || 0;
+    let vol = calcPartVolume(p, l, t);
+    if (!vol) {
+      p = Number(r[40]) || p;
+      l = Number(r[41]) || l;
+      t = Number(r[42]) || t;
+      vol = calcPartVolume(p, l, t);
+    }
     const qty = Number(r[39]) || 1;
+    const photoIndex = Number(r[2]) || Number(r[1]) || 0;
 
     parts.push({
       no,
+      excelRow: i + 1,
+      photoIndex,
       kode,
       nama,
       modulName: String(r[13] ?? '').trim(),
@@ -199,26 +211,60 @@ function parseBomTemplateRows(rows) {
   return parts;
 }
 
+/**
+ * Impor workbook penuh — BOM TEMPLATE + CALCULATION + SUMMARY COST + KALKULASI + PICK LIST
+ */
 export function parseBomWorkbook(wb) {
   const templateRows = readSheetRows(wb, 'BOM TEMPLATE');
   const { productInfo, productMeta, dimensi } = parseProductHeader(templateRows);
   const partRows = parseBomTemplateRows(templateRows);
-  const bomData = buildTreeFromFlatRows(partRows);
+  let bomData = buildTreeFromFlatRows(partRows);
+
+  const mirror = parseFullWorkbookMirror(wb);
+  const calcMap = parseCalculationPartsMap(readSheetRows(wb, 'CALCULATION'));
+
+  mergeCalculationIntoBom(bomData, calcMap);
+  appendSummaryProcessParts(bomData, mirror.summaryCost?.lines || []);
+
+  const packingSpec = buildPackingSpecFromSummary(mirror.summaryCost);
+  const cogsConfig = buildCogsConfigFromSummary(mirror.summaryCost);
 
   const project = createEmptyProject({
     productInfo,
     productMeta,
     bomData,
     dimensi,
+    packingSpec,
+    cogsConfig,
+    excelMirror: mirror,
     importedFromExcel: true,
+    importSheets: [
+      'SUMMARY COST',
+      'BOM TEMPLATE',
+      'CALCULATION',
+      'KALKULASI HPP MENTAH',
+      'KALKULASI SUPPLIER 1',
+      'KALKULASI SUPPLIER 2',
+      'KALKULASI SUPPLIER 3',
+      'DATA BASE',
+      'FORMULA DATA',
+      'MASTER RATIO',
+      'COATING RATIO',
+      'ROUND COMPONENT CALC',
+      'PICK LIST',
+    ],
   });
 
-  return linkProjectToMasters(project, { applyBiaya: true });
+  return linkProjectToMasters(project, {
+    applyBiaya: true,
+    skipBiayaIfExcel: true,
+  });
 }
 
-export function parseBomFromArrayBuffer(buffer) {
+export async function parseBomFromArrayBuffer(buffer) {
   const wb = XLSX.read(buffer, { type: 'array' });
-  return parseBomWorkbook(wb);
+  const project = parseBomWorkbook(wb);
+  return attachExcelImagesToProject(project, buffer);
 }
 
 export async function parseBomFromFile(file) {

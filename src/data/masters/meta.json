@@ -1,7 +1,7 @@
 {
   "sourceFile": "1 - ZAN-100 - 2-12-25.xlsx",
-  "importedAt": "2026-06-01T08:30:07.850Z",
-  "importScriptVersion": "3.0.0",
+  "importedAt": "2026-06-01T14:45:18.474Z",
+  "importScriptVersion": "4.0.0",
   "checksum": "d1a84da2ca014e46",
   "sheetRowCounts": {
     "DATA BASE": 1043,
@@ -20,6 +20,8 @@
     "workCenters": 27,
     "woodLabor": 24,
     "formulaDataRows": 8,
-    "roundPresets": 2
+    "roundPresets": 2,
+    "materialCatalog": 112,
+    "supplierParts": 15
   }
 }

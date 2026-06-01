@@ -1,0 +1,173 @@
+{
+  "sourceFile": "1 - ZAN-100 - 2-12-25.xlsx",
+  "sourcePath": "d:/Project Spartan Jepara/03. DOKUMEN/Modul Document/Manufacture Management/1. Excel Bill Of Material/1 - ZAN-100 - 2-12-25.xlsx",
+  "exportedAt": "2026-06-01T22:31:06.802Z",
+  "stats": {
+    "mediaFiles": 30,
+    "browserReady": 13,
+    "skippedEmf": 17,
+    "skippedWmf": 0,
+    "skippedOther": 0,
+    "anchors": 257,
+    "mapped": 5
+  },
+  "mediaCount": 30,
+  "mediaFiles": [
+    {
+      "file": "image29.emf",
+      "bytes": 43016
+    },
+    {
+      "file": "image30.jpeg",
+      "bytes": 63144
+    },
+    {
+      "file": "image21.emf",
+      "bytes": 4464
+    },
+    {
+      "file": "image22.emf",
+      "bytes": 4480
+    },
+    {
+      "file": "image23.emf",
+      "bytes": 4480
+    },
+    {
+      "file": "image24.emf",
+      "bytes": 4504
+    },
+    {
+      "file": "image25.emf",
+      "bytes": 4488
+    },
+    {
+      "file": "image26.emf",
+      "bytes": 4488
+    },
+    {
+      "file": "image27.emf",
+      "bytes": 4488
+    },
+    {
+      "file": "image28.emf",
+      "bytes": 4504
+    },
+    {
+      "file": "image20.emf",
+      "bytes": 4488
+    },
+    {
+      "file": "image18.emf",
+      "bytes": 4468
+    },
+    {
+      "file": "image1.png",
+      "bytes": 20152
+    },
+    {
+      "file": "image2.jpeg",
+      "bytes": 12582
+    },
+    {
+      "file": "image3.png",
+      "bytes": 35564
+    },
+    {
+      "file": "image4.png",
+      "bytes": 20720
+    },
+    {
+      "file": "image5.png",
+      "bytes": 34637
+    },
+    {
+      "file": "image6.jpeg",
+      "bytes": 18722
+    },
+    {
+      "file": "image19.emf",
+      "bytes": 4464
+    },
+    {
+      "file": "image7.jpeg",
+      "bytes": 97249
+    },
+    {
+      "file": "image12.jpeg",
+      "bytes": 52415
+    },
+    {
+      "file": "image13.emf",
+      "bytes": 67312
+    },
+    {
+      "file": "image14.emf",
+      "bytes": 73720
+    },
+    {
+      "file": "image15.emf",
+      "bytes": 74948
+    },
+    {
+      "file": "image16.emf",
+      "bytes": 54376
+    },
+    {
+      "file": "image17.emf",
+      "bytes": 4468
+    },
+    {
+      "file": "image10.jpeg",
+      "bytes": 26596
+    },
+    {
+      "file": "image11.jpeg",
+      "bytes": 124397
+    },
+    {
+      "file": "image9.jpeg",
+      "bytes": 313975
+    },
+    {
+      "file": "image8.jpeg",
+      "bytes": 24349
+    }
+  ],
+  "mappedByAnchor": [
+    {
+      "sheet": "SUMMARY COST",
+      "excelRow": 3,
+      "file": "SUMMARY_COST_row3.png"
+    },
+    {
+      "sheet": "BOM TEMPLATE",
+      "excelRow": 1,
+      "file": "BOM_TEMPLATE_row1.jpg"
+    },
+    {
+      "sheet": "BOM TEMPLATE",
+      "excelRow": 4,
+      "file": "BOM_TEMPLATE_row4.png"
+    },
+    {
+      "sheet": "BOM TEMPLATE",
+      "excelRow": 7,
+      "file": "BOM_TEMPLATE_row7.jpg"
+    },
+    {
+      "sheet": "ROUND COMPONENT CALC",
+      "excelRow": 16,
+      "file": "ROUND_COMPONENT_CALC_row16.jpg"
+    }
+  ],
+  "folders": {
+    "allMedia": "D:\\Project Spartan Jepara\\02. RESEARCH\\Bill Of Materials\\BOM Design by Gemini\\assets\\excel-images\\zan-100\\media",
+    "anchorMapped": "D:\\Project Spartan Jepara\\02. RESEARCH\\Bill Of Materials\\BOM Design by Gemini\\assets\\excel-images\\zan-100\\by-sheet-row"
+  },
+  "notes": [
+    "media/ = semua file dari xl/media/ (termasuk .emf)",
+    "by-sheet-row/ = hanya PNG/JPEG yang terpetakan ke baris sheet (anchor)",
+    "Legenda FINISHING/ASSEMBLING CODE (template): lihat media/image30.jpeg–image76.jpeg pada export template"
+  ]
+}

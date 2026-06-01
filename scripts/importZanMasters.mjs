@@ -15,7 +15,7 @@ const EXCEL_PATH =
   'd:/Project Spartan Jepara/03. DOKUMEN/Modul Document/Manufacture Management/1. Excel Bill Of Material/1 - ZAN-100 - 2-12-25.xlsx';
 
 const OUT = path.join(ROOT, 'src/data/masters');
-const IMPORT_VERSION = '3.0.0';
+const IMPORT_VERSION = '4.0.0';
 
 function slug(s) {
   return String(s)
@@ -37,6 +37,8 @@ function writeJson(relPath, data) {
 
 function parseWoodMaterials(rows) {
   const materials = [];
+  const buyerSafetyPct = Number(rows[5]?.[4]) || 0.1;
+
   for (let i = 7; i < rows.length; i++) {
     const r = rows[i];
     const no = Number(r[0]);
@@ -47,21 +49,47 @@ function parseWoodMaterials(rows) {
     }
     if (String(r[35] ?? '').trim() === 'NO' && String(r[36] ?? '').includes('FINISHING')) break;
 
-    const priceSupplier = Number(r[13]) || 0;
     const priceBuyer = Number(r[3]) || 0;
+    const priceSupplier = Number(r[13]) || 0;
     if (!priceSupplier && !priceBuyer) continue;
+
+    const safetyBuyer = Number(r[4]) || 0;
+    const totalBuyer = Number(r[5]) || 0;
+    const safetySupplier = Number(r[14]) || 0;
+    const totalSupplier = Number(r[15]) || priceSupplier;
+    const finishingCode = String(r[36] ?? '').trim();
+    const diameterGrade = String(r[39] ?? '').trim();
+    const supplierChannel = String(r[23] ?? '').trim() === '1' ? 'IMPORT' : 'LOKAL';
 
     materials.push({
       id: `wood-${no}`,
+      kode: finishingCode ? `WOOD-${finishingCode}-${no}` : `WOOD-${String(no).padStart(3, '0')}`,
       no,
+      nama: spec,
       specification: spec,
       woodName: String(r[2] ?? '').trim(),
+      diameterGrade,
+      finishingCode,
+      dimensi: { p: 0, l: 0, t: 0, label: diameterGrade || spec },
+      hargaLogBuyer: priceBuyer,
+      safetyFactorBuyer: safetyBuyer,
+      buyerSafetyPct,
+      hargaMaterialBuyer: totalBuyer,
+      hargaLogSupplier: priceSupplier,
+      safetyFactorSupplier: safetySupplier,
+      hargaMaterialSupplier: totalSupplier,
       pricePerM3Buyer: priceBuyer,
-      priceSafetyFactorBuyer: Number(r[4]) || 0,
-      buyerTotalPerM3: Number(r[5]) || 0,
-      pricePerM3Supplier: priceSupplier || priceBuyer,
+      priceSafetyFactorBuyer: safetyBuyer,
+      buyerTotalPerM3: totalBuyer,
+      pricePerM3Supplier: totalSupplier || priceSupplier || priceBuyer,
       invoiceCostPerM3: Number(r[12]) || 0,
+      vendorSupplier: diameterGrade,
+      supplierName: diameterGrade,
+      supplierChannel,
+      unit: 'm³',
       materialType: 'kayu',
+      source: 'DATA BASE',
+      excelRef: `DATA BASE row ${i + 1}`,
       aktif: true,
     });
   }
@@ -203,17 +231,27 @@ function parseCoatings(rows) {
     if (!no || !name || name.length < 3) continue;
     if (!name.includes('.') && !name.includes('HARKA') && !name.includes('STAIN')) continue;
 
+    const codeFin = Number(r[2]) || 0;
     const entry = {
       id: `coat-${no}`,
       no,
+      kode: codeFin ? `COAT-${codeFin}` : `COAT-${no}`,
       name,
-      code: Number(r[2]) || 0,
+      nama: name,
+      code: codeFin,
+      kodeFinishing: codeFin,
       materialCostM2: Number(r[3]) || 0,
       materialWaste: Number(r[5]) || 0,
       totalMaterialM2: Number(r[7]) || Number(r[3]) || 0,
       laborM2: Number(r[9]) || 0,
       totalProductionM2: Number(r[11]) || 0,
       roundedCostM2: Number(r[13]) || 0,
+      hargaMaterial: Number(r[7]) || Number(r[3]) || 0,
+      hargaSatuan: Number(r[13]) || 0,
+      vendorSupplier: '',
+      unit: 'm²',
+      materialType: 'coating',
+      source: 'COATING RATIO',
       aktif: true,
     };
 
@@ -520,7 +558,47 @@ function buildWorkCentersFromExcel(woodLabor, routingBase) {
   return merged;
 }
 
-function main() {
+function parseSupplierSheets(wb) {
+  const parts = [];
+  for (const n of [1, 2, 3]) {
+    const name = `KALKULASI SUPPLIER ${n}`;
+    const sh = wb.Sheets[name];
+    if (!sh) continue;
+    const rows = XLSX.utils.sheet_to_json(sh, { header: 1, defval: '' });
+    for (let i = 0; i < rows.length; i++) {
+      const r = rows[i] || [];
+      const no = Number(r[0]);
+      const material = String(r[1] ?? '').trim();
+      const desc = String(r[3] ?? '').trim();
+      if (!no || !material || material === '0' || !desc || desc.includes('DESCRIPTION')) continue;
+      parts.push({
+        no,
+        material,
+        module: String(r[2] ?? '').trim(),
+        description: desc,
+        partCode: `SUP${n}-${no}`,
+        invoiceP: Number(r[4]) || 0,
+        invoiceL: Number(r[5]) || 0,
+        invoiceT: Number(r[6]) || 0,
+        prodP: Number(r[8]) || 0,
+        prodL: Number(r[9]) || 0,
+        prodT: Number(r[10]) || 0,
+        vol: Number(r[11]) || 0,
+        qty: Number(r[12]) || 1,
+        priceMaterial: Number(r[13]) || 0,
+        priceSafety: Number(r[14]) || 0,
+        totalPrice: Number(r[15]) || 0,
+        wasteFactor: Number(r[17]) || 0,
+        source: name,
+        excelRow: i + 1,
+        supplierIndex: n,
+      });
+    }
+  }
+  return parts;
+}
+
+async function main() {
   if (!fs.existsSync(EXCEL_PATH)) {
     console.error('Excel not found:', EXCEL_PATH);
     process.exit(1);
@@ -554,6 +632,16 @@ function main() {
     { id: 'WC-003', kode: 'WC-003', nama: 'Finishing Booth', ratePerMin: 500, mesin: 'Spray Booth', aktif: true, source: 'routingCatalog' },
   ];
   const workCenters = buildWorkCentersFromExcel(woodLabor, routingBase);
+  const supplierParts = parseSupplierSheets(wb);
+
+  const { buildMaterialCatalog } = await import('../src/utils/buildMaterialCatalog.js');
+  const materialCatalog = buildMaterialCatalog({
+    wood,
+    coatings,
+    formulaDataRows,
+    nonWood,
+    supplierParts,
+  });
 
   const meta = {
     sourceFile: path.basename(EXCEL_PATH),
@@ -578,10 +666,13 @@ function main() {
       woodLabor: woodLabor.length,
       formulaDataRows: formulaDataRows.length,
       roundPresets: roundPresets.length,
+      materialCatalog: materialCatalog.length,
+      supplierParts: supplierParts.length,
     },
   };
 
   writeJson('database/wood.json', wood);
+  writeJson('catalog/materialCatalog.json', materialCatalog);
   writeJson('database/nonWood.json', nonWood);
   writeJson('ratios/byCategory.json', ratios);
   writeJson('coatings/systems.json', coatings);
@@ -610,6 +701,8 @@ function main() {
   console.log('  wood labor rows:', woodLabor.length);
   console.log('  formula data rows:', formulaDataRows.length);
   console.log('  round presets:', roundPresets.length);
+  console.log('  material catalog:', materialCatalog.length);
+  console.log('  supplier part rows:', supplierParts.length);
   console.log('  checksum:', checksum);
 
   const kayuRatio = ratios.find((r) => r.materialType === 'kayu');
@@ -618,4 +711,7 @@ function main() {
   console.log('  coat-33 rounded/m²:', desert?.roundedCostM2);
 }
 
-main();
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

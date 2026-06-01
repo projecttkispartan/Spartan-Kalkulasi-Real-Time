@@ -21,11 +21,9 @@ import {
   Users,
 } from 'lucide-react';
 import ClickZoomImage from '../ui/ClickZoomImage';
-import { posisiGambarMap } from '../../data/mockData';
 import { getActiveWorkCenters, ROUTING_TEMPLATES, PROSES_OPTIONS, getWorkCenterById } from '../../data/routingCatalog';
+import { POSISI_COMBO_GROUPS, getPosisiComboItem } from '../../data/posisiComboCatalog';
 import { formatIDR } from '../../utils/formatters';
-
-const POSISI_OPTIONS = Object.keys(posisiGambarMap);
 const PAGE = 'page-inner-full w-full max-w-[1600px] mx-auto';
 
 const selectCls =
@@ -591,14 +589,31 @@ function OperationCard({ op, index, costs, materialVol, onRemove, onUpdate, onVi
               </div>
               <div className="flex-1 min-w-0 space-y-2">
                 <p className="text-[10px] text-brand-600/70">Klik thumbnail untuk zoom</p>
-                <Field label="Area kerja">
+                <Field label="Kode posisi / combo">
                   <SelectWrap>
-                    <select value={op.posisiOperasi} onChange={(e) => onUpdate(op.id, 'posisiOperasi', e.target.value)} className={selectCls}>
-                      {POSISI_OPTIONS.map((label) => (
-                        <option key={label} value={label}>
-                          {label}
-                        </option>
+                    <select
+                      value={getPosisiComboItem(op.posisiOperasi)?.value ?? op.posisiOperasi}
+                      onChange={(e) => {
+                        const item = getPosisiComboItem(e.target.value);
+                        onUpdate(op.id, 'posisiOperasi', e.target.value);
+                        if (item?.src) onUpdate(op.id, 'gambar', item.src);
+                      }}
+                      className={selectCls}
+                    >
+                      {POSISI_COMBO_GROUPS.map((group) => (
+                        <optgroup key={group.id} label={group.label}>
+                          {group.items.map((item) => (
+                            <option key={item.value} value={item.value}>
+                              {item.label}
+                            </option>
+                          ))}
+                        </optgroup>
                       ))}
+                      {op.posisiOperasi && !getPosisiComboItem(op.posisiOperasi) && (
+                        <optgroup label="Nilai lama">
+                          <option value={op.posisiOperasi}>{op.posisiOperasi}</option>
+                        </optgroup>
+                      )}
                     </select>
                   </SelectWrap>
                 </Field>

@@ -12,11 +12,22 @@
 
 1. **Refresh** halaman (F5).
 2. Pastikan master ter-load: menu **Master Data** → cek sumber file ZAN-100.
-3. Buka project → **Input Produk**: pilih **Kayu (DATA BASE)** dan **Coating (COATING RATIO)**.
-4. Tab **Struktur** → **Sinkron DATA BASE** jika project lama.
-5. Tab **Kebutuhan Material** → **Hitung harga kayu dari master** untuk part kayu.
-6. Part finishing/coating: isi **Luas m²** (`surfaceM2`) agar biaya coating masuk COGS.
-7. Tab **COGS / Summary** → bandingkan dengan Excel → **Export** jika OK.
+3. **Import Excel** (Dashboard) atau buka sample project hasil `npm run import:samples`.
+4. Impor workbook membaca: **BOM TEMPLATE**, **CALCULATION**, **SUMMARY COST** (packing + proses), **KALKULASI HPP/SUPPLIER**, **PICK LIST**.
+5. Master global: **DATA BASE**, **FORMULA DATA**, **MASTER RATIO**, **COATING RATIO**, **ROUND COMPONENT** (`npm run import:masters`).
+6. Tab **COGS / Summary** → bandingkan `excelMirror.summaryCost` dengan Excel → **Export** jika OK.
+
+## Sheet Excel yang di-import per project
+
+| Sheet | Dipakai untuk |
+|-------|----------------|
+| BOM TEMPLATE | Struktur modul/part, header produk |
+| CALCULATION | Biaya kayu per kode part, vol, luas m² |
+| SUMMARY COST | Packing BOX/SF, baris proses (LAMINATING, AMPLAS, …), OH % |
+| KALKULASI HPP MENTAH | Mirror HPP (`excelMirror.hppMentah`) |
+| KALKULASI SUPPLIER 1–3 | Mirror supplier (`excelMirror.supplierKalkulasi`) |
+| PICK LIST | Daftar order (`excelMirror.pickList`) |
+| DATA BASE / FORMULA / RATIO / COATING / ROUND | Master global (bukan per file project) |
 
 ## Import master dari Excel
 

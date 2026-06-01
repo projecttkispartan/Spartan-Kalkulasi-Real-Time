@@ -11,6 +11,7 @@ import woodLaborSeed from '../data/masters/tables/woodLabor.json' with { type: '
 import masterRatioBlocksSeed from '../data/masters/tables/masterRatioBlocks.json' with { type: 'json' };
 import formulaDataRowsSeed from '../data/masters/tables/formulaDataRows.json' with { type: 'json' };
 import roundPresetsSeed from '../data/masters/tables/roundComponentPresets.json' with { type: 'json' };
+import catalogSeed from '../data/masters/catalog/materialCatalog.json' with { type: 'json' };
 // Legacy fallbacks
 import legacyMaterials from '../data/masters/materials.json' with { type: 'json' };
 import legacyRatios from '../data/masters/wasteRatios.json' with { type: 'json' };
@@ -33,6 +34,7 @@ const KEYS = {
   masterRatioBlocks: 'masterRatioBlocks_v1',
   formulaDataRows: 'formulaDataRows_v1',
   roundPresets: 'roundPresets_v1',
+  materialCatalog: 'materialCatalog_v1',
 };
 
 const LS_KEYS = {
@@ -48,6 +50,7 @@ const LS_KEYS = {
   masterRatioBlocks: 'bom_master_ratio_blocks_v1',
   formulaDataRows: 'bom_master_formula_rows_v1',
   roundPresets: 'bom_master_round_presets_v1',
+  materialCatalog: 'bom_master_catalog_v1',
 };
 
 const materialsDefault = woodSeed?.length ? woodSeed : legacyMaterials;
@@ -273,6 +276,24 @@ export async function getRoundComponentPresets() {
   return getStoreItem(KEYS.roundPresets, LS_KEYS.roundPresets, roundPresetsSeed);
 }
 
+export async function getMaterialCatalog() {
+  return getStoreItem(KEYS.materialCatalog, LS_KEYS.materialCatalog, catalogSeed);
+}
+
+export async function saveMaterialCatalog(list) {
+  try {
+    await idbPut(KEYS.materialCatalog, list);
+  } catch {
+    lsSet(LS_KEYS.materialCatalog, list);
+  }
+  cache.materialCatalog = list;
+  return list;
+}
+
+export function getCachedMaterialCatalog() {
+  return cache.materialCatalog ?? catalogSeed;
+}
+
 export async function saveRoundComponentPresets(list) {
   try {
     await idbPut(KEYS.roundPresets, list);
@@ -301,19 +322,31 @@ let cache = {
   coatings: null,
   formulas: null,
   rounding: null,
+  materialCatalog: null,
   loadedAt: 0,
 };
 
 export async function hydrateAllMasters() {
-  const [materials, nonWood, wasteRatios, coatings, formulas, rounding] = await Promise.all([
-    getMaterials(),
-    getNonWoodMaterials(),
-    getWasteRatios(),
-    getCoatings(),
-    getFormulas(),
-    getRoundingRules(),
-  ]);
-  cache = { materials, nonWood, wasteRatios, coatings, formulas, rounding, loadedAt: Date.now() };
+  const [materials, nonWood, wasteRatios, coatings, formulas, rounding, materialCatalog] =
+    await Promise.all([
+      getMaterials(),
+      getNonWoodMaterials(),
+      getWasteRatios(),
+      getCoatings(),
+      getFormulas(),
+      getRoundingRules(),
+      getMaterialCatalog(),
+    ]);
+  cache = {
+    materials,
+    nonWood,
+    wasteRatios,
+    coatings,
+    formulas,
+    rounding,
+    materialCatalog,
+    loadedAt: Date.now(),
+  };
   return cache;
 }
 
@@ -355,6 +388,7 @@ export async function reimportMastersFromSeedFiles() {
     idbPut(KEYS.masterRatioBlocks, masterRatioBlocksSeed),
     idbPut(KEYS.formulaDataRows, formulaDataRowsSeed),
     idbPut(KEYS.roundPresets, roundPresetsSeed),
+    idbPut(KEYS.materialCatalog, catalogSeed),
   ];
   await Promise.all(puts).catch(() => {
     lsSet(LS_KEYS.materials, materialsDefault);
@@ -369,6 +403,7 @@ export async function reimportMastersFromSeedFiles() {
     lsSet(LS_KEYS.masterRatioBlocks, masterRatioBlocksSeed);
     lsSet(LS_KEYS.formulaDataRows, formulaDataRowsSeed);
     lsSet(LS_KEYS.roundPresets, roundPresetsSeed);
+    lsSet(LS_KEYS.materialCatalog, catalogSeed);
   });
   return hydrateAllMasters();
 }

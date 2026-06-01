@@ -1,0 +1,554 @@
+{
+  "sourceFile": "1 - CALCULATION TEMPLATE 2014 - 10-12-13.xlsx",
+  "sourcePath": "d:/Project Spartan Jepara/03. DOKUMEN/Modul Document/Manufacture Management/1. Excel Bill Of Material/1 - CALCULATION TEMPLATE 2014 - 10-12-13.xlsx",
+  "exportedAt": "2026-06-01T22:31:07.526Z",
+  "stats": {
+    "mediaFiles": 119,
+    "browserReady": 82,
+    "skippedEmf": 37,
+    "skippedWmf": 0,
+    "skippedOther": 0,
+    "anchors": 530,
+    "mapped": 10
+  },
+  "mediaCount": 119,
+  "mediaFiles": [
+    {
+      "file": "image1.emf",
+      "bytes": 4500
+    },
+    {
+      "file": "image10.emf",
+      "bytes": 4736
+    },
+    {
+      "file": "image100.jpeg",
+      "bytes": 118694
+    },
+    {
+      "file": "image101.jpeg",
+      "bytes": 157109
+    },
+    {
+      "file": "image102.jpeg",
+      "bytes": 166460
+    },
+    {
+      "file": "image103.jpeg",
+      "bytes": 139104
+    },
+    {
+      "file": "image104.emf",
+      "bytes": 67312
+    },
+    {
+      "file": "image105.emf",
+      "bytes": 73720
+    },
+    {
+      "file": "image106.emf",
+      "bytes": 74948
+    },
+    {
+      "file": "image107.emf",
+      "bytes": 54376
+    },
+    {
+      "file": "image108.emf",
+      "bytes": 4488
+    },
+    {
+      "file": "image109.emf",
+      "bytes": 4488
+    },
+    {
+      "file": "image11.emf",
+      "bytes": 4712
+    },
+    {
+      "file": "image110.emf",
+      "bytes": 4488
+    },
+    {
+      "file": "image111.emf",
+      "bytes": 43016
+    },
+    {
+      "file": "image112.jpeg",
+      "bytes": 158862
+    },
+    {
+      "file": "image113.jpeg",
+      "bytes": 156707
+    },
+    {
+      "file": "image114.jpeg",
+      "bytes": 185167
+    },
+    {
+      "file": "image115.jpeg",
+      "bytes": 167338
+    },
+    {
+      "file": "image116.jpeg",
+      "bytes": 182162
+    },
+    {
+      "file": "image117.jpeg",
+      "bytes": 185381
+    },
+    {
+      "file": "image118.jpeg",
+      "bytes": 87876
+    },
+    {
+      "file": "image119.jpeg",
+      "bytes": 171310
+    },
+    {
+      "file": "image12.emf",
+      "bytes": 5340
+    },
+    {
+      "file": "image13.emf",
+      "bytes": 4712
+    },
+    {
+      "file": "image14.emf",
+      "bytes": 4748
+    },
+    {
+      "file": "image15.emf",
+      "bytes": 5372
+    },
+    {
+      "file": "image16.emf",
+      "bytes": 4732
+    },
+    {
+      "file": "image17.emf",
+      "bytes": 4732
+    },
+    {
+      "file": "image18.emf",
+      "bytes": 4500
+    },
+    {
+      "file": "image19.emf",
+      "bytes": 4468
+    },
+    {
+      "file": "image2.emf",
+      "bytes": 4512
+    },
+    {
+      "file": "image20.emf",
+      "bytes": 4468
+    },
+    {
+      "file": "image21.emf",
+      "bytes": 4464
+    },
+    {
+      "file": "image22.emf",
+      "bytes": 4488
+    },
+    {
+      "file": "image23.emf",
+      "bytes": 4464
+    },
+    {
+      "file": "image24.emf",
+      "bytes": 4480
+    },
+    {
+      "file": "image25.emf",
+      "bytes": 4480
+    },
+    {
+      "file": "image26.emf",
+      "bytes": 4504
+    },
+    {
+      "file": "image27.emf",
+      "bytes": 4488
+    },
+    {
+      "file": "image28.emf",
+      "bytes": 4592
+    },
+    {
+      "file": "image29.emf",
+      "bytes": 4504
+    },
+    {
+      "file": "image3.emf",
+      "bytes": 4500
+    },
+    {
+      "file": "image30.jpeg",
+      "bytes": 2607
+    },
+    {
+      "file": "image31.jpeg",
+      "bytes": 2141
+    },
+    {
+      "file": "image32.jpeg",
+      "bytes": 1789
+    },
+    {
+      "file": "image33.jpeg",
+      "bytes": 1909
+    },
+    {
+      "file": "image34.jpeg",
+      "bytes": 1796
+    },
+    {
+      "file": "image35.jpeg",
+      "bytes": 2197
+    },
+    {
+      "file": "image36.jpeg",
+      "bytes": 2336
+    },
+    {
+      "file": "image37.jpeg",
+      "bytes": 1809
+    },
+    {
+      "file": "image38.jpeg",
+      "bytes": 2640
+    },
+    {
+      "file": "image39.jpeg",
+      "bytes": 2145
+    },
+    {
+      "file": "image4.emf",
+      "bytes": 4596
+    },
+    {
+      "file": "image40.jpeg",
+      "bytes": 2119
+    },
+    {
+      "file": "image41.jpeg",
+      "bytes": 2364
+    },
+    {
+      "file": "image42.jpeg",
+      "bytes": 2682
+    },
+    {
+      "file": "image43.jpeg",
+      "bytes": 3203
+    },
+    {
+      "file": "image44.jpeg",
+      "bytes": 2398
+    },
+    {
+      "file": "image45.jpeg",
+      "bytes": 2466
+    },
+    {
+      "file": "image46.jpeg",
+      "bytes": 2848
+    },
+    {
+      "file": "image47.jpeg",
+      "bytes": 2485
+    },
+    {
+      "file": "image48.jpeg",
+      "bytes": 2763
+    },
+    {
+      "file": "image49.jpeg",
+      "bytes": 2636
+    },
+    {
+      "file": "image5.emf",
+      "bytes": 4596
+    },
+    {
+      "file": "image50.jpeg",
+      "bytes": 2443
+    },
+    {
+      "file": "image51.jpeg",
+      "bytes": 2778
+    },
+    {
+      "file": "image52.jpeg",
+      "bytes": 1129
+    },
+    {
+      "file": "image53.jpeg",
+      "bytes": 2870
+    },
+    {
+      "file": "image54.jpeg",
+      "bytes": 2258
+    },
+    {
+      "file": "image55.jpeg",
+      "bytes": 14940
+    },
+    {
+      "file": "image56.jpeg",
+      "bytes": 15497
+    },
+    {
+      "file": "image57.jpeg",
+      "bytes": 1132
+    },
+    {
+      "file": "image58.jpeg",
+      "bytes": 2121
+    },
+    {
+      "file": "image59.jpeg",
+      "bytes": 1853
+    },
+    {
+      "file": "image6.emf",
+      "bytes": 4608
+    },
+    {
+      "file": "image60.jpeg",
+      "bytes": 2309
+    },
+    {
+      "file": "image61.jpeg",
+      "bytes": 1923
+    },
+    {
+      "file": "image62.jpeg",
+      "bytes": 2047
+    },
+    {
+      "file": "image63.jpeg",
+      "bytes": 2350
+    },
+    {
+      "file": "image64.jpeg",
+      "bytes": 1848
+    },
+    {
+      "file": "image65.jpeg",
+      "bytes": 2309
+    },
+    {
+      "file": "image66.jpeg",
+      "bytes": 1916
+    },
+    {
+      "file": "image67.jpeg",
+      "bytes": 2129
+    },
+    {
+      "file": "image68.jpeg",
+      "bytes": 1869
+    },
+    {
+      "file": "image69.jpeg",
+      "bytes": 1909
+    },
+    {
+      "file": "image7.emf",
+      "bytes": 4600
+    },
+    {
+      "file": "image70.jpeg",
+      "bytes": 1785
+    },
+    {
+      "file": "image71.jpeg",
+      "bytes": 2300
+    },
+    {
+      "file": "image72.jpeg",
+      "bytes": 2304
+    },
+    {
+      "file": "image73.jpeg",
+      "bytes": 1878
+    },
+    {
+      "file": "image74.jpeg",
+      "bytes": 2669
+    },
+    {
+      "file": "image75.jpeg",
+      "bytes": 2099
+    },
+    {
+      "file": "image76.jpeg",
+      "bytes": 3226
+    },
+    {
+      "file": "image77.jpeg",
+      "bytes": 147002
+    },
+    {
+      "file": "image78.jpeg",
+      "bytes": 139792
+    },
+    {
+      "file": "image79.jpeg",
+      "bytes": 123036
+    },
+    {
+      "file": "image8.emf",
+      "bytes": 4628
+    },
+    {
+      "file": "image80.jpeg",
+      "bytes": 125455
+    },
+    {
+      "file": "image81.jpeg",
+      "bytes": 164186
+    },
+    {
+      "file": "image82.jpeg",
+      "bytes": 124804
+    },
+    {
+      "file": "image83.jpeg",
+      "bytes": 164604
+    },
+    {
+      "file": "image84.jpeg",
+      "bytes": 137292
+    },
+    {
+      "file": "image85.jpeg",
+      "bytes": 151759
+    },
+    {
+      "file": "image86.jpeg",
+      "bytes": 121717
+    },
+    {
+      "file": "image87.jpeg",
+      "bytes": 140198
+    },
+    {
+      "file": "image88.jpeg",
+      "bytes": 164840
+    },
+    {
+      "file": "image89.jpeg",
+      "bytes": 144872
+    },
+    {
+      "file": "image9.emf",
+      "bytes": 4720
+    },
+    {
+      "file": "image90.jpeg",
+      "bytes": 176677
+    },
+    {
+      "file": "image91.jpeg",
+      "bytes": 127049
+    },
+    {
+      "file": "image92.jpeg",
+      "bytes": 131113
+    },
+    {
+      "file": "image93.jpeg",
+      "bytes": 160272
+    },
+    {
+      "file": "image94.jpeg",
+      "bytes": 132775
+    },
+    {
+      "file": "image95.jpeg",
+      "bytes": 158666
+    },
+    {
+      "file": "image96.jpeg",
+      "bytes": 146406
+    },
+    {
+      "file": "image97.jpeg",
+      "bytes": 81258
+    },
+    {
+      "file": "image98.jpeg",
+      "bytes": 129720
+    },
+    {
+      "file": "image99.jpeg",
+      "bytes": 133540
+    }
+  ],
+  "mappedByAnchor": [
+    {
+      "sheet": "INPUTING",
+      "excelRow": 24,
+      "file": "INPUTING_row24.jpg"
+    },
+    {
+      "sheet": "INPUTING",
+      "excelRow": 33,
+      "file": "INPUTING_row33.jpg"
+    },
+    {
+      "sheet": "INPUTING",
+      "excelRow": 447,
+      "file": "INPUTING_row447.jpg"
+    },
+    {
+      "sheet": "INPUTING",
+      "excelRow": 258,
+      "file": "INPUTING_row258.jpg"
+    },
+    {
+      "sheet": "INPUTING",
+      "excelRow": 93,
+      "file": "INPUTING_row93.jpg"
+    },
+    {
+      "sheet": "INPUTING",
+      "excelRow": 102,
+      "file": "INPUTING_row102.jpg"
+    },
+    {
+      "sheet": "INPUTING",
+      "excelRow": 190,
+      "file": "INPUTING_row190.jpg"
+    },
+    {
+      "sheet": "INPUTING",
+      "excelRow": 199,
+      "file": "INPUTING_row199.jpg"
+    },
+    {
+      "sheet": "INPUTING",
+      "excelRow": 240,
+      "file": "INPUTING_row240.jpg"
+    },
+    {
+      "sheet": "INPUTING",
+      "excelRow": 249,
+      "file": "INPUTING_row249.jpg"
+    }
+  ],
+  "folders": {
+    "allMedia": "D:\\Project Spartan Jepara\\02. RESEARCH\\Bill Of Materials\\BOM Design by Gemini\\assets\\excel-images\\calculation-template-2014\\media",
+    "anchorMapped": "D:\\Project Spartan Jepara\\02. RESEARCH\\Bill Of Materials\\BOM Design by Gemini\\assets\\excel-images\\calculation-template-2014\\by-sheet-row"
+  },
+  "notes": [
+    "media/ = semua file dari xl/media/ (termasuk .emf)",
+    "by-sheet-row/ = hanya PNG/JPEG yang terpetakan ke baris sheet (anchor)",
+    "Legenda FINISHING/ASSEMBLING CODE (template): lihat media/image30.jpeg–image76.jpeg pada export template"
+  ]
+}

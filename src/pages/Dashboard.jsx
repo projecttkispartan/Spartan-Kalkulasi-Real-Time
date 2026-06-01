@@ -81,6 +81,20 @@ export default function Dashboard({
       await saveProject(project);
       refresh();
       onOpenProject(project.id);
+      const img = project.importImageStats;
+      const totalImg = img?.appliedTotal ?? (img?.applied || 0) + (img?.appliedByIndex || 0);
+      if (totalImg > 0 || img?.productFoto) {
+        const parts = [];
+        if (img.productFoto) parts.push('foto produk');
+        if (totalImg > 0) parts.push(`${totalImg} foto part`);
+        let msg = `Gambar Excel diimpor: ${parts.join(', ')}.`;
+        if (img.note) msg += ` ${img.note}`;
+        window.alert(msg);
+      } else if (img?.skippedEmf > 0 && !img?.applied) {
+        window.alert(
+          `File berisi ${img.mediaFiles} gambar; ${img.skippedEmf} dalam format EMF (tidak bisa ditampilkan di browser). Gunakan PNG/JPEG di sheet BOM TEMPLATE.`,
+        );
+      }
     } catch (err) {
       window.alert(`Gagal import Excel: ${err.message || err}`);
     }

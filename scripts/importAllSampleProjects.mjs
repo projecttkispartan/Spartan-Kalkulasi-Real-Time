@@ -47,6 +47,9 @@ function finalizeSampleProject(raw, key, file) {
     packingSpec: raw.packingSpec || createDefaultPackingSpec(),
     containerCapacity: raw.containerCapacity?.length ? raw.containerCapacity : [],
     cogsConfig: raw.cogsConfig || { packingJalur: 'BOX', factoryOhPct: 5, managementOhPct: 2.5, markupPct: 20 },
+    packingSpec: raw.packingSpec || createDefaultPackingSpec(),
+    excelMirror: raw.excelMirror || null,
+    importSheets: raw.importSheets || [],
     customErp: { parts: [], machines: [], workers: [] },
     kursUsd: 16004,
     kursEur: 17500,
@@ -76,7 +79,7 @@ const SAMPLE_FILES = [
 
 const OUT_DIR = path.join(ROOT, 'src/data/samples/projects');
 const MANIFEST_PATH = path.join(ROOT, 'src/data/samples/manifest.json');
-const SAMPLE_VERSION = 3;
+const SAMPLE_VERSION = 4;
 
 function slug(s) {
   return String(s)
