@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Download, FileSpreadsheet, FileText, ChevronDown, Loader2 } from 'lucide-react';
 
-export default function ExportMenu({ onExportExcel, onExportPdf, disabled = false }) {
+export default function ExportMenu({ onExportExcel, onExportPdf, onExportPdfFull, disabled = false }) {
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(null);
   const ref = useRef(null);
@@ -70,6 +70,21 @@ export default function ExportMenu({ onExportExcel, onExportPdf, disabled = fals
             )}
             Export PDF (.pdf)
           </button>
+          {onExportPdfFull && (
+            <button
+              type="button"
+              disabled={!!busy}
+              onClick={() => run('pdffull', onExportPdfFull)}
+              className="w-full flex items-center gap-2.5 px-3 py-2.5 text-left text-xs font-bold text-slate-700 hover:bg-indigo-50 hover:text-indigo-800 transition-colors disabled:opacity-50 border-t border-slate-100"
+            >
+              {busy === 'pdffull' ? (
+                <Loader2 className="w-4 h-4 animate-spin text-indigo-600" />
+              ) : (
+                <FileText className="w-4 h-4 text-indigo-600" />
+              )}
+              PDF Lengkap (COGS + Summary)
+            </button>
+          )}
         </div>
       )}
     </div>

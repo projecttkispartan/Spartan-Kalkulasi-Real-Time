@@ -1,4 +1,5 @@
-import { CONTAINER_NET_VOLUME_M3 } from '../data/excelReference';
+import { CONTAINER_NET_VOLUME_M3 } from '../data/excelReference.js';
+import { evalFormula } from './formulaEngine.js';
 
 export const CONTAINER_PRESETS = [
   {
@@ -32,29 +33,28 @@ export const CONTAINER_PRESETS = [
   },
 ];
 
-/**
- * Volume packing (m³) — BOM TEMPLATE:
- * Box: (W+tolW)×(D+tolD)×(H+tolH) / 10⁹
- * SF + CHAIR: … / 10⁹ × 0.6
- */
-export function calcPackingVolume(dimensi, packingItem, options = {}) {
-  if (!packingItem || !dimensi) return 0;
-  const w = (Number(dimensi.w) || 0) + (Number(packingItem.tolW) || 0);
-  const d = (Number(dimensi.d) || 0) + (Number(packingItem.tolD) || 0);
-  const h = (Number(dimensi.h) || 0) + (Number(packingItem.tolH) || 0);
-  let vol = (w * d * h) / 1_000_000_000;
-  const itemType = options.itemType ?? '';
-  if (packingItem.chairFactor && String(itemType).toUpperCase() === 'CHAIR') {
-    vol *= 0.6;
-  }
-  return Number(vol.toFixed(6));
+export function calcPartVolume(p, l, t) {
+  return evalFormula('vol_part_mm', { p, l, t }) ?? 0;
 }
 
-/**
- * Kapasitas net kontainer (referensi Excel SUMMARY COST):
- * - 1 piece → volume packing (m³)
- * - 20'/40'/40' HC → floor(volumeMuatanKontainer_m³ / volumePacking_m³) → Pcs
- */
+export function calcPackingVolume(dimensi, packingItem, options = {}) {
+  if (!packingItem || !dimensi) return 0;
+  const ctx = {
+    w: dimensi.w,
+    d: dimensi.d,
+    h: dimensi.h,
+    tolW: packingItem.tolW,
+    tolD: packingItem.tolD,
+    tolH: packingItem.tolH,
+    itemType: options.itemType ?? '',
+    chairFactor: packingItem.chairFactor,
+  };
+  if (packingItem.chairFactor && String(ctx.itemType).toUpperCase() === 'CHAIR') {
+    return evalFormula('vol_packing_sf', ctx) ?? 0;
+  }
+  return evalFormula('vol_packing_box', ctx) ?? 0;
+}
+
 export function calcContainerNetCapacity(preset, volBox, volSF) {
   const boxVol = Number(volBox) || 0;
   const sfVol = Number(volSF) || 0;
@@ -67,14 +67,11 @@ export function calcContainerNetCapacity(preset, volBox, volSF) {
   }
 
   const containerM3 = Number(preset.containerNetM3) || 0;
-  const pcsFromVol = (pieceVol) => {
-    if (!pieceVol || !containerM3) return 0;
-    return Math.floor(containerM3 / pieceVol);
-  };
-
   return {
-    netCapBox: pcsFromVol(boxVol),
-    netCapSF: sfVol ? pcsFromVol(sfVol) : 0,
+    netCapBox: evalFormula('container_pcs', { containerNetM3: containerM3, volPacking: boxVol }) ?? 0,
+    netCapSF: sfVol
+      ? evalFormula('container_pcs', { containerNetM3: containerM3, volPacking: sfVol }) ?? 0
+      : 0,
   };
 }
 

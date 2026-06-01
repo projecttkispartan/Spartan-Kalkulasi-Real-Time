@@ -1,5 +1,5 @@
-import { enrichRoutingSteps } from '../data/routingCatalog';
-import { calcProsesCosts } from './operationCosts';
+import { enrichRoutingSteps } from '../data/routingCatalog.js';
+import { calcProsesCosts } from './operationCosts.js';
 
 /** Satu baris kebutuhan proses — WC tunggal atau langkah routing */
 export function flattenProsesLineItems(prosesEntries) {

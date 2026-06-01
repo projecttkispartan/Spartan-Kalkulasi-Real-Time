@@ -429,8 +429,25 @@ export function applyVolumeToOperation(op, materialVolM3) {
   return op;
 }
 
+let masterWorkCentersCache = null;
+
+export async function hydrateWorkCentersFromMaster() {
+  try {
+    const { getWorkCenters } = await import('../services/masterStorage.js');
+    masterWorkCentersCache = await getWorkCenters();
+  } catch {
+    masterWorkCentersCache = null;
+  }
+  return getActiveWorkCenters();
+}
+
+export function getActiveWorkCenters() {
+  return masterWorkCentersCache?.length ? masterWorkCentersCache : WORK_CENTERS;
+}
+
 export function getWorkCenterById(id) {
-  return WORK_CENTERS.find((wc) => wc.id === id) ?? null;
+  const list = getActiveWorkCenters();
+  return list.find((wc) => wc.id === id || wc.kode === id) ?? null;
 }
 
 export function getRoutingById(id) {

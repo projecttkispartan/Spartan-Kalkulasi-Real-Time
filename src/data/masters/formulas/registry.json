@@ -1,0 +1,151 @@
+[
+  {
+    "id": "vol_part_mm",
+    "label": "Volume part (m³)",
+    "description": "P × L × T (mm) ÷ 10⁹",
+    "excelRef": "BOM TEMPLATE / FORMULA DATA",
+    "inputs": [
+      "p",
+      "l",
+      "t"
+    ],
+    "handler": "vol_part_mm",
+    "outputUnit": "m3"
+  },
+  {
+    "id": "vol_packing_box",
+    "label": "Volume packing box (m³)",
+    "description": "(W+tolW)×(D+tolD)×(H+tolH) ÷ 10⁹",
+    "excelRef": "BOM TEMPLATE",
+    "inputs": [
+      "w",
+      "d",
+      "h",
+      "tolW",
+      "tolD",
+      "tolH"
+    ],
+    "handler": "vol_packing_box",
+    "outputUnit": "m3"
+  },
+  {
+    "id": "vol_packing_sf",
+    "label": "Volume single face (m³)",
+    "description": "Volume box × 0.6 untuk CHAIR",
+    "excelRef": "BOM TEMPLATE",
+    "inputs": [
+      "w",
+      "d",
+      "h",
+      "tolW",
+      "tolD",
+      "tolH",
+      "itemType"
+    ],
+    "handler": "vol_packing_sf",
+    "outputUnit": "m3"
+  },
+  {
+    "id": "container_pcs",
+    "label": "Kapasitas kontainer (pcs)",
+    "description": "floor(volumeMuatanKontainer ÷ volumePacking)",
+    "excelRef": "SUMMARY COST",
+    "inputs": [
+      "containerNetM3",
+      "volPacking"
+    ],
+    "handler": "container_pcs",
+    "outputUnit": "pcs"
+  },
+  {
+    "id": "wood_material_cost",
+    "label": "Biaya material kayu (IDR)",
+    "description": "harga/m³ × vol × (1 + SF% + WF%)",
+    "excelRef": "DATA BASE + MASTER RATIO",
+    "inputs": [
+      "pricePerM3",
+      "vol",
+      "sf",
+      "wf"
+    ],
+    "handler": "wood_material_cost",
+    "outputUnit": "idr"
+  },
+  {
+    "id": "coating_cost",
+    "label": "Biaya coating (IDR)",
+    "description": "luas m² × rounded cost/m²",
+    "excelRef": "COATING RATIO",
+    "inputs": [
+      "surfaceM2",
+      "roundedCostM2"
+    ],
+    "handler": "coating_cost",
+    "outputUnit": "idr"
+  },
+  {
+    "id": "surface_m2_estimate",
+    "label": "Estimasi luas permukaan part (m²)",
+    "description": "2×(P×L + P×T + L×T) mm² → m²",
+    "excelRef": "FORMULA DATA",
+    "inputs": [
+      "p",
+      "l",
+      "t"
+    ],
+    "handler": "surface_m2_estimate",
+    "outputUnit": "m2"
+  },
+  {
+    "id": "cogs_production",
+    "label": "Production cost",
+    "description": "Material + proses + packing",
+    "excelRef": "SUMMARY COST",
+    "inputs": [
+      "totalMaterial",
+      "totalProcess",
+      "packingCost"
+    ],
+    "handler": "cogs_production",
+    "outputUnit": "idr"
+  },
+  {
+    "id": "cogs_total",
+    "label": "Total COGS",
+    "description": "Production + factory OH + management OH",
+    "excelRef": "SUMMARY COST",
+    "inputs": [
+      "productionCost",
+      "factoryOhPct",
+      "managementOhPct"
+    ],
+    "handler": "cogs_total",
+    "outputUnit": "idr"
+  },
+  {
+    "id": "cogs_selling",
+    "label": "Harga jual",
+    "description": "COGS × (1 + markup%)",
+    "excelRef": "SUMMARY COST",
+    "inputs": [
+      "totalCogs",
+      "markupPct"
+    ],
+    "handler": "cogs_selling",
+    "outputUnit": "idr"
+  },
+  {
+    "id": "round_table_component",
+    "label": "Volume komponen meja bundar (m³)",
+    "description": "ROUND COMPONENT CALC — cubic meter components",
+    "excelRef": "ROUND COMPONENT CALC",
+    "inputs": [
+      "sections",
+      "outerDiameterMm",
+      "radialWidthMm",
+      "thicknessMm"
+    ],
+    "handler": "round_table_component",
+    "outputUnit": "m3"
+  }
+]

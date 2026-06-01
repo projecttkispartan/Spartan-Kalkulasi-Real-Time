@@ -1,4 +1,4 @@
-import { getWorkCenterById, enrichRoutingSteps, calcStepCosts, DEFAULT_LABOR_RATE_PER_MIN } from '../data/routingCatalog';
+import { getWorkCenterById, enrichRoutingSteps, calcStepCosts, DEFAULT_LABOR_RATE_PER_MIN } from '../data/routingCatalog.js';
 
 export const LABOR_RATE_PER_MIN = DEFAULT_LABOR_RATE_PER_MIN;
 

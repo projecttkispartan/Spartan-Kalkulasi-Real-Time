@@ -1,4 +1,4 @@
-import { posisiGambarMap } from '../data/mockData';
+import { posisiGambarMap } from '../data/mockData.js';
 
 /** Gambar default per tipe hierarki — wireframe selalu punya visual */
 export const defaultImagesByTipe = {

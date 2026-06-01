@@ -1,0 +1,29 @@
+[
+  {
+    "id": "selling_price_1000",
+    "target": "sellingPrice",
+    "method": "floor",
+    "step": 1000,
+    "label": "Harga jual — floor ke ribuan",
+    "excelRef": "SUMMARY COST / export",
+    "aktif": true
+  },
+  {
+    "id": "part_biaya_1",
+    "target": "part.biaya",
+    "method": "round",
+    "step": 1,
+    "label": "Biaya part per unit — round IDR",
+    "excelRef": "CALCULATION",
+    "aktif": true
+  },
+  {
+    "id": "summary_category_1",
+    "target": "summaryCategory",
+    "method": "round",
+    "step": 1,
+    "label": "Subtotal kategori SUMMARY COST",
+    "excelRef": "SUMMARY COST",
+    "aktif": true
+  }
+]

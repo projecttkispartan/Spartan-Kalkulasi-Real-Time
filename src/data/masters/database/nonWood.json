@@ -1,0 +1,145 @@
+[
+  {
+    "id": "nw-1",
+    "no": 1,
+    "specification": "PLYWOOD",
+    "woodName": "PLYWOOD",
+    "materialType": "plywood",
+    "pricePerM3Supplier": 0,
+    "pricePerM3Buyer": 0,
+    "aktif": true,
+    "source": "FORMULA DATA"
+  },
+  {
+    "id": "nw-2",
+    "no": 2,
+    "specification": "MDF",
+    "woodName": "MDF",
+    "materialType": "komponen",
+    "pricePerM3Supplier": 0,
+    "pricePerM3Buyer": 0,
+    "aktif": true,
+    "source": "FORMULA DATA"
+  },
+  {
+    "id": "nw-3",
+    "no": 3,
+    "specification": "BESI",
+    "woodName": "BESI",
+    "materialType": "steel",
+    "pricePerM3Supplier": 0,
+    "pricePerM3Buyer": 0,
+    "aktif": true,
+    "source": "FORMULA DATA"
+  },
+  {
+    "id": "nw-4",
+    "no": 4,
+    "specification": "HPL",
+    "woodName": "HPL",
+    "materialType": "komponen",
+    "pricePerM3Supplier": 0,
+    "pricePerM3Buyer": 0,
+    "aktif": true,
+    "source": "FORMULA DATA"
+  },
+  {
+    "id": "nw-5",
+    "no": 5,
+    "specification": "HARDWARE",
+    "woodName": "HARDWARE",
+    "materialType": "hardware",
+    "pricePerM3Supplier": 0,
+    "pricePerM3Buyer": 0,
+    "aktif": true,
+    "source": "FORMULA DATA"
+  },
+  {
+    "id": "nw-6",
+    "no": 6,
+    "specification": "BLOCKBOARD",
+    "woodName": "BLOCKBOARD",
+    "materialType": "komponen",
+    "pricePerM3Supplier": 0,
+    "pricePerM3Buyer": 0,
+    "aktif": true,
+    "source": "FORMULA DATA"
+  },
+  {
+    "id": "nw-7",
+    "no": 7,
+    "specification": "VENEER",
+    "woodName": "VENEER",
+    "materialType": "veneer",
+    "pricePerM3Supplier": 0,
+    "pricePerM3Buyer": 0,
+    "aktif": true,
+    "source": "FORMULA DATA"
+  },
+  {
+    "id": "nw-8",
+    "no": 8,
+    "specification": "PLYWOOD",
+    "woodName": "PLYWOOD",
+    "materialType": "plywood",
+    "pricePerM3Supplier": 0,
+    "pricePerM3Buyer": 0,
+    "aktif": true,
+    "source": "FORMULA DATA"
+  },
+  {
+    "id": "nw-9",
+    "no": 9,
+    "specification": "MDF",
+    "woodName": "MDF",
+    "materialType": "komponen",
+    "pricePerM3Supplier": 0,
+    "pricePerM3Buyer": 0,
+    "aktif": true,
+    "source": "FORMULA DATA"
+  },
+  {
+    "id": "nw-10",
+    "no": 10,
+    "specification": "BESI",
+    "woodName": "BESI",
+    "materialType": "steel",
+    "pricePerM3Supplier": 0,
+    "pricePerM3Buyer": 0,
+    "aktif": true,
+    "source": "FORMULA DATA"
+  },
+  {
+    "id": "nw-11",
+    "no": 11,
+    "specification": "HPL",
+    "woodName": "HPL",
+    "materialType": "komponen",
+    "pricePerM3Supplier": 0,
+    "pricePerM3Buyer": 0,
+    "aktif": true,
+    "source": "FORMULA DATA"
+  },
+  {
+    "id": "nw-12",
+    "no": 12,
+    "specification": "HARDWARE",
+    "woodName": "HARDWARE",
+    "materialType": "hardware",
+    "pricePerM3Supplier": 0,
+    "pricePerM3Buyer": 0,
+    "aktif": true,
+    "source": "FORMULA DATA"
+  },
+  {
+    "id": "nw-13",
+    "no": 13,
+    "specification": "BLOCKBOARD",
+    "woodName": "BLOCKBOARD",
+    "materialType": "komponen",
+    "pricePerM3Supplier": 0,
+    "pricePerM3Buyer": 0,
+    "aktif": true,
+    "source": "FORMULA DATA"
+  }
+]

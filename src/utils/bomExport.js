@@ -2,12 +2,17 @@ import * as XLSX from 'xlsx';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { formatIDR } from './formatters';
-import { expandProsesList } from './bomCostRollup';
-import { calcProsesCosts } from './operationCosts';
-import { flattenProsesLineItems, sumProsesLineItems } from './prosesLineItems';
 import { getPartHierarchyLabels } from './treeHelpers';
 import { getMaterialTypeLabel } from '../data/excelReference';
-import { calcPartRowFinancials, calcStrukturProdFinancials } from './partCostHelpers';
+import { calcProsesCosts } from './operationCosts';
+import {
+  expandProsesList,
+  computePartDisplayFinancials,
+  computePartCostRow,
+  flattenProsesLineItems,
+  sumProsesLineItems,
+  computeSummaryCostRollup,
+} from '../services/bomCalculations';
 
 function fxUsd(value, kursUsd) {
   return Number(kursUsd) ? (Number(value) / kursUsd).toFixed(2) : '0.00';
@@ -24,7 +29,7 @@ function buildCogsWaterfallRows(cogsData, cogsConfig) {
   const jalur = cc.packingJalur || 'BOX';
   const afterMat = cd.totalMaterial || 0;
   const afterProc = afterMat + (cd.totalProcess || 0);
-  const sellingRounded = Math.floor((cd.sellingPrice || 0) / 1000) * 1000;
+  const sellingRounded = cd.sellingPrice ?? Math.floor((cd.sellingPriceRaw || cd.sellingPrice || 0) / 1000) * 1000;
 
   return [
     {
@@ -235,6 +240,7 @@ export function buildBomExportPayload({
   packingDimensions,
   packingSpec,
   containerCapacity,
+  customErp,
 }) {
   const dim = dimensi || {};
   const volProduk =
@@ -262,7 +268,7 @@ export function buildBomExportPayload({
 
   const strukturRows = flatNodes.map((node, i) => {
     const d = node.data;
-    const fin = calcStrukturProdFinancials(d, kursUsd, kursEur);
+    const fin = d.tipe === 'PART' ? computePartDisplayFinancials(d, kursUsd, kursEur) : null;
     return {
       no: i + 1,
       level: node.level,
@@ -274,15 +280,15 @@ export function buildBomExportPayload({
       unit: d.unit || (d.tipe === 'PART' ? 'EA' : ''),
       dimensi: d.p && d.l && d.t ? `${d.p} x ${d.l} x ${d.t}` : '',
       vol: d.vol ?? '',
-      biayaIdr: fin.unitMat,
-      biayaUsd: fin.usdMat,
-      biayaEur: fin.eurMat,
-      prodIdr: fin.prodTotal,
-      prodUsd: fin.usdProd,
-      prodEur: fin.eurProd,
-      prodUnitIdr: d.tipe === 'PART' ? fin.prodUnit : '',
-      prodUnitUsd: d.tipe === 'PART' ? fin.usdProdUnit : '',
-      prodUnitEur: d.tipe === 'PART' ? fin.eurProdUnit : '',
+      biayaIdr: fin?.unitMat ?? 0,
+      biayaUsd: fin?.usdMat ?? '',
+      biayaEur: fin?.eurMat ?? '',
+      prodIdr: fin?.prodTotal ?? 0,
+      prodUsd: fin?.usdProd ?? '',
+      prodEur: fin?.eurProd ?? '',
+      prodUnitIdr: fin?.prodUnit ?? '',
+      prodUnitUsd: fin?.usdProdUnit ?? '',
+      prodUnitEur: fin?.eurProdUnit ?? '',
       sf: Number(d.sf) || 0,
       wf: Number(d.wf) || 0,
       prosesCount: d.proses?.length || d.proses_count || 0,
@@ -305,9 +311,9 @@ export function buildBomExportPayload({
       const hierarchy = getPartHierarchyLabels(bomData, node.id);
       const sf = Number(d.sf) || 0;
       const wf = Number(d.wf) || 0;
-      const fin = calcPartRowFinancials(d, kursUsd, kursEur);
-      const base = (Number(d.biaya) || 0) * (Number(d.qty) || 1);
-      const matTotal = base * (1 + sf / 100 + wf / 100);
+      const row = computePartCostRow(d);
+      const fin = computePartDisplayFinancials(d, kursUsd, kursEur);
+      const matTotal = row.matAdjusted;
       return {
         no: i + 1,
         modul: hierarchy.modul?.nama || '',
@@ -375,6 +381,9 @@ export function buildBomExportPayload({
   });
 
   const cogsWaterfall = buildCogsWaterfallRows(cogsData, cogsConfig);
+  const summaryCost = computeSummaryCostRollup({ bomData, cogsData, cogsConfig });
+  const summaryKalkulasiRows = buildSummaryKalkulasiRows(flatNodes);
+  const erpRows = buildErpExportRows({ flatNodes, customErp: customErp || {} });
 
   const packing = buildPackingPayload({
     dimensi,
@@ -412,7 +421,87 @@ export function buildBomExportPayload({
     materialTotals,
     prosesRows,
     packing,
+    summaryCost,
+    summaryKalkulasiRows,
+    erpRows,
   };
+}
+
+function buildSummaryKalkulasiRows(flatNodes) {
+  return flatNodes.map((node, i) => {
+    const d = node.data;
+    const fin = d.tipe === 'PART' ? computePartCostRow(d) : null;
+    return {
+      no: i + 1,
+      level: node.level,
+      tipe: d.tipe,
+      kode: d.kode || '',
+      nama: d.nama || '',
+      qty: d.qty ?? '',
+      matIdr: fin?.matAdjusted ?? 0,
+      prosesIdr: fin?.prosesTotal ?? 0,
+      totalIdr: fin?.biayaProduksi ?? 0,
+    };
+  });
+}
+
+function buildErpExportRows({ flatNodes, customErp }) {
+  const rows = [];
+  flatNodes.forEach((node) => {
+    const d = node.data;
+    if (d.tipe !== 'PART') return;
+    const fin = computePartCostRow(d);
+    rows.push({
+      sumber: 'BOM',
+      tipe: 'Material Part',
+      referensi: d.kode,
+      nama: d.nama,
+      qty: d.qty,
+      nilai: fin.matAdjusted,
+    });
+    expandProsesList(d).forEach((p) => {
+      const c = calcProsesCosts(p);
+      rows.push({
+        sumber: 'BOM',
+        tipe: 'Proses',
+        referensi: p.nama || '—',
+        nama: d.nama,
+        qty: 1,
+        nilai: c.total,
+      });
+    });
+  });
+  (customErp.parts || []).forEach((item) => {
+    rows.push({
+      sumber: 'Custom',
+      tipe: 'Part',
+      referensi: item.id,
+      nama: item.nama,
+      qty: item.qty,
+      nilai: (Number(item.qty) || 0) * (Number(item.rate) || 0),
+    });
+  });
+  (customErp.machines || []).forEach((item) => {
+    rows.push({
+      sumber: 'Custom',
+      tipe: 'Mesin',
+      referensi: item.id,
+      nama: item.nama,
+      qty: item.waktu,
+      nilai: (Number(item.waktu) || 0) * (Number(item.rate) || 0),
+    });
+  });
+  (customErp.workers || []).forEach((item) => {
+    rows.push({
+      sumber: 'Custom',
+      tipe: 'TK',
+      referensi: item.id,
+      nama: item.nama,
+      qty: item.waktu,
+      nilai: (Number(item.waktu) || 0) * (Number(item.person) || 0) * (Number(item.rate) || 0),
+    });
+  });
+  return rows;
 }
 
 function sheetFromAoA(rows) {
@@ -433,7 +522,7 @@ export function exportBomToExcel(payload) {
   const pt = payload.prosesTabTotals || payload.prosesTotals || {};
   const pk = payload.packing || {};
 
-  const sellingRounded = Math.floor((payload.cogsData?.sellingPrice || 0) / 1000) * 1000;
+  const sellingRounded = payload.cogsData?.sellingPrice ?? Math.floor((payload.cogsData?.sellingPriceRaw || 0) / 1000) * 1000;
 
   appendSheet(wb, 'Ringkasan', [
     ['LAPORAN BOM — MANUFAKTUR'],
@@ -818,6 +907,53 @@ export function exportBomToExcel(payload) {
     ['Harga Jual (pre-round)', cd.sellingPrice ?? 0],
   ]);
 
+  const sc = payload.summaryCost;
+  if (sc?.rows) {
+    appendSheet(wb, 'Summary Cost', [
+      ['SUMMARY COST — ROLLUP EXCEL'],
+      ['Jalur Packing', sc.jalur],
+      [],
+      ['Kategori', 'Baris Excel', 'Nilai (IDR)'],
+      ...sc.rows.map((r) => [r.label, r.excelRow ?? '', r.amount ?? 0]),
+    ]);
+  }
+
+  appendSheet(wb, 'Summary Kalkulasi', [
+    ['No', 'Level', 'Tipe', 'Kode', 'Nama', 'Qty', 'Material IDR', 'Proses IDR', 'Total IDR'],
+    ...(payload.summaryKalkulasiRows || []).map((r) => [
+      r.no,
+      r.level,
+      r.tipe,
+      r.kode,
+      r.nama,
+      r.qty,
+      r.matIdr,
+      r.prosesIdr,
+      r.totalIdr,
+    ]),
+  ]);
+
+  appendSheet(wb, 'ERP Jurnal', [
+    ['Sumber', 'Tipe', 'Referensi', 'Nama', 'Qty', 'Nilai IDR'],
+    ...(payload.erpRows || []).map((r) => [
+      r.sumber,
+      r.tipe,
+      r.referensi,
+      r.nama,
+      r.qty,
+      r.nilai,
+    ]),
+    [],
+    [
+      'TOTAL',
+      '',
+      '',
+      '',
+      '',
+      (payload.erpRows || []).reduce((s, r) => s + (Number(r.nilai) || 0), 0),
+    ],
+  ]);
+
   const fname = `${payload.meta.filename}_${stamp()}.xlsx`;
   XLSX.writeFile(wb, fname);
   return fname;
@@ -949,6 +1085,55 @@ export function exportBomToPdf(payload) {
   });
 
   const fname = `${payload.meta.filename}_${stamp()}.pdf`;
+  doc.save(fname);
+  return fname;
+}
+
+/** PDF lengkap: ringkasan + COGS + Summary Cost */
+export function exportBomToPdfFull(payload) {
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const pi = payload.productInfo || {};
+  const margin = 14;
+  let y = 16;
+
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.text(`Laporan BOM Lengkap — ${pi.nama || pi.kodeBom || 'Produk'}`, margin, y);
+  y += 10;
+
+  autoTable(doc, {
+    startY: y,
+    head: [['COGS', 'IDR']],
+    body: [
+      ['Material', payload.cogsData?.totalMaterial ?? 0],
+      ['Proses', payload.cogsData?.totalProcess ?? 0],
+      ['Packing', payload.cogsData?.packingCost ?? 0],
+      ['Production Cost', payload.cogsData?.productionCost ?? 0],
+      ['Factory OH', payload.cogsData?.factoryOh ?? 0],
+      ['Management OH', payload.cogsData?.managementOh ?? 0],
+      ['TOTAL COGS', payload.cogsData?.totalCogs ?? 0],
+    ],
+    styles: { fontSize: 9 },
+    margin: { left: margin, right: margin },
+  });
+
+  y = doc.lastAutoTable.finalY + 10;
+  const sc = payload.summaryCost?.rows || [];
+  if (sc.length) {
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Summary Cost', margin, y);
+    y += 4;
+    autoTable(doc, {
+      startY: y,
+      head: [['Kategori', 'Nilai IDR']],
+      body: sc.filter((r) => !r.isSubtotal || r.amount).map((r) => [r.label, r.amount ?? '']),
+      styles: { fontSize: 8 },
+      margin: { left: margin, right: margin },
+    });
+  }
+
+  const fname = `${payload.meta.filename}_${stamp()}_lengkap.pdf`;
   doc.save(fname);
   return fname;
 }

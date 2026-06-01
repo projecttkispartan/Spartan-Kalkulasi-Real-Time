@@ -2,6 +2,8 @@ import { Layout, Package, Network } from 'lucide-react';
 import { calcPackingVolume, findPackingByType } from '../../utils/packingVolume';
 import ClickZoomImage from '../ui/ClickZoomImage';
 import { resolveNodeFoto } from '../../utils/images';
+import { formatIDR } from '../../utils/formatters';
+import { WoodGradeField, CoatingField } from '../fields/MasterCombos';
 
 const fieldLabel = 'label-field mb-1 block';
 const fieldInput =
@@ -108,6 +110,10 @@ export default function ProductPanel({
   onPackingTolChange,
   onPackingGrossChange,
   packingVolOpts,
+  mastersTick = 0,
+  onWoodGradeChange,
+  onCoatingChange,
+  coatingPreview,
 }) {
   const axes = [
     { label: 'W', dimKey: 'w', tolKey: 'tolW', base: dimensi.w },
@@ -219,6 +225,48 @@ export default function ProductPanel({
                   className={fieldInput}
                   placeholder="CHAIR"
                 />
+              </div>
+              <div className="sm:col-span-2">
+                <label className={fieldLabel}>
+                  Kayu (DATA BASE)
+                  {productMeta.woodGradeId ? (
+                    <span className="ml-2 text-[9px] font-mono text-emerald-600 normal-case">
+                      terhubung
+                    </span>
+                  ) : null}
+                </label>
+                <WoodGradeField
+                  mastersTick={mastersTick}
+                  value={productMeta.woodGradeId || productMeta.wood || ''}
+                  onChange={(id, mat) => {
+                    if (onWoodGradeChange) onWoodGradeChange(id, mat);
+                    else {
+                      onProductMetaChange('woodGradeId', id || '');
+                      onProductMetaChange('wood', mat?.specification || mat?.woodName || '');
+                    }
+                  }}
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <label className={fieldLabel}>Coating (COATING RATIO)</label>
+                <CoatingField
+                  mastersTick={mastersTick}
+                  value={productMeta.coating || ''}
+                  coatingId={productMeta.coatingId || ''}
+                  onChange={(payload) => {
+                    if (onCoatingChange) onCoatingChange(payload);
+                    else {
+                      onProductMetaChange('coatingId', payload.coatingId || '');
+                      onProductMetaChange('coating', payload.coating || '');
+                    }
+                  }}
+                />
+                {coatingPreview && productMeta.coatingId ? (
+                  <p className="text-[10px] text-indigo-600 font-bold mt-1">
+                    Σ luas part: {coatingPreview.surfaceM2?.toFixed(4) ?? 0} m² · estimasi coating Rp{' '}
+                    {formatIDR(coatingPreview.coatingCost || 0)}
+                  </p>
+                ) : null}
               </div>
             </div>
 

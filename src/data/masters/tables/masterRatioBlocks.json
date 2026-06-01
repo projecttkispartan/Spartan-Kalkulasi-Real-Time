@@ -1,0 +1,116 @@
+{
+  "plywood": [
+    {
+      "id": "plywood-1-material",
+      "no": 1,
+      "jobDescription": "MATERIAL",
+      "man": 0,
+      "materialRatio": 0.1,
+      "laborRatioSec": 0,
+      "source": "PLYWOOD RATIO",
+      "excelRef": "MASTER RATIO row 6"
+    },
+    {
+      "id": "plywood-2-preparation",
+      "no": 2,
+      "jobDescription": "PREPARATION",
+      "man": 1,
+      "materialRatio": 0,
+      "laborRatioSec": 60,
+      "source": "PLYWOOD RATIO",
+      "excelRef": "MASTER RATIO row 7"
+    },
+    {
+      "id": "plywood-3-milling-1",
+      "no": 3,
+      "jobDescription": "MILLING 1",
+      "man": 1,
+      "materialRatio": 0,
+      "laborRatioSec": 120,
+      "source": "PLYWOOD RATIO",
+      "excelRef": "MASTER RATIO row 8"
+    },
+    {
+      "id": "plywood-4-milling-2",
+      "no": 4,
+      "jobDescription": "MILLING 2",
+      "man": 1,
+      "materialRatio": 0,
+      "laborRatioSec": 180,
+      "source": "PLYWOOD RATIO",
+      "excelRef": "MASTER RATIO row 9"
+    },
+    {
+      "id": "plywood-1-cnc-1",
+      "no": 1,
+      "jobDescription": "CNC 1",
+      "man": 0.2,
+      "materialRatio": 0,
+      "laborRatioSec": 0.0033333333333333335,
+      "source": "PLYWOOD RATIO",
+      "excelRef": "MASTER RATIO row 31"
+    },
+    {
+      "id": "plywood-2-cnc-2",
+      "no": 2,
+      "jobDescription": "CNC 2",
+      "man": 0.4,
+      "materialRatio": 0,
+      "laborRatioSec": 0.006666666666666667,
+      "source": "PLYWOOD RATIO",
+      "excelRef": "MASTER RATIO row 32"
+    },
+    {
+      "id": "plywood-3-cnc-3",
+      "no": 3,
+      "jobDescription": "CNC 3",
+      "man": 0.6,
+      "materialRatio": 0,
+      "laborRatioSec": 0.01,
+      "source": "PLYWOOD RATIO",
+      "excelRef": "MASTER RATIO row 33"
+    }
+  ],
+  "mdf": [
+    {
+      "id": "mdf-1-material",
+      "no": 1,
+      "jobDescription": "MATERIAL",
+      "man": 0,
+      "materialRatio": 0.1,
+      "laborRatioSec": 0,
+      "source": "MDF RATIO",
+      "excelRef": "MASTER RATIO row 6"
+    },
+    {
+      "id": "mdf-2-preparation",
+      "no": 2,
+      "jobDescription": "PREPARATION",
+      "man": 1,
+      "materialRatio": 0,
+      "laborRatioSec": 60,
+      "source": "MDF RATIO",
+      "excelRef": "MASTER RATIO row 7"
+    },
+    {
+      "id": "mdf-3-milling-1",
+      "no": 3,
+      "jobDescription": "MILLING 1",
+      "man": 1,
+      "materialRatio": 0,
+      "laborRatioSec": 120,
+      "source": "MDF RATIO",
+      "excelRef": "MASTER RATIO row 8"
+    },
+    {
+      "id": "mdf-4-milling-2",
+      "no": 4,
+      "jobDescription": "MILLING 2",
+      "man": 1,
+      "materialRatio": 0,
+      "laborRatioSec": 180,
+      "source": "MDF RATIO",
+      "excelRef": "MASTER RATIO row 9"
+    }
+  ]
+}

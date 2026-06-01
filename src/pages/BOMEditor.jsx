@@ -1,11 +1,10 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import {
   ArrowLeft, DollarSign, Euro, FileText, CheckCircle2, ImagePlus, Network, Package, Grid,
   Wrench, Calculator, BookOpen, Plus, Search, Table as TableIcon, ZoomOut, ZoomIn, Maximize,
   Trash2, ChevronDown, Link as LinkIcon, Image as ImageIcon, ChevronRight, Layout, Activity,
   AlertTriangle, PieChart, Server, Users, QrCode, Briefcase, Edit, Eye, EyeOff, PanelTopClose, PanelTopOpen, TrendingUp,
 } from 'lucide-react';
-import { manufactureGraph } from '../data/mockData';
 import { flattenTree, getPartHierarchyLabels } from '../utils/treeHelpers';
 import { formatIDR, formatPrice } from '../utils/formatters';
 import {
@@ -36,11 +35,38 @@ import ProductPanel from '../components/product/ProductPanel';
 import OperasiDetailCell from '../components/ui/OperasiDetailCell';
 import FontCaseToggle from '../components/ui/FontCaseToggle';
 import ExportMenu from '../components/ui/ExportMenu';
-import { buildBomExportPayload, exportBomToExcel, exportBomToPdf } from '../utils/bomExport';
+import { buildBomExportPayload, exportBomToExcel, exportBomToPdf, exportBomToPdfFull } from '../utils/bomExport';
+import MasterWorkCenterModal from '../components/modals/MasterWorkCenterModal';
+import MasterMaterialsModal from '../components/modals/MasterMaterialsModal';
+import { resolveProductCoatingCost } from '../utils/masterLookup';
+import {
+  applyMasterToWoodPart,
+  enrichNodeFromMaster,
+  getWasteRatioForMaterialType,
+} from '../utils/masterLookup';
+import {
+  linkProjectToMasters,
+  syncProductWoodToParts,
+  enrichBomFromMasters,
+} from '../utils/linkProjectToMasters';
+import { useMasters } from '../hooks/useMasters';
 import { VENDOR_SAMPLES } from '../data/masterSamples';
 import { resolveNodeFoto } from '../utils/images';
-import { flattenProsesLineItems, sumProsesLineItems } from '../utils/prosesLineItems';
-import { calcPartRowFinancials, calcStrukturProdFinancials } from '../utils/partCostHelpers';
+import {
+  expandProsesList,
+  computePartDisplayFinancials,
+  computePackingTotals,
+  computeCogs,
+  computeSummaryFromBom,
+  computeMaterialTabTotals,
+  collectProsesEntries,
+  computeProsesSummary,
+  flattenProsesLineItems,
+  sumProsesLineItems,
+  validatePartsForExport,
+} from '../services/bomCalculations';
+import { normalizeProject } from '../utils/emptyProject.js';
+import { WoodGradeField } from '../components/fields/MasterCombos.jsx';
 
 function MaterialTypeDisplay({ value }) {
   const label = getMaterialTypeLabel(value);
@@ -176,21 +202,7 @@ function VendorField({ value, onChange }) {
 const NodeCard = ({ data }) => {
   const [showProses, setShowProses] = useState(true);
   const style = tipeStyles[data.tipe] || tipeStyles.PART;
-  const prosesList = useMemo(() => {
-    if (data.proses?.length) return data.proses;
-    if ((data.proses_count || 0) > 0) {
-      const est = Math.round(110000 / data.proses_count);
-      return Array.from({ length: data.proses_count }, (_, i) => ({
-        nama: `Operasi ${i + 1}`,
-        mfgProcess: 'Woodworking',
-        posisiOperasi: 'Depan',
-        waktuOperasi: 0,
-        biaya: est,
-        gambar: null,
-      }));
-    }
-    return [];
-  }, [data.proses, data.proses_count]);
+  const prosesList = useMemo(() => expandProsesList(data), [data]);
   const hasProses = prosesList.length > 0;
 
   return (
@@ -353,8 +365,37 @@ const TreeNode = ({ node, isRoot = false }) => {
 // 2.5. KOMPONEN MODAL KALKULASI LENGKAP
 // ==========================================
 
-export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKursEur, fontCase, setFontCase }) {
-  const [bomData, setBomData] = useState(manufactureGraph);
+function applyProjectToStates(project, setters) {
+  const p = normalizeProject(project);
+  if (!p) return;
+  setters.setBomData(p.bomData);
+  setters.setProductInfo(p.productInfo);
+  setters.setProductMeta(p.productMeta);
+  setters.setDimensi(p.dimensi);
+  setters.setPackingDimensions(p.packingDimensions);
+  setters.setPackingSpec(p.packingSpec);
+  setters.setContainerCapacity(p.containerCapacity);
+  setters.setCogsConfig(p.cogsConfig);
+  setters.setCustomErp(p.customErp ?? { parts: [], machines: [], workers: [] });
+}
+
+export default function BOMEditor({
+  onBack,
+  projectId,
+  initialProject,
+  onSaveProject,
+  kursUsd,
+  setKursUsd,
+  kursEur,
+  setKursEur,
+  fontCase,
+  setFontCase,
+}) {
+  const safeProject = normalizeProject(initialProject) || initialProject;
+  const [saveStatus, setSaveStatus] = useState('saved');
+  const saveTimerRef = useRef(null);
+
+  const [bomData, setBomData] = useState(() => safeProject?.bomData);
   const [viewMode, setViewMode] = useState('table'); 
   const [searchQuery, setSearchQuery] = useState('');
   const [routingNode, setRoutingNode] = useState(null);
@@ -364,6 +405,9 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
   const [showProductPanel, setShowProductPanel] = useState(true);
   const [priceDisplay] = useState('IDR');
   const [showHiddenContainers, setShowHiddenContainers] = useState(false);
+  const [showMasterWc, setShowMasterWc] = useState(false);
+  const [showMasterMaterials, setShowMasterMaterials] = useState(false);
+  const { mastersReady, mastersTick, reloadMasters } = useMasters();
 
   const [editorTab, setEditorTab] = useState('struktur');
   const [materialHierarchyCols, setMaterialHierarchyCols] = useState({
@@ -373,56 +417,43 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
   }); 
 
   // STATE BARU UNTUK CUSTOM ERP ENTRIES
-  const [customErp, setCustomErp] = useState({
-    parts: [],
-    machines: [],
-    workers: []
-  });
+  const [customErp, setCustomErp] = useState(
+    () => safeProject?.customErp ?? { parts: [], machines: [], workers: [] },
+  );
 
-  // STATE BARU UNTUK COGS
-  const [cogsConfig, setCogsConfig] = useState({
-    packingJalur: 'BOX', // 'BOX' | 'SF'
-    factoryOhPct: EXCEL_FACTORY_OH_PCT,
-    managementOhPct: 2.5,
-    markupPct: 20
-  });
+  const [cogsConfig, setCogsConfig] = useState(
+    () =>
+      initialProject?.cogsConfig ?? {
+        packingJalur: 'BOX',
+        factoryOhPct: EXCEL_FACTORY_OH_PCT,
+        managementOhPct: 2.5,
+        markupPct: 20,
+      },
+  );
 
-  const [productMeta, setProductMeta] = useState({
-    itemType: ELBA_CHAIR_REFERENCE.itemType,
-    wood: ELBA_CHAIR_REFERENCE.wood,
-    coating: ELBA_CHAIR_REFERENCE.coating,
-  });
+  const [productMeta, setProductMeta] = useState(
+    () =>
+      initialProject?.productMeta ?? {
+        itemType: ELBA_CHAIR_REFERENCE.itemType,
+        wood: ELBA_CHAIR_REFERENCE.wood,
+        coating: ELBA_CHAIR_REFERENCE.coating,
+      },
+  );
 
-  // STATE BARU UNTUK PACKING SPECIFICATION (BOM & ROUTING PACKING)
-  const [packingSpec, setPackingSpec] = useState({
-    materialsBox: [
-      { id: 1, nama: 'Karton Luar (Double Wall)', qty: 1, unit: 'Pcs', harga: 114000 },
-      { id: 2, nama: 'Lakban Bening 2"', qty: 0.5, unit: 'Roll', harga: 12000 }
-    ],
-    materialsSF: [
-      { id: 1, nama: 'Single Face Paper', qty: 3, unit: 'Meter', harga: 15000 },
-      { id: 2, nama: 'Tali Strapping', qty: 10, unit: 'Meter', harga: 500 }
-    ],
-    routingBox: [
-      { id: 1, nama: 'Melipat & Lakban Bawah', waktu: 5, pekerja: 1, rate: 500 },
-      { id: 2, nama: 'Memasukkan Produk & Segel', waktu: 10, pekerja: 2, rate: 500 }
-    ],
-    routingSF: [
-      { id: 1, nama: 'Bungkus Full Body SF', waktu: 15, pekerja: 2, rate: 500 },
-      { id: 2, nama: 'Ikat Strapping Tape', waktu: 10, pekerja: 2, rate: 500 }
-    ]
-  });
+  const [packingSpec, setPackingSpec] = useState(() => safeProject?.packingSpec);
 
-  // RESTORED STATES: Identitas Produk, Dimensi & Canvas Zoom
-  const [productInfo, setProductInfo] = useState({
-    kode: ELBA_CHAIR_REFERENCE.kode,
-    nama: ELBA_CHAIR_REFERENCE.nama,
-    varian: 'NLH',
-    customer: ELBA_CHAIR_REFERENCE.customer,
-    kodeBom: ELBA_CHAIR_REFERENCE.kodeBom,
-    namaBom: ELBA_CHAIR_REFERENCE.namaBom,
-    versi: ELBA_CHAIR_REFERENCE.versi,
-  });
+  const [productInfo, setProductInfo] = useState(
+    () =>
+      initialProject?.productInfo ?? {
+        kode: ELBA_CHAIR_REFERENCE.kode,
+        nama: ELBA_CHAIR_REFERENCE.nama,
+        varian: 'NLH',
+        customer: ELBA_CHAIR_REFERENCE.customer,
+        kodeBom: ELBA_CHAIR_REFERENCE.kodeBom,
+        namaBom: ELBA_CHAIR_REFERENCE.namaBom,
+        versi: ELBA_CHAIR_REFERENCE.versi,
+      },
+  );
   
   const [scale, setScale] = useState(1);
   const [pan, setPan] = useState({ x: 50, y: 50 });
@@ -430,14 +461,51 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
   const [lastMousePos, setLastMousePos] = useState({ x: 0, y: 0 });
   const containerRef = useRef(null);
 
-  const [dimensi, setDimensi] = useState({ ...ELBA_CHAIR_REFERENCE.dimensi });
+  const [dimensi, setDimensi] = useState(
+    () => initialProject?.dimensi ?? { ...ELBA_CHAIR_REFERENCE.dimensi },
+  );
 
-  const [packingDimensions, setPackingDimensions] = useState([
-    { id: 1, type: 'BOX KARTON', tolW: 40, tolD: 40, tolH: 50 },
-    { id: 2, type: 'SINGLE FACE', tolW: 10, tolD: 10, tolH: 20, chairFactor: true },
-  ]);
-  
-  const [containerCapacity, setContainerCapacity] = useState(buildDefaultContainerRows);
+  const [packingDimensions, setPackingDimensions] = useState(
+    () =>
+      initialProject?.packingDimensions ?? [
+        { id: 1, type: 'BOX KARTON', tolW: 40, tolD: 40, tolH: 50 },
+        { id: 2, type: 'SINGLE FACE', tolW: 10, tolD: 10, tolH: 20, chairFactor: true },
+      ],
+  );
+
+  const [containerCapacity, setContainerCapacity] = useState(
+    () => initialProject?.containerCapacity ?? buildDefaultContainerRows(),
+  );
+
+  useEffect(() => {
+    if (!initialProject || !mastersReady) return;
+    const linked = linkProjectToMasters(initialProject, { applyBiaya: true });
+    applyProjectToStates(linked, {
+      setBomData,
+      setProductInfo,
+      setProductMeta,
+      setDimensi,
+      setPackingDimensions,
+      setPackingSpec,
+      setContainerCapacity,
+      setCogsConfig,
+      setCustomErp,
+    });
+    setSaveStatus('saved');
+  }, [projectId, initialProject, mastersReady, mastersTick]);
+
+  useEffect(() => {
+    const nama = productInfo.namaBom || productInfo.nama;
+    if (!productInfo.kode && !nama) return;
+    setBomData((prev) => {
+      if (!prev || prev.tipe !== 'MODUL') return prev;
+      return {
+        ...prev,
+        kode: productInfo.kode || prev.kode,
+        nama: nama || prev.nama,
+      };
+    });
+  }, [productInfo.kode, productInfo.nama, productInfo.namaBom]);
 
   const packingBoxItem = useMemo(
     () => findPackingByType(packingDimensions, 'box') || packingDimensions[0],
@@ -508,13 +576,76 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
     setProductMeta((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleProductWoodGrade = (gradeId, mat) => {
+    setProductMeta((prev) => ({
+      ...prev,
+      woodGradeId: gradeId || '',
+      wood: mat?.specification || mat?.woodName || prev.wood,
+    }));
+    if (gradeId) {
+      setBomData((prev) => syncProductWoodToParts(prev, gradeId, { applyBiaya: false }));
+    }
+  };
+
+  const handleProductCoating = ({ coatingId, coating }) => {
+    setProductMeta((prev) => ({
+      ...prev,
+      coatingId: coatingId || '',
+      coating: coating || prev.coating,
+    }));
+  };
+
+  const handleApplyWoodMasterToAllParts = () => {
+    const gradeId = productMeta.woodGradeId || '';
+    if (!gradeId) return;
+    setBomData((prev) => syncProductWoodToParts(prev, gradeId, { applyBiaya: true }));
+  };
+
+  const handleSyncBomFromMasters = () => {
+    setBomData((prev) =>
+      enrichBomFromMasters(prev, { productMeta, productInfo }, { applyBiaya: false }),
+    );
+  };
+
+  const handleStructureWoodSelect = (nodeId, gradeId, mat) => {
+    const updateTree = (node) => {
+      if (node.id === nodeId) {
+        const ratio = getWasteRatioForMaterialType(mat?.materialType || 'kayu');
+        let updated = {
+          ...node,
+          woodGradeId: gradeId || '',
+          woodSpecification: mat?.specification || '',
+          materialType: mat?.materialType || (gradeId ? 'kayu' : node.materialType || ''),
+          nama: mat?.specification || node.nama,
+        };
+        if (gradeId) {
+          updated.sf = updated.sf ?? ratio.sf;
+          updated.wf = updated.wf ?? ratio.wf;
+        }
+        if (node.tipe === 'PART' && gradeId && updated.vol) {
+          updated = applyMasterToWoodPart(updated, gradeId);
+        }
+        return updated;
+      }
+      if (node.children) {
+        return { ...node, children: node.children.map(updateTree) };
+      }
+      return node;
+    };
+    setBomData((prev) => updateTree(prev));
+    if (gradeId && mat?.specification && !productMeta.woodGradeId) {
+      setProductMeta((prev) => ({
+        ...prev,
+        woodGradeId: gradeId,
+        wood: mat.specification,
+      }));
+    }
+  };
+
   const volProduk = ((dimensi.w * dimensi.d * dimensi.h) / 1000000000).toFixed(6);
 
-  // Auto-kalkulasi biaya packing
-  const packBoxMat = packingSpec.materialsBox.reduce((s, m) => s + ((Number(m.qty)||0) * (Number(m.harga)||0)), 0);
-  const packBoxLab = packingSpec.routingBox.reduce((s, r) => s + ((Number(r.waktu)||0) * (Number(r.pekerja)||0) * (Number(r.rate)||0)), 0);
-  const packSfMat = packingSpec.materialsSF.reduce((s, m) => s + ((Number(m.qty)||0) * (Number(m.harga)||0)), 0);
-  const packSfLab = packingSpec.routingSF.reduce((s, r) => s + ((Number(r.waktu)||0) * (Number(r.pekerja)||0) * (Number(r.rate)||0)), 0);
+  const packingTotals = useMemo(() => computePackingTotals(packingSpec), [packingSpec]);
+  const { packBoxMat, packBoxLab, packSfMat, packSfLab } = packingTotals;
 
   // HANDLER DIMENSI PACKING DINAMIS
   const handleAddPackingDim = () => {
@@ -640,16 +771,37 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
   };
 
   // HANDLER EDIT NODE SECARA INLINE
+  const handleWoodGradeSelect = (nodeId, gradeId) => {
+    const updateTree = (node) => {
+      if (node.id === nodeId) {
+        return applyMasterToWoodPart({ ...node, woodGradeId: gradeId }, gradeId);
+      }
+      if (node.children) {
+        return { ...node, children: node.children.map(updateTree) };
+      }
+      return node;
+    };
+    setBomData((prev) => updateTree(prev));
+  };
+
   const handleUpdateNode = (id, field, value) => {
     const updateTree = (node) => {
       if (node.id === id) {
         let updatedNode = { ...node, [field]: value };
-        // Otomatis kalkulasi volume jika dimensi diubah
         if (field === 'p' || field === 'l' || field === 't') {
           const w = field === 'p' ? value : (updatedNode.p || 0);
           const d = field === 'l' ? value : (updatedNode.l || 0);
           const h = field === 't' ? value : (updatedNode.t || 0);
           updatedNode.vol = Number(((w * d * h) / 1000000000).toFixed(6));
+          if (updatedNode.woodGradeId && updatedNode.tipe === 'PART') {
+            updatedNode = applyMasterToWoodPart(updatedNode, updatedNode.woodGradeId);
+          }
+        }
+        if (field === 'nama' || field === 'kode') {
+          updatedNode = enrichNodeFromMaster(updatedNode, { productInfo, productMeta });
+          if (updatedNode.woodGradeId && updatedNode.tipe === 'PART' && updatedNode.vol) {
+            updatedNode = applyMasterToWoodPart(updatedNode, updatedNode.woodGradeId);
+          }
         }
         return updatedNode;
       }
@@ -658,7 +810,14 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
       }
       return node;
     };
-    setBomData(prev => updateTree(prev));
+    setBomData((prev) => updateTree(prev));
+
+    if (id === bomData.id && field === 'kode') {
+      setProductInfo((pi) => ({ ...pi, kode: value }));
+    }
+    if (id === bomData.id && field === 'nama') {
+      setProductInfo((pi) => ({ ...pi, namaBom: value, nama: value }));
+    }
   };
 
   const handleSaveRouting = (nodeId, prosesList) => {
@@ -707,60 +866,17 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
   // INLINE RENDER TABLE VIEW AGAR KURSOR TIDAK HILANG FOKUS
   const flatNodes = useMemo(() => flattenTree(bomData), [bomData]);
 
-  const summaryData = useMemo(() => {
-    let material = 0;
-    let process = 0;
-    let partCount = 0;
-    let modulCount = 0;
-    
-    flatNodes.forEach(node => {
-      const d = node.data;
-      if (d.tipe === 'PART') {
-        partCount++;
-        material += (d.biaya || 0) * (d.qty || 1);
-        if (d.proses && d.proses.length > 0) {
-           process += d.proses.reduce((sum, p) => sum + (p.biaya ?? calcProsesCosts(p).total), 0);
-        } else {
-           process += (d.proses_count || 0) * 110000; 
-        }
-      } else if (d.tipe === 'MODUL') {
-        modulCount++;
-      }
-    });
-    
-    return { material, process, total: material + process, partCount, modulCount };
-  }, [flatNodes]);
+  const summaryData = useMemo(
+    () => computeSummaryFromBom(bomData, flatNodes),
+    [bomData, flatNodes],
+  );
 
   const prosesTypeLabel = (p) => {
     if (p.proses) return getProsesById(p.proses).label;
     return p.mfgProcess || '—';
   };
 
-  const expandProsesList = (nodeData) => {
-    if (nodeData.proses?.length) return nodeData.proses;
-    if ((nodeData.proses_count || 0) > 0) {
-      const est = Math.round(110000 / nodeData.proses_count);
-      return Array.from({ length: nodeData.proses_count }, (_, i) => ({
-        nama: `Operasi ${i + 1}`,
-        mfgProcess: 'Woodworking',
-        posisiOperasi: '-',
-        waktuOperasi: 0,
-        totalPerson: 2,
-        biaya: est,
-      }));
-    }
-    return [];
-  };
-
-  const allProses = useMemo(() => {
-    const result = [];
-    flatNodes.forEach((node) => {
-      expandProsesList(node.data).forEach((p) => {
-        result.push({ ...p, nodeId: node.id, nodeNama: node.data.nama, nodeKode: node.data.kode });
-      });
-    });
-    return result;
-  }, [flatNodes]);
+  const allProses = useMemo(() => collectProsesEntries(flatNodes), [flatNodes]);
 
   const prosesLineItems = useMemo(() => flattenProsesLineItems(allProses), [allProses]);
   const prosesLineTotals = useMemo(() => sumProsesLineItems(prosesLineItems), [prosesLineItems]);
@@ -775,105 +891,27 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
     return m;
   }, [flatNodes]);
 
-  // SUMMARY REKAPITULASI PROSES (TABEL BARU)
-  const prosesSummary = useMemo(() => {
-    const summary = {};
-    let totalWaktu = 0, totalMesin = 0, totalPekerja = 0, grandTotal = 0;
+  const prosesSummary = useMemo(() => computeProsesSummary(allProses), [allProses]);
 
-    allProses.forEach(p => {
-      const mfg = p.mfgProcess || 'Lainnya';
-      if (!summary[mfg]) summary[mfg] = { waktu: 0, mesin: 0, pekerja: 0, total: 0, count: 0 };
+  const coatingPreview = useMemo(
+    () => resolveProductCoatingCost(bomData, productMeta),
+    [bomData, productMeta],
+  );
 
-      const { waktu, mesin, pekerja, total } = calcProsesCosts(p);
-
-      summary[mfg].count += 1;
-      summary[mfg].waktu += waktu;
-      summary[mfg].mesin += mesin;
-      summary[mfg].pekerja += pekerja;
-      summary[mfg].total += total;
-
-      totalWaktu += waktu;
-      totalMesin += mesin;
-      totalPekerja += pekerja;
-      grandTotal += total;
-    });
-    return {
-      items: Object.entries(summary).map(([name, data]) => ({ name, ...data })),
-      totalWaktu, totalMesin, totalPekerja, grandTotal
-    };
-  }, [allProses]);
-
-  // KALKULASI COGS BERDASARKAN REFERENSI
-  const cogsData = useMemo(() => {
-    let totalMaterial = 0;
-    let totalProcess = 0;
-
-    flatNodes.forEach(node => {
-      const d = node.data;
-      if (d.tipe === 'PART') {
-        const sf = Number(d.sf) || 0;
-        const wf = Number(d.wf) || 0;
-        const baseMat = (Number(d.biaya) || 0) * (Number(d.qty) || 1);
-        totalMaterial += baseMat * (1 + (sf / 100) + (wf / 100));
-
-        if (d.proses && d.proses.length > 0) {
-          d.proses.forEach(p => {
-            totalProcess += calcProsesCosts(p).total;
-          });
-        } else if (d.proses_count > 0) {
-          totalProcess += d.proses_count * 110000;
-        }
-      }
-    });
-
-    const packingMat = cogsConfig.packingJalur === 'BOX' ? packBoxMat : packSfMat;
-    const packingLab = cogsConfig.packingJalur === 'BOX' ? packBoxLab : packSfLab;
-    const packingCost = packingMat + packingLab;
-
-    const productionCost = totalMaterial + totalProcess + packingCost;
-    const factoryOh = productionCost * (Number(cogsConfig.factoryOhPct) / 100);
-    const managementOh = productionCost * (Number(cogsConfig.managementOhPct) / 100);
-    
-    const totalCogs = productionCost + factoryOh + managementOh;
-    const sellingPrice = totalCogs * (1 + (Number(cogsConfig.markupPct) / 100));
-
-    return { totalMaterial, totalProcess, packingMat, packingLab, packingCost, productionCost, factoryOh, managementOh, totalCogs, sellingPrice };
-  }, [flatNodes, cogsConfig, packBoxMat, packBoxLab, packSfMat, packSfLab]);
+  const cogsData = useMemo(
+    () => computeCogs({ bomData, cogsConfig, packingTotals, productMeta }),
+    [bomData, cogsConfig, packingTotals, productMeta],
+  );
 
   const summaryTotals = useMemo(() => {
-    let material = 0;
-    let process = 0;
-    flatNodes.forEach((node) => {
-      const d = node.data;
-      if (d.tipe !== 'PART') return;
-      const sf = Number(d.sf) || 0;
-      const wf = Number(d.wf) || 0;
-      material += (Number(d.biaya) || 0) * (Number(d.qty) || 1) * (1 + sf / 100 + wf / 100);
-      expandProsesList(d).forEach((p) => {
-        process += calcProsesCosts(p).total;
-      });
-    });
-    return { material, process, production: material + process };
-  }, [flatNodes]);
+    const s = computeSummaryFromBom(bomData, flatNodes);
+    return { material: s.material, process: s.process, production: s.production };
+  }, [bomData, flatNodes]);
 
-  const materialTabTotals = useMemo(() => {
-    let material = 0;
-    let materialBase = 0;
-    let partCount = 0;
-    let totalQty = 0;
-    flatNodes.forEach((node) => {
-      const d = node.data;
-      if (d.tipe !== 'PART') return;
-      partCount++;
-      const sf = Number(d.sf) || 0;
-      const wf = Number(d.wf) || 0;
-      const base = (Number(d.biaya) || 0) * (Number(d.qty) || 1);
-      materialBase += base;
-      material += base * (1 + sf / 100 + wf / 100);
-      totalQty += Number(d.qty) || 0;
-    });
-    return { material, materialBase, partCount, totalQty };
-  }, [flatNodes]);
+  const materialTabTotals = useMemo(
+    () => computeMaterialTabTotals(flatNodes),
+    [flatNodes],
+  );
 
   const prosesTabTotals = useMemo(
     () => ({
@@ -882,6 +920,92 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
     }),
     [prosesLineTotals, prosesLineItems.length],
   );
+
+  const buildProjectDocument = useCallback(
+    () => ({
+      schemaVersion: 1,
+      id: projectId,
+      kode: productInfo.kode,
+      nama: productInfo.namaBom || productInfo.nama,
+      customer: productInfo.customer,
+      versi: productInfo.versi,
+      status: initialProject?.status ?? 'draft',
+      createdAt: initialProject?.createdAt ?? new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      createdBy: initialProject?.createdBy ?? 'Admin',
+      productInfo,
+      productMeta,
+      dimensi,
+      bomData,
+      packingDimensions,
+      packingSpec,
+      containerCapacity,
+      cogsConfig,
+      kursUsd,
+      kursEur,
+      customErp,
+      cachedHpp: cogsData.totalCogs,
+    }),
+    [
+      projectId,
+      productInfo,
+      productMeta,
+      dimensi,
+      bomData,
+      packingDimensions,
+      packingSpec,
+      containerCapacity,
+      cogsConfig,
+      kursUsd,
+      kursEur,
+      customErp,
+      cogsData.totalCogs,
+      initialProject,
+    ],
+  );
+
+  const persistProject = useCallback(async () => {
+    if (!onSaveProject) return;
+    setSaveStatus('saving');
+    try {
+      await onSaveProject(buildProjectDocument());
+      setSaveStatus('saved');
+    } catch {
+      setSaveStatus('error');
+    }
+  }, [onSaveProject, buildProjectDocument]);
+
+  const handleSaveNow = () => {
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    persistProject();
+  };
+
+  useEffect(() => {
+    if (!onSaveProject || !projectId) return undefined;
+    setSaveStatus('dirty');
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => {
+      persistProject();
+    }, 2000);
+    return () => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    };
+  }, [
+    bomData,
+    productInfo,
+    productMeta,
+    dimensi,
+    packingDimensions,
+    packingSpec,
+    containerCapacity,
+    cogsConfig,
+    customErp,
+    kursUsd,
+    kursEur,
+    onSaveProject,
+    projectId,
+    persistProject,
+  ]);
 
   const buildExportPayload = () =>
     buildBomExportPayload({
@@ -903,10 +1027,21 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
       packingDimensions,
       packingSpec,
       containerCapacity,
+      customErp,
     });
 
-  const handleExportExcel = () => exportBomToExcel(buildExportPayload());
-  const handleExportPdf = () => exportBomToPdf(buildExportPayload());
+  const runExport = (fn) => {
+    const errors = validatePartsForExport(flatNodes);
+    if (errors.length) {
+      window.alert(`Export dibatalkan:\n\n${errors.slice(0, 8).join('\n')}${errors.length > 8 ? `\n…+${errors.length - 8} lainnya` : ''}`);
+      return;
+    }
+    fn(buildExportPayload());
+  };
+
+  const handleExportExcel = () => runExport(exportBomToExcel);
+  const handleExportPdf = () => runExport(exportBomToPdf);
+  const handleExportPdfFull = () => runExport(exportBomToPdfFull);
 
   const fp = (value) => formatPrice(value, priceDisplay, kursUsd, kursEur);
 
@@ -959,8 +1094,9 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
               <tbody>
                 {flatNodes.map((node) => {
                   const d = node.data;
-                  const fin = calcStrukturProdFinancials(d, kursUsd, kursEur);
-                  const { usdMat, eurMat, prodTotal: hargaProduksiIDR, usdProd, eurProd, prodUnit, usdProdUnit, eurProdUnit } = fin;
+                  const fin = d.tipe === 'PART' ? computePartDisplayFinancials(d, kursUsd, kursEur) : null;
+                  const hargaProduksiIDR = fin?.prodTotal ?? 0;
+                  const { usdMat = '0.00', eurMat = '0.00', usdProd = '0.00', eurProd = '0.00', prodUnit = 0, usdProdUnit = '0.00', eurProdUnit = '0.00' } = fin || {};
 
                   const style = tipeStyles[d.tipe] || tipeStyles.PART;
 
@@ -1031,7 +1167,29 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                         <input type="text" value={d.kode} onChange={(e) => handleUpdateNode(node.id, 'kode', e.target.value)} className={`${inputClasses} font-mono text-slate-600 min-w-[120px]`} />
                       </td>
                       <td className="sticky left-[600px] z-10 bg-inherit py-2 px-2 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] border-r border-slate-100">
-                        <input type="text" value={d.nama} onChange={(e) => handleUpdateNode(node.id, 'nama', e.target.value)} className={`${inputClasses} font-bold text-slate-800 min-w-[220px]`} />
+                        {d.tipe === 'MODUL' ? (
+                          <input
+                            type="text"
+                            value={d.nama}
+                            onChange={(e) => handleUpdateNode(node.id, 'nama', e.target.value)}
+                            className={`${inputClasses} font-bold text-slate-800 min-w-[220px]`}
+                            placeholder="Nama produk / BOM…"
+                          />
+                        ) : d.tipe === 'SUBMODUL' || d.tipe === 'SUBMODUL 2' || (d.tipe === 'PART' && d.materialType !== 'hardware') ? (
+                          <WoodGradeField
+                            mastersTick={mastersTick}
+                            value={d.woodGradeId || d.nama || d.woodSpecification || ''}
+                            onChange={(gradeId, mat) => handleStructureWoodSelect(node.id, gradeId, mat)}
+                            className="min-w-[220px]"
+                          />
+                        ) : (
+                          <input
+                            type="text"
+                            value={d.nama}
+                            onChange={(e) => handleUpdateNode(node.id, 'nama', e.target.value)}
+                            className={`${inputClasses} font-bold text-slate-800 min-w-[220px]`}
+                          />
+                        )}
                       </td>
                       
                       {/* KOLOM LAINNYA SCROLLABLE */}
@@ -1041,8 +1199,20 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                         </div>
                       </td>
                       <td className="py-2 px-2 border-r border-slate-100 text-center">
-                        {d.tipe === 'PART' ? (
-                          <MaterialTypeDisplay value={d.materialType || ''} />
+                        {d.materialType ? (
+                          <div className="flex flex-col items-center gap-0.5">
+                            <MaterialTypeDisplay value={d.materialType} />
+                            {d.woodGradeId && (
+                              <span className="text-[8px] font-mono text-emerald-600" title="Terhubung DATA BASE">
+                                DB ✓
+                              </span>
+                            )}
+                          </div>
+                        ) : d.tipe === 'PART' ? (
+                          <MaterialTypeField
+                            value=""
+                            onChange={(val) => handleUpdateNode(node.id, 'materialType', val)}
+                          />
                         ) : (
                           <span className="text-slate-300 text-[10px]">—</span>
                         )}
@@ -1130,6 +1300,15 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
 
       {/* Include Detail Summary Modal */}
       <SummaryDetailModal node={detailSummaryNode} onClose={() => setDetailSummaryNode(null)} />
+      <MasterWorkCenterModal isOpen={showMasterWc} onClose={() => setShowMasterWc(false)} />
+      <MasterMaterialsModal
+        isOpen={showMasterMaterials}
+        onClose={() => {
+          setShowMasterMaterials(false);
+          reloadMasters();
+        }}
+        onReimported={reloadMasters}
+      />
 
       <svg width="0" height="0" className="absolute">
         <defs>
@@ -1144,7 +1323,20 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
             <ArrowLeft className="w-4 h-4 mr-2" /> Ke Daftar BOM
           </button>
           <span className="bg-blue-50 border border-blue-100 text-blue-700 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm">
-            Project: {productInfo.kode}
+            Project: {productInfo.kode || '—'}
+          </span>
+          <span
+            className={`text-[10px] font-bold uppercase px-2 py-1 rounded border ${
+              saveStatus === 'saved'
+                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                : saveStatus === 'saving'
+                  ? 'bg-amber-50 text-amber-700 border-amber-200'
+                  : saveStatus === 'error'
+                    ? 'bg-red-50 text-red-700 border-red-200'
+                    : 'bg-slate-100 text-slate-500 border-slate-200'
+            }`}
+          >
+            {saveStatus === 'saved' ? 'Tersimpan' : saveStatus === 'saving' ? 'Menyimpan…' : saveStatus === 'error' ? 'Gagal simpan' : 'Belum disimpan'}
           </span>
         </div>
         <div className="flex items-center gap-3 flex-wrap justify-end">
@@ -1159,11 +1351,33 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
           </button>
           <FontCaseToggle value={fontCase} onChange={setFontCase} />
           <CurrencyGroup kursUsd={kursUsd} setKursUsd={setKursUsd} kursEur={kursEur} setKursEur={setKursEur} className="mr-1" />
-          <ExportMenu onExportExcel={handleExportExcel} onExportPdf={handleExportPdf} />
+          <button
+            type="button"
+            onClick={() => setShowMasterMaterials(true)}
+            className="border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-2"
+          >
+            <Server className="w-4 h-4" /> Master Data
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowMasterWc(true)}
+            className="border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-2"
+          >
+            <Server className="w-4 h-4" /> Master WC
+          </button>
+          <ExportMenu
+            onExportExcel={handleExportExcel}
+            onExportPdf={handleExportPdf}
+            onExportPdfFull={handleExportPdfFull}
+          />
           <button onClick={() => setShowKalkulasi(true)} className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors shadow-sm">
             <FileText className="w-4 h-4" /> View Kalkulasi Lengkap
           </button>
-          <button onClick={onBack} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors shadow-sm shadow-blue-500/30">
+          <button
+            type="button"
+            onClick={handleSaveNow}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors shadow-sm shadow-blue-500/30"
+          >
             <CheckCircle2 className="w-4 h-4" /> Simpan Project
           </button>
         </div>
@@ -1195,6 +1409,9 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
             onProductInfoChange={handleProductInfoChange}
             productMeta={productMeta}
             onProductMetaChange={handleProductMetaChange}
+            onWoodGradeChange={handleProductWoodGrade}
+            onCoatingChange={handleProductCoating}
+            mastersTick={mastersTick}
             productImage={resolveNodeFoto(bomData)}
             dimensi={dimensi}
             onDimensiChange={updateDimensi}
@@ -1203,6 +1420,7 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
             onPackingTolChange={(id, tol, val) => handleUpdatePackingDim(id, tol, val)}
             onPackingGrossChange={(id, tol, val, base) => handleUpdatePackingGross(id, tol, val, base)}
             packingVolOpts={packingVolOpts}
+            coatingPreview={coatingPreview}
           />
         ) : (
           <div className="px-6 pt-4 pb-2 shrink-0 flex items-center justify-between bg-white border-b border-slate-200">
@@ -1231,9 +1449,21 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
               <div className="px-6 py-4 border-b border-slate-200 shrink-0 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white z-10 shadow-sm">
                 <div>
                   <h2 className="text-xl font-black text-slate-800 mb-0.5 tracking-tight">Struktur Perakitan & Modul</h2>
-                  <p className="text-xs text-slate-500 font-medium">Pengaturan hierarki Modul, Submodul, Part, dan Routing Produksi.</p>
+                  <p className="text-xs text-slate-500 font-medium">
+                    Pengaturan hierarki Modul, Submodul, Part, dan Routing Produksi.
+                    Nama grade kayu (mis. MAHOGANY - 30 UP) otomatis diambil dari <strong>DATA BASE</strong>.
+                  </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={handleSyncBomFromMasters}
+                    disabled={!mastersReady}
+                    className="px-4 py-2 rounded-lg text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-40 shadow-sm"
+                    title="Cocokkan semua baris dengan master kayu & coating"
+                  >
+                    Sinkron DATA BASE
+                  </button>
                   <button onClick={() => handleAddNode(bomData.id, 'MODUL')} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors shadow-sm shadow-blue-500/30">
                     <Plus className="w-4 h-4" /> Tambah Modul Utama
                   </button>
@@ -1762,8 +1992,20 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                       <Grid className="w-5 h-5 text-amber-500" /> Kebutuhan Material (Daftar Part)
                     </h2>
                     <p className="text-xs text-slate-500 mt-1 font-medium">Rekapitulasi otomatis dari seluruh komponen dalam struktur BOM yang diidentifikasi sebagai <strong>PART</strong>.</p>
+                    {!mastersReady && (
+                      <p className="text-[10px] text-amber-600 font-bold mt-1">Memuat master DATA BASE…</p>
+                    )}
                   </div>
                   <div className="flex flex-wrap items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      disabled={!productMeta.woodGradeId}
+                      onClick={handleApplyWoodMasterToAllParts}
+                      className="px-3 py-1.5 rounded-lg text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200 hover:bg-amber-200 disabled:opacity-40"
+                      title="Hitung ulang biaya semua part kayu dari grade produk + harga/m³ master"
+                    >
+                      Hitung harga kayu dari master
+                    </button>
                     <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest mr-1">Kolom hierarki:</span>
                     {[
                       { key: 'modul', label: 'Modul' },
@@ -1805,6 +2047,7 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                           <th rowSpan={2} className="px-4 py-3 border-r border-slate-100 text-left border-b border-slate-200 align-middle min-w-[120px]">SUBMODUL 2</th>
                         )}
                         <th rowSpan={2} className="px-4 py-3 border-r border-slate-100 text-left border-b border-slate-200 align-middle min-w-[120px] text-emerald-700">TIPE MATERIAL</th>
+                        <th rowSpan={2} className="px-4 py-3 border-r border-slate-100 text-left border-b border-slate-200 align-middle min-w-[200px] text-amber-700">GRADE KAYU</th>
                         <th rowSpan={2} className="px-4 py-3 border-r border-slate-100 text-left border-b border-slate-200 align-middle">KODE MATERIAL</th>
                         <th rowSpan={2} className="px-4 py-3 border-r border-slate-100 text-left border-b border-slate-200 align-middle">NAMA MATERIAL</th>
                         <th rowSpan={2} className="px-4 py-3 border-r border-slate-100 text-left border-b border-slate-200 align-middle">VENDOR</th>
@@ -1839,7 +2082,7 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                         const hargaBeliIDR = d.biaya || 0;
                         const sf = Number(d.sf) || 0;
                         const wf = Number(d.wf) || 0;
-                        const fin = calcPartRowFinancials(d, kursUsd, kursEur);
+                        const fin = computePartDisplayFinancials(d, kursUsd, kursEur);
                         const { usdMat, eurMat, prodTotal: hargaProduksiIDR, usdProd, eurProd, prodUnit, usdProdUnit, eurProdUnit } = fin;
 
                         return (
@@ -1873,6 +2116,18 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                                 value={d.materialType || ''}
                                 onChange={(val) => handleUpdateNode(node.id, 'materialType', val)}
                               />
+                            </td>
+                            <td className="px-4 py-3 border-r border-slate-100">
+                              {d.materialType === 'kayu' ? (
+                                <WoodGradeField
+                                  mastersTick={mastersTick}
+                                  value={d.woodGradeId || d.woodSpecification || productMeta.woodGradeId || productMeta.wood || ''}
+                                  onChange={(gradeId) => handleWoodGradeSelect(node.id, gradeId)}
+                                  className="min-w-[180px]"
+                                />
+                              ) : (
+                                <span className="text-[10px] text-slate-300">—</span>
+                              )}
                             </td>
                             <td className="px-4 py-3 border-r border-slate-100 font-mono text-slate-500">{d.kode}</td>
                             <td className="px-4 py-3 border-r border-slate-100 font-black text-slate-700">{d.nama}</td>
@@ -2168,9 +2423,6 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
                          totalOpMesin += c.mesin;
                          totalOpPekerja += c.pekerja;
                        });
-                       if (!expandProsesList(d).length && d.proses_count > 0) {
-                         totalOpMesin = d.proses_count * 110000;
-                       }
                        const totalOpCost = totalOpMesin + totalOpPekerja;
                        const grandTotalRow = adjustedMatCost + totalOpCost;
 
@@ -2334,9 +2586,9 @@ export default function BOMEditor({ onBack, kursUsd, setKursUsd, kursEur, setKur
             const totalProsesCount = allProses.length;
 
             // KALKULASI DATA CUSTOM
-            const customPartCost = customErp.parts.reduce((sum, item) => sum + ((Number(item.qty)||0) * (Number(item.rate)||0)), 0);
-            const customMachineCost = customErp.machines.reduce((sum, item) => sum + ((Number(item.waktu)||0) * (Number(item.rate)||0)), 0);
-            const customWorkerCost = customErp.workers.reduce((sum, item) => sum + ((Number(item.waktu)||0) * (Number(item.person)||0) * (Number(item.rate)||0)), 0);
+            const customPartCost = (customErp.parts || []).reduce((sum, item) => sum + ((Number(item.qty)||0) * (Number(item.rate)||0)), 0);
+            const customMachineCost = (customErp.machines || []).reduce((sum, item) => sum + ((Number(item.waktu)||0) * (Number(item.rate)||0)), 0);
+            const customWorkerCost = (customErp.workers || []).reduce((sum, item) => sum + ((Number(item.waktu)||0) * (Number(item.person)||0) * (Number(item.rate)||0)), 0);
 
             // GRAND TOTAL
             const grandPart = basePartCost + customPartCost;

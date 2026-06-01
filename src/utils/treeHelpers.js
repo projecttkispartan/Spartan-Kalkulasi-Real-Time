@@ -1,4 +1,5 @@
 export const flattenTree = (node, level = 0, isLast = true, result = []) => {
+  if (!node) return result;
   result.push({ id: node.id, level, isLast, data: node });
   if (node.children) {
     node.children.forEach((child, idx) => {

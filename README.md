@@ -68,6 +68,46 @@ Buka **http://localhost:3000**
 | `src/data/` | Mock BOM & referensi Excel |
 | `dist/` | Hasil build (CSS + JS) |
 
+## Master data & import Excel
+
+Master **DATA BASE**, **MASTER RATIO**, **COATING RATIO**, **FORMULA DATA**, dan **ROUND COMPONENT** di-import dari file Excel ZAN-100:
+
+```bash
+npm run import:masters
+```
+
+Path custom (Windows PowerShell):
+
+```powershell
+$env:ZAN_EXCEL="D:\path\to\1 - ZAN-100 - 2-12-25.xlsx"
+npm run import:masters
+```
+
+Impor BOM project dari Excel:
+
+```bash
+npm run import:bom -- "path\to\file.xlsx"
+```
+
+Dokumentasi lengkap: [`docs/Excel-vs-App.md`](docs/Excel-vs-App.md) · PRD: [`docs/PRD-BOM-Excel-Parity.md`](docs/PRD-BOM-Excel-Parity.md)
+
+### Toleransi COGS vs Excel
+
+Total COGS sample ZAN: deviasi ≤ **1,5%** atau ≤ **Rp 25.000** (`npm test`).
+
+### Alur setelah buka project
+
+1. Refresh halaman → master ter-hydrate otomatis  
+2. **Sinkron DATA BASE** (tab Struktur) untuk project lama  
+3. **Hitung harga kayu dari master** (tab Material)  
+4. Isi **luas m²** pada part finishing untuk biaya coating  
+
+## Tests
+
+```bash
+npm test
+```
+
 ## Tech
 
-React 18 · esbuild · Tailwind CSS 3 · Lucide icons
+React 18 · esbuild · Tailwind CSS 3 · Lucide icons · IndexedDB

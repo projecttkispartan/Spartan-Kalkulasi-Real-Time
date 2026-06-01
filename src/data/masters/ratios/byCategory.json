@@ -1,0 +1,74 @@
+[
+  {
+    "id": "ratio-kayu",
+    "category": "kayu",
+    "materialType": "kayu",
+    "label": "KAYU — ratio (FORMULA DATA)",
+    "sf": 0,
+    "wf": 30,
+    "wasteFactor": 0.3,
+    "source": "FORMULA DATA",
+    "excelRef": "FORMULA DATA row 5",
+    "aktif": true
+  },
+  {
+    "id": "ratio-plywood",
+    "category": "plywood",
+    "materialType": "plywood",
+    "label": "PLYWOOD — ratio (FORMULA DATA)",
+    "sf": 10,
+    "wf": 0,
+    "materialRatio": 0.1,
+    "source": "FORMULA DATA",
+    "excelRef": "FORMULA DATA row 6",
+    "aktif": true
+  },
+  {
+    "id": "ratio-komponen",
+    "category": "komponen",
+    "materialType": "komponen",
+    "label": "MDF — ratio (FORMULA DATA)",
+    "sf": 10,
+    "wf": 0,
+    "materialRatio": 0.1,
+    "source": "FORMULA DATA",
+    "excelRef": "FORMULA DATA row 7",
+    "aktif": true
+  },
+  {
+    "id": "ratio-steel",
+    "category": "steel",
+    "materialType": "steel",
+    "label": "BESI — ratio (FORMULA DATA)",
+    "sf": 10,
+    "wf": 0,
+    "materialRatio": 0.1,
+    "source": "FORMULA DATA",
+    "excelRef": "FORMULA DATA row 8",
+    "aktif": true
+  },
+  {
+    "id": "ratio-hardware",
+    "category": "hardware",
+    "materialType": "hardware",
+    "label": "HARDWARE — ratio (FORMULA DATA)",
+    "sf": 10,
+    "wf": 0,
+    "materialRatio": 0.1,
+    "source": "FORMULA DATA",
+    "excelRef": "FORMULA DATA row 10",
+    "aktif": true
+  },
+  {
+    "id": "ratio-veneer",
+    "category": "veneer",
+    "materialType": "veneer",
+    "label": "VENEER — ratio (FORMULA DATA)",
+    "sf": 10,
+    "wf": 0,
+    "materialRatio": 0.1,
+    "source": "FORMULA DATA",
+    "excelRef": "FORMULA DATA row 12",
+    "aktif": true
+  }
+]

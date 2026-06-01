@@ -1,0 +1,22 @@
+[
+  {
+    "id": "round-a",
+    "label": "Round table preset a",
+    "sections": 8,
+    "outerDiameterMm": 1200,
+    "radialWidthMm": 25,
+    "thicknessMm": 0,
+    "cubicMeter": 0.0007898062169106162,
+    "source": "ROUND COMPONENT CALC"
+  },
+  {
+    "id": "round-b",
+    "label": "Round table preset b",
+    "sections": 4,
+    "outerDiameterMm": 1400,
+    "radialWidthMm": 100,
+    "thicknessMm": 0,
+    "cubicMeter": 0.004778386259911527,
+    "source": "ROUND COMPONENT CALC"
+  }
+]

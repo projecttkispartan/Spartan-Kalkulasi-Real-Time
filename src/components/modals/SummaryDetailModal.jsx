@@ -4,6 +4,7 @@ import {
 import { tipeStyles } from '../../design/tipeStyles';
 import { formatIDR } from '../../utils/formatters';
 import { calcProsesCosts, LABOR_RATE_PER_MIN } from '../../utils/operationCosts';
+import { expandProsesList, computePartCostRow } from '../../services/bomCalculations';
 import { getProsesById } from '../../data/routingCatalog';
 import OperasiDetailCell from '../ui/OperasiDetailCell';
 
@@ -12,28 +13,22 @@ export default function SummaryDetailModal({ node, onClose }) {
   const d = node.data;
   const style = tipeStyles[d.tipe] || tipeStyles.PART;
   
-  const sf = Number(d.sf) || 0;
-  const wf = Number(d.wf) || 0;
-  const baseMaterialCost = (d.biaya || 0) * (d.qty || 1);
-  const materialCostWithFactors = baseMaterialCost * (1 + (sf/100) + (wf/100));
+  const costRow = d.tipe === 'PART' ? computePartCostRow(d) : null;
+  const materialCostWithFactors = costRow?.matAdjusted ?? 0;
 
   let totalWaktuAll = 0;
   let totalMesinAll = 0;
   let totalPekerjaAll = 0;
 
-  if (d.proses && d.proses.length > 0) {
-    d.proses.forEach(p => {
-      const c = calcProsesCosts(p);
-      totalWaktuAll += c.waktu;
-      totalMesinAll += c.mesin;
-      totalPekerjaAll += c.pekerja;
-    });
-  } else if (d.proses_count > 0) {
-    totalMesinAll = d.proses_count * 110000;
-  }
-  
-  const totalOperationCost = totalMesinAll + totalPekerjaAll;
-  const grandTotal = materialCostWithFactors + totalOperationCost;
+  expandProsesList(d).forEach((p) => {
+    const c = calcProsesCosts(p);
+    totalWaktuAll += c.waktu;
+    totalMesinAll += c.mesin + (c.wc || 0);
+    totalPekerjaAll += c.pekerja;
+  });
+
+  const totalOperationCost = costRow?.prosesTotal ?? totalMesinAll + totalPekerjaAll;
+  const grandTotal = costRow?.biayaProduksi ?? materialCostWithFactors + totalOperationCost;
 
   return (
     <div className="fixed inset-0 z-[130] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 md:p-6 lg:p-8 animate-in fade-in duration-200">

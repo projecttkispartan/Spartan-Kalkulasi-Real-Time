@@ -1,0 +1,116 @@
+{
+  "version": 3,
+  "importedAt": "2026-06-01T08:43:38.057Z",
+  "projects": [
+    {
+      "sampleKey": "ZAN-100",
+      "id": "sample-zan-100",
+      "file": "zan-100.json",
+      "sourceExcel": "1 - ZAN-100 - 2-12-25.xlsx",
+      "kode": "ZAN-10",
+      "nama": "ZANZIBAR STOOL/ SIDE TABLE",
+      "customer": "AMATA",
+      "partCount": 10
+    },
+    {
+      "sampleKey": "MF081",
+      "id": "sample-mf081",
+      "file": "mf081.json",
+      "sourceExcel": "2 - MF081 - PURSER'S CHAIR BLACK & HONEY - HARD DAM -FINAL- 28-3-22.xlsx",
+      "kode": "MF081",
+      "nama": "PURSER CHAIR BLACK & HONEY",
+      "customer": "AM",
+      "partCount": 2
+    },
+    {
+      "sampleKey": "DCTVBS",
+      "id": "sample-dctvbs",
+      "file": "dctvbs.json",
+      "sourceExcel": "2 - DCTVBS - TEMPLATE BARU - 20-8-21.xlsx",
+      "kode": "DCTVBS-N",
+      "nama": "NEW DAVENPORT WALL UNIT ",
+      "customer": "HOC",
+      "partCount": 73
+    },
+    {
+      "sampleKey": "SVDT-120",
+      "id": "sample-svdt-120",
+      "file": "svdt-120.json",
+      "sourceExcel": "7 - SVDT.120-ST - SAVOY DINING TABLE 120 STAIN COLOR - 17-9-21.xlsx",
+      "kode": "SVDT.120-SL",
+      "nama": "SAVOY DINING TABLE SOLID COLOR",
+      "customer": "HOC",
+      "partCount": 32
+    },
+    {
+      "sampleKey": "MF056",
+      "id": "sample-mf056",
+      "file": "mf056.json",
+      "sourceExcel": "2 - MF056 - MADRAS DESK - 20-4-22.xlsx",
+      "kode": "MF056",
+      "nama": "MADRAS DESK",
+      "customer": "AM",
+      "partCount": 47
+    },
+    {
+      "sampleKey": "ELB-555-98",
+      "id": "sample-elb-555-98",
+      "file": "elb-555-98.json",
+      "sourceExcel": "1 - ELB-555-98 - ELBA CHAIR NLH - 19-5-23.xlsx",
+      "kode": "ELB-555-98",
+      "nama": "ELBA CHAIR",
+      "customer": "AMATA",
+      "partCount": 13
+    },
+    {
+      "sampleKey": "L-LOU-NAT",
+      "id": "sample-l-lou-nat",
+      "file": "l-lou-nat.json",
+      "sourceExcel": "3 - L-LOU-NAT - L LOUNGER NATURAL - 17-7-25.xlsx",
+      "kode": "L-LOU-NAT",
+      "nama": "L LOUNGER NATURAL",
+      "customer": "IMOGEN",
+      "partCount": 46
+    },
+    {
+      "sampleKey": "G632L-RO",
+      "id": "sample-g632l-ro",
+      "file": "g632l-ro.json",
+      "sourceExcel": "17 - G632L-RO - MARIO 3 S - 12-5-26.xlsx",
+      "kode": "G632L-RO",
+      "nama": "MARIO 3 SEATER",
+      "customer": "GOMMAIRE",
+      "partCount": 18
+    },
+    {
+      "sampleKey": "FNA-550",
+      "id": "sample-fna-550",
+      "file": "fna-550.json",
+      "sourceExcel": "2 - FNA-550 - 4-12-25.xlsx",
+      "kode": "FNA-550",
+      "nama": "FIONA CHAIR BLACK LIMED",
+      "customer": "AMATA",
+      "partCount": 12
+    },
+    {
+      "sampleKey": "G557",
+      "id": "sample-g557",
+      "file": "g557.json",
+      "sourceExcel": "10 - G557 - ALABAMA 1 SEATER - 9-5-26.xlsx",
+      "kode": "G557-NAT",
+      "nama": "ALABAMA 1-SEATER",
+      "customer": "GOMMAIRE",
+      "partCount": 15
+    },
+    {
+      "sampleKey": "POL-TAB-3",
+      "id": "sample-pol-tab-3",
+      "file": "pol-tab-3.json",
+      "sourceExcel": "1 - POL-TAB-3 - 17-3-26.xlsx",
+      "kode": "WAB-TAB-3",
+      "nama": "WABI DINING TABLE NATURAL",
+      "customer": "IMOGEN",
+      "partCount": 14
+    }
+  ]
+}

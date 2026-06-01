@@ -1,19 +1,18 @@
-import { calcProsesCosts } from './operationCosts';
+import { calcProsesCosts } from './operationCosts.js';
 
-/** Estimasi operasi jika hanya proses_count */
-export function expandProsesList(nodeData) {
+/** Estimasi operasi jika hanya proses_count (non-live / legacy) */
+export function expandProsesList(nodeData, options = {}) {
+  const { allowEstimateFallback = false } = options;
   if (nodeData.proses?.length) return nodeData.proses;
-  if ((nodeData.proses_count || 0) > 0) {
-    const est = Math.round(110000 / nodeData.proses_count);
-    return Array.from({ length: nodeData.proses_count }, (_, i) => ({
-      nama: `Operasi ${i + 1}`,
-      mfgProcess: 'Woodworking',
-      posisiOperasi: '-',
-      waktuOperasi: 0,
-      biaya: est,
-    }));
-  }
-  return [];
+  if (!allowEstimateFallback || !(nodeData.proses_count > 0)) return [];
+  const est = Math.round(110000 / nodeData.proses_count);
+  return Array.from({ length: nodeData.proses_count }, (_, i) => ({
+    nama: `Operasi ${i + 1}`,
+    mfgProcess: 'Woodworking',
+    posisiOperasi: '-',
+    waktuOperasi: 0,
+    biaya: est,
+  }));
 }
 
 /** Biaya per PART: material + SF/WF + proses */
@@ -94,6 +93,7 @@ export function rollupTreeCosts(node) {
 
 /** Total dari semua PART di pohon */
 export function computePartsTotals(bomData) {
+  if (!bomData) return { ...EMPTY_ROLLUP };
   const walk = (node, acc) => {
     if (node.tipe === 'PART') {
       const r = computePartCostRow(node);

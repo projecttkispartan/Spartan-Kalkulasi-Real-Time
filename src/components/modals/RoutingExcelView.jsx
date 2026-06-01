@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import ClickZoomImage from '../ui/ClickZoomImage';
 import { posisiGambarMap } from '../../data/mockData';
-import { WORK_CENTERS, ROUTING_TEMPLATES, PROSES_OPTIONS, getWorkCenterById } from '../../data/routingCatalog';
+import { getActiveWorkCenters, ROUTING_TEMPLATES, PROSES_OPTIONS, getWorkCenterById } from '../../data/routingCatalog';
 import { formatIDR } from '../../utils/formatters';
 
 const POSISI_OPTIONS = Object.keys(posisiGambarMap);
@@ -548,7 +548,7 @@ function OperationCard({ op, index, costs, materialVol, onRemove, onUpdate, onVi
             <Field label="Work center" className="lg:col-span-2">
               <SelectWrap>
                 <select value={op.workCenterId} onChange={(e) => onUpdate(op.id, 'workCenterId', e.target.value)} className={selectCls}>
-                  {WORK_CENTERS.map((wc) => (
+                  {getActiveWorkCenters().map((wc) => (
                     <option key={wc.id} value={wc.id}>
                       {wc.kode} — {wc.nama}
                     </option>
