@@ -1,6 +1,6 @@
 {
-  "version": 4,
-  "importedAt": "2026-06-01T09:05:22.055Z",
+  "version": 5,
+  "importedAt": "2026-06-03T01:26:49.811Z",
   "projects": [
     {
       "sampleKey": "ZAN-100",
@@ -8,9 +8,9 @@
       "file": "zan-100.json",
       "sourceExcel": "1 - ZAN-100 - 2-12-25.xlsx",
       "kode": "ZAN-10",
-      "nama": "ZANZIBAR STOOL/ SIDE TABLE",
+      "nama": "ZAN-10 - ZANZIBAR STOOL/ SIDE TABLE",
       "customer": "AMATA",
-      "partCount": 68
+      "partCount": 10
     },
     {
       "sampleKey": "MF081",
@@ -20,7 +20,7 @@
       "kode": "MF081",
       "nama": "PURSER CHAIR BLACK & HONEY",
       "customer": "AM",
-      "partCount": 42
+      "partCount": 8
     },
     {
       "sampleKey": "DCTVBS",
@@ -30,7 +30,7 @@
       "kode": "DCTVBS-N",
       "nama": "NEW DAVENPORT WALL UNIT ",
       "customer": "HOC",
-      "partCount": 115
+      "partCount": 81
     },
     {
       "sampleKey": "SVDT-120",
@@ -40,7 +40,7 @@
       "kode": "SVDT.120-SL",
       "nama": "SAVOY DINING TABLE SOLID COLOR",
       "customer": "HOC",
-      "partCount": 72
+      "partCount": 40
     },
     {
       "sampleKey": "MF056",
@@ -50,7 +50,7 @@
       "kode": "MF056",
       "nama": "MADRAS DESK",
       "customer": "AM",
-      "partCount": 87
+      "partCount": 55
     },
     {
       "sampleKey": "ELB-555-98",
@@ -60,7 +60,7 @@
       "kode": "ELB-555-98",
       "nama": "ELBA CHAIR",
       "customer": "AMATA",
-      "partCount": 58
+      "partCount": 24
     },
     {
       "sampleKey": "L-LOU-NAT",
@@ -70,7 +70,7 @@
       "kode": "L-LOU-NAT",
       "nama": "L LOUNGER NATURAL",
       "customer": "IMOGEN",
-      "partCount": 104
+      "partCount": 54
     },
     {
       "sampleKey": "G632L-RO",
@@ -80,7 +80,7 @@
       "kode": "G632L-RO",
       "nama": "MARIO 3 SEATER",
       "customer": "GOMMAIRE",
-      "partCount": 78
+      "partCount": 28
     },
     {
       "sampleKey": "FNA-550",
@@ -90,7 +90,7 @@
       "kode": "FNA-550",
       "nama": "FIONA CHAIR BLACK LIMED",
       "customer": "AMATA",
-      "partCount": 72
+      "partCount": 22
     },
     {
       "sampleKey": "G557",
@@ -100,7 +100,7 @@
       "kode": "G557-NAT",
       "nama": "ALABAMA 1-SEATER",
       "customer": "GOMMAIRE",
-      "partCount": 73
+      "partCount": 23
     },
     {
       "sampleKey": "POL-TAB-3",
@@ -110,7 +110,7 @@
       "kode": "WAB-TAB-3",
       "nama": "WABI DINING TABLE NATURAL",
       "customer": "IMOGEN",
-      "partCount": 74
+      "partCount": 24
     }
   ]
 }

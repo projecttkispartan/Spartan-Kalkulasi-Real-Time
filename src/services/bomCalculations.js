@@ -89,13 +89,17 @@ export function computeCogs({
   const totalMaterial = parts.matAdjusted;
   const totalProcess = parts.prosesTotal;
   const { coatingCost, surfaceM2 } = resolveProductCoatingCost(bomData, productMeta);
+  const useCoating =
+    cogsConfig.includeCoatingInCogs !== false &&
+    cogsConfig.includeCoatingInCogs !== 'false';
+  const coatingForCogs = useCoating ? coatingCost : 0;
 
   const jalur = cogsConfig.packingJalur === 'SF' ? 'SF' : 'BOX';
   const packingMat = jalur === 'BOX' ? packingTotals.packBoxMat : packingTotals.packSfMat;
   const packingLab = jalur === 'BOX' ? packingTotals.packBoxLab : packingTotals.packSfLab;
   const packingCost = packingMat + packingLab;
 
-  const productionCost = totalMaterial + totalProcess + packingCost + coatingCost;
+  const productionCost = totalMaterial + totalProcess + packingCost + coatingForCogs;
   const factoryOhPct = Number(cogsConfig.factoryOhPct) || 0;
   const managementOhPct = Number(cogsConfig.managementOhPct) || 0;
   const markupPct = Number(cogsConfig.markupPct) || 0;
@@ -109,7 +113,8 @@ export function computeCogs({
   return {
     totalMaterial,
     totalProcess,
-    coatingCost,
+    coatingCost: coatingForCogs,
+    coatingCostDetail: coatingCost,
     coatingSurfaceM2: surfaceM2,
     packingMat,
     packingLab,

@@ -1,4 +1,4 @@
-import { getCachedMaterials, getCachedNonWoodMaterials, getCachedWasteRatios, getCachedCoatings } from '../services/masterStorage.js';
+import { getCachedMaterials, getCachedNonWoodMaterials, getCachedWasteRatios, getCachedCoatings, getCachedMaterialCatalog } from '../services/masterStorage.js';
 import { evalFormula } from './formulaEngine.js';
 
 function allMaterials() {
@@ -80,6 +80,16 @@ export function findCoatingByName(name) {
   return partial.sort((a, b) => (b.name?.length || 0) - (a.name?.length || 0))[0] || null;
 }
 
+/** Cari hardware/komponen dari katalog terpadu (CALCULATION, HPP, supplier) */
+export function findCatalogByKode(kode) {
+  const q = String(kode || '').trim().toUpperCase();
+  if (!q) return null;
+  const catalog = getCachedMaterialCatalog() || [];
+  const exact = catalog.find((c) => String(c.kode || '').trim().toUpperCase() === q);
+  if (exact) return exact;
+  return catalog.find((c) => String(c.nama || '').trim().toUpperCase() === q) || null;
+}
+
 export function getWasteRatioForMaterialType(materialType) {
   const ratios = getCachedWasteRatios();
   return (
@@ -98,8 +108,12 @@ export function applyMasterToWoodPart(partData, woodGradeId) {
     woodSpecification: result.material.specification,
     materialType: 'kayu',
     biaya: result.biaya,
-    sf: result.sf,
-    wf: result.wf,
+    /** Waste sudah di `biaya` via wood_material_cost — rollup jangan hitung SF/WF lagi */
+    sf: 0,
+    wf: 0,
+    woodWasteSfPct: result.sf,
+    woodWasteWfPct: result.wf,
+    wasteIncludedInBiaya: true,
   };
 }
 
@@ -110,6 +124,17 @@ export function listActiveWoodMaterials() {
 export function listActiveCoatings() {
   return getCachedCoatings().filter((c) => c.aktif !== false);
 }
+
+const NON_WOOD_MATERIAL_TYPES = new Set([
+  'hardware',
+  'steel',
+  'plywood',
+  'veneer',
+  'komponen',
+  'finishing',
+  'upholstery',
+  'coating',
+]);
 
 /**
  * Isi otomatis dari DATA BASE berdasarkan nama/kode node atau info produk.
@@ -127,6 +152,12 @@ export function enrichNodeFromMaster(node, { productInfo, productMeta } = {}) {
     if (productName && !String(n.nama || '').trim()) n.nama = productName;
   }
 
+  const existingMt = String(n.materialType || '').toLowerCase();
+  const skipWoodMatch =
+    n.hardware ||
+    NON_WOOD_MATERIAL_TYPES.has(existingMt) ||
+    (existingMt === 'hardware' && n.biayaFromExcel);
+
   const lookupTexts = [
     n.woodSpecification,
     n.nama,
@@ -134,27 +165,29 @@ export function enrichNodeFromMaster(node, { productInfo, productMeta } = {}) {
     productMeta?.wood,
   ].filter((t) => t && String(t).trim());
 
-  for (const text of lookupTexts) {
-    const mat = findMaterialBySpec(text);
-    if (mat) {
-      const ratio = getWasteRatioForMaterialType(mat.materialType || 'kayu');
-      const spec = mat.specification || text;
-      const namaLooksLikeGrade =
-        !n.nama ||
-        n.nama === text ||
-        findMaterialBySpec(n.nama) ||
-        String(n.nama).toUpperCase().includes(mat.woodName?.toUpperCase() || '');
+  if (!skipWoodMatch) {
+    for (const text of lookupTexts) {
+      const mat = findMaterialBySpec(text);
+      if (mat) {
+        const ratio = getWasteRatioForMaterialType(mat.materialType || 'kayu');
+        const spec = mat.specification || text;
+        const namaLooksLikeGrade =
+          !n.nama ||
+          n.nama === text ||
+          findMaterialBySpec(n.nama) ||
+          String(n.nama).toUpperCase().includes(mat.woodName?.toUpperCase() || '');
 
-      n = {
-        ...n,
-        woodGradeId: mat.id,
-        woodSpecification: spec,
-        materialType: mat.materialType || 'kayu',
-        nama: namaLooksLikeGrade ? spec : n.nama,
-        sf: n.sf != null && n.sf !== '' ? n.sf : ratio.sf,
-        wf: n.wf != null && n.wf !== '' ? n.wf : ratio.wf,
-      };
-      return n;
+        n = {
+          ...n,
+          woodGradeId: mat.id,
+          woodSpecification: spec,
+          materialType: mat.materialType || 'kayu',
+          nama: namaLooksLikeGrade ? spec : n.nama,
+          sf: n.biayaFromExcel ? 0 : n.sf != null && n.sf !== '' ? n.sf : ratio.sf,
+          wf: n.biayaFromExcel ? 0 : n.wf != null && n.wf !== '' ? n.wf : ratio.wf,
+        };
+        return n;
+      }
     }
   }
 
@@ -215,6 +248,20 @@ export function aggregateCoatingSurfaceM2(bomData, { coatingId } = {}) {
   return total;
 }
 
+/** Total m² dari part yang punya surfaceM2 eksplisit (CALCULATION / import) */
+export function aggregateExplicitSurfaceM2(bomData) {
+  let total = 0;
+  const walk = (node) => {
+    if (node.tipe === 'PART') {
+      const explicit = Number(node.surfaceM2);
+      if (explicit > 0) total += explicit * (Number(node.qty) || 1);
+    }
+    (node.children || []).forEach(walk);
+  };
+  if (bomData) walk(bomData);
+  return total;
+}
+
 function aggregateAllPartSurfaceM2(bomData) {
   let total = 0;
   const walk = (node) => {
@@ -230,10 +277,17 @@ function aggregateAllPartSurfaceM2(bomData) {
 export function resolveProductCoatingCost(bomData, productMeta) {
   const coatingId = productMeta?.coatingId;
   if (!coatingId) return { coatingCost: 0, surfaceM2: 0 };
+
+  const metaM2 = Number(productMeta?.surfaceM2Coating) || 0;
+  const explicitM2 = aggregateExplicitSurfaceM2(bomData);
   const byType = aggregateCoatingSurfaceM2(bomData, { coatingId });
-  const allParts = aggregateAllPartSurfaceM2(bomData);
-  const fallbackM2 = Number(productMeta?.surfaceM2Coating) || 0;
-  const m2 = Math.max(byType, allParts, fallbackM2);
+
+  /** Prioritas: meta Excel → surfaceM2 eksplisit part → part finishing/coating */
+  let m2 = 0;
+  if (metaM2 > 0) m2 = metaM2;
+  else if (explicitM2 > 0) m2 = explicitM2;
+  else if (byType > 0) m2 = byType;
+
   return {
     surfaceM2: m2,
     coatingCost: computeCoatingCost(coatingId, m2),

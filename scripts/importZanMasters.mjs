@@ -673,6 +673,7 @@ async function main() {
 
   writeJson('database/wood.json', wood);
   writeJson('catalog/materialCatalog.json', materialCatalog);
+  writeJson('catalog/supplierParts.json', supplierParts);
   writeJson('database/nonWood.json', nonWood);
   writeJson('ratios/byCategory.json', ratios);
   writeJson('coatings/systems.json', coatings);

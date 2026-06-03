@@ -1,7 +1,7 @@
 {
   "sourceFile": "1 - ZAN-100 - 2-12-25.xlsx",
-  "importedAt": "2026-06-01T14:45:18.474Z",
-  "importScriptVersion": "4.0.0",
+  "importedAt": "2026-06-03T07:05:31.733Z",
+  "importScriptVersion": "5.0.0",
   "checksum": "d1a84da2ca014e46",
   "sheetRowCounts": {
     "DATA BASE": 1043,
@@ -21,7 +21,79 @@
     "woodLabor": 24,
     "formulaDataRows": 8,
     "roundPresets": 2,
-    "materialCatalog": 112,
-    "supplierParts": 15
-  }
+    "materialCatalog": 640,
+    "supplierParts": 15,
+    "calculationComponents": 447,
+    "hppMentahParts": 59,
+    "supplierKalkulasiParts": 843
+  },
+  "mergedAt": "2026-06-03T07:17:02.078Z",
+  "mergeSources": [
+    {
+      "key": "ZAN-100",
+      "file": "1 - ZAN-100 - 2-12-25.xlsx",
+      "calcRows": 42,
+      "hppRows": 5
+    },
+    {
+      "key": "MF081",
+      "file": "2 - MF081 - PURSER'S CHAIR BLACK & HONEY - HARD DAM -FINAL- 28-3-22.xlsx",
+      "calcRows": 42,
+      "hppRows": 0
+    },
+    {
+      "key": "DCTVBS",
+      "file": "2 - DCTVBS - TEMPLATE BARU - 20-8-21.xlsx",
+      "calcRows": 163,
+      "hppRows": 0
+    },
+    {
+      "key": "SVDT-120",
+      "file": "7 - SVDT.120-ST - SAVOY DINING TABLE 120 STAIN COLOR - 17-9-21.xlsx",
+      "calcRows": 86,
+      "hppRows": 0
+    },
+    {
+      "key": "MF056",
+      "file": "2 - MF056 - MADRAS DESK - 20-4-22.xlsx",
+      "calcRows": 100,
+      "hppRows": 0
+    },
+    {
+      "key": "ELB-555-98",
+      "file": "1 - ELB-555-98 - ELBA CHAIR NLH - 19-5-23.xlsx",
+      "calcRows": 51,
+      "hppRows": 0
+    },
+    {
+      "key": "L-LOU-NAT",
+      "file": "3 - L-LOU-NAT - L LOUNGER NATURAL - 17-7-25.xlsx",
+      "calcRows": 88,
+      "hppRows": 0
+    },
+    {
+      "key": "G632L-RO",
+      "file": "17 - G632L-RO - MARIO 3 S - 12-5-26.xlsx",
+      "calcRows": 51,
+      "hppRows": 17
+    },
+    {
+      "key": "FNA-550",
+      "file": "2 - FNA-550 - 4-12-25.xlsx",
+      "calcRows": 47,
+      "hppRows": 10
+    },
+    {
+      "key": "G557",
+      "file": "10 - G557 - ALABAMA 1 SEATER - 9-5-26.xlsx",
+      "calcRows": 45,
+      "hppRows": 14
+    },
+    {
+      "key": "POL-TAB-3",
+      "file": "1 - POL-TAB-3 - 17-3-26.xlsx",
+      "calcRows": 64,
+      "hppRows": 13
+    }
+  ]
 }

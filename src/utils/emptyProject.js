@@ -78,6 +78,7 @@ export function createDefaultCogsConfig() {
     factoryOhPct: EXCEL_FACTORY_OH_PCT,
     managementOhPct: 2.5,
     markupPct: 20,
+    includeCoatingInCogs: true,
   };
 }
 
@@ -267,7 +268,7 @@ function buildZanContainerRows() {
 }
 
 /** Versi data sample — naikkan jika seed BOM/HPP diperbarui */
-export const ZAN_SAMPLE_SEED_VERSION = 4;
+export const ZAN_SAMPLE_SEED_VERSION = 5;
 
 /** Seed ZANZIBAR STOOL — dari 1 - ZAN-100 - 2-12-25.xlsx */
 export function createProjectFromZanSeed() {

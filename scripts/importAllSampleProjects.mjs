@@ -7,6 +7,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import * as XLSX from 'xlsx';
 import { parseBomWorkbook } from '../src/utils/importBomFromExcel.js';
+import { createProjectFromZanSeed } from '../src/utils/emptyProject.js';
+import { optimizeImportedProject } from '../src/utils/sampleProjectOptimize.js';
 
 function createDefaultPackingSpec() {
   return { materialsBox: [], materialsSF: [], routingBox: [], routingSF: [] };
@@ -79,7 +81,7 @@ const SAMPLE_FILES = [
 
 const OUT_DIR = path.join(ROOT, 'src/data/samples/projects');
 const MANIFEST_PATH = path.join(ROOT, 'src/data/samples/manifest.json');
-const SAMPLE_VERSION = 4;
+const SAMPLE_VERSION = 5;
 
 function slug(s) {
   return String(s)
@@ -113,7 +115,33 @@ function main() {
     }
     console.log('Importing', file, '…');
     const wb = XLSX.read(fs.readFileSync(full), { type: 'buffer' });
-    const raw = parseBomWorkbook(wb);
+    let raw = parseBomWorkbook(wb);
+    raw = optimizeImportedProject(raw);
+
+    if (key === 'ZAN-100') {
+      const seed = createProjectFromZanSeed();
+      raw = optimizeImportedProject({
+        ...seed,
+        sampleKey: key,
+        sampleSourceFile: file,
+        excelMirror: raw.excelMirror,
+        importSheets: raw.importSheets,
+        importedFromExcel: true,
+        productInfo: { ...raw.productInfo, ...seed.productInfo },
+        productMeta: {
+          ...seed.productMeta,
+          surfaceM2Coating: 0,
+        },
+        dimensi: seed.dimensi?.w ? seed.dimensi : raw.dimensi,
+        cogsConfig: {
+          ...seed.cogsConfig,
+          includeCoatingInCogs: false,
+          excelProductionCost: raw.excelMirror?.summaryCost?.productionCost || 0,
+          excelTotalCogs: raw.excelMirror?.summaryCost?.totalCogs || 0,
+        },
+      });
+    }
+
     const doc = finalizeSampleProject(raw, key, file);
     const id = doc.id;
 

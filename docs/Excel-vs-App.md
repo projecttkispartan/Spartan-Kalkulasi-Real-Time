@@ -60,7 +60,44 @@ Output: `src/data/masters/` (database, ratios, coatings, formulas, rounding, met
 | Biaya coating | COATING RATIO rounded/m² × Σ surfaceM2 part |
 | Harga jual | ROUND rules (floor ribuan) + markup |
 
-## Regresi otomatis
+## Checklist pengganti Excel (lengkap)
+
+Daftar centang terstruktur + audit live di tab COGS: **[Checklist-Pengganti-Excel.md](./Checklist-Pengganti-Excel.md)**
+
+Ringkas:
+
+| Tahap | Item kunci |
+|-------|------------|
+| Master | `import:masters`, work center, kurs |
+| Produk | itemType, woodGradeId, coatingId, W×D×H |
+| BOM | part, qty, materialType, P×L×T → vol |
+| Material | biaya kayu, **sf/wf=0** jika waste di biaya, ≈ KAYU material Excel |
+| Proses | routing atau part SUMMARY, total proses > 0 |
+| Coating | coatingId, m² terkontrol |
+| Packing | material + routing, jalur BOX/SF |
+| COGS | OH 5%+2,5%, markup 20% |
+| Verifikasi | vs excelMirror, toleransi ≤1,5%, `npm test` |
+
+## Hasil audit sample (v5)
+
+Jalankan: `npm run audit:samples`
+
+| Sample | Target | Catatan |
+|--------|--------|---------|
+| **ZAN-100** | ≤ **1,5%** COGS | BOM **seed terkurasi** (`zanStoolGraph`) + mirror Excel |
+| Import lain (10 file) | ≤ **8%** (bertahap) | BOM + CALCULATION + baris SUMMARY; `includeCoatingInCogs: false` |
+
+Perintah optimasi data:
+
+```bash
+npm run import:samples      # re-import dari folder Excel (lama)
+npm run refresh:mirror      # perbaiki total production/COGS di mirror
+npm run patch:samples       # terapkan seed ZAN + config parity
+npm run audit:samples       # laporan deviasi
+```
+
+(`refresh:mirror` → `node scripts/refreshSampleExcelMirror.mjs` — tambahkan ke package.json jika belum)
+
 
 ```bash
 npm test

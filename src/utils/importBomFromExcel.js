@@ -4,6 +4,7 @@
 import * as XLSX from 'xlsx';
 import { linkProjectToMasters } from './linkProjectToMasters.js';
 import { createEmptyProject } from './emptyProject.js';
+import { optimizeImportedProject } from './sampleProjectOptimize.js';
 import { calcPartVolume } from './packingVolume.js';
 import {
   readSheetRows,
@@ -13,6 +14,7 @@ import {
   appendSummaryProcessParts,
   buildPackingSpecFromSummary,
   buildCogsConfigFromSummary,
+  sumCalculationSurfaceM2,
 } from './excelWorkbookParsers.js';
 import { attachExcelImagesToProject } from './excelImageExtract.js';
 
@@ -226,6 +228,11 @@ export function parseBomWorkbook(wb) {
   mergeCalculationIntoBom(bomData, calcMap);
   appendSummaryProcessParts(bomData, mirror.summaryCost?.lines || []);
 
+  const surfaceM2Coating = sumCalculationSurfaceM2(calcMap);
+  if (surfaceM2Coating > 0) {
+    productMeta.surfaceM2Coating = surfaceM2Coating;
+  }
+
   const packingSpec = buildPackingSpecFromSummary(mirror.summaryCost);
   const cogsConfig = buildCogsConfigFromSummary(mirror.summaryCost);
 
@@ -255,10 +262,16 @@ export function parseBomWorkbook(wb) {
     ],
   });
 
-  return linkProjectToMasters(project, {
-    applyBiaya: true,
-    skipBiayaIfExcel: true,
-  });
+  return linkProjectToMasters(
+    optimizeImportedProject({
+      ...project,
+      productMeta,
+    }),
+    {
+      applyBiaya: true,
+      skipBiayaIfExcel: true,
+    },
+  );
 }
 
 export async function parseBomFromArrayBuffer(buffer) {

@@ -10,6 +10,17 @@ import {
 } from './masterLookup.js';
 import { calcPartVolume } from './packingVolume.js';
 
+const NON_WOOD_TYPES = new Set([
+  'hardware',
+  'steel',
+  'plywood',
+  'veneer',
+  'komponen',
+  'finishing',
+  'upholstery',
+  'coating',
+]);
+
 /** Perbaiki vol part yang salah baca dari Excel (angka dimensi mm, bukan m³). */
 export function normalizePartVolume(part) {
   if (!part || part.tipe !== 'PART') return part;
@@ -69,32 +80,41 @@ function walkBomEnrich(node, ctx) {
 
   let updated = enrichNodeFromMaster(node, { productInfo, productMeta });
 
-  const gradeId =
-    resolveWoodGradeId({
-      woodGradeId: updated.woodGradeId,
-      woodSpecification: updated.woodSpecification,
-      wood: productMeta?.wood,
-    }) ||
-    (updated.tipe === 'PART' && !updated.woodGradeId ? defaultGradeId : updated.woodGradeId);
+  const mt = String(updated.materialType || '').toLowerCase();
+  const isNonWoodPart = updated.tipe === 'PART' && NON_WOOD_TYPES.has(mt);
 
-  if (gradeId) {
-    const mat = getCachedMaterials().find((m) => m.id === gradeId);
-    if (mat && (updated.materialType === 'kayu' || mat.materialType === 'kayu')) {
-      updated = {
-        ...updated,
-        woodGradeId: gradeId,
-        woodSpecification: updated.woodSpecification || mat.specification || '',
-        materialType: 'kayu',
-      };
+  if (!isNonWoodPart) {
+    const gradeId =
+      resolveWoodGradeId({
+        woodGradeId: updated.woodGradeId,
+        woodSpecification: updated.woodSpecification,
+        wood: productMeta?.wood,
+      }) ||
+      (updated.tipe === 'PART' && !updated.woodGradeId ? defaultGradeId : updated.woodGradeId);
+
+    if (gradeId) {
+      const mat = getCachedMaterials().find((m) => m.id === gradeId);
+      if (mat && (updated.materialType === 'kayu' || mat.materialType === 'kayu')) {
+        updated = {
+          ...updated,
+          woodGradeId: gradeId,
+          woodSpecification: updated.woodSpecification || mat.specification || '',
+          materialType: 'kayu',
+        };
+      }
     }
   }
 
   if (updated.tipe === 'PART') {
     updated = normalizePartVolume(updated);
+    if (updated.biayaFromExcel && Number(updated.biaya) > 0) {
+      updated = { ...updated, sf: 0, wf: 0 };
+    }
   }
 
   const isWoodPart =
     updated.tipe === 'PART' &&
+    !NON_WOOD_TYPES.has(String(updated.materialType || '').toLowerCase()) &&
     (updated.materialType === 'kayu' || updated.woodGradeId) &&
     updated.woodGradeId;
 

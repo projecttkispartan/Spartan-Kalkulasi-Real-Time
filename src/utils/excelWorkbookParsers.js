@@ -98,13 +98,14 @@ export function parseSummaryCostSheet(rows) {
     const machine = Number(r[9]) || 0;
     const total = Number(r[13]) || 0;
 
-    if (label.includes('COST OF GOOD SOLD')) {
-      const rowTotal = Number(r[13]) || Number(r[16]) || total;
-      if (rowTotal > totalCogs) totalCogs = rowTotal;
+    if (label.includes('COST OF GOOD SOLD') || label.includes('COST OF GOODS SOLD')) {
+      const candidates = [r[13], r[16], r[15], r[14]].map(Number).filter((n) => n > 0);
+      if (candidates.length) totalCogs = Math.max(totalCogs, ...candidates);
       continue;
     }
     if (label.includes('PRODUCTION COST') && !label.includes('RAW')) {
-      productionCost = total || productionCost;
+      const candidates = [r[13], r[16], r[15]].map(Number).filter((n) => n > 0);
+      if (candidates.length) productionCost = Math.max(productionCost, ...candidates);
       continue;
     }
     if (label === 'BOX PACKING') {
@@ -153,44 +154,153 @@ export function parseSummaryCostSheet(rows) {
   };
 }
 
-/** CALCULATION — part kayu & biaya per kode part */
-export function parseCalculationPartsMap(rows) {
-  const map = new Map();
+/** Map tipe baris CALCULATION → materialType app */
+export const CALCULATION_TYPE_MAP = {
+  KAYU: 'kayu',
+  PLYWOOD: 'plywood',
+  HARDWARE: 'hardware',
+  LAMINATING: 'komponen',
+  FINISHING: 'finishing',
+  AMPLAS: 'komponen',
+  GERINDA: 'komponen',
+  UPHOLSTERY: 'upholstery',
+  'BOX PACKING': 'komponen',
+  VENEER: 'veneer',
+  MDF: 'komponen',
+  STEEL: 'steel',
+  HPL: 'komponen',
+};
+
+function mapCalculationMaterialType(type, subType, nama) {
+  const u = String(type ?? '').trim().toUpperCase();
+  const sub = String(subType ?? '').trim().toUpperCase();
+  if (u === 'LAMINATING' && (sub === 'LEM' || /LEM\s/i.test(String(nama ?? '')))) return 'komponen';
+  if (u === 'LAMINATING') return 'veneer';
+  return CALCULATION_TYPE_MAP[u] || 'komponen';
+}
+
+function calcRowQtyAndTotal(r, materialType) {
+  if (materialType === 'hardware') {
+    const qty = Number(r[15]) || Number(r[6]) || 1;
+    const total = Number(r[19]) || Number(r[26]) || 0;
+    return { qty, total };
+  }
+  const qty = Number(r[16]) || Number(r[15]) || 1;
+  const total = Number(r[26]) || Number(r[19]) || 0;
+  return { qty, total };
+}
+
+/** Parse satu baris CALCULATION → entri part/katalog (semua tipe material) */
+export function parseCalculationRow(r, rowIndex = 0) {
+  const type = String(r[3] ?? '').trim().toUpperCase();
+  if (!type || type === 'NO' || type === 'NAME') return null;
+
+  const subType = String(r[4] ?? '').trim();
+  const kode = String(r[7] ?? '').trim();
+  const nama = String(r[11] ?? '').trim();
+  const module = String(r[10] ?? '').trim();
+
+  if (!nama && !kode) return null;
+  if (/LABOUR COST|LABOR COST|TOTAL/i.test(nama)) return null;
+
+  const materialType = mapCalculationMaterialType(type, subType, nama);
+  const { qty, total } = calcRowQtyAndTotal(r, materialType);
+  const p = Number(r[12]) || 0;
+  const l = Number(r[13]) || 0;
+  const t = Number(r[14]) || 0;
+  const vol = Number(r[15]) && materialType === 'kayu' ? Number(r[15]) : calcPartVolume(p, l, t);
+  const surfaceM2 = Number(r[28]) || Number(r[38]) || 0;
+  const biayaUnit = qty && total ? Math.round(total / qty) : Math.round(total) || 0;
+
+  const isPartKey =
+    (materialType === 'kayu' && kode.includes('-')) ||
+    (materialType === 'hardware' && kode.length > 3) ||
+    (materialType === 'plywood' && kode.includes('-'));
+
+  if (!isPartKey && !total && !biayaUnit && materialType !== 'komponen') return null;
+  if (materialType === 'komponen' && type === 'LAMINATING' && subType.toUpperCase() === 'LEM' && !total && !nama) {
+    return null;
+  }
+
+  const partKey =
+    kode ||
+    (nama ? `CALC-${type}-${String(nama).slice(0, 24).replace(/\s+/g, '-')}` : `CALC-R${rowIndex + 1}`);
+
+  return {
+    kode: partKey,
+    nama: nama || kode || type,
+    module,
+    calcType: type,
+    calcSubType: subType,
+    materialType,
+    qty,
+    p,
+    l,
+    t,
+    vol: materialType === 'kayu' || materialType === 'plywood' ? vol || calcPartVolume(p, l, t) : 0,
+    surfaceM2,
+    biayaUnit,
+    biayaLine: total,
+    wood: String(r[8] ?? '').trim(),
+    unit: String(r[16] ?? r[17] ?? 'EA').trim() || 'EA',
+    excelRow: rowIndex + 1,
+    mergeToBom: isPartKey && (biayaUnit > 0 || total > 0 || vol > 0),
+  };
+}
+
+/**
+ * CALCULATION lengkap — kayu, hardware, plywood, lem, dll.
+ * @returns {{ partsMap: Map, catalog: Array }}
+ */
+export function parseCalculationSheet(rows) {
+  const partsMap = new Map();
+  const catalog = [];
+  const catalogSeen = new Set();
+
   for (let i = 8; i < rows.length; i++) {
-    const r = rows[i] || [];
-    const kode = String(r[7] ?? '').trim();
-    if (!kode || !kode.includes('-')) continue;
-    const type = String(r[3] ?? '').trim().toUpperCase();
-    if (type && type !== 'KAYU') continue;
-    if (String(r[5] ?? '').toUpperCase() !== 'X' && type === 'KAYU') {
-      // baris kayu aktif biasanya X di kolom 5
+    const parsed = parseCalculationRow(rows[i], i);
+    if (!parsed) continue;
+
+    const catKey = `${parsed.materialType}::${parsed.kode}`;
+    if (!catalogSeen.has(catKey)) {
+      catalogSeen.add(catKey);
+      catalog.push({ id: `calc-${slugKey(parsed.kode)}`, ...parsed, source: 'CALCULATION' });
     }
 
-    const qty = Number(r[16]) || 1;
-    const totalPrice = Number(r[26]) || 0;
-    const p = Number(r[12]) || 0;
-    const l = Number(r[13]) || 0;
-    const t = Number(r[14]) || 0;
-    const vol = Number(r[15]) || calcPartVolume(p, l, t);
-    const surfaceM2 = Number(r[28]) || Number(r[38]) || 0;
-
-    if (!totalPrice && !vol) continue;
-
-    map.set(kode, {
-      kode,
-      nama: String(r[11] ?? '').trim(),
-      qty,
-      p,
-      l,
-      t,
-      vol,
-      surfaceM2,
-      biayaUnit: qty ? Math.round(totalPrice / qty) : Math.round(totalPrice),
-      biayaLine: totalPrice,
-      wood: String(r[8] ?? '').trim(),
-    });
+    if (parsed.mergeToBom && parsed.kode) {
+      const prev = partsMap.get(parsed.kode);
+      if (!prev || parsed.biayaLine >= (prev.biayaLine || 0)) {
+        partsMap.set(parsed.kode, parsed);
+      }
+    }
   }
-  return map;
+
+  return { partsMap, catalog };
+}
+
+function slugKey(s) {
+  return String(s ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+/** CALCULATION — map kode part → biaya (semua tipe yang punya kode BOM) */
+export function parseCalculationPartsMap(rows) {
+  return parseCalculationSheet(rows).partsMap;
+}
+
+/** Agregasi luas coating dari sheet CALCULATION (surfaceM2 × qty) */
+export function sumCalculationSurfaceM2(calcMap) {
+  if (!calcMap) return 0;
+  let total = 0;
+  const iter = calcMap instanceof Map ? calcMap.values() : Object.values(calcMap);
+  for (const c of iter) {
+    const m2 = Number(c?.surfaceM2) || 0;
+    if (m2 > 0) total += m2 * (Number(c.qty) || 1);
+  }
+  return total;
 }
 
 /** KALKULASI HPP MENTAH / SUPPLIER — mirror baris material */
@@ -343,8 +453,17 @@ export function mergeCalculationIntoBom(bomData, calcMap) {
     node.vol = calc.vol || node.vol;
     node.biaya = calc.biayaUnit;
     node.biayaFromExcel = true;
+    if (calc.materialType) node.materialType = calc.materialType;
+    if (calc.calcType === 'HARDWARE') node.hardware = true;
     if (calc.surfaceM2 > 0) node.surfaceM2 = calc.surfaceM2;
-    if (calc.wood && !node.woodSpecification) node.woodSpecification = calc.wood;
+    if (calc.wood && !node.woodSpecification && calc.materialType === 'kayu') {
+      node.woodSpecification = calc.wood;
+    }
+    if (calc.materialType === 'hardware') {
+      node.sf = 0;
+      node.wf = 0;
+      node.woodGradeId = '';
+    }
   });
   return bomData;
 }
@@ -426,5 +545,7 @@ export function buildCogsConfigFromSummary(summary, defaults = {}) {
     markupPct: defaults.markupPct ?? 20,
     excelProductionCost: summary.productionCost || 0,
     excelTotalCogs: summary.totalCogs || 0,
+    /** Finishing/coating sudah di baris SUMMARY — jangan tambah coatingCost terpisah */
+    includeCoatingInCogs: defaults.includeCoatingInCogs ?? false,
   };
 }

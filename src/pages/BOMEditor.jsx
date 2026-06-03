@@ -32,6 +32,7 @@ import SummaryDetailModal from '../components/modals/SummaryDetailModal';
 import KalkulasiModal from '../components/modals/KalkulasiModal';
 import MarkupPreviewModal from '../components/modals/MarkupPreviewModal';
 import ProductPanel from '../components/product/ProductPanel';
+import ExcelParityChecklistPanel from '../components/cogs/ExcelParityChecklistPanel';
 import OperasiDetailCell from '../components/ui/OperasiDetailCell';
 import FontCaseToggle from '../components/ui/FontCaseToggle';
 import ExportMenu from '../components/ui/ExportMenu';
@@ -377,6 +378,8 @@ function applyProjectToStates(project, setters) {
   setters.setContainerCapacity(p.containerCapacity);
   setters.setCogsConfig(p.cogsConfig);
   setters.setCustomErp(p.customErp ?? { parts: [], machines: [], workers: [] });
+  if (setters.setExcelMirror) setters.setExcelMirror(p.excelMirror ?? null);
+  if (setters.setImportedFromExcel) setters.setImportedFromExcel(!!p.importedFromExcel);
 }
 
 export default function BOMEditor({
@@ -419,6 +422,10 @@ export default function BOMEditor({
   // STATE BARU UNTUK CUSTOM ERP ENTRIES
   const [customErp, setCustomErp] = useState(
     () => safeProject?.customErp ?? { parts: [], machines: [], workers: [] },
+  );
+  const [excelMirror, setExcelMirror] = useState(() => safeProject?.excelMirror ?? null);
+  const [importedFromExcel, setImportedFromExcel] = useState(
+    () => !!safeProject?.importedFromExcel,
   );
 
   const [cogsConfig, setCogsConfig] = useState(
@@ -490,6 +497,8 @@ export default function BOMEditor({
       setContainerCapacity,
       setCogsConfig,
       setCustomErp,
+      setExcelMirror,
+      setImportedFromExcel,
     });
     setSaveStatus('saved');
   }, [projectId, initialProject, mastersReady, mastersTick]);
@@ -944,6 +953,9 @@ export default function BOMEditor({
       kursUsd,
       kursEur,
       customErp,
+      excelMirror,
+      importSheets: initialProject?.importSheets ?? [],
+      importedFromExcel,
       cachedHpp: cogsData.totalCogs,
     }),
     [
@@ -959,6 +971,8 @@ export default function BOMEditor({
       kursUsd,
       kursEur,
       customErp,
+      excelMirror,
+      importedFromExcel,
       cogsData.totalCogs,
       initialProject,
     ],
@@ -2986,6 +3000,22 @@ export default function BOMEditor({
                   </div>
                 </div>
               </div>
+
+              <ExcelParityChecklistPanel
+                bomData={bomData}
+                productMeta={productMeta}
+                productInfo={productInfo}
+                dimensi={dimensi}
+                packingSpec={packingSpec}
+                packingDimensions={packingDimensions}
+                cogsConfig={cogsConfig}
+                cogsData={cogsData}
+                excelMirror={excelMirror}
+                importedFromExcel={importedFromExcel}
+                kursUsd={kursUsd}
+                kursEur={kursEur}
+                mastersReady={mastersReady}
+              />
 
               {/* COGS Waterfall Table */}
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col mb-8">

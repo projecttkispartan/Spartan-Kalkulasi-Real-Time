@@ -27,9 +27,13 @@ Tim costing/BOM dapat membuat dan memelihara BOM di app dengan angka setara **SU
 
 Detail requirement lengkap: lihat rencana implementasi di `.cursor/plans/` atau dokumen review stakeholder.
 
+## Checklist operasional
+
+Lihat **[Checklist-Pengganti-Excel.md](./Checklist-Pengganti-Excel.md)** — audit live di tab COGS editor.
+
 ## Kriteria release
 
-- [ ] `npm test` lulus (ELBA + ZAN + formula + rounding)
+- [ ] `npm test` lulus (ELBA + ZAN + formula + rounding + parity audit)
 - [ ] MASTER RATIO dari sheet Excel
 - [ ] ≥10 formula terdaftar & dipakai
 - [ ] Selling price rounded = Excel ZAN

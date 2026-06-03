@@ -147,6 +147,74 @@ function mapMaterialLabel(mat) {
   return 'komponen';
 }
 
+/** Baris CALCULATION (hardware, lem, plywood, dll.) → entri katalog */
+export function calculationComponentToCatalogEntry(row) {
+  if (!row?.kode && !row?.nama) return null;
+  const p = Number(row.p) || 0;
+  const l = Number(row.l) || 0;
+  const t = Number(row.t) || 0;
+  const unit = row.unit || (row.materialType === 'hardware' ? 'EA' : row.materialType === 'kayu' ? 'm³' : '—');
+  return {
+    id: row.id || `calc-${slug(row.kode || row.nama)}`,
+    kode: row.kode,
+    nama: row.nama || row.kode,
+    module: row.module || '',
+    materialType: row.materialType || 'komponen',
+    calcType: row.calcType || '',
+    calcSubType: row.calcSubType || '',
+    unit,
+    dimensi: {
+      p,
+      l,
+      t,
+      label: p && l && t ? `${p}×${l}×${t} mm` : row.calcType || '',
+    },
+    vol: row.vol || 0,
+    qty: row.qty || 1,
+    surfaceM2: row.surfaceM2 || 0,
+    hargaLog: row.biayaUnit || 0,
+    hargaMaterial: row.biayaLine || row.biayaUnit || 0,
+    hargaSatuan: row.biayaUnit || 0,
+    safetyFactor: 0,
+    safetyFactorPct: 0,
+    vendorSupplier: '',
+    vendorBuyer: '',
+    source: row.source || 'CALCULATION',
+    sourceFile: row.sourceFile || '',
+    excelRef: row.excelRow ? `CALCULATION row ${row.excelRow}` : 'CALCULATION',
+    aktif: true,
+  };
+}
+
+/** Baris KALKULASI HPP MENTAH → entri katalog */
+export function hppMentahToCatalogEntry(row) {
+  if (!row?.description) return null;
+  const p = row.prodP || row.invoiceP || 0;
+  const l = row.prodL || row.invoiceL || 0;
+  const t = row.prodT || row.invoiceT || 0;
+  return {
+    id: `hpp-${row.no}-${slug(row.description)}`,
+    kode: row.partCode || `HPP-${row.no}`,
+    no: row.no,
+    nama: row.description.trim(),
+    module: row.module || '',
+    material: row.material || '',
+    materialType: mapMaterialLabel(row.material),
+    unit: 'm³',
+    dimensi: { p, l, t, label: p && l && t ? `${p}×${l}×${t} mm` : '' },
+    vol: row.vol || 0,
+    qty: row.qty || 1,
+    hargaLog: row.priceMaterial || 0,
+    safetyFactor: row.priceSafety || 0,
+    hargaMaterial: row.totalPrice || 0,
+    vendorSupplier: 'HPP MENTAH',
+    source: row.source || 'KALKULASI HPP MENTAH',
+    sourceFile: row.sourceFile || '',
+    excelRef: `row ${row.excelRow || row.no}`,
+    aktif: true,
+  };
+}
+
 /** Gabungkan semua sumber master → satu tabel katalog */
 export function buildMaterialCatalog({
   wood = [],
@@ -154,6 +222,8 @@ export function buildMaterialCatalog({
   formulaDataRows = [],
   nonWood = [],
   supplierParts = [],
+  calculationComponents = [],
+  hppMentahParts = [],
 } = {}) {
   const catalog = [];
   const seen = new Set();
@@ -209,6 +279,22 @@ export function buildMaterialCatalog({
   for (const sp of supplierParts) {
     const entry = typeof sp === 'object' && sp.kode ? sp : supplierPartToCatalogEntry(sp);
     if (entry && !seen.has(entry.kode)) {
+      seen.add(entry.kode);
+      catalog.push(entry);
+    }
+  }
+
+  for (const cc of calculationComponents) {
+    const entry = calculationComponentToCatalogEntry(cc);
+    if (entry && !seen.has(entry.kode)) {
+      seen.add(entry.kode);
+      catalog.push(entry);
+    }
+  }
+
+  for (const hp of hppMentahParts) {
+    const entry = hppMentahToCatalogEntry(hp);
+    if (entry && entry.kode && !seen.has(entry.kode)) {
       seen.add(entry.kode);
       catalog.push(entry);
     }
