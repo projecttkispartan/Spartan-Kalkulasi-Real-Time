@@ -5,8 +5,8 @@
   "sampleSeedVersion": 5,
   "sampleSourceFile": "2 - FNA-550 - 4-12-25.xlsx",
   "status": "draft",
-  "createdAt": "2026-06-03T01:47:19.827Z",
-  "updatedAt": "2026-06-03T01:57:16.514Z",
+  "createdAt": "2026-06-03T07:34:14.787Z",
+  "updatedAt": "2026-06-03T07:34:14.787Z",
   "createdBy": "Excel Import",
   "kode": "FNA-550",
   "nama": "FIONA CHAIR BLACK LIMED",
@@ -657,7 +657,7 @@
                 "t": 0,
                 "vol": 0,
                 "biaya": 0,
-                "materialType": "kayu",
+                "materialType": "hardware",
                 "sf": 0,
                 "wf": 0,
                 "proses_count": 0,
@@ -665,8 +665,7 @@
                 "children": [],
                 "excelRow": 1121,
                 "photoIndex": 0,
-                "woodGradeId": "wood-14",
-                "woodSpecification": "TEAK KAMPUNG - 20 UP 150"
+                "coatingId": "coat-10"
               }
             ],
             "woodGradeId": "wood-11",
@@ -697,16 +696,14 @@
                 "t": 0,
                 "vol": 0,
                 "biaya": 0,
-                "materialType": "kayu",
+                "materialType": "hardware",
                 "sf": 0,
                 "wf": 0,
                 "proses_count": 0,
                 "proses": [],
                 "children": [],
                 "excelRow": 1122,
-                "photoIndex": 0,
-                "woodGradeId": "wood-11",
-                "woodSpecification": "MINDI - 30 UP 200"
+                "photoIndex": 0
               }
             ],
             "woodGradeId": "wood-11",
@@ -734,7 +731,7 @@
           {
             "id": "excel-proc-0",
             "no": 900,
-            "nama": "HARDWARE",
+            "nama": "ASSEMBLING HARDWARE",
             "kode": "EXCEL-assembling_hardware",
             "tipe": "PART",
             "qty": 1,
@@ -760,14 +757,12 @@
                 "biayaPekerja": 132112
               }
             ],
-            "children": [],
-            "woodGradeId": "nw-5",
-            "woodSpecification": "HARDWARE"
+            "children": []
           },
           {
             "id": "excel-proc-1",
             "no": 901,
-            "nama": "HARDWARE",
+            "nama": "FITTING HARDWARE",
             "kode": "EXCEL-fitting_hardware",
             "tipe": "PART",
             "qty": 1,
@@ -793,9 +788,7 @@
                 "biayaPekerja": 26051
               }
             ],
-            "children": [],
-            "woodGradeId": "nw-5",
-            "woodSpecification": "HARDWARE"
+            "children": []
           },
           {
             "id": "excel-proc-2",
@@ -810,7 +803,7 @@
             "t": 0,
             "vol": 0,
             "biaya": 826,
-            "materialType": "kayu",
+            "materialType": "komponen",
             "sf": 0,
             "wf": 0,
             "catatan": "Impor SUMMARY COST baris 26",
@@ -826,9 +819,7 @@
                 "biayaPekerja": 54732
               }
             ],
-            "children": [],
-            "woodGradeId": "wood-11",
-            "woodSpecification": "MINDI - 30 UP 200"
+            "children": []
           },
           {
             "id": "excel-proc-3",
@@ -843,7 +834,7 @@
             "t": 0,
             "vol": 0,
             "biaya": 6014,
-            "materialType": "kayu",
+            "materialType": "komponen",
             "sf": 0,
             "wf": 0,
             "catatan": "Impor SUMMARY COST baris 27",
@@ -859,9 +850,7 @@
                 "biayaPekerja": 66581
               }
             ],
-            "children": [],
-            "woodGradeId": "wood-11",
-            "woodSpecification": "MINDI - 30 UP 200"
+            "children": []
           },
           {
             "id": "excel-proc-4",
@@ -876,7 +865,7 @@
             "t": 0,
             "vol": 0,
             "biaya": 105307,
-            "materialType": "kayu",
+            "materialType": "komponen",
             "sf": 0,
             "wf": 0,
             "catatan": "Impor SUMMARY COST baris 28",
@@ -892,9 +881,7 @@
                 "biayaPekerja": 73105
               }
             ],
-            "children": [],
-            "woodGradeId": "wood-11",
-            "woodSpecification": "MINDI - 30 UP 200"
+            "children": []
           },
           {
             "id": "excel-proc-5",
@@ -909,7 +896,7 @@
             "t": 0,
             "vol": 0,
             "biaya": 171765,
-            "materialType": "kayu",
+            "materialType": "komponen",
             "sf": 0,
             "wf": 0,
             "catatan": "Impor SUMMARY COST baris 29",
@@ -925,9 +912,7 @@
                 "biayaPekerja": 58321
               }
             ],
-            "children": [],
-            "woodGradeId": "wood-11",
-            "woodSpecification": "MINDI - 30 UP 200"
+            "children": []
           },
           {
             "id": "excel-proc-6",
@@ -942,7 +927,7 @@
             "t": 0,
             "vol": 0,
             "biaya": 826,
-            "materialType": "kayu",
+            "materialType": "komponen",
             "sf": 0,
             "wf": 0,
             "catatan": "Impor SUMMARY COST baris 124",
@@ -958,9 +943,7 @@
                 "biayaPekerja": 826
               }
             ],
-            "children": [],
-            "woodGradeId": "wood-11",
-            "woodSpecification": "MINDI - 30 UP 200"
+            "children": []
           },
           {
             "id": "excel-proc-7",
@@ -975,7 +958,7 @@
             "t": 0,
             "vol": 0,
             "biaya": 6014,
-            "materialType": "kayu",
+            "materialType": "komponen",
             "sf": 0,
             "wf": 0,
             "catatan": "Impor SUMMARY COST baris 125",
@@ -991,9 +974,7 @@
                 "biayaPekerja": 66581
               }
             ],
-            "children": [],
-            "woodGradeId": "wood-11",
-            "woodSpecification": "MINDI - 30 UP 200"
+            "children": []
           },
           {
             "id": "excel-proc-8",
@@ -1008,7 +989,7 @@
             "t": 0,
             "vol": 0,
             "biaya": 0,
-            "materialType": "kayu",
+            "materialType": "komponen",
             "sf": 0,
             "wf": 0,
             "catatan": "Impor SUMMARY COST baris 126",
@@ -1024,9 +1005,7 @@
                 "biayaPekerja": 3908
               }
             ],
-            "children": [],
-            "woodGradeId": "wood-11",
-            "woodSpecification": "MINDI - 30 UP 200"
+            "children": []
           },
           {
             "id": "excel-proc-9",
@@ -1041,7 +1020,7 @@
             "t": 0,
             "vol": 0,
             "biaya": 171765,
-            "materialType": "kayu",
+            "materialType": "komponen",
             "sf": 0,
             "wf": 0,
             "catatan": "Impor SUMMARY COST baris 127",
@@ -1057,9 +1036,7 @@
                 "biayaPekerja": 58321
               }
             ],
-            "children": [],
-            "woodGradeId": "wood-11",
-            "woodSpecification": "MINDI - 30 UP 200"
+            "children": []
           }
         ],
         "woodGradeId": "wood-11",
@@ -1197,9 +1174,9 @@
     "factoryOhPct": 5,
     "managementOhPct": 2.5,
     "markupPct": 20,
+    "includeCoatingInCogs": false,
     "excelProductionCost": 1484080.0322762849,
-    "excelTotalCogs": 1595386.0346970062,
-    "includeCoatingInCogs": false
+    "excelTotalCogs": 1595386.0346970062
   },
   "excelMirror": {
     "summaryCost": {
@@ -1386,6 +1363,10 @@
       "1200310-1.3.0.2.1": {
         "kode": "1200310-1.3.0.2.1",
         "nama": "KAKI",
+        "module": "BODI",
+        "calcType": "KAYU",
+        "calcSubType": "MINDI - 3",
+        "materialType": "kayu",
         "qty": 4,
         "p": 450,
         "l": 65,
@@ -1394,11 +1375,18 @@
         "surfaceM2": 0.3782,
         "biayaUnit": 17498,
         "biayaLine": 69990.375,
-        "wood": "MINDI - 30 UP 200"
+        "wood": "MINDI - 30 UP 200",
+        "unit": "4",
+        "excelRow": 12,
+        "mergeToBom": true
       },
       "1200310-1.3.0.2.2": {
         "kode": "1200310-1.3.0.2.2",
         "nama": "SUNDUK SAMPING",
+        "module": "BODI",
+        "calcType": "KAYU",
+        "calcSubType": "MINDI - 3",
+        "materialType": "kayu",
         "qty": 2,
         "p": 350,
         "l": 55,
@@ -1407,11 +1395,18 @@
         "surfaceM2": 0.1015,
         "biayaUnit": 11516,
         "biayaLine": 23031.020833333336,
-        "wood": "MINDI - 30 UP 200"
+        "wood": "MINDI - 30 UP 200",
+        "unit": "2",
+        "excelRow": 13,
+        "mergeToBom": true
       },
       "1200310-1.3.0.2.3": {
         "kode": "1200310-1.3.0.2.3",
         "nama": "SUNDUK DEPAN BELAKANG",
+        "module": "BODI",
+        "calcType": "KAYU",
+        "calcSubType": "MINDI - 3",
+        "materialType": "kayu",
         "qty": 2,
         "p": 480,
         "l": 55,
@@ -1420,11 +1415,18 @@
         "surfaceM2": 0.1392,
         "biayaUnit": 15793,
         "biayaLine": 31585.4,
-        "wood": "MINDI - 30 UP 200"
+        "wood": "MINDI - 30 UP 200",
+        "unit": "2",
+        "excelRow": 14,
+        "mergeToBom": true
       },
       "1200310-1.3.0.2.4": {
         "kode": "1200310-1.3.0.2.4",
         "nama": "TIANG SANDARAN",
+        "module": "BODI",
+        "calcType": "KAYU",
+        "calcSubType": "MINDI - 3",
+        "materialType": "kayu",
         "qty": 2,
         "p": 550,
         "l": 100,
@@ -1433,11 +1435,18 @@
         "surfaceM2": 0.28600000000000003,
         "biayaUnit": 28201,
         "biayaLine": 56402.50000000001,
-        "wood": "MINDI - 30 UP 200"
+        "wood": "MINDI - 30 UP 200",
+        "unit": "2",
+        "excelRow": 15,
+        "mergeToBom": true
       },
       "1200310-1.0.0.2.5": {
         "kode": "1200310-1.0.0.2.5",
         "nama": "TEMPEL TIANG SANDARAN",
+        "module": "BODI",
+        "calcType": "KAYU",
+        "calcSubType": "MINDI - 3",
+        "materialType": "kayu",
         "qty": 2,
         "p": 450,
         "l": 75,
@@ -1446,11 +1455,18 @@
         "surfaceM2": 0.06749999999999999,
         "biayaUnit": 17305,
         "biayaLine": 34610.625,
-        "wood": "MINDI - 30 UP 200"
+        "wood": "MINDI - 30 UP 200",
+        "unit": "2",
+        "excelRow": 16,
+        "mergeToBom": true
       },
       "1200310-1.3.0.2.6": {
         "kode": "1200310-1.3.0.2.6",
         "nama": "JARI JARI SANDARAN",
+        "module": "BODI",
+        "calcType": "KAYU",
+        "calcSubType": "MINDI - 3",
+        "materialType": "kayu",
         "qty": 5,
         "p": 550,
         "l": 20,
@@ -1459,11 +1475,18 @@
         "surfaceM2": 0.21999999999999997,
         "biayaUnit": 3760,
         "biayaLine": 18800.833333333336,
-        "wood": "MINDI - 30 UP 200"
+        "wood": "MINDI - 30 UP 200",
+        "unit": "5",
+        "excelRow": 17,
+        "mergeToBom": true
       },
       "1200310-1.3.0.2.7": {
         "kode": "1200310-1.3.0.2.7",
         "nama": "SUNDUK SANDARAN ATAS",
+        "module": "BODI",
+        "calcType": "KAYU",
+        "calcSubType": "MINDI - 3",
+        "materialType": "kayu",
         "qty": 1,
         "p": 450,
         "l": 65,
@@ -1472,11 +1495,18 @@
         "surfaceM2": 0.08099999999999999,
         "biayaUnit": 24997,
         "biayaLine": 24996.562500000004,
-        "wood": "MINDI - 30 UP 200"
+        "wood": "MINDI - 30 UP 200",
+        "unit": "1",
+        "excelRow": 18,
+        "mergeToBom": true
       },
       "1200310-1.3.0.2.8": {
         "kode": "1200310-1.3.0.2.8",
         "nama": "SIKON",
+        "module": "BODI",
+        "calcType": "KAYU",
+        "calcSubType": "MINDI - 3",
+        "materialType": "kayu",
         "qty": 1,
         "p": 500,
         "l": 60,
@@ -1485,11 +1515,18 @@
         "surfaceM2": 0.030000000000000002,
         "biayaUnit": 12819,
         "biayaLine": 12818.750000000002,
-        "wood": "MINDI - 30 UP 200"
+        "wood": "MINDI - 30 UP 200",
+        "unit": "1",
+        "excelRow": 19,
+        "mergeToBom": true
       },
       "1200310-1.3.0.18.9": {
         "kode": "1200310-1.3.0.18.9",
         "nama": "RAM DUDUKAN PANJANG",
+        "module": "DUDUKAN",
+        "calcType": "KAYU",
+        "calcSubType": "MINDI - 3",
+        "materialType": "kayu",
         "qty": 2,
         "p": 420,
         "l": 65,
@@ -1498,11 +1535,18 @@
         "surfaceM2": 0,
         "biayaUnit": 11665,
         "biayaLine": 23330.125,
-        "wood": "MINDI - 30 UP 200"
+        "wood": "MINDI - 30 UP 200",
+        "unit": "2",
+        "excelRow": 20,
+        "mergeToBom": true
       },
       "1200310-1.3.0.18.10": {
         "kode": "1200310-1.3.0.18.10",
         "nama": "RAM DUDUKAN PENDEK",
+        "module": "DUDUKAN",
+        "calcType": "KAYU",
+        "calcSubType": "MINDI - 3",
+        "materialType": "kayu",
         "qty": 2,
         "p": 380,
         "l": 65,
@@ -1511,7 +1555,110 @@
         "surfaceM2": 0,
         "biayaUnit": 10554,
         "biayaLine": 21108.208333333336,
-        "wood": "MINDI - 30 UP 200"
+        "wood": "MINDI - 30 UP 200",
+        "unit": "2",
+        "excelRow": 21,
+        "mergeToBom": true
+      },
+      "004-008-001-003": {
+        "kode": "004-008-001-003",
+        "nama": "LEM EPOXY SET",
+        "module": "ASSEMBLING",
+        "calcType": "HARDWARE",
+        "calcSubType": "ASSEMBLING",
+        "materialType": "hardware",
+        "qty": 0.20393333333333333,
+        "p": 0,
+        "l": 0,
+        "t": 0,
+        "vol": 0,
+        "surfaceM2": 0,
+        "biayaUnit": 115500,
+        "biayaLine": 23554.300000000003,
+        "wood": "LOCAL",
+        "unit": "KG",
+        "excelRow": 833,
+        "mergeToBom": true
+      },
+      "006-001-001-003": {
+        "kode": "006-001-001-003",
+        "nama": "AMPLAS 150",
+        "module": "ASSEMBLING",
+        "calcType": "HARDWARE",
+        "calcSubType": "ASSEMBLING",
+        "materialType": "hardware",
+        "qty": 1,
+        "p": 0,
+        "l": 0,
+        "t": 0,
+        "vol": 0,
+        "surfaceM2": 0,
+        "biayaUnit": 3245,
+        "biayaLine": 3245.0000000000005,
+        "wood": "LOCAL",
+        "unit": "LBR",
+        "excelRow": 834,
+        "mergeToBom": true
+      },
+      "005-016-008-003": {
+        "kode": "005-016-008-003",
+        "nama": "Dex Screw M8 X 80 mm",
+        "module": "ASSEMBLING",
+        "calcType": "HARDWARE",
+        "calcSubType": "ASSEMBLING",
+        "materialType": "hardware",
+        "qty": 4,
+        "p": 0,
+        "l": 0,
+        "t": 0,
+        "vol": 0,
+        "surfaceM2": 0,
+        "biayaUnit": 1815,
+        "biayaLine": 7260.000000000001,
+        "wood": "LOCAL",
+        "unit": "PCS",
+        "excelRow": 837,
+        "mergeToBom": true
+      },
+      "005-001-022-010": {
+        "kode": "005-001-022-010",
+        "nama": "Plat ID Number LVLK",
+        "module": "FITTING",
+        "calcType": "HARDWARE",
+        "calcSubType": "FITTING",
+        "materialType": "hardware",
+        "qty": 1,
+        "p": 0,
+        "l": 0,
+        "t": 0,
+        "vol": 0,
+        "surfaceM2": 0,
+        "biayaUnit": 8525,
+        "biayaLine": 8525,
+        "wood": "LOCAL",
+        "unit": "1",
+        "excelRow": 1064,
+        "mergeToBom": true
+      },
+      "005-001-012-045": {
+        "kode": "005-001-012-045",
+        "nama": "Sepatu Plastik",
+        "module": "FITTING",
+        "calcType": "HARDWARE",
+        "calcSubType": "FITTING",
+        "materialType": "hardware",
+        "qty": 4,
+        "p": 0,
+        "l": 0,
+        "t": 0,
+        "vol": 0,
+        "surfaceM2": 0,
+        "biayaUnit": 387,
+        "biayaLine": 1548.8000000000002,
+        "wood": "LOCAL",
+        "unit": "4",
+        "excelRow": 1067,
+        "mergeToBom": true
       }
     },
     "hppMentah": [

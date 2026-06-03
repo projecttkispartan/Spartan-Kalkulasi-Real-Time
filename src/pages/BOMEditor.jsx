@@ -3,7 +3,7 @@ import {
   ArrowLeft, DollarSign, Euro, FileText, CheckCircle2, ImagePlus, Network, Package, Grid,
   Wrench, Calculator, BookOpen, Plus, Search, Table as TableIcon, ZoomOut, ZoomIn, Maximize,
   Trash2, ChevronDown, Link as LinkIcon, Image as ImageIcon, ChevronRight, Layout, Activity,
-  AlertTriangle, PieChart, Server, Users, QrCode, Briefcase, Edit, Eye, EyeOff, PanelTopClose, PanelTopOpen, TrendingUp,
+  AlertTriangle, PieChart, Server, Users, QrCode, Briefcase, Edit, Eye, EyeOff, PanelTopClose, PanelTopOpen, TrendingUp, HelpCircle,
 } from 'lucide-react';
 import { flattenTree, getPartHierarchyLabels } from '../utils/treeHelpers';
 import { formatIDR, formatPrice } from '../utils/formatters';
@@ -39,6 +39,7 @@ import ExportMenu from '../components/ui/ExportMenu';
 import { buildBomExportPayload, exportBomToExcel, exportBomToPdf, exportBomToPdfFull } from '../utils/bomExport';
 import MasterWorkCenterModal from '../components/modals/MasterWorkCenterModal';
 import MasterMaterialsModal from '../components/modals/MasterMaterialsModal';
+import MasterUsageGuideModal from '../components/modals/MasterUsageGuideModal';
 import { resolveProductCoatingCost } from '../utils/masterLookup';
 import {
   applyMasterToWoodPart,
@@ -410,6 +411,7 @@ export default function BOMEditor({
   const [showHiddenContainers, setShowHiddenContainers] = useState(false);
   const [showMasterWc, setShowMasterWc] = useState(false);
   const [showMasterMaterials, setShowMasterMaterials] = useState(false);
+  const [showMasterGuide, setShowMasterGuide] = useState(false);
   const { mastersReady, mastersTick, reloadMasters } = useMasters();
 
   const [editorTab, setEditorTab] = useState('struktur');
@@ -1315,6 +1317,7 @@ export default function BOMEditor({
       {/* Include Detail Summary Modal */}
       <SummaryDetailModal node={detailSummaryNode} onClose={() => setDetailSummaryNode(null)} />
       <MasterWorkCenterModal isOpen={showMasterWc} onClose={() => setShowMasterWc(false)} />
+      <MasterUsageGuideModal isOpen={showMasterGuide} onClose={() => setShowMasterGuide(false)} />
       <MasterMaterialsModal
         isOpen={showMasterMaterials}
         onClose={() => {
@@ -1378,6 +1381,14 @@ export default function BOMEditor({
             className="border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-2"
           >
             <Server className="w-4 h-4" /> Master WC
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowMasterGuide(true)}
+            className="border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-2"
+            title="Panduan Master Data & kalkulasi"
+          >
+            <HelpCircle className="w-4 h-4" /> Panduan
           </button>
           <ExportMenu
             onExportExcel={handleExportExcel}

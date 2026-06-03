@@ -68,7 +68,7 @@ export function RpInput({ value, onChange, className = '', emphasize = false, su
     : 'bg-slate-700 text-white border-slate-700';
 
   return (
-    <div className={`relative flex items-stretch min-w-[8.5rem] max-w-[11rem] ml-auto ${className}`}>
+    <div className={`relative flex items-stretch min-w-[8.5rem] max-w-[12rem] ${className}`}>
       <span
         className={`inline-flex items-center px-2 rounded-l-lg border border-r-0 text-[11px] font-bold shrink-0 tracking-tight ${prefixEm}`}
       >
@@ -134,9 +134,53 @@ export function MasterSearch({ value, onChange, placeholder = 'Cari kode, nama, 
   );
 }
 
+/** Input angka — sel tabel rata kanan/tengah seragam */
+export function NumInput({ value, onChange, className = '', min = 0, step = 'any' }) {
+  return (
+    <input
+      type="number"
+      min={min}
+      step={step}
+      value={value ?? ''}
+      onChange={(e) => onChange(e.target.value === '' ? 0 : Number(e.target.value))}
+      className={`w-full min-w-[4.5rem] max-w-[7rem] bg-white border border-slate-200/80 rounded-lg px-2.5 py-1.5 text-sm text-slate-800 tabular-nums text-right shadow-sm
+        focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 outline-none ${className}`}
+    />
+  );
+}
+
+export function MasterTabHint({ sheet, children }) {
+  return (
+    <div className="rounded-xl border border-emerald-100 bg-emerald-50/40 px-4 py-3 text-xs text-slate-700 leading-relaxed">
+      {sheet && (
+        <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 mb-1">
+          Mirror Excel · {sheet}
+        </p>
+      )}
+      <p>{children}</p>
+    </div>
+  );
+}
+
+export function MasterDataBody({ hint, search, onSearchChange, searchPlaceholder, children }) {
+  return (
+    <div className="flex flex-col flex-1 min-h-0 gap-3 overflow-hidden">
+      {hint ? <div className="shrink-0">{hint}</div> : null}
+      {onSearchChange != null && (
+        <div className="shrink-0">
+          <MasterSearch value={search} onChange={onSearchChange} placeholder={searchPlaceholder} />
+        </div>
+      )}
+      <div className="master-scroll-region scroll-thin touch-pan-y">
+        {children}
+      </div>
+    </div>
+  );
+}
+
 export function MasterTabBar({ tabs, active, onChange }) {
   return (
-    <div className="flex flex-wrap gap-1 p-1.5 bg-slate-200/50 rounded-2xl border border-slate-200/80 shadow-inner">
+    <div className="flex gap-1 p-1.5 bg-slate-200/50 rounded-2xl border border-slate-200/80 shadow-inner overflow-x-auto scroll-thin flex-nowrap">
       {tabs.map((t) => {
         const on = active === t.id;
         return (
@@ -170,7 +214,7 @@ export function MasterPanel({ children, className = '' }) {
   return (
     <div
       className={`bg-white/95 backdrop-blur-sm rounded-2xl border border-slate-200/90 shadow-lg shadow-slate-200/50
-        flex flex-col min-h-[calc(100vh-13rem)] overflow-hidden ring-1 ring-white ${className}`}
+        flex flex-col flex-1 min-h-0 h-full overflow-hidden ring-1 ring-white ${className}`}
     >
       {children}
     </div>
@@ -186,10 +230,10 @@ export function MasterSectionTitle({ children }) {
   );
 }
 
-export function MasterTableWrap({ children, minWidth = '800px' }) {
+export function MasterTableWrap({ children, minWidth = '960px' }) {
   return (
-    <div className="overflow-auto rounded-xl border border-slate-200/60 bg-slate-50/30">
-      <table className="w-full text-left text-sm border-collapse" style={{ minWidth }}>
+    <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      <table className="w-full text-left text-sm border-collapse master-data-table" style={{ minWidth }}>
         {children}
       </table>
     </div>
@@ -204,13 +248,14 @@ export function MasterThead({ children }) {
   );
 }
 
-export function MasterTh({ children, className = '', align = 'left', money = false }) {
+export function MasterTh({ children, className = '', align = 'left', money = false, narrow = false }) {
   const alignCls =
     align === 'right' ? 'text-right' : align === 'center' ? 'text-center' : 'text-left';
+  const pad = narrow ? 'py-2.5 px-2 first:pl-3 last:pr-3' : 'py-3 px-4 first:pl-5 last:pr-5';
   return (
     <th
-      className={`py-3 px-4 first:pl-5 last:pr-5 ${alignCls}
-        ${money ? 'bg-emerald-50/80 text-emerald-900' : ''} ${className}`}
+      className={`${pad} ${alignCls} whitespace-nowrap
+        ${money ? 'bg-emerald-50/90 text-emerald-900' : 'bg-slate-50/90'} ${className}`}
     >
       {money ? (
         <span className="inline-flex items-center justify-end gap-1 w-full">
@@ -235,12 +280,13 @@ export function MasterTr({ children, className = '', index }) {
   );
 }
 
-export function MasterTd({ children, className = '', align = 'left', mono = false }) {
+export function MasterTd({ children, className = '', align = 'left', mono = false, narrow = false }) {
   const alignCls =
     align === 'right' ? 'text-right' : align === 'center' ? 'text-center' : 'text-left';
+  const pad = narrow ? 'py-2 px-2 first:pl-3 last:pr-3' : 'py-2.5 px-4 first:pl-5 last:pr-5';
   return (
     <td
-      className={`py-2.5 px-4 first:pl-5 last:pr-5 align-middle ${alignCls} ${mono ? 'font-mono text-xs' : ''} ${className}`}
+      className={`${pad} align-middle ${alignCls} ${mono ? 'font-mono text-xs text-slate-600' : ''} ${className}`}
     >
       {children}
     </td>

@@ -5,8 +5,8 @@
   "sampleSeedVersion": 5,
   "sampleSourceFile": "17 - G632L-RO - MARIO 3 S - 12-5-26.xlsx",
   "status": "draft",
-  "createdAt": "2026-06-03T01:45:10.175Z",
-  "updatedAt": "2026-06-03T01:57:16.502Z",
+  "createdAt": "2026-06-03T07:32:14.194Z",
+  "updatedAt": "2026-06-03T07:32:14.194Z",
   "createdBy": "Excel Import",
   "kode": "G632L-RO",
   "nama": "MARIO 3 SEATER",
@@ -1065,16 +1065,14 @@
                 "t": 0,
                 "vol": 0,
                 "biaya": 0,
-                "materialType": "kayu",
+                "materialType": "hardware",
                 "sf": 0,
                 "wf": 0,
                 "proses_count": 0,
                 "proses": [],
                 "children": [],
                 "excelRow": 1122,
-                "photoIndex": 0,
-                "woodGradeId": "wood-20",
-                "woodSpecification": "TEAK KAMPUNG - 30 UP 200"
+                "photoIndex": 0
               }
             ],
             "woodGradeId": "wood-20",
@@ -1102,7 +1100,7 @@
           {
             "id": "excel-proc-0",
             "no": 900,
-            "nama": "HARDWARE",
+            "nama": "ASSEMBLING HARDWARE",
             "kode": "EXCEL-assembling_hardware",
             "tipe": "PART",
             "qty": 1,
@@ -1128,14 +1126,12 @@
                 "biayaPekerja": 120183
               }
             ],
-            "children": [],
-            "woodGradeId": "nw-5",
-            "woodSpecification": "HARDWARE"
+            "children": []
           },
           {
             "id": "excel-proc-1",
             "no": 901,
-            "nama": "HARDWARE",
+            "nama": "FITTING HARDWARE",
             "kode": "EXCEL-fitting_hardware",
             "tipe": "PART",
             "qty": 1,
@@ -1161,9 +1157,7 @@
                 "biayaPekerja": 19774
               }
             ],
-            "children": [],
-            "woodGradeId": "nw-5",
-            "woodSpecification": "HARDWARE"
+            "children": []
           },
           {
             "id": "excel-proc-2",
@@ -1178,7 +1172,7 @@
             "t": 0,
             "vol": 0,
             "biaya": 1329,
-            "materialType": "kayu",
+            "materialType": "komponen",
             "sf": 0,
             "wf": 0,
             "catatan": "Impor SUMMARY COST baris 26",
@@ -1194,9 +1188,7 @@
                 "biayaPekerja": 99120
               }
             ],
-            "children": [],
-            "woodGradeId": "wood-20",
-            "woodSpecification": "TEAK KAMPUNG - 30 UP 200"
+            "children": []
           },
           {
             "id": "excel-proc-3",
@@ -1211,7 +1203,7 @@
             "t": 0,
             "vol": 0,
             "biaya": 10828,
-            "materialType": "kayu",
+            "materialType": "komponen",
             "sf": 0,
             "wf": 0,
             "catatan": "Impor SUMMARY COST baris 27",
@@ -1227,9 +1219,7 @@
                 "biayaPekerja": 18106
               }
             ],
-            "children": [],
-            "woodGradeId": "wood-20",
-            "woodSpecification": "TEAK KAMPUNG - 30 UP 200"
+            "children": []
           },
           {
             "id": "excel-proc-4",
@@ -1244,7 +1234,7 @@
             "t": 0,
             "vol": 0,
             "biaya": 38008,
-            "materialType": "kayu",
+            "materialType": "komponen",
             "sf": 0,
             "wf": 0,
             "catatan": "Impor SUMMARY COST baris 28",
@@ -1260,9 +1250,7 @@
                 "biayaPekerja": 27226
               }
             ],
-            "children": [],
-            "woodGradeId": "wood-20",
-            "woodSpecification": "TEAK KAMPUNG - 30 UP 200"
+            "children": []
           },
           {
             "id": "excel-proc-5",
@@ -1277,7 +1265,7 @@
             "t": 0,
             "vol": 0,
             "biaya": 1851449,
-            "materialType": "kayu",
+            "materialType": "komponen",
             "sf": 0,
             "wf": 0,
             "catatan": "Impor SUMMARY COST baris 29",
@@ -1293,9 +1281,7 @@
                 "biayaPekerja": 343829
               }
             ],
-            "children": [],
-            "woodGradeId": "wood-20",
-            "woodSpecification": "TEAK KAMPUNG - 30 UP 200"
+            "children": []
           },
           {
             "id": "excel-proc-6",
@@ -1310,7 +1296,7 @@
             "t": 0,
             "vol": 0,
             "biaya": 1329,
-            "materialType": "kayu",
+            "materialType": "komponen",
             "sf": 0,
             "wf": 0,
             "catatan": "Impor SUMMARY COST baris 124",
@@ -1326,9 +1312,7 @@
                 "biayaPekerja": 1329
               }
             ],
-            "children": [],
-            "woodGradeId": "wood-20",
-            "woodSpecification": "TEAK KAMPUNG - 30 UP 200"
+            "children": []
           },
           {
             "id": "excel-proc-7",
@@ -1343,7 +1327,7 @@
             "t": 0,
             "vol": 0,
             "biaya": 10828,
-            "materialType": "kayu",
+            "materialType": "komponen",
             "sf": 0,
             "wf": 0,
             "catatan": "Impor SUMMARY COST baris 125",
@@ -1359,9 +1343,7 @@
                 "biayaPekerja": 18106
               }
             ],
-            "children": [],
-            "woodGradeId": "wood-20",
-            "woodSpecification": "TEAK KAMPUNG - 30 UP 200"
+            "children": []
           },
           {
             "id": "excel-proc-8",
@@ -1376,7 +1358,7 @@
             "t": 0,
             "vol": 0,
             "biaya": 0,
-            "materialType": "kayu",
+            "materialType": "komponen",
             "sf": 0,
             "wf": 0,
             "catatan": "Impor SUMMARY COST baris 126",
@@ -1392,9 +1374,7 @@
                 "biayaPekerja": 10629
               }
             ],
-            "children": [],
-            "woodGradeId": "wood-20",
-            "woodSpecification": "TEAK KAMPUNG - 30 UP 200"
+            "children": []
           },
           {
             "id": "excel-proc-9",
@@ -1409,7 +1389,7 @@
             "t": 0,
             "vol": 0,
             "biaya": 1851449,
-            "materialType": "kayu",
+            "materialType": "komponen",
             "sf": 0,
             "wf": 0,
             "catatan": "Impor SUMMARY COST baris 127",
@@ -1425,9 +1405,7 @@
                 "biayaPekerja": 343829
               }
             ],
-            "children": [],
-            "woodGradeId": "wood-20",
-            "woodSpecification": "TEAK KAMPUNG - 30 UP 200"
+            "children": []
           }
         ],
         "woodGradeId": "wood-20",
@@ -1565,9 +1543,9 @@
     "factoryOhPct": 2,
     "managementOhPct": 1.5,
     "markupPct": 20,
+    "includeCoatingInCogs": false,
     "excelProductionCost": 4406937.550942161,
-    "excelTotalCogs": 4561180.365225137,
-    "includeCoatingInCogs": false
+    "excelTotalCogs": 4561180.365225137
   },
   "excelMirror": {
     "summaryCost": {
@@ -1754,6 +1732,10 @@
       "1858130-1.5.0.2.1": {
         "kode": "1858130-1.5.0.2.1",
         "nama": "KAKI DEPAN",
+        "module": "BODI",
+        "calcType": "KAYU",
+        "calcSubType": "TEAK KAMPUNG - 3",
+        "materialType": "kayu",
         "qty": 2,
         "p": 565,
         "l": 60,
@@ -1762,11 +1744,18 @@
         "surfaceM2": 0.1356,
         "biayaUnit": 34171,
         "biayaLine": 68342.4,
-        "wood": "TEAK KAMPUNG - 30 UP 200"
+        "wood": "TEAK KAMPUNG - 30 UP 200",
+        "unit": "2",
+        "excelRow": 12,
+        "mergeToBom": true
       },
       "1858130-1.5.0.2.2": {
         "kode": "1858130-1.5.0.2.2",
         "nama": "KAKI BELAKANG",
+        "module": "BODI",
+        "calcType": "KAYU",
+        "calcSubType": "TEAK KAMPUNG - 3",
+        "materialType": "kayu",
         "qty": 2,
         "p": 775,
         "l": 168,
@@ -1775,11 +1764,18 @@
         "surfaceM2": 0.26039999999999996,
         "biayaUnit": 65621,
         "biayaLine": 131241.59999999998,
-        "wood": "TEAK KAMPUNG - 30 UP 200"
+        "wood": "TEAK KAMPUNG - 30 UP 200",
+        "unit": "2",
+        "excelRow": 13,
+        "mergeToBom": true
       },
       "1858130-1.5.0.2.3": {
         "kode": "1858130-1.5.0.2.3",
         "nama": "TANGANAN",
+        "module": "BODI",
+        "calcType": "KAYU",
+        "calcSubType": "TEAK KAMPUNG - 3",
+        "materialType": "kayu",
         "qty": 2,
         "p": 708,
         "l": 60,
@@ -1788,11 +1784,18 @@
         "surfaceM2": 0.16992000000000002,
         "biayaUnit": 42820,
         "biayaLine": 85639.68,
-        "wood": "TEAK KAMPUNG - 30 UP 200"
+        "wood": "TEAK KAMPUNG - 30 UP 200",
+        "unit": "2",
+        "excelRow": 14,
+        "mergeToBom": true
       },
       "1858130-1.5.0.2.4": {
         "kode": "1858130-1.5.0.2.4",
         "nama": "SUNDUK SAMPING",
+        "module": "BODI",
+        "calcType": "KAYU",
+        "calcSubType": "TEAK KAMPUNG - 3",
+        "materialType": "kayu",
         "qty": 2,
         "p": 606,
         "l": 60,
@@ -1801,11 +1804,18 @@
         "surfaceM2": 0.14544,
         "biayaUnit": 36651,
         "biayaLine": 73301.76,
-        "wood": "TEAK KAMPUNG - 30 UP 200"
+        "wood": "TEAK KAMPUNG - 30 UP 200",
+        "unit": "2",
+        "excelRow": 15,
+        "mergeToBom": true
       },
       "1858130-1.5.0.2.5": {
         "kode": "1858130-1.5.0.2.5",
         "nama": "SUNDUK DEPAN",
+        "module": "BODI",
+        "calcType": "KAYU",
+        "calcSubType": "TEAK KAMPUNG - 3",
+        "materialType": "kayu",
         "qty": 1,
         "p": 2170,
         "l": 60,
@@ -1814,11 +1824,18 @@
         "surfaceM2": 0.2604,
         "biayaUnit": 196862,
         "biayaLine": 196862.40000000005,
-        "wood": "TEAK KAMPUNG - 30 UP 250"
+        "wood": "TEAK KAMPUNG - 30 UP 250",
+        "unit": "1",
+        "excelRow": 16,
+        "mergeToBom": true
       },
       "1858130-1.5.0.2.6": {
         "kode": "1858130-1.5.0.2.6",
         "nama": "SUNDUK BELAKANG",
+        "module": "BODI",
+        "calcType": "KAYU",
+        "calcSubType": "TEAK KAMPUNG - 3",
+        "materialType": "kayu",
         "qty": 2,
         "p": 1083,
         "l": 60,
@@ -1827,11 +1844,18 @@
         "surfaceM2": 0.25992,
         "biayaUnit": 58222,
         "biayaLine": 116444.15999999999,
-        "wood": "TEAK KAMPUNG - 30 UP 200"
+        "wood": "TEAK KAMPUNG - 30 UP 200",
+        "unit": "2",
+        "excelRow": 17,
+        "mergeToBom": true
       },
       "1858130-1.5.0.2.7": {
         "kode": "1858130-1.5.0.2.7",
         "nama": "KAKI TENGAH DEPAN",
+        "module": "BODI",
+        "calcType": "KAYU",
+        "calcSubType": "TEAK KAMPUNG - 3",
+        "materialType": "kayu",
         "qty": 1,
         "p": 275,
         "l": 60,
@@ -1840,11 +1864,18 @@
         "surfaceM2": 0.033,
         "biayaUnit": 16632,
         "biayaLine": 16632,
-        "wood": "TEAK KAMPUNG - 30 UP 200"
+        "wood": "TEAK KAMPUNG - 30 UP 200",
+        "unit": "1",
+        "excelRow": 18,
+        "mergeToBom": true
       },
       "1858130-1.5.0.2.8": {
         "kode": "1858130-1.5.0.2.8",
         "nama": "KAKI TENGAH BELAKANG",
+        "module": "BODI",
+        "calcType": "KAYU",
+        "calcSubType": "TEAK KAMPUNG - 3",
+        "materialType": "kayu",
         "qty": 1,
         "p": 745,
         "l": 137,
@@ -1853,11 +1884,18 @@
         "surfaceM2": 0.102065,
         "biayaUnit": 102882,
         "biayaLine": 102881.52,
-        "wood": "TEAK KAMPUNG - 30 UP 200"
+        "wood": "TEAK KAMPUNG - 30 UP 200",
+        "unit": "1",
+        "excelRow": 19,
+        "mergeToBom": true
       },
       "1858130-1.5.0.2.9": {
         "kode": "1858130-1.5.0.2.9",
         "nama": "SUNDUK DUDUKAN TENGAH",
+        "module": "BODI",
+        "calcType": "KAYU",
+        "calcSubType": "TEAK KAMPUNG - 3",
+        "materialType": "kayu",
         "qty": 1,
         "p": 623,
         "l": 60,
@@ -1866,11 +1904,18 @@
         "surfaceM2": 0.07476000000000001,
         "biayaUnit": 37679,
         "biayaLine": 37679.03999999999,
-        "wood": "TEAK KAMPUNG - 30 UP 200"
+        "wood": "TEAK KAMPUNG - 30 UP 200",
+        "unit": "1",
+        "excelRow": 20,
+        "mergeToBom": true
       },
       "1858130-1.5.0.2.10": {
         "kode": "1858130-1.5.0.2.10",
         "nama": "SUNDUK DUDUKAN SAMPING",
+        "module": "BODI",
+        "calcType": "KAYU",
+        "calcSubType": "TEAK KAMPUNG - 3",
+        "materialType": "kayu",
         "qty": 2,
         "p": 640,
         "l": 40,
@@ -1879,11 +1924,18 @@
         "surfaceM2": 0.1024,
         "biayaUnit": 22938,
         "biayaLine": 45875.19999999999,
-        "wood": "TEAK KAMPUNG - 30 UP 200"
+        "wood": "TEAK KAMPUNG - 30 UP 200",
+        "unit": "2",
+        "excelRow": 21,
+        "mergeToBom": true
       },
       "1858130-1.5.0.2.11": {
         "kode": "1858130-1.5.0.2.11",
         "nama": "SANDARAN ATAS",
+        "module": "BODI",
+        "calcType": "KAYU",
+        "calcSubType": "TEAK KAMPUNG - 3",
+        "materialType": "kayu",
         "qty": 1,
         "p": 2170,
         "l": 40,
@@ -1892,11 +1944,18 @@
         "surfaceM2": 0.1736,
         "biayaUnit": 131242,
         "biayaLine": 131241.6,
-        "wood": "TEAK KAMPUNG - 30 UP 250"
+        "wood": "TEAK KAMPUNG - 30 UP 250",
+        "unit": "1",
+        "excelRow": 22,
+        "mergeToBom": true
       },
       "1858130-1.5.0.2.12": {
         "kode": "1858130-1.5.0.2.12",
         "nama": "SANDARAN BAWAH",
+        "module": "BODI",
+        "calcType": "KAYU",
+        "calcSubType": "TEAK KAMPUNG - 3",
+        "materialType": "kayu",
         "qty": 1,
         "p": 2170,
         "l": 40,
@@ -1905,11 +1964,18 @@
         "surfaceM2": 0.1736,
         "biayaUnit": 131242,
         "biayaLine": 131241.6,
-        "wood": "TEAK KAMPUNG - 30 UP 250"
+        "wood": "TEAK KAMPUNG - 30 UP 250",
+        "unit": "1",
+        "excelRow": 23,
+        "mergeToBom": true
       },
       "1858130-1.5.0.2.13": {
         "kode": "1858130-1.5.0.2.13",
         "nama": "SUNDUK SANDARAN",
+        "module": "BODI",
+        "calcType": "KAYU",
+        "calcSubType": "TEAK KAMPUNG - 3",
+        "materialType": "kayu",
         "qty": 2,
         "p": 300,
         "l": 40,
@@ -1918,11 +1984,18 @@
         "surfaceM2": 0.048,
         "biayaUnit": 10752,
         "biayaLine": 21504,
-        "wood": "TEAK KAMPUNG - 30 UP 200"
+        "wood": "TEAK KAMPUNG - 30 UP 200",
+        "unit": "2",
+        "excelRow": 24,
+        "mergeToBom": true
       },
       "1858130-1.5.0.2.14": {
         "kode": "1858130-1.5.0.2.14",
         "nama": "SIKU DEPAN",
+        "module": "BODI",
+        "calcType": "KAYU",
+        "calcSubType": "TEAK KAMPUNG - 3",
+        "materialType": "kayu",
         "qty": 2,
         "p": 125,
         "l": 60,
@@ -1931,11 +2004,18 @@
         "surfaceM2": 0.030000000000000002,
         "biayaUnit": 5880,
         "biayaLine": 11759.999999999998,
-        "wood": "TEAK KAMPUNG - 30 UP 200"
+        "wood": "TEAK KAMPUNG - 30 UP 200",
+        "unit": "2",
+        "excelRow": 25,
+        "mergeToBom": true
       },
       "1858130-1.5.0.2.15": {
         "kode": "1858130-1.5.0.2.15",
         "nama": "SIKU BELAKANG",
+        "module": "BODI",
+        "calcType": "KAYU",
+        "calcSubType": "TEAK KAMPUNG - 3",
+        "materialType": "kayu",
         "qty": 2,
         "p": 125,
         "l": 60,
@@ -1944,11 +2024,18 @@
         "surfaceM2": 0.030000000000000002,
         "biayaUnit": 5880,
         "biayaLine": 11759.999999999998,
-        "wood": "TEAK KAMPUNG - 30 UP 200"
+        "wood": "TEAK KAMPUNG - 30 UP 200",
+        "unit": "2",
+        "excelRow": 26,
+        "mergeToBom": true
       },
       "1858130-1.5.0.2.16": {
         "kode": "1858130-1.5.0.2.16",
         "nama": "SIKU TENGAH",
+        "module": "BODI",
+        "calcType": "KAYU",
+        "calcSubType": "TEAK KAMPUNG - 3",
+        "materialType": "kayu",
         "qty": 4,
         "p": 125,
         "l": 60,
@@ -1957,11 +2044,18 @@
         "surfaceM2": 0.060000000000000005,
         "biayaUnit": 5880,
         "biayaLine": 23519.999999999996,
-        "wood": "TEAK KAMPUNG - 30 UP 200"
+        "wood": "TEAK KAMPUNG - 30 UP 200",
+        "unit": "4",
+        "excelRow": 27,
+        "mergeToBom": true
       },
       "1858130-1.5.0.2.17": {
         "kode": "1858130-1.5.0.2.17",
         "nama": "SIKU BAWAH",
+        "module": "BODI",
+        "calcType": "KAYU",
+        "calcSubType": "TEAK KAMPUNG - 3",
+        "materialType": "kayu",
         "qty": 2,
         "p": 140,
         "l": 70,
@@ -1970,98 +2064,110 @@
         "surfaceM2": 0.0392,
         "biayaUnit": 5488,
         "biayaLine": 10975.999999999998,
-        "wood": "TEAK KAMPUNG - 30 UP 200"
+        "wood": "TEAK KAMPUNG - 30 UP 200",
+        "unit": "2",
+        "excelRow": 28,
+        "mergeToBom": true
       },
-      "009-001-004-001": {
-        "kode": "009-001-004-001",
-        "nama": "FOAMSHEET 1 MM",
-        "qty": 9282.735,
-        "p": 1085.7,
-        "l": 0.06785625,
+      "004-008-001-003": {
+        "kode": "004-008-001-003",
+        "nama": "LEM EPOXY SET",
+        "module": "ASSEMBLING",
+        "calcType": "HARDWARE",
+        "calcSubType": "ASSEMBLING",
+        "materialType": "hardware",
+        "qty": 0.32196500000000006,
+        "p": 0,
+        "l": 0,
         "t": 0,
-        "vol": 8.55,
+        "vol": 0,
         "surfaceM2": 0,
-        "biayaUnit": 0,
-        "biayaLine": 0,
-        "wood": "FOAMSHEET 1 MM"
+        "biayaUnit": 143000,
+        "biayaLine": 46040.99500000001,
+        "wood": "LOCAL",
+        "unit": "KG",
+        "excelRow": 832,
+        "mergeToBom": true
       },
-      "009-001-006-001": {
-        "kode": "009-001-006-001",
-        "nama": "RAFIA",
-        "qty": 11761.734600000002,
-        "p": 161.70000000000002,
-        "l": 0.01010625,
-        "t": 0,
-        "vol": 72.738,
-        "surfaceM2": 0,
-        "biayaUnit": 0,
-        "biayaLine": 0,
-        "wood": "RAFIA"
-      },
-      "009-001-009-001": {
-        "kode": "009-001-009-001",
-        "nama": "SINGLE FACE",
-        "qty": 28471.50000000001,
-        "p": 3330.000000000001,
-        "l": 0.20812500000000006,
-        "t": 0,
-        "vol": 8.55,
-        "surfaceM2": 0,
-        "biayaUnit": 0,
-        "biayaLine": 0,
-        "wood": "SINGLE FACE"
-      },
-      "009-001-001-002": {
-        "kode": "009-001-001-002",
-        "nama": "CARTON TOP",
+      "006-001-001-003": {
+        "kode": "006-001-001-003",
+        "nama": "AMPLAS 150",
+        "module": "ASSEMBLING",
+        "calcType": "HARDWARE",
+        "calcSubType": "ASSEMBLING",
+        "materialType": "hardware",
         "qty": 1,
         "p": 0,
         "l": 0,
         "t": 0,
-        "vol": 3.5298,
+        "vol": 0,
         "surfaceM2": 0,
-        "biayaUnit": 0,
-        "biayaLine": 0,
-        "wood": "CARTON TOP"
+        "biayaUnit": 3245,
+        "biayaLine": 3245.0000000000005,
+        "wood": "LOCAL",
+        "unit": "LBR",
+        "excelRow": 833,
+        "mergeToBom": true
       },
-      "009-009-001-002": {
-        "kode": "009-009-001-002",
-        "nama": "LABEL BOX",
-        "qty": 577.5,
-        "p": 577.5,
-        "l": 0.03609375,
+      "005-001-022-010": {
+        "kode": "005-001-022-010",
+        "nama": "Plat ID Number LVLK",
+        "module": "FITTING",
+        "calcType": "HARDWARE",
+        "calcSubType": "FITTING",
+        "materialType": "hardware",
+        "qty": 1,
+        "p": 0,
+        "l": 0,
         "t": 0,
-        "vol": 1,
+        "vol": 0,
         "surfaceM2": 0,
-        "biayaUnit": 0,
-        "biayaLine": 0,
-        "wood": "LABEL BOX"
+        "biayaUnit": 8525,
+        "biayaLine": 8525,
+        "wood": "LOCAL",
+        "unit": "1",
+        "excelRow": 1062,
+        "mergeToBom": true
       },
-      "009-003-002-001": {
-        "kode": "009-003-002-001",
-        "nama": "LABEL PACKING",
-        "qty": 1732.5,
-        "p": 577.5,
-        "l": 0.03609375,
+      "005-001-012-045": {
+        "kode": "005-001-012-045",
+        "nama": "SEPATU PLASTIK",
+        "module": "FITTING",
+        "calcType": "HARDWARE",
+        "calcSubType": "FITTING",
+        "materialType": "hardware",
+        "qty": 3,
+        "p": 0,
+        "l": 0,
         "t": 0,
-        "vol": 3,
+        "vol": 0,
         "surfaceM2": 0,
-        "biayaUnit": 0,
-        "biayaLine": 0,
-        "wood": "LABEL PACKING"
+        "biayaUnit": 774,
+        "biayaLine": 2323.2000000000003,
+        "wood": "LOCAL",
+        "unit": "6",
+        "excelRow": 1064,
+        "mergeToBom": true
       },
-      "009-003-001-003": {
-        "kode": "009-003-001-003",
-        "nama": "LAKBAN KERTAS PACKING",
-        "qty": 1024.8,
-        "p": 100.8,
-        "l": 0.0063,
+      "005-000-002-041": {
+        "kode": "005-000-002-041",
+        "nama": "DEX SCREW  M6X100 MM",
+        "module": "FITTING",
+        "calcType": "HARDWARE",
+        "calcSubType": "FITTING",
+        "materialType": "hardware",
+        "qty": 4,
+        "p": 0,
+        "l": 0,
         "t": 0,
-        "vol": 10.166666666666666,
+        "vol": 0,
         "surfaceM2": 0,
-        "biayaUnit": 0,
-        "biayaLine": 0,
-        "wood": "LAKBAN KERTAS PACKING"
+        "biayaUnit": 1925,
+        "biayaLine": 7700.000000000001,
+        "wood": "LOCAL",
+        "unit": "4",
+        "excelRow": 1065,
+        "mergeToBom": true
       }
     },
     "hppMentah": [

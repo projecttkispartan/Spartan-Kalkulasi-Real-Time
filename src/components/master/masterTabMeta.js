@@ -1,0 +1,86 @@
+/** Metadata tab Master Data — label, petunjuk, kolom pencarian */
+export const MASTER_TAB_META = {
+  catalog: {
+    label: 'Katalog Material',
+    sheet: 'Gabungan CALCULATION · HPP · Supplier',
+    hint: 'Ringkasan semua material ter-import. Dipakai lookup kode part & hardware. Edit harga jika perlu lalu simpan tab ini.',
+    searchFields: ['kode', 'nama', 'vendorSupplier', 'materialType'],
+    searchPlaceholder: 'Cari kode, nama, vendor, jenis…',
+  },
+  materials: {
+    label: 'DATA BASE',
+    sheet: 'Sheet DATA BASE (kayu)',
+    hint: 'Harga log & material per grade kayu (buyer/supplier). Part kayu di BOM memakai specification / woodGradeId untuk tarif m³.',
+    searchFields: ['kode', 'woodName', 'specification', 'vendorSupplier', 'diameterGrade'],
+    searchPlaceholder: 'Cari no, kode, specification, nama kayu…',
+  },
+  nonWood: {
+    label: 'Non-Kayu',
+    sheet: 'FORMULA DATA · non-wood',
+    hint: 'Plywood, MDF, besi, HPL, hardware, dll. Set materialType agar ratio & kalkulasi part non-kayu konsisten.',
+    searchFields: ['specification', 'woodName', 'materialType'],
+    searchPlaceholder: 'Cari jenis, nama material…',
+  },
+  ratios: {
+    label: 'MASTER RATIO',
+    sheet: 'MASTER RATIO · FORMULA DATA',
+    hint: 'Safety Factor (SF) & Waste Factor (WF) per kategori material. WF kayu default 30% — dipakai saat hitung biaya part (jika SF/WF belum di nolkan di part).',
+    searchFields: ['label', 'materialType', 'category'],
+    searchPlaceholder: 'Cari label, tipe material…',
+  },
+  woodLabor: {
+    label: 'WOOD LABOR',
+    sheet: 'MASTER RATIO (wood labor)',
+    hint: 'Biaya tenaga kayu per m³ per jenis pekerjaan. Referensi routing & estimasi proses woodworking.',
+    searchFields: ['jobDescription', 'id'],
+    searchPlaceholder: 'Cari job description…',
+  },
+  coatings: {
+    label: 'COATING RATIO',
+    sheet: 'COATING RATIO',
+    hint: 'Finishing per m²: material, waste, labor, rounded cost. Produk memakai coatingId / nama coating × luas m² part.',
+    searchFields: ['name', 'nama', 'kode', 'no'],
+    searchPlaceholder: 'Cari no, kode finishing, nama…',
+  },
+  formulaRows: {
+    label: 'FORMULA DATA',
+    sheet: 'FORMULA DATA',
+    hint: 'Rasio buyer/supplier per material & proses, WF/SF %, ketebalan (mm). Dasar formula engine & waste per tipe.',
+    searchFields: ['materialType', 'proses', 'componentName'],
+    searchPlaceholder: 'Cari material, proses…',
+  },
+  formulas: {
+    label: 'Formula Registry',
+    sheet: 'Registry (app)',
+    hint: 'ID formula kalkulasi internal (wood_material_cost, coating_cost, dll.). Hanya ubah jika paham dampak ke engine.',
+    searchFields: ['id', 'label', 'description'],
+    searchPlaceholder: 'Cari id formula…',
+  },
+  rounding: {
+    label: 'ROUND COMPONENT',
+    sheet: 'ROUND COMPONENT CALC',
+    hint: 'Aturan pembulatan harga jual & preset meja bundar (sections, Ø, m³).',
+    searchFields: ['target', 'label'],
+    searchPlaceholder: 'Cari target, label…',
+  },
+  workCenters: {
+    label: 'WORK CENTER',
+    sheet: 'MASTER RATIO · routing',
+    hint: 'Rate per menit & mesin untuk operasi part. Pilih workCenterId di routing operasi — biaya = waktu × rate (+ TK).',
+    searchFields: ['kode', 'nama', 'mesin', 'category'],
+    searchPlaceholder: 'Cari kode, nama WC, mesin…',
+  },
+};
+
+export const MASTER_TABS_ORDER = [
+  'materials',
+  'nonWood',
+  'ratios',
+  'woodLabor',
+  'coatings',
+  'formulaRows',
+  'workCenters',
+  'catalog',
+  'formulas',
+  'rounding',
+];
