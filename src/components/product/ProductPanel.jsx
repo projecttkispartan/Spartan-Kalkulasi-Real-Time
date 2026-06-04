@@ -9,41 +9,48 @@ const fieldLabel = 'label-field mb-1 block';
 const fieldInput =
   'w-full border-b-2 border-slate-200 px-0 py-2 text-sm font-bold text-slate-700 focus:outline-none focus:border-brand-500 bg-transparent transition-colors hover:border-slate-300';
 
-function PackingAxisInline({ base, tolVal, gross, theme, onTol, onGross }) {
+/** Satu baris rumus packing — tinggi & kotak sama dengan input Produk (nett + tol = gross). */
+function PackingAxisFormula({ base, tolVal, gross, theme, onTol }) {
+  const field = `product-dim-produk-in shrink-0 ${theme.field}`;
   return (
-    <div className="product-dim-axis__row">
-      <span className={`product-dim-pack__nett ${theme.nett}`}>{base}</span>
-      <span className={`product-dim-pack__sep ${theme.plus}`}>+</span>
+    <div className="product-dim-formula" role="group" aria-label="Nett plus toleransi sama dengan gross">
+      <span className={`${field} product-dim-field--readonly`} title="Nett (mm)">
+        {base}
+      </span>
+      <span className={`product-dim-formula__sep ${theme.plus}`} aria-hidden>
+        +
+      </span>
       <input
         type="number"
+        inputMode="numeric"
+        step="1"
         value={tolVal}
         onChange={(e) => onTol(e.target.value)}
-        className={`product-dim-pack__in ${theme.tol}`}
-        aria-label="Toleransi"
+        className={field}
+        title="Toleransi (mm)"
+        aria-label="Toleransi mm"
       />
-      <span className="product-dim-pack__sep">=</span>
-      <input
-        type="number"
-        value={gross}
-        onChange={(e) => onGross(e.target.value)}
-        className={`product-dim-pack__in ${theme.gross}`}
-        aria-label="Gross"
-      />
+      <span className={`product-dim-formula__sep ${theme.plus}`} aria-hidden>
+        =
+      </span>
+      <span className={`${field} product-dim-field--readonly`} title="Gross (mm)">
+        {gross}
+      </span>
     </div>
   );
 }
 
 function DimColumn({ icon: Icon, title, vol, accent, variant = 'produk', children }) {
-  const volDisplay = Number(vol).toFixed(4);
+  const volLabel = `${Number(vol).toFixed(4)} m³`;
   return (
     <div className={`product-dim-col product-dim-col--${variant} ${accent.border}`}>
       <div className={`product-dim-col__head ${accent.head}`}>
         <span className={`product-dim-col__title ${accent.title}`}>
-          <Icon className={`w-3 h-3 shrink-0 ${accent.icon}`} />
+          <Icon className={`w-3.5 h-3.5 shrink-0 ${accent.icon}`} />
           <span className="truncate">{title}</span>
         </span>
-        <span className={`product-dim-col__vol ${accent.vol}`} title={`${vol} m³`}>
-          {volDisplay}
+        <span className={`product-dim-col__vol normal-case ${accent.vol}`} title={volLabel}>
+          {volLabel}
         </span>
       </div>
       <div className={`product-dim-col__body ${accent.body}`}>{children}</div>
@@ -69,9 +76,7 @@ const PACK_THEME = {
     icon: 'text-material-500',
     vol: 'bg-material-100 text-material-800 border-material-200',
     plus: 'text-material-500',
-    nett: 'border-material-100',
-    tol: 'border-material-200 text-material-800 focus:border-material-400 focus:ring-material-200',
-    gross: 'border-material-200 text-material-900 focus:border-material-400',
+    field: 'border-material-200 text-material-800 focus:border-material-400 focus:ring-material-200',
   },
   sf: {
     border: 'border-teal-200',
@@ -81,9 +86,7 @@ const PACK_THEME = {
     icon: 'text-teal-500',
     vol: 'bg-teal-100 text-teal-800 border-teal-200',
     plus: 'text-teal-500',
-    nett: 'border-teal-100',
-    tol: 'border-teal-200 text-teal-800 focus:border-teal-400 focus:ring-teal-200',
-    gross: 'border-teal-200 text-teal-900 focus:border-teal-400',
+    field: 'border-teal-200 text-teal-800 focus:border-teal-400 focus:ring-teal-200',
   },
 };
 
@@ -108,7 +111,6 @@ export default function ProductPanel({
   volProduk,
   packingDimensions,
   onPackingTolChange,
-  onPackingGrossChange,
   packingVolOpts,
   mastersTick = 0,
   onWoodGradeChange,
@@ -135,13 +137,12 @@ export default function ProductPanel({
           const gross = base + (Number(item[tolKey]) || 0);
           return (
             <AxisSlot key={tolKey} label={label}>
-              <PackingAxisInline
+              <PackingAxisFormula
                 base={base}
                 tolVal={item[tolKey]}
                 gross={gross}
                 theme={theme}
                 onTol={(val) => onPackingTolChange(item.id, tolKey, val)}
-                onGross={(val) => onPackingGrossChange(item.id, tolKey, val, base)}
               />
             </AxisSlot>
           );
@@ -237,12 +238,21 @@ export default function ProductPanel({
                 </label>
                 <WoodGradeField
                   mastersTick={mastersTick}
-                  value={productMeta.woodGradeId || productMeta.wood || ''}
-                  onChange={(id, mat) => {
-                    if (onWoodGradeChange) onWoodGradeChange(id, mat);
-                    else {
+                  value={productMeta.woodGradeId || ''}
+                  manualSpec={productMeta.woodGradeId ? '' : productMeta.wood || ''}
+                  onChange={(id, mat, manualSpec) => {
+                    if (onWoodGradeChange) {
+                      if (id && mat) onWoodGradeChange(id, mat);
+                      else if (manualSpec != null && !id) {
+                        onProductMetaChange('woodGradeId', '');
+                        onProductMetaChange('wood', manualSpec);
+                      } else if (!id && !mat) {
+                        onProductMetaChange('woodGradeId', '');
+                        onProductMetaChange('wood', '');
+                      }
+                    } else {
                       onProductMetaChange('woodGradeId', id || '');
-                      onProductMetaChange('wood', mat?.specification || mat?.woodName || '');
+                      onProductMetaChange('wood', mat?.specification || manualSpec || '');
                     }
                   }}
                 />
@@ -278,9 +288,13 @@ export default function ProductPanel({
                     <AxisSlot key={dimKey} label={label}>
                       <input
                         type="number"
+                        inputMode="numeric"
+                        step="1"
                         value={dimensi[dimKey]}
                         onChange={(e) => onDimensiChange(dimKey, e.target.value)}
                         className={`product-dim-produk-in ${PRODUK_ACCENT.input}`}
+                        title={`Dimensi ${label} (mm)`}
+                        aria-label={`Produk ${label} mm`}
                       />
                     </AxisSlot>
                   ))}

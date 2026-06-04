@@ -165,6 +165,21 @@
     @apply flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-4 md:p-6 bg-page flex flex-col gap-4 md:gap-5;
   }
 
+  /* Tab isi penuh viewport — scroll di panel tabel (bukan halaman) */
+  .tab-page-fit {
+    flex: 1 1 0%;
+    min-height: 0;
+    @apply overflow-hidden p-3 md:p-4 bg-page flex flex-col gap-2 md:gap-3;
+  }
+
+  .proses-scroll-region {
+    flex: 1 1 0%;
+    min-height: 0;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
   .tab-page-header {
     @apply surface-card-lg p-4 md:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0;
   }
@@ -202,95 +217,91 @@
   }
 
   .product-dim-cols-wrap {
-    @apply rounded-lg border border-slate-200 bg-slate-50/50 space-y-1 w-fit max-w-full;
-    padding: calc(0.375rem + 2px);
+    @apply rounded-lg border border-slate-200 bg-slate-50/50 space-y-1.5 w-full max-w-full;
+    padding: 0.5rem 0.625rem;
   }
 
   .product-dim-cols__legend {
-    @apply text-[9px] font-bold text-slate-400 uppercase tracking-wider leading-none;
-    padding-left: calc(0.125rem + 2px);
-    padding-right: calc(0.125rem + 2px);
+    @apply text-[10px] font-bold text-slate-500 uppercase tracking-wider;
+    padding-left: 0.125rem;
   }
 
   .product-dim-cols {
-    @apply inline-flex flex-row flex-wrap items-stretch w-fit max-w-full;
-    gap: calc(0.25rem + 2px);
+    @apply flex flex-row flex-wrap items-stretch w-full gap-2;
   }
 
   .product-dim-col {
-    @apply flex flex-col rounded border overflow-hidden bg-white shrink-0 shadow-sm;
+    @apply flex flex-col rounded-md border overflow-hidden bg-white shrink-0 shadow-sm;
   }
 
   .product-dim-col--produk {
-    width: calc(9.75rem + 4px);
+    width: 9.75rem;
+    min-width: 9.75rem;
+    flex: 0 0 9.75rem;
   }
 
   .product-dim-col--pack {
-    width: calc(17.25rem + 4px);
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 27.5rem;
   }
 
   .product-dim-col__head {
-    @apply flex items-center justify-between gap-1 border-b shrink-0 min-h-0;
-    padding: calc(0.125rem + 2px) calc(0.375rem + 2px);
+    @apply flex items-center justify-between gap-2 border-b shrink-0 px-2.5 py-1.5;
   }
 
   .product-dim-col__title {
-    @apply text-[9px] font-extrabold uppercase tracking-wide flex items-center gap-0.5 min-w-0 leading-none;
+    @apply text-[10px] font-extrabold uppercase tracking-wide flex items-center gap-1 min-w-0;
   }
 
   .product-dim-col__vol {
-    @apply text-[8px] font-black tabular-nums shrink-0 py-px rounded border leading-none;
-    padding-left: calc(0.25rem + 2px);
-    padding-right: calc(0.25rem + 2px);
-  }
-
-  .product-dim-col__vol::after {
-    content: ' m³';
-    @apply font-bold text-[7px] opacity-75;
+    @apply text-[10px] font-black tabular-nums shrink-0 px-1.5 py-0.5 rounded border whitespace-nowrap normal-case;
   }
 
   .product-dim-col__body {
-    @apply grid grid-cols-3 divide-x divide-slate-100 px-0;
-    padding-top: calc(0.25rem + 2px);
-    padding-bottom: calc(0.25rem + 2px);
+    @apply grid divide-x divide-slate-100 py-2 items-center;
+    min-height: 4.25rem;
+  }
+
+  .product-dim-col--produk .product-dim-col__body {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .product-dim-col--pack .product-dim-col__body {
+    grid-template-columns: repeat(3, minmax(8.75rem, 1fr));
   }
 
   .product-dim-axis {
-    @apply flex flex-col items-center justify-center gap-px min-w-0 py-0;
-    padding-left: calc(0.125rem + 2px);
-    padding-right: calc(0.125rem + 2px);
+    @apply flex flex-col items-center justify-center gap-1 min-w-0 px-1;
   }
 
   .product-dim-axis__label {
-    @apply text-[9px] font-black text-slate-400 uppercase tracking-wider leading-none;
+    @apply text-[10px] font-black text-slate-400 uppercase tracking-wider leading-none h-3 flex items-center;
   }
 
-  .product-dim-axis__row {
-    @apply flex flex-row flex-nowrap items-center justify-center gap-px w-full;
-  }
-
+  /* Kotak angka — Produk & semua nilai packing (nett / tol / gross) */
   .product-dim-produk-in {
-    @apply text-center text-[10px] font-bold border rounded bg-white tabular-nums outline-none focus:ring-1;
-    width: calc(3.5rem + 4px);
-    padding: calc(0.125rem + 2px) calc(0.125rem + 2px);
+    @apply box-border h-7 w-[2.75rem] min-w-[2.75rem] max-w-[2.75rem] flex shrink-0 items-center justify-center text-[11px] leading-none font-bold tabular-nums text-center border rounded bg-white outline-none focus:ring-1;
+    -moz-appearance: textfield;
   }
 
-  .product-dim-pack__nett {
-    @apply text-[9px] font-semibold tabular-nums py-px rounded border bg-white text-slate-600 shrink-0 text-center leading-none;
-    width: calc(1.65rem + 4px);
-    padding: calc(1px + 2px) calc(0.125rem + 2px);
+  .product-dim-produk-in::-webkit-outer-spin-button,
+  .product-dim-produk-in::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
 
-  .product-dim-pack__in {
-    @apply text-center text-[9px] font-bold border rounded bg-white tabular-nums outline-none focus:ring-1 shrink-0 leading-none;
-    width: calc(1.75rem + 4px);
-    padding: calc(1px + 2px) calc(0.125rem + 2px);
+  .product-dim-field--readonly {
+    @apply bg-slate-50/90 cursor-default;
   }
 
-  .product-dim-pack__sep {
-    @apply text-[8px] text-slate-300 font-semibold shrink-0 select-none leading-none;
-    padding-left: calc(1px + 2px);
-    padding-right: calc(1px + 2px);
+  /* Satu baris sejajar dengan baris input Produk */
+  .product-dim-formula {
+    @apply flex flex-row flex-nowrap items-center justify-center gap-0.5 h-7 w-full max-w-full;
+  }
+
+  .product-dim-formula__sep {
+    @apply text-[11px] font-bold leading-none shrink-0 w-[0.625rem] text-center select-none;
   }
 
   .panel-card {

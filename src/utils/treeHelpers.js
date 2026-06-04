@@ -20,13 +20,18 @@ export function getAncestorChain(root, targetId, trail = []) {
   return null;
 }
 
-/** Ambil modul / submodul / submodul 2 dari posisi part di pohon BOM. */
+/** Ambil modul / submodul / submodul 2 dari posisi part di pohon BOM (level terdalam). */
 export function getPartHierarchyLabels(root, partId) {
   const chain = getAncestorChain(root, partId) || [];
-  const pick = (tipe) => chain.find((n) => n.tipe === tipe);
+  const pickLast = (tipe) => {
+    for (let i = chain.length - 1; i >= 0; i--) {
+      if (chain[i].tipe === tipe) return chain[i];
+    }
+    return null;
+  };
   return {
-    modul: pick('MODUL'),
-    submodul: pick('SUBMODUL'),
-    submodul2: pick('SUBMODUL 2'),
+    modul: pickLast('MODUL'),
+    submodul: pickLast('SUBMODUL'),
+    submodul2: pickLast('SUBMODUL 2'),
   };
 }

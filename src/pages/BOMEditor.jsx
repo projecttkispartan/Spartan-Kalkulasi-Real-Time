@@ -61,7 +61,7 @@ import { VENDOR_SAMPLES } from '../data/masterSamples';
 import { resolveNodeFoto } from '../utils/images';
 import {
   expandProsesList,
-  computePartDisplayFinancials,
+  computeNodeDisplayFinancials,
   computePackingTotals,
   computeCogs,
   computeSummaryFromBom,
@@ -71,18 +71,10 @@ import {
   flattenProsesLineItems,
   sumProsesLineItems,
   validatePartsForExport,
+  buildNodeRollupMap,
 } from '../services/bomCalculations';
 import { normalizeProject } from '../utils/emptyProject.js';
 import { WoodGradeField } from '../components/fields/MasterCombos.jsx';
-
-function MaterialTypeDisplay({ value }) {
-  const label = getMaterialTypeLabel(value);
-  return (
-    <span className="inline-block px-2 py-1 rounded text-[9px] font-bold uppercase tracking-wide bg-slate-100 text-slate-600 border border-slate-200 min-w-[72px]">
-      {label}
-    </span>
-  );
-}
 
 function MaterialTypeField({ value, onChange, disabled = false }) {
   return (
@@ -121,6 +113,91 @@ function SummaryTotalCards({ fp, totals }) {
   );
 }
 
+const HIERARCHY_COL_DEFS = [
+  { key: 'modul', label: 'Modul' },
+  { key: 'submodul', label: 'Submodul' },
+  { key: 'submodul2', label: 'Submodul 2' },
+];
+
+function countHierarchyCols(cols) {
+  return HIERARCHY_COL_DEFS.reduce((n, { key }) => n + (cols[key] ? 1 : 0), 0);
+}
+
+function HierarchyColToggles({ cols, onToggle }) {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest mr-1">Kolom hierarki:</span>
+      {HIERARCHY_COL_DEFS.map(({ key, label }) => {
+        const visible = cols[key];
+        return (
+          <button
+            key={key}
+            type="button"
+            onClick={() => onToggle(key)}
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] font-bold border transition-colors ${
+              visible
+                ? 'bg-slate-800 text-white border-slate-800'
+                : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'
+            }`}
+          >
+            {visible ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+            {label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function HierarchyHeaderCells({
+  cols,
+  cellClass = 'px-4 py-3 border-r border-slate-100 text-left border-b border-slate-200 align-middle',
+  singleRow = false,
+}) {
+  const span = singleRow ? {} : { rowSpan: 2 };
+  return (
+    <>
+      {cols.modul && (
+        <th {...span} className={`${cellClass} min-w-[140px]`}>MODUL</th>
+      )}
+      {cols.submodul && (
+        <th {...span} className={`${cellClass} min-w-[140px]`}>SUBMODUL</th>
+      )}
+      {cols.submodul2 && (
+        <th {...span} className={`${cellClass} min-w-[120px]`}>SUBMODUL 2</th>
+      )}
+    </>
+  );
+}
+
+function HierarchyBodyCells({ cols, hierarchy, compact = false }) {
+  const cls = compact
+    ? 'px-3 py-2.5 border-r border-slate-100 text-left'
+    : 'px-4 py-3 border-r border-slate-100 text-left';
+
+  const cell = (node) => {
+    if (!node?.nama) {
+      return <span className="text-slate-300">—</span>;
+    }
+    return (
+      <div
+        className="font-bold text-slate-700 text-[11px] max-w-[160px] truncate"
+        title={node.nama}
+      >
+        {node.nama}
+      </div>
+    );
+  };
+
+  return (
+    <>
+      {cols.modul && <td className={cls}>{cell(hierarchy.modul)}</td>}
+      {cols.submodul && <td className={cls}>{cell(hierarchy.submodul)}</td>}
+      {cols.submodul2 && <td className={cls}>{cell(hierarchy.submodul2)}</td>}
+    </>
+  );
+}
+
 function MaterialTotalCards({ fp, totals }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -143,28 +220,34 @@ function MaterialTotalCards({ fp, totals }) {
   );
 }
 
-function ProsesTotalCards({ fp, totals }) {
+function ProsesTotalCards({ fp, totals, compact = false }) {
+  const pad = compact ? 'px-3 py-2.5' : 'p-4';
+  const labelCls = compact ? 'text-[8px]' : 'text-[9px]';
+  const valueCls = compact ? 'text-base' : 'text-xl';
+  const subCls = compact ? 'text-[8px] mt-0' : 'text-[9px] mt-0.5';
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <div className="rounded-xl border border-blue-100 bg-blue-50/50 p-4">
-        <span className="text-[9px] font-bold text-blue-600 uppercase tracking-widest">Durasi (Menit)</span>
-        <p className="text-xl font-black text-blue-800 mt-1">{totals.waktu} <span className="text-sm font-bold">menit</span></p>
-        <p className="text-[9px] text-blue-600/70 mt-0.5 font-medium">{totals.lineCount} baris operasi</p>
+    <div className={`grid grid-cols-2 lg:grid-cols-4 ${compact ? 'gap-2' : 'gap-4 sm:grid-cols-2'}`}>
+      <div className={`rounded-xl border border-blue-100 bg-blue-50/50 ${pad}`}>
+        <span className={`${labelCls} font-bold text-blue-600 uppercase tracking-widest`}>Durasi (Menit)</span>
+        <p className={`${valueCls} font-black text-blue-800 ${compact ? 'mt-0.5 leading-tight' : 'mt-1'}`}>
+          {totals.waktu} <span className="text-xs font-bold">menit</span>
+        </p>
+        {!compact && <p className={`${subCls} text-blue-600/70 font-medium`}>{totals.lineCount} baris operasi</p>}
       </div>
-      <div className="rounded-xl border border-indigo-100 bg-indigo-50/50 p-4">
-        <span className="text-[9px] font-bold text-indigo-600 uppercase tracking-widest">Biaya Proses</span>
-        <p className="text-lg font-black text-indigo-800 mt-1">{fp(totals.mesin)}</p>
-        <p className="text-[9px] text-indigo-600/70 mt-0.5 font-medium">Work center &amp; mesin</p>
+      <div className={`rounded-xl border border-indigo-100 bg-indigo-50/50 ${pad}`}>
+        <span className={`${labelCls} font-bold text-indigo-600 uppercase tracking-widest`}>Biaya Proses</span>
+        <p className={`${compact ? 'text-sm' : 'text-lg'} font-black text-indigo-800 ${compact ? 'mt-0.5' : 'mt-1'}`}>{fp(totals.mesin)}</p>
+        {!compact && <p className={`${subCls} text-indigo-600/70 font-medium`}>Work center &amp; mesin</p>}
       </div>
-      <div className="rounded-xl border border-emerald-100 bg-emerald-50/50 p-4">
-        <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-widest">Biaya Tenaga Kerja</span>
-        <p className="text-lg font-black text-emerald-800 mt-1">{fp(totals.pekerja)}</p>
-        <p className="text-[9px] text-emerald-600/70 mt-0.5 font-medium">{totals.personMinutes} org·menit</p>
+      <div className={`rounded-xl border border-emerald-100 bg-emerald-50/50 ${pad}`}>
+        <span className={`${labelCls} font-bold text-emerald-600 uppercase tracking-widest`}>Biaya Tenaga Kerja</span>
+        <p className={`${compact ? 'text-sm' : 'text-lg'} font-black text-emerald-800 ${compact ? 'mt-0.5' : 'mt-1'}`}>{fp(totals.pekerja)}</p>
+        {!compact && <p className={`${subCls} text-emerald-600/70 font-medium`}>{totals.personMinutes} org·menit</p>}
       </div>
-      <div className="rounded-xl border border-brand-200 bg-brand-50/50 p-4">
-        <span className="text-[9px] font-bold text-brand-600 uppercase tracking-widest">Total Biaya Proses</span>
-        <p className="text-xl font-black text-brand-800 mt-1">{fp(totals.total)}</p>
-        <p className="text-[9px] text-brand-600/70 mt-0.5 font-medium">Biaya proses + tenaga kerja</p>
+      <div className={`rounded-xl border border-brand-200 bg-brand-50/50 ${pad}`}>
+        <span className={`${labelCls} font-bold text-brand-600 uppercase tracking-widest`}>Total Biaya Proses</span>
+        <p className={`${valueCls} font-black text-brand-800 ${compact ? 'mt-0.5 leading-tight' : 'mt-1'}`}>{fp(totals.total)}</p>
+        {!compact && <p className={`${subCls} text-brand-600/70 font-medium`}>Biaya proses + tenaga kerja</p>}
       </div>
     </div>
   );
@@ -424,7 +507,13 @@ export default function BOMEditor({
     modul: true,
     submodul: true,
     submodul2: true,
-  }); 
+  });
+  const hierarchyColCount = countHierarchyCols(materialHierarchyCols);
+  const summaryPartsOnly = hierarchyColCount > 0;
+  const toggleHierarchyCol = useCallback(
+    (key) => setMaterialHierarchyCols((prev) => ({ ...prev, [key]: !prev[key] })),
+    [],
+  );
 
   // STATE BARU UNTUK CUSTOM ERP ENTRIES
   const [customErp, setCustomErp] = useState(
@@ -626,16 +715,30 @@ export default function BOMEditor({
     );
   };
 
-  const handleStructureWoodSelect = (nodeId, gradeId, mat) => {
+  const handleStructureWoodSelect = (nodeId, gradeId, mat, manualSpec) => {
     const updateTree = (node) => {
       if (node.id === nodeId) {
+        if (manualSpec != null && manualSpec !== undefined && !gradeId && !mat) {
+          return {
+            ...node,
+            woodGradeId: '',
+            woodSpecification: String(manualSpec),
+            materialType: node.materialType || 'kayu',
+          };
+        }
+        if (!gradeId && !mat) {
+          return {
+            ...node,
+            woodGradeId: '',
+            woodSpecification: '',
+          };
+        }
         const ratio = getWasteRatioForMaterialType(mat?.materialType || 'kayu');
         let updated = {
           ...node,
           woodGradeId: gradeId || '',
           woodSpecification: mat?.specification || '',
-          materialType: mat?.materialType || (gradeId ? 'kayu' : node.materialType || ''),
-          nama: mat?.specification || node.nama,
+          materialType: node.materialType || (gradeId ? (mat?.materialType || 'kayu') : node.materialType || ''),
         };
         if (gradeId) {
           updated.sf = updated.sf ?? ratio.sf;
@@ -661,6 +764,24 @@ export default function BOMEditor({
     }
   };
 
+  const handleStructureMaterialType = (nodeId, materialType) => {
+    const updateTree = (node) => {
+      if (node.id === nodeId) {
+        const updated = { ...node, materialType };
+        if (materialType !== 'kayu') {
+          updated.woodGradeId = '';
+          updated.woodSpecification = '';
+        }
+        return updated;
+      }
+      if (node.children) {
+        return { ...node, children: node.children.map(updateTree) };
+      }
+      return node;
+    };
+    setBomData((prev) => updateTree(prev));
+  };
+
   const volProduk = ((dimensi.w * dimensi.d * dimensi.h) / 1000000000).toFixed(6);
 
   const packingTotals = useMemo(() => computePackingTotals(packingSpec), [packingSpec]);
@@ -676,11 +797,6 @@ export default function BOMEditor({
   const handleDeletePackingDim = (id) => {
     setPackingDimensions(packingDimensions.filter(p => p.id !== id));
   };
-  const handleUpdatePackingGross = (id, field, value, baseValue) => {
-    const gross = Number(value) || 0;
-    handleUpdatePackingDim(id, field, gross - baseValue);
-  };
-
   // Fungsi untuk mengupdate state kapasitas kontainer
   const toggleContainerHidden = (index) => {
     setContainerCapacity((prev) =>
@@ -803,6 +919,26 @@ export default function BOMEditor({
     setBomData((prev) => updateTree(prev));
   };
 
+  const handlePartWoodField = (nodeId, gradeId, mat, manualSpec) => {
+    if (gradeId && mat) {
+      handleWoodGradeSelect(nodeId, gradeId);
+      return;
+    }
+    const updateTree = (node) => {
+      if (node.id === nodeId) {
+        if (manualSpec != null && manualSpec !== undefined && !gradeId) {
+          return { ...node, woodGradeId: '', woodSpecification: String(manualSpec) };
+        }
+        return { ...node, woodGradeId: '', woodSpecification: '' };
+      }
+      if (node.children) {
+        return { ...node, children: node.children.map(updateTree) };
+      }
+      return node;
+    };
+    setBomData((prev) => updateTree(prev));
+  };
+
   const handleUpdateNode = (id, field, value) => {
     const updateTree = (node) => {
       if (node.id === id) {
@@ -884,6 +1020,14 @@ export default function BOMEditor({
 
   // INLINE RENDER TABLE VIEW AGAR KURSOR TIDAK HILANG FOKUS
   const flatNodes = useMemo(() => flattenTree(bomData), [bomData]);
+
+  const nodeRollupMap = useMemo(() => buildNodeRollupMap(bomData), [bomData]);
+
+  const summaryTableNodes = useMemo(
+    () =>
+      summaryPartsOnly ? flatNodes.filter((n) => n.data.tipe === 'PART') : flatNodes,
+    [flatNodes, summaryPartsOnly],
+  );
 
   const summaryData = useMemo(
     () => computeSummaryFromBom(bomData, flatNodes),
@@ -1155,7 +1299,7 @@ export default function BOMEditor({
                   <th className="sticky left-[50px] z-20 bg-white py-3 px-4 border-r border-slate-200 text-left" style={{ minWidth: 260, width: 260 }}>AKSI (TAMBAH / HAPUS)</th>
                   <th className="sticky left-[310px] z-20 bg-white py-3 px-4 border-r border-slate-200" style={{ minWidth: 150, width: 150 }}>HIERARKI (TIPE)</th>
                   <th className="sticky left-[460px] z-20 bg-white py-3 px-4 border-r border-slate-200" style={{ minWidth: 140, width: 140 }}>KODE MATERIAL</th>
-                  <th className="sticky left-[600px] z-20 bg-white py-3 px-4 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] border-r border-slate-200" style={{ minWidth: 250, width: 250 }}>NAMA MATERIAL</th>
+                  <th className="sticky left-[600px] z-20 bg-white py-3 px-4 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] border-r border-slate-200" style={{ minWidth: 280, width: 280 }}>NAMA KOMPONEN / GRADE</th>
                   
                   <th className="py-3 px-4 text-center w-20">GAMBAR</th>
                   <th className="py-3 px-4 text-center min-w-[130px] text-emerald-700">TIPE MATERIAL</th>
@@ -1180,9 +1324,15 @@ export default function BOMEditor({
               <tbody>
                 {flatNodes.map((node) => {
                   const d = node.data;
-                  const fin = d.tipe === 'PART' ? computePartDisplayFinancials(d, kursUsd, kursEur) : null;
+                  const fin = computeNodeDisplayFinancials(
+                    d,
+                    nodeRollupMap.get(node.id),
+                    kursUsd,
+                    kursEur,
+                  );
                   const hargaProduksiIDR = fin?.prodTotal ?? 0;
                   const { usdMat = '0.00', eurMat = '0.00', usdProd = '0.00', eurProd = '0.00', prodUnit = 0, usdProdUnit = '0.00', eurProdUnit = '0.00' } = fin || {};
+                  const isRollupRow = fin?.isRollup;
 
                   const style = tipeStyles[d.tipe] || tipeStyles.PART;
 
@@ -1253,29 +1403,32 @@ export default function BOMEditor({
                         <input type="text" value={d.kode} onChange={(e) => handleUpdateNode(node.id, 'kode', e.target.value)} className={`${inputClasses} font-mono text-slate-600 min-w-[120px]`} />
                       </td>
                       <td className="sticky left-[600px] z-10 bg-inherit py-2 px-2 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] border-r border-slate-100">
-                        {d.tipe === 'MODUL' ? (
+                        <div className="flex flex-col gap-2 min-w-[250px]">
                           <input
                             type="text"
                             value={d.nama}
                             onChange={(e) => handleUpdateNode(node.id, 'nama', e.target.value)}
-                            className={`${inputClasses} font-bold text-slate-800 min-w-[220px]`}
-                            placeholder="Nama produk / BOM…"
+                            className={`${inputClasses} font-bold text-slate-800 w-full`}
+                            placeholder={
+                              d.tipe === 'MODUL' ? 'Nama produk / BOM…' : 'Nama komponen…'
+                            }
                           />
-                        ) : d.tipe === 'SUBMODUL' || d.tipe === 'SUBMODUL 2' || (d.tipe === 'PART' && d.materialType !== 'hardware') ? (
-                          <WoodGradeField
-                            mastersTick={mastersTick}
-                            value={d.woodGradeId || d.nama || d.woodSpecification || ''}
-                            onChange={(gradeId, mat) => handleStructureWoodSelect(node.id, gradeId, mat)}
-                            className="min-w-[220px]"
-                          />
-                        ) : (
-                          <input
-                            type="text"
-                            value={d.nama}
-                            onChange={(e) => handleUpdateNode(node.id, 'nama', e.target.value)}
-                            className={`${inputClasses} font-bold text-slate-800 min-w-[220px]`}
-                          />
-                        )}
+                          {/* SUBMODUL: grade opsional sebagai label grup; PART kayu: grade aktif */}
+                          {(d.tipe === 'SUBMODUL' ||
+                            d.tipe === 'SUBMODUL 2' ||
+                            (d.tipe === 'PART' && d.materialType !== 'hardware')) && (
+                            <WoodGradeField
+                              mastersTick={mastersTick}
+                              compact
+                              value={d.woodGradeId || ''}
+                              manualSpec={d.woodSpecification || ''}
+                              onChange={(gradeId, mat, manualSpec) =>
+                                handleStructureWoodSelect(node.id, gradeId, mat, manualSpec)
+                              }
+                              className="min-w-0 w-full"
+                            />
+                          )}
+                        </div>
                       </td>
                       
                       {/* KOLOM LAINNYA SCROLLABLE */}
@@ -1285,20 +1438,18 @@ export default function BOMEditor({
                         </div>
                       </td>
                       <td className="py-2 px-2 border-r border-slate-100 text-center">
-                        {d.materialType ? (
-                          <div className="flex flex-col items-center gap-0.5">
-                            <MaterialTypeDisplay value={d.materialType} />
+                        {d.tipe === 'PART' ? (
+                          <div className="flex flex-col items-center gap-1">
+                            <MaterialTypeField
+                              value={d.materialType || ''}
+                              onChange={(val) => handleStructureMaterialType(node.id, val)}
+                            />
                             {d.woodGradeId && (
-                              <span className="text-[8px] font-mono text-emerald-600" title="Terhubung DATA BASE">
+                              <span className="text-[8px] font-mono text-emerald-600" title="Grade dari DATA BASE">
                                 DB ✓
                               </span>
                             )}
                           </div>
-                        ) : d.tipe === 'PART' ? (
-                          <MaterialTypeField
-                            value=""
-                            onChange={(val) => handleUpdateNode(node.id, 'materialType', val)}
-                          />
                         ) : (
                           <span className="text-slate-300 text-[10px]">—</span>
                         )}
@@ -1318,28 +1469,44 @@ export default function BOMEditor({
                       <td className="py-2 px-1.5 border-r border-slate-100 text-center font-bold text-blue-600 bg-blue-50/20 tabular-nums text-[11px]">{d.vol || '—'}</td>
 
                       <td className="py-2 px-1.5 text-right bg-amber-50/15">
-                        <input
-                          type="number"
-                          value={d.biaya === 0 ? '' : d.biaya}
-                          onChange={(e) => handleUpdateNode(node.id, 'biaya', Number(e.target.value))}
-                          placeholder="0"
-                          className={`${inputClasses} text-right w-[5.25rem] text-slate-700 font-medium tabular-nums`}
-                        />
+                        {d.tipe === 'PART' ? (
+                          <input
+                            type="number"
+                            value={d.biaya === 0 ? '' : d.biaya}
+                            onChange={(e) => handleUpdateNode(node.id, 'biaya', Number(e.target.value))}
+                            placeholder="0"
+                            className={`${inputClasses} text-right w-[5.25rem] text-slate-700 font-medium tabular-nums`}
+                            title="Harga material satuan (aktif)"
+                          />
+                        ) : (
+                          <span
+                            className="inline-block text-right w-[5.25rem] text-[11px] font-bold text-amber-800 tabular-nums"
+                            title="Total material dari part di bawahnya"
+                          >
+                            {fin?.matAdjusted ? `Rp ${formatIDR(fin.matAdjusted)}` : '—'}
+                          </span>
+                        )}
                       </td>
-                      <td className="py-2 px-1.5 text-right text-amber-700/90 bg-amber-50/15 tabular-nums text-[11px] font-semibold">{usdMat}</td>
-                      <td className="py-2 px-1.5 border-r border-slate-100 text-right text-amber-700/90 bg-amber-50/15 tabular-nums text-[11px] font-semibold">{eurMat}</td>
+                      <td className="py-2 px-1.5 text-right text-amber-700/90 bg-amber-50/15 tabular-nums text-[11px] font-semibold">
+                        {isRollupRow ? (fin?.matAdjusted ? usdMat : '—') : usdMat}
+                      </td>
+                      <td className="py-2 px-1.5 border-r border-slate-100 text-right text-amber-700/90 bg-amber-50/15 tabular-nums text-[11px] font-semibold">
+                        {isRollupRow ? (fin?.matAdjusted ? eurMat : '—') : eurMat}
+                      </td>
 
-                      <td className="py-2 px-1.5 text-right font-black text-indigo-700 bg-indigo-50/10 tabular-nums text-[11px]">Rp {formatIDR(hargaProduksiIDR)}</td>
+                      <td className="py-2 px-1.5 text-right font-black text-indigo-700 bg-indigo-50/10 tabular-nums text-[11px]">
+                        {hargaProduksiIDR ? `Rp ${formatIDR(hargaProduksiIDR)}` : '—'}
+                      </td>
                       <td className="py-2 px-1.5 text-right font-bold text-indigo-600 bg-indigo-50/10 tabular-nums text-[11px]">{usdProd}</td>
                       <td className="py-2 px-1.5 border-r border-slate-100 text-right font-bold text-indigo-600 bg-indigo-50/10 tabular-nums text-[11px]">{eurProd}</td>
                       <td className="py-2 px-1.5 text-right font-bold text-violet-700 bg-violet-50/10 tabular-nums text-[11px]">
-                        {d.tipe === 'PART' ? `Rp ${formatIDR(prodUnit)}` : '—'}
+                        {fin ? (d.tipe === 'PART' ? `Rp ${formatIDR(prodUnit)}` : `Rp ${formatIDR(hargaProduksiIDR)}`) : '—'}
                       </td>
                       <td className="py-2 px-1.5 text-right font-bold text-violet-600 bg-violet-50/10 tabular-nums text-[11px]">
-                        {d.tipe === 'PART' ? usdProdUnit : '—'}
+                        {fin ? (d.tipe === 'PART' ? usdProdUnit : usdProd) : '—'}
                       </td>
                       <td className="py-2 px-1.5 border-r border-slate-100 text-right font-bold text-violet-600 bg-violet-50/10 tabular-nums text-[11px]">
-                        {d.tipe === 'PART' ? eurProdUnit : '—'}
+                        {fin ? (d.tipe === 'PART' ? eurProdUnit : eurProd) : '—'}
                       </td>
                       
                       <td className="py-3 px-4 border-r border-slate-100">
@@ -1530,7 +1697,6 @@ export default function BOMEditor({
             volProduk={volProduk}
             packingDimensions={packingDimensions}
             onPackingTolChange={(id, tol, val) => handleUpdatePackingDim(id, tol, val)}
-            onPackingGrossChange={(id, tol, val, base) => handleUpdatePackingGross(id, tol, val, base)}
             packingVolOpts={packingVolOpts}
             coatingPreview={coatingPreview}
           />
@@ -1553,7 +1719,7 @@ export default function BOMEditor({
         <EditorTabBar activeTab={editorTab} onTabChange={setEditorTab} />
 
         {/* TAB CONTENT AREA */}
-        <div className="flex-1 flex flex-col min-h-0 bg-white">
+        <div className="flex-1 flex flex-col min-h-0 overflow-hidden bg-white">
           
           {/* TAB 1: STRUKTUR PERAKITAN */}
           {editorTab === 'struktur' && (
@@ -2118,29 +2284,7 @@ export default function BOMEditor({
                     >
                       Hitung harga kayu dari master
                     </button>
-                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest mr-1">Kolom hierarki:</span>
-                    {[
-                      { key: 'modul', label: 'Modul' },
-                      { key: 'submodul', label: 'Submodul' },
-                      { key: 'submodul2', label: 'Submodul 2' },
-                    ].map(({ key, label }) => {
-                      const visible = materialHierarchyCols[key];
-                      return (
-                        <button
-                          key={key}
-                          type="button"
-                          onClick={() => setMaterialHierarchyCols((prev) => ({ ...prev, [key]: !prev[key] }))}
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] font-bold border transition-colors ${
-                            visible
-                              ? 'bg-slate-800 text-white border-slate-800'
-                              : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'
-                          }`}
-                        >
-                          {visible ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
-                          {label}
-                        </button>
-                      );
-                    })}
+                    <HierarchyColToggles cols={materialHierarchyCols} onToggle={toggleHierarchyCol} />
                   </div>
                 </div>
                 <div className="overflow-x-auto">
@@ -2149,15 +2293,7 @@ export default function BOMEditor({
                       <tr>
                         <th rowSpan={2} className="px-4 py-3 border-r border-slate-100 w-12 border-b border-slate-200 align-middle">NO</th>
                         <th rowSpan={2} className="px-4 py-3 border-r border-slate-100 w-16 border-b border-slate-200 align-middle">FOTO</th>
-                        {materialHierarchyCols.modul && (
-                          <th rowSpan={2} className="px-4 py-3 border-r border-slate-100 text-left border-b border-slate-200 align-middle min-w-[140px]">MODUL</th>
-                        )}
-                        {materialHierarchyCols.submodul && (
-                          <th rowSpan={2} className="px-4 py-3 border-r border-slate-100 text-left border-b border-slate-200 align-middle min-w-[140px]">SUBMODUL</th>
-                        )}
-                        {materialHierarchyCols.submodul2 && (
-                          <th rowSpan={2} className="px-4 py-3 border-r border-slate-100 text-left border-b border-slate-200 align-middle min-w-[120px]">SUBMODUL 2</th>
-                        )}
+                        <HierarchyHeaderCells cols={materialHierarchyCols} />
                         <th rowSpan={2} className="px-4 py-3 border-r border-slate-100 text-left border-b border-slate-200 align-middle min-w-[120px] text-emerald-700">TIPE MATERIAL</th>
                         <th rowSpan={2} className="px-4 py-3 border-r border-slate-100 text-left border-b border-slate-200 align-middle min-w-[200px] text-amber-700">GRADE KAYU</th>
                         <th rowSpan={2} className="px-4 py-3 border-r border-slate-100 text-left border-b border-slate-200 align-middle">KODE MATERIAL</th>
@@ -2205,24 +2341,7 @@ export default function BOMEditor({
                                  {d.foto ? <img src={d.foto} alt="pic" className="w-full h-full object-cover" /> : <ImageIcon className="w-4 h-4 text-slate-300" />}
                                </div>
                             </td>
-                            {materialHierarchyCols.modul && (
-                              <td className="px-4 py-3 border-r border-slate-100 text-left">
-                                <div className="font-bold text-slate-700 text-[11px] max-w-[160px] truncate" title={hierarchy.modul?.nama}>{hierarchy.modul?.nama || '—'}</div>
-                                {hierarchy.modul?.kode && <div className="text-[9px] font-mono text-slate-400 truncate">{hierarchy.modul.kode}</div>}
-                              </td>
-                            )}
-                            {materialHierarchyCols.submodul && (
-                              <td className="px-4 py-3 border-r border-slate-100 text-left">
-                                <div className="font-bold text-slate-700 text-[11px] max-w-[160px] truncate" title={hierarchy.submodul?.nama}>{hierarchy.submodul?.nama || '—'}</div>
-                                {hierarchy.submodul?.kode && <div className="text-[9px] font-mono text-slate-400 truncate">{hierarchy.submodul.kode}</div>}
-                              </td>
-                            )}
-                            {materialHierarchyCols.submodul2 && (
-                              <td className="px-4 py-3 border-r border-slate-100 text-left">
-                                <div className="font-bold text-slate-700 text-[11px] max-w-[140px] truncate" title={hierarchy.submodul2?.nama}>{hierarchy.submodul2?.nama || '—'}</div>
-                                {hierarchy.submodul2?.kode && <div className="text-[9px] font-mono text-slate-400 truncate">{hierarchy.submodul2.kode}</div>}
-                              </td>
-                            )}
+                            <HierarchyBodyCells cols={materialHierarchyCols} hierarchy={hierarchy} />
                             <td className="px-4 py-3 border-r border-slate-100">
                               <MaterialTypeField
                                 value={d.materialType || ''}
@@ -2233,8 +2352,11 @@ export default function BOMEditor({
                               {d.materialType === 'kayu' ? (
                                 <WoodGradeField
                                   mastersTick={mastersTick}
-                                  value={d.woodGradeId || d.woodSpecification || productMeta.woodGradeId || productMeta.wood || ''}
-                                  onChange={(gradeId) => handleWoodGradeSelect(node.id, gradeId)}
+                                  value={d.woodGradeId || ''}
+                                  manualSpec={d.woodSpecification || ''}
+                                  onChange={(gradeId, mat, manualSpec) =>
+                                    handlePartWoodField(node.id, gradeId, mat, manualSpec)
+                                  }
                                   className="min-w-[180px]"
                                 />
                               ) : (
@@ -2307,94 +2429,107 @@ export default function BOMEditor({
             </div>
           )}
 
-          {/* TAB 4: KEBUTUHAN PROSES */}
+          {/* TAB 4: KEBUTUHAN PROSES — satu layar; scroll di panel tabel */}
           {editorTab === 'proses' && (
-            <div className="flex-1 overflow-y-auto p-6 md:p-8 bg-page flex flex-col gap-6 scrollbar-hide">
-              <ProsesTotalCards fp={fp} totals={prosesTabTotals} />
+            <div className="tab-page-fit flex-1 min-h-0">
+              <div className="shrink-0">
+                <ProsesTotalCards fp={fp} totals={prosesTabTotals} compact />
+              </div>
 
+              <div className="flex-1 min-h-0 flex flex-col gap-2 overflow-hidden">
               {/* Tabel Rekapitulasi Manufaktur */}
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-                <div className="px-6 py-4 border-b border-slate-100 bg-white">
-                  <h3 className="text-sm font-black text-slate-800 flex items-center gap-2">
-                    <PieChart className="w-4 h-4 text-indigo-500" /> Tabel Rekapitulasi Manufaktur
+              <div className="shrink-0 flex flex-col max-h-[min(10rem,22vh)] bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <div className="px-4 py-2 border-b border-slate-100 bg-white shrink-0">
+                  <h3 className="text-xs font-black text-slate-800 flex items-center gap-2">
+                    <PieChart className="w-3.5 h-3.5 text-indigo-500" /> Tabel Rekapitulasi Manufaktur
                   </h3>
                 </div>
-                <div className="overflow-x-auto">
+                <div className="min-h-0 overflow-y-auto overflow-x-auto">
                   <table className="w-full text-left text-xs whitespace-nowrap">
-                    <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-extrabold uppercase text-[9px] tracking-wider text-center">
+                    <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-extrabold uppercase text-[9px] tracking-wider text-center sticky top-0 z-[1]">
                       <tr>
-                        <th className="px-4 py-3 border-r border-slate-100 w-12">NO</th>
-                        <th className="px-4 py-3 border-r border-slate-100 text-left">KATEGORI MANUFAKTUR</th>
-                        <th className="px-4 py-3 border-r border-slate-100">TOTAL OPERASI</th>
-                        <th className="px-4 py-3 border-r border-slate-100 text-blue-600">TOTAL DURASI</th>
-                        <th className="px-4 py-3 border-r border-slate-100 text-right">SUBTOTAL WORK CENTER</th>
-                        <th className="px-4 py-3 border-r border-slate-100 text-right">SUBTOTAL MAN POWER</th>
-                        <th className="px-4 py-3 text-right text-indigo-600">TOTAL BIAYA (IDR)</th>
+                        <th className="px-3 py-2 border-r border-slate-100 w-10">NO</th>
+                        <th className="px-3 py-2 border-r border-slate-100 text-left">KATEGORI MANUFAKTUR</th>
+                        <th className="px-3 py-2 border-r border-slate-100">TOTAL OPERASI</th>
+                        <th className="px-3 py-2 border-r border-slate-100 text-blue-600">TOTAL DURASI</th>
+                        <th className="px-3 py-2 border-r border-slate-100 text-right">SUBTOTAL WORK CENTER</th>
+                        <th className="px-3 py-2 border-r border-slate-100 text-right">SUBTOTAL MAN POWER</th>
+                        <th className="px-3 py-2 text-right text-indigo-600">TOTAL BIAYA (IDR)</th>
                       </tr>
                     </thead>
                     <tbody className="font-medium text-slate-700 divide-y divide-slate-100">
                       {prosesSummary.items.length === 0 ? (
                         <tr>
-                          <td colSpan={7} className="px-6 py-8 text-center text-slate-400 text-xs italic">
+                          <td colSpan={7} className="px-4 py-6 text-center text-slate-400 text-xs italic">
                             Belum ada operasi manufaktur — tambahkan proses pada part di tab Struktur atau buka Routing.
                           </td>
                         </tr>
                       ) : prosesSummary.items.map((item, i) => (
                         <tr key={item.name} className="hover:bg-slate-50 transition-colors">
-                          <td className="px-4 py-3 text-center border-r border-slate-100 text-slate-400 font-bold">{i + 1}</td>
-                          <td className="px-4 py-3 border-r border-slate-100 font-black text-slate-800">{item.name}</td>
-                          <td className="px-4 py-3 border-r border-slate-100 text-center">
+                          <td className="px-3 py-2 text-center border-r border-slate-100 text-slate-400 font-bold">{i + 1}</td>
+                          <td className="px-3 py-2 border-r border-slate-100 font-black text-slate-800">{item.name}</td>
+                          <td className="px-3 py-2 border-r border-slate-100 text-center">
                             <span className="bg-slate-100 border border-slate-200 px-2 py-0.5 rounded text-[10px] font-bold text-slate-500">{item.count} Proses</span>
                           </td>
-                          <td className="px-4 py-3 border-r border-slate-100 text-center font-black text-blue-600">{item.waktu} Min</td>
-                          <td className="px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-700">Rp {formatIDR(item.mesin)}</td>
-                          <td className="px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-700">Rp {formatIDR(item.pekerja)}</td>
-                          <td className="px-4 py-3 text-right font-black text-indigo-700 bg-indigo-50/20">Rp {formatIDR(item.total)}</td>
+                          <td className="px-3 py-2 border-r border-slate-100 text-center font-black text-blue-600">{item.waktu} Min</td>
+                          <td className="px-3 py-2 border-r border-slate-100 text-right font-bold text-slate-700">Rp {formatIDR(item.mesin)}</td>
+                          <td className="px-3 py-2 border-r border-slate-100 text-right font-bold text-slate-700">Rp {formatIDR(item.pekerja)}</td>
+                          <td className="px-3 py-2 text-right font-black text-indigo-700 bg-indigo-50/20">Rp {formatIDR(item.total)}</td>
                         </tr>
                       ))}
                     </tbody>
-                    <tfoot className="bg-slate-50 border-t-2 border-slate-200">
+                    <tfoot className="bg-slate-50 border-t-2 border-slate-200 sticky bottom-0">
                       <tr>
-                        <td colSpan={3} className="px-4 py-3 text-right font-black text-slate-700 uppercase tracking-widest text-[10px]">AKUMULASI TOTAL:</td>
-                        <td className="px-4 py-3 text-center font-black text-blue-600">{prosesSummary.totalWaktu} Min</td>
-                        <td className="px-4 py-3 text-right font-black text-slate-800">Rp {formatIDR(prosesSummary.totalMesin)}</td>
-                        <td className="px-4 py-3 text-right font-black text-slate-800">Rp {formatIDR(prosesSummary.totalPekerja)}</td>
-                        <td className="px-4 py-3 text-right font-black text-indigo-700">Rp {formatIDR(prosesSummary.grandTotal)}</td>
+                        <td colSpan={3} className="px-3 py-2 text-right font-black text-slate-700 uppercase tracking-widest text-[9px]">AKUMULASI TOTAL:</td>
+                        <td className="px-3 py-2 text-center font-black text-blue-600">{prosesSummary.totalWaktu} Min</td>
+                        <td className="px-3 py-2 text-right font-black text-slate-800">Rp {formatIDR(prosesSummary.totalMesin)}</td>
+                        <td className="px-3 py-2 text-right font-black text-slate-800">Rp {formatIDR(prosesSummary.totalPekerja)}</td>
+                        <td className="px-3 py-2 text-right font-black text-indigo-700">Rp {formatIDR(prosesSummary.grandTotal)}</td>
                       </tr>
                     </tfoot>
                   </table>
                 </div>
               </div>
 
-              {/* 2. Tabel Detail Kebutuhan Proses (WC & Man Power) */}
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-                <div className="px-6 py-4 border-b border-slate-100 bg-white">
-                  <h3 className="text-sm font-black text-slate-800 flex items-center gap-2">
-                    <Wrench className="w-4 h-4 text-indigo-500" /> Detail Kebutuhan Proses
-                  </h3>
+              {/* Tabel Detail Kebutuhan Proses — mengisi sisa tinggi + scroll */}
+              <div className="flex-1 min-h-0 flex flex-col bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <div className="px-4 py-2 border-b border-slate-100 bg-white shrink-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <div>
+                    <h3 className="text-xs font-black text-slate-800 flex items-center gap-2">
+                      <Wrench className="w-3.5 h-3.5 text-indigo-500" /> Detail Kebutuhan Proses
+                    </h3>
+                    <p className="text-[9px] text-slate-500 mt-0.5 font-medium hidden sm:block">
+                      Satu baris per operasi — kolom hierarki mengikuti part induk.
+                    </p>
+                  </div>
+                  <HierarchyColToggles cols={materialHierarchyCols} onToggle={toggleHierarchyCol} />
                 </div>
-                <div className="overflow-x-auto">
+                <div className="proses-scroll-region">
                   <table className="w-full text-left text-xs whitespace-nowrap border-collapse">
-                    <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-extrabold uppercase text-[9px] tracking-wider text-center">
+                    <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-extrabold uppercase text-[9px] tracking-wider text-center sticky top-0 z-10 shadow-sm">
                       <tr>
-                        <th className="px-3 py-3 border-r border-slate-100 w-10">NO</th>
-                        <th className="px-3 py-3 border-r border-slate-100 text-left min-w-[120px]">KODE PART</th>
-                        <th className="px-3 py-3 border-r border-slate-100 text-left min-w-[140px]">NAMA PART</th>
-                        <th className="px-3 py-3 border-r border-slate-100 text-left min-w-[120px]">OPERASI</th>
-                        <th className="px-3 py-3 border-r border-slate-100 w-24">TIPE</th>
-                        <th className="px-3 py-3 border-r border-slate-100 text-left min-w-[100px]">TAHAP</th>
-                        <th className="px-3 py-3 border-r border-slate-100 text-left min-w-[140px]">WC / LANGKAH</th>
-                        <th className="px-3 py-3 border-r border-slate-100 text-blue-600 w-16">DURASI</th>
-                        <th className="px-3 py-3 border-r border-slate-100 text-amber-600 w-14">ORG</th>
-                        <th className="px-3 py-3 border-r border-slate-100 w-20">ORG·MNT</th>
-                        <th className="px-3 py-3 border-r border-slate-100 text-right min-w-[100px]">BIAYA WC</th>
-                        <th className="px-3 py-3 border-r border-slate-100 text-right min-w-[100px]">BIAYA TK</th>
+                        <th rowSpan={2} className="px-3 py-3 border-r border-slate-100 w-10 align-middle">NO</th>
+                        <HierarchyHeaderCells
+                          cols={materialHierarchyCols}
+                          cellClass="px-3 py-3 border-r border-slate-100 text-left border-b border-slate-200 align-middle"
+                        />
+                        <th rowSpan={2} className="px-3 py-3 border-r border-slate-100 text-left min-w-[120px] align-middle">KODE PART</th>
+                        <th rowSpan={2} className="px-3 py-3 border-r border-slate-100 text-left min-w-[140px] align-middle">NAMA PART</th>
+                        <th rowSpan={2} className="px-3 py-3 border-r border-slate-100 text-left min-w-[120px] align-middle">OPERASI</th>
+                        <th rowSpan={2} className="px-3 py-3 border-r border-slate-100 w-24 align-middle">TIPE</th>
+                        <th rowSpan={2} className="px-3 py-3 border-r border-slate-100 text-left min-w-[100px] align-middle">TAHAP</th>
+                        <th rowSpan={2} className="px-3 py-3 border-r border-slate-100 text-left min-w-[140px] align-middle">WC / LANGKAH</th>
+                        <th rowSpan={2} className="px-3 py-3 border-r border-slate-100 text-blue-600 w-16 align-middle">DURASI</th>
+                        <th rowSpan={2} className="px-3 py-3 border-r border-slate-100 text-amber-600 w-14 align-middle">ORG</th>
+                        <th rowSpan={2} className="px-3 py-3 border-r border-slate-100 w-20 align-middle">ORG·MNT</th>
+                        <th rowSpan={2} className="px-3 py-3 border-r border-slate-100 text-right min-w-[100px] align-middle">BIAYA WC</th>
+                        <th rowSpan={2} className="px-3 py-3 border-r border-slate-100 text-right min-w-[100px] align-middle">BIAYA TK</th>
                         <th colSpan={3} className="px-2 py-2 border-r border-slate-200 border-b border-indigo-200 text-indigo-700 bg-indigo-50/40">SUBTOTAL BIAYA</th>
                         <th colSpan={3} className="px-2 py-2 border-r border-slate-200 border-b border-violet-200 text-violet-700 bg-violet-50/40">HARGA PRODUKSI (SATUAN)</th>
-                        <th className="px-3 py-3 text-left min-w-[140px]">DETAIL</th>
+                        <th rowSpan={2} className="px-3 py-3 text-left min-w-[140px] align-middle">DETAIL</th>
                       </tr>
                       <tr className="bg-white border-b border-slate-200 text-[9px] font-extrabold uppercase text-slate-500">
-                        <th colSpan={12} className="border-r border-slate-100" />
+                        <th colSpan={12 + hierarchyColCount} className="border-r border-slate-100" />
                         <th className="py-2 px-1.5 text-right text-indigo-700">IDR</th>
                         <th className="py-2 px-1.5 text-right text-amber-600">USD</th>
                         <th className="py-2 px-1.5 border-r border-slate-200 text-right text-brand-600">EUR</th>
@@ -2407,16 +2542,20 @@ export default function BOMEditor({
                     <tbody className="font-medium text-slate-700 divide-y divide-slate-100">
                       {prosesLineItems.length === 0 ? (
                         <tr>
-                          <td colSpan={19} className="px-6 py-10 text-center text-slate-400 text-xs italic">
+                          <td colSpan={19 + hierarchyColCount} className="px-6 py-10 text-center text-slate-400 text-xs italic">
                             Belum ada operasi manufaktur — tambahkan proses pada part di tab Struktur atau buka Routing.
                           </td>
                         </tr>
                       ) : prosesLineItems.map((ln, i) => {
                         const partQty = partQtyByKode[ln.nodeKode] || 1;
                         const prodUnit = ln.biayaTotal / partQty;
+                        const hierarchy = ln.nodeId
+                          ? getPartHierarchyLabels(bomData, ln.nodeId)
+                          : { modul: null, submodul: null, submodul2: null };
                         return (
                         <tr key={ln.key} className="hover:bg-slate-50 transition-colors align-top">
                           <td className="px-3 py-2.5 text-center border-r border-slate-100 text-slate-400 font-bold">{i + 1}</td>
+                          <HierarchyBodyCells cols={materialHierarchyCols} hierarchy={hierarchy} compact />
                           <td className="px-3 py-2.5 border-r border-slate-100 font-mono text-[10px] text-slate-500">{ln.nodeKode || '—'}</td>
                           <td className="px-3 py-2.5 border-r border-slate-100 font-bold text-slate-800 text-[11px]">{ln.nodeNama || '—'}</td>
                           <td className="px-3 py-2.5 border-r border-slate-100 font-bold text-slate-700">{ln.opNama || '—'}</td>
@@ -2465,7 +2604,7 @@ export default function BOMEditor({
                     {prosesLineItems.length > 0 && (
                       <tfoot className="bg-slate-50 border-t-2 border-slate-200 text-[10px] font-black">
                         <tr>
-                          <td colSpan={7} className="px-3 py-3 text-right uppercase tracking-widest text-slate-500">Total ({prosesLineItems.length} baris):</td>
+                          <td colSpan={7 + hierarchyColCount} className="px-3 py-3 text-right uppercase tracking-widest text-slate-500">Total ({prosesLineItems.length} baris):</td>
                           <td className="px-3 py-3 text-center text-blue-600">{prosesLineTotals.waktu} mnt</td>
                           <td className="px-3 py-3 text-center text-amber-700">—</td>
                           <td className="px-3 py-3 text-center text-slate-600">{prosesLineTotals.personMinutes}</td>
@@ -2482,7 +2621,7 @@ export default function BOMEditor({
                   </table>
                 </div>
               </div>
-
+              </div>
             </div>
           )}
 
@@ -2490,10 +2629,26 @@ export default function BOMEditor({
           {editorTab === 'summary' && (
             <div className="flex-1 overflow-y-auto bg-slate-50 flex flex-col scrollbar-hide">
               <div className="px-8 py-5 border-b border-slate-200 bg-white shrink-0 shadow-sm z-10 sticky top-0">
-                <h2 className="text-lg font-black text-slate-800 flex items-center gap-2">
-                  <Calculator className="w-5 h-5 text-blue-600" /> Summary Kalkulasi Terpadu
-                </h2>
-                <p className="text-xs text-slate-500 mt-1 font-medium">Rangkuman lengkap struktur hierarki, spesifikasi dimensi, harga material, faktor penyesuaian (SF & WF), dan rincian biaya operasi manufaktur per komponen.</p>
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                  <div>
+                    <h2 className="text-lg font-black text-slate-800 flex items-center gap-2">
+                      <Calculator className="w-5 h-5 text-blue-600" /> Summary Kalkulasi Terpadu
+                    </h2>
+                    <p className="text-xs text-slate-500 mt-1 font-medium">
+                      Rangkuman dimensi, harga material, faktor SF/WF, dan biaya operasi per komponen.
+                      {summaryPartsOnly ? (
+                        <span className="block text-[10px] text-amber-700 font-bold mt-1">
+                          Tampilan daftar part — nonaktifkan semua kolom Modul/Submodul untuk pohon lengkap (MODUL → PART).
+                        </span>
+                      ) : (
+                        <span className="block text-[10px] text-slate-400 mt-1">
+                          Aktifkan kolom Modul/Submodul untuk merapikan tabel (hanya baris PART).
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                  <HierarchyColToggles cols={materialHierarchyCols} onToggle={toggleHierarchyCol} />
+                </div>
               </div>
               <div className="px-8 py-4 bg-white border-b border-slate-200 shrink-0">
                 <SummaryTotalCards fp={fp} totals={summaryTotals} />
@@ -2502,8 +2657,19 @@ export default function BOMEditor({
                  <table className="w-full text-left text-xs whitespace-nowrap border-collapse">
                    <thead className="bg-slate-100 border-b-2 border-slate-200 text-slate-500 font-extrabold uppercase text-[9px] tracking-widest text-center sticky top-0 z-10 shadow-sm">
                      <tr>
-                       <th className="px-4 py-4 border-r border-slate-200 w-12">REF</th>
-                       <th className="px-4 py-4 border-r border-slate-200 text-left min-w-[200px]">HIERARKI & NAMA KOMPONEN</th>
+                       <th className="px-4 py-4 border-r border-slate-200 w-12">
+                         {summaryPartsOnly ? 'NO' : 'REF'}
+                       </th>
+                       {summaryPartsOnly && (
+                         <HierarchyHeaderCells
+                           cols={materialHierarchyCols}
+                           singleRow
+                           cellClass="px-4 py-4 border-r border-slate-200 text-left"
+                         />
+                       )}
+                       <th className="px-4 py-4 border-r border-slate-200 text-left min-w-[200px]">
+                         {summaryPartsOnly ? 'NAMA PART' : 'HIERARKI & NAMA KOMPONEN'}
+                       </th>
                        <th className="px-4 py-4 border-r border-slate-200 text-left">KODE MATERIAL</th>
                        <th className="px-4 py-4 border-r border-slate-200 w-16">QTY</th>
                        <th className="px-4 py-4 border-r border-slate-200">DIMENSI (W X D X H)</th>
@@ -2511,69 +2677,135 @@ export default function BOMEditor({
                        <th className="px-4 py-4 border-r border-slate-200 text-amber-600">SAFETY FACTOR (%)</th>
                        <th className="px-4 py-4 border-r border-slate-200 text-red-500">WASTE FACTOR (%)</th>
                        <th className="px-4 py-4 border-r border-slate-200 text-right">HARGA PART (IDR)</th>
-                       <th className="px-4 py-4 border-r border-slate-200 text-left min-w-[640px]">RINCIAN OPERASI PRODUKSI</th>
+                       <th className={`px-4 py-4 border-r border-slate-200 text-left ${summaryPartsOnly ? 'min-w-[480px]' : 'min-w-[640px]'}`}>
+                         RINCIAN OPERASI PRODUKSI
+                       </th>
                        <th className="px-4 py-4 text-right text-indigo-700 bg-indigo-50/50 min-w-[120px]">TOTAL BIAYA (IDR)</th>
                      </tr>
                    </thead>
                    <tbody className="divide-y divide-slate-200 bg-white">
-                     {flatNodes.map((node) => {
+                     {summaryTableNodes.map((node, rowIndex) => {
                        const d = node.data;
+                       const isPart = d.tipe === 'PART';
                        const style = tipeStyles[d.tipe] || tipeStyles.PART;
+                       const hierarchy = isPart
+                         ? getPartHierarchyLabels(bomData, node.id)
+                         : { modul: null, submodul: null, submodul2: null };
                        
                        const sf = Number(d.sf) || 0;
                        const wf = Number(d.wf) || 0;
-                       const baseMatCost = (d.biaya || 0) * (d.qty || 1);
-                       const adjustedMatCost = baseMatCost * (1 + (sf/100) + (wf/100));
+                       const baseMatCost = isPart ? (d.biaya || 0) * (d.qty || 1) : 0;
+                       const adjustedMatCost = isPart ? baseMatCost * (1 + (sf/100) + (wf/100)) : 0;
 
                        let totalOpWaktu = 0;
                        let totalOpMesin = 0;
                        let totalOpPekerja = 0;
 
-                       expandProsesList(d).forEach((p) => {
-                         const c = calcProsesCosts(p);
-                         totalOpWaktu += c.waktu;
-                         totalOpMesin += c.mesin;
-                         totalOpPekerja += c.pekerja;
-                       });
+                       if (isPart) {
+                         expandProsesList(d).forEach((p) => {
+                           const c = calcProsesCosts(p);
+                           totalOpWaktu += c.waktu;
+                           totalOpMesin += c.mesin;
+                           totalOpPekerja += c.pekerja;
+                         });
+                       }
                        const totalOpCost = totalOpMesin + totalOpPekerja;
                        const grandTotalRow = adjustedMatCost + totalOpCost;
+                       const prosesList = isPart ? expandProsesList(d) : [];
 
                        return (
-                         <tr key={node.id} className="hover:bg-slate-50/50 transition-colors align-top">
-                           <td className="px-4 py-4 border-r border-slate-100 text-center">
-                              <button onClick={() => setDetailSummaryNode(node)} className="p-1.5 bg-slate-100 hover:bg-blue-100 text-slate-400 hover:text-blue-600 rounded transition-colors" title="Lihat Detail Summary">
-                                <QrCode className="w-4 h-4"/>
-                              </button>
+                         <tr
+                           key={node.id}
+                           className={`hover:bg-slate-50/50 transition-colors align-top ${!isPart ? 'bg-slate-50/40' : ''}`}
+                         >
+                           <td className="px-4 py-3 border-r border-slate-100 text-center">
+                             {summaryPartsOnly ? (
+                               <div className="flex flex-col items-center gap-1">
+                                 <span className="text-slate-400 font-bold text-[10px]">{rowIndex + 1}</span>
+                                 <button
+                                   type="button"
+                                   onClick={() => setDetailSummaryNode(node)}
+                                   className="p-1 bg-slate-100 hover:bg-blue-100 text-slate-400 hover:text-blue-600 rounded transition-colors"
+                                   title="Detail summary"
+                                 >
+                                   <QrCode className="w-3.5 h-3.5" />
+                                 </button>
+                               </div>
+                             ) : (
+                               <button
+                                 type="button"
+                                 onClick={() => setDetailSummaryNode(node)}
+                                 className="p-1.5 bg-slate-100 hover:bg-blue-100 text-slate-400 hover:text-blue-600 rounded transition-colors"
+                                 title="Lihat Detail Summary"
+                               >
+                                 <QrCode className="w-4 h-4" />
+                               </button>
+                             )}
                            </td>
-                           <td className="px-4 py-4 border-r border-slate-100">
-                              <div className="flex items-start" style={{ paddingLeft: `${node.level * 16}px` }}>
-                                <div className="flex flex-col gap-1">
-                                  <span className={`inline-block px-1.5 py-0.5 rounded text-[8px] font-black tracking-wider uppercase border w-max ${style.pill}`}>{d.tipe}</span>
-                                  <span className="font-black text-slate-800 text-sm whitespace-normal leading-tight">{d.nama}</span>
-                                </div>
-                              </div>
+                           {summaryPartsOnly && (
+                             <HierarchyBodyCells cols={materialHierarchyCols} hierarchy={hierarchy} />
+                           )}
+                           <td className="px-4 py-3 border-r border-slate-100">
+                             {summaryPartsOnly ? (
+                               <span className="font-black text-slate-800 text-sm whitespace-normal leading-tight">
+                                 {d.nama}
+                               </span>
+                             ) : (
+                               <div className="flex items-start" style={{ paddingLeft: `${node.level * 16}px` }}>
+                                 <div className="flex flex-col gap-1">
+                                   <span className={`inline-block px-1.5 py-0.5 rounded text-[8px] font-black tracking-wider uppercase border w-max ${style.pill}`}>
+                                     {d.tipe}
+                                   </span>
+                                   <span className="font-black text-slate-800 text-sm whitespace-normal leading-tight">{d.nama}</span>
+                                 </div>
+                               </div>
+                             )}
                            </td>
-                           <td className="px-4 py-4 border-r border-slate-100 font-mono text-slate-500">{d.kode}</td>
-                           <td className="px-4 py-4 border-r border-slate-100 text-center font-black text-slate-700">{d.qty}</td>
-                           <td className="px-4 py-4 border-r border-slate-100 text-center text-slate-600 font-bold">
-                             {d.p && d.l && d.t ? `${d.p} x ${d.l} x ${d.t}` : '0 x 0 x 0'}
+                           <td className="px-4 py-3 border-r border-slate-100 font-mono text-slate-500">
+                             {isPart ? d.kode : <span className="text-slate-300">—</span>}
                            </td>
-                           <td className="px-4 py-4 border-r border-slate-100 text-center font-bold text-blue-600 bg-blue-50/10">
-                             {d.vol} m³
+                           <td className="px-4 py-3 border-r border-slate-100 text-center font-black text-slate-700">
+                             {isPart ? d.qty : '—'}
                            </td>
-                           <td className="px-4 py-4 border-r border-slate-100 text-center">
-                             <input type="number" value={sf} onChange={(e) => handleUpdateNode(node.id, 'sf', e.target.value)} className="w-14 text-center border border-amber-200 text-amber-700 bg-amber-50 rounded px-1 py-1 outline-none focus:border-amber-400 font-bold text-xs" />
+                           <td className="px-4 py-3 border-r border-slate-100 text-center text-slate-600 font-bold">
+                             {isPart && d.p && d.l && d.t ? `${d.p} x ${d.l} x ${d.t}` : isPart ? '—' : '—'}
                            </td>
-                           <td className="px-4 py-4 border-r border-slate-100 text-center">
-                             <input type="number" value={wf} onChange={(e) => handleUpdateNode(node.id, 'wf', e.target.value)} className="w-14 text-center border border-red-200 text-red-600 bg-red-50 rounded px-1 py-1 outline-none focus:border-red-400 font-bold text-xs" />
+                           <td className="px-4 py-3 border-r border-slate-100 text-center font-bold text-blue-600 bg-blue-50/10">
+                             {isPart && d.vol ? `${d.vol} m³` : <span className="text-slate-300 font-normal">—</span>}
                            </td>
-                           <td className="px-4 py-4 border-r border-slate-100 text-right font-bold text-slate-800">
-                             Rp {formatIDR(d.biaya || 0)}
+                           <td className="px-4 py-3 border-r border-slate-100 text-center">
+                             {isPart ? (
+                               <input
+                                 type="number"
+                                 value={sf}
+                                 onChange={(e) => handleUpdateNode(node.id, 'sf', e.target.value)}
+                                 className="w-14 text-center border border-amber-200 text-amber-700 bg-amber-50 rounded px-1 py-1 outline-none focus:border-amber-400 font-bold text-xs"
+                               />
+                             ) : (
+                               <span className="text-slate-300">—</span>
+                             )}
+                           </td>
+                           <td className="px-4 py-3 border-r border-slate-100 text-center">
+                             {isPart ? (
+                               <input
+                                 type="number"
+                                 value={wf}
+                                 onChange={(e) => handleUpdateNode(node.id, 'wf', e.target.value)}
+                                 className="w-14 text-center border border-red-200 text-red-600 bg-red-50 rounded px-1 py-1 outline-none focus:border-red-400 font-bold text-xs"
+                               />
+                             ) : (
+                               <span className="text-slate-300">—</span>
+                             )}
+                           </td>
+                           <td className="px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-800">
+                             {isPart ? <>Rp {formatIDR(d.biaya || 0)}</> : <span className="text-slate-300">—</span>}
                            </td>
                            
                            {/* Nested Table Rincian Operasi */}
                            <td className="p-0 border-r border-slate-100 align-top bg-slate-50/30">
-                             {expandProsesList(d).length > 0 ? (
+                             {!isPart ? (
+                               <div className="px-4 py-3 text-center text-[10px] text-slate-300">—</div>
+                             ) : prosesList.length > 0 ? (
                                <div className="w-full">
                                  <table className="w-full text-left text-[9px]">
                                    <thead className="bg-slate-100 border-b border-slate-200 text-slate-500 font-bold">
@@ -2589,7 +2821,7 @@ export default function BOMEditor({
                                      </tr>
                                    </thead>
                                    <tbody className="divide-y divide-slate-100">
-                                     {expandProsesList(d).map((p, idx) => {
+                                     {prosesList.map((p, idx) => {
                                         const { waktu: w, person, mesin: bMesin, pekerja: bPekerja, rate, ratePekerja } = calcProsesCosts(p);
                                         const rowSubtotal = bMesin + bPekerja;
                                         return (
@@ -2647,14 +2879,20 @@ export default function BOMEditor({
                                  </table>
                                </div>
                              ) : (
-                               <div className="h-full flex items-center justify-center p-4">
-                                 <span className="text-[10px] text-slate-400 font-medium italic flex items-center gap-1.5"><AlertTriangle className="w-3 h-3"/> Belum ada data operasi manufaktur yang didaftarkan</span>
+                               <div className={`flex items-center justify-center ${summaryPartsOnly ? 'px-3 py-2' : 'p-4'}`}>
+                                 <span
+                                   className="text-[10px] text-slate-400 font-medium flex items-center gap-1"
+                                   title="Belum ada data operasi produksi"
+                                 >
+                                   <AlertTriangle className="w-3 h-3 shrink-0" />
+                                   {summaryPartsOnly ? 'Tanpa operasi' : 'Belum ada data operasi manufaktur yang didaftarkan'}
+                                 </span>
                                </div>
                              )}
                            </td>
 
-                           <td className="px-4 py-4 text-right font-black text-indigo-700 bg-indigo-50/30 text-sm align-middle">
-                             Rp {formatIDR(grandTotalRow)}
+                           <td className="px-4 py-3 text-right font-black text-indigo-700 bg-indigo-50/30 text-sm align-middle">
+                             {isPart ? <>Rp {formatIDR(grandTotalRow)}</> : <span className="text-slate-300">—</span>}
                            </td>
                          </tr>
                        )

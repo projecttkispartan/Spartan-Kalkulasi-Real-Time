@@ -6,6 +6,7 @@ import {
   computePartCostRow,
   computePartsTotals,
   rollupTreeCosts,
+  buildNodeRollupMap,
 } from '../utils/bomCostRollup.js';
 import { calcProsesCosts } from '../utils/operationCosts.js';
 import { flattenProsesLineItems, sumProsesLineItems } from '../utils/prosesLineItems.js';
@@ -18,7 +19,7 @@ import { applyRoundingForTarget } from '../utils/roundingEngine.js';
 
 const LIVE_OPTIONS = { allowEstimateFallback: false };
 
-export { computePartCostRow, computePartsTotals, rollupTreeCosts };
+export { computePartCostRow, computePartsTotals, rollupTreeCosts, buildNodeRollupMap };
 
 export function expandProsesList(nodeData, options = LIVE_OPTIONS) {
   return expandProsesListBase(nodeData, { ...LIVE_OPTIONS, ...options });
@@ -29,6 +30,35 @@ export function convertIdrToUsdEur(amount, kursUsd, kursEur) {
   const usd = Number(kursUsd) ? (v / kursUsd).toFixed(2) : '0.00';
   const eur = Number(kursEur) ? (v / kursEur).toFixed(2) : '0.00';
   return { idr: v, usd, eur };
+}
+
+/**
+ * PART: harga material aktif dari field biaya; proses dari operasi part.
+ * MODUL / SUBMODUL: material & proses = rollup anak (+ operasi pada node induk).
+ */
+export function computeNodeDisplayFinancials(d, rollup, kursUsd, kursEur) {
+  if (d.tipe === 'PART') {
+    return { ...computePartDisplayFinancials(d, kursUsd, kursEur), isRollup: false };
+  }
+  if (!rollup) return null;
+  const prodTotal = rollup.biayaProduksi || 0;
+  const matTotal = rollup.matAdjusted || 0;
+  const fxMat = convertIdrToUsdEur(matTotal, kursUsd, kursEur);
+  const fxProd = convertIdrToUsdEur(prodTotal, kursUsd, kursEur);
+  return {
+    ...rollup,
+    unitMat: 0,
+    matAdjusted: matTotal,
+    usdMat: fxMat.usd,
+    eurMat: fxMat.eur,
+    prodTotal,
+    prodUnit: prodTotal,
+    usdProd: fxProd.usd,
+    eurProd: fxProd.eur,
+    usdProdUnit: fxProd.usd,
+    eurProdUnit: fxProd.eur,
+    isRollup: true,
+  };
 }
 
 /** Display row: material unit + production total/unit (matAdjusted + proses) */

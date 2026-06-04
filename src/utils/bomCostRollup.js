@@ -69,7 +69,28 @@ const EMPTY_ROLLUP = {
   biayaProduksi: 0,
 };
 
-/** Rollup biaya pohon BOM (modul mengagregasi anak) */
+/** Tambah biaya operasi manufaktur yang melekat pada node (modul/submodul). */
+function addOwnProsesToRollup(node, rolled) {
+  let mesin = 0;
+  let wc = 0;
+  let pekerja = 0;
+  let waktu = 0;
+  expandProsesList(node).forEach((p) => {
+    const c = calcProsesCosts(p);
+    mesin += c.mesin;
+    wc += c.wc || 0;
+    pekerja += c.pekerja;
+    waktu += c.waktu;
+  });
+  rolled.mesin += mesin;
+  rolled.wc += wc;
+  rolled.pekerja += pekerja;
+  rolled.waktu += waktu;
+  rolled.prosesTotal = rolled.mesin + rolled.wc + rolled.pekerja;
+  rolled.biayaProduksi = rolled.matAdjusted + rolled.prosesTotal;
+}
+
+/** Rollup biaya pohon BOM (modul mengagregasi anak + proses pada node) */
 export function rollupTreeCosts(node) {
   if (node.children?.length) {
     const rolled = { ...EMPTY_ROLLUP };
@@ -79,6 +100,11 @@ export function rollupTreeCosts(node) {
         rolled[k] += c[k] || 0;
       });
     });
+    if (node.tipe !== 'PART') {
+      addOwnProsesToRollup(node, rolled);
+    } else {
+      rolled.biayaProduksi = rolled.matAdjusted + rolled.prosesTotal;
+    }
     node._rollup = rolled;
     return rolled;
   }
@@ -107,4 +133,20 @@ export function computePartsTotals(bomData) {
   const acc = { ...EMPTY_ROLLUP };
   walk(bomData, acc);
   return acc;
+}
+
+/** Peta rollup per id node (untuk tampilan modul/submodul di tabel struktur). */
+export function buildNodeRollupMap(bomData) {
+  const map = new Map();
+  if (!bomData) return map;
+  const clone = structuredClone(bomData);
+  const walk = (n) => {
+    rollupTreeCosts(n);
+    if (n.id != null && n._rollup) {
+      map.set(n.id, { ...n._rollup });
+    }
+    (n.children || []).forEach(walk);
+  };
+  walk(clone);
+  return map;
 }

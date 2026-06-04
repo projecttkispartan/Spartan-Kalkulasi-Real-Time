@@ -12,6 +12,7 @@ export function flattenProsesLineItems(prosesEntries) {
         lines.push({
           key: `${p.nodeId ?? opIndex}-rt-${st.urutan ?? lines.length}`,
           opIndex,
+          nodeId: p.nodeId,
           nodeKode: p.nodeKode,
           nodeNama: p.nodeNama,
           opNama: p.nama,
@@ -33,6 +34,7 @@ export function flattenProsesLineItems(prosesEntries) {
       lines.push({
         key: `${p.nodeId ?? opIndex}-wc`,
         opIndex,
+        nodeId: p.nodeId,
         nodeKode: p.nodeKode,
         nodeNama: p.nodeNama,
         opNama: p.nama,
