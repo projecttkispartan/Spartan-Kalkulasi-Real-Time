@@ -12,6 +12,7 @@ import {
   EXCEL_PARITY_TOLERANCE_IDR,
   EXCEL_PARITY_TOLERANCE_PCT,
 } from '../src/data/excelParityChecklist.js';
+import { CURATED_SAMPLE_KEYS } from '../src/utils/emptyProject.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
@@ -31,10 +32,9 @@ function withinTolerance(actual, expected, pctOverride) {
 
 function loadProject(file, sampleKey) {
   const raw = JSON.parse(fs.readFileSync(path.join(PROJECTS_DIR, file), 'utf8'));
-  const opts =
-    sampleKey === 'ZAN-100'
-      ? { applyBiaya: false, skipBiayaIfExcel: true }
-      : { applyBiaya: true, skipBiayaIfExcel: true };
+  const opts = CURATED_SAMPLE_KEYS.has(sampleKey)
+    ? { applyBiaya: false, skipBiayaIfExcel: true }
+    : { applyBiaya: true, skipBiayaIfExcel: true };
   return linkProjectToMasters(raw, opts);
 }
 
@@ -54,7 +54,7 @@ for (const p of MANIFEST.projects) {
     productMeta: doc.productMeta,
   });
   const excel = doc.excelMirror?.summaryCost || {};
-  const strictPct = p.sampleKey === 'ZAN-100' ? 0.015 : 0.08;
+  const strictPct = CURATED_SAMPLE_KEYS.has(p.sampleKey) ? 0.015 : 0.08;
   const prodT = withinTolerance(cogs.productionCost, excel.productionCost, strictPct);
   const cogsT = withinTolerance(cogs.totalCogs, excel.totalCogs, strictPct);
 
@@ -72,9 +72,9 @@ for (const p of MANIFEST.projects) {
     `${ok ? 'OK' : 'FAIL'} ${p.sampleKey.padEnd(12)} prod ${(prodT.pct * 100).toFixed(2)}% cogs ${(cogsT.pct * 100).toFixed(2)}% | app COGS ${Math.round(cogs.totalCogs)} excel ${Math.round(excel.totalCogs)}`,
   );
 
-  if (p.sampleKey === 'ZAN-100') {
+  if (CURATED_SAMPLE_KEYS.has(p.sampleKey)) {
     if (ok) passStrict += 1;
-    assert.ok(ok, `ZAN-100 must be within ${strictPct * 100}%`);
+    assert.ok(ok, `${p.sampleKey} must be within ${strictPct * 100}%`);
   } else if (ok) {
     passLoose += 1;
   } else if (cogsT.pct <= 0.12 && prodT.pct <= 0.12) {
@@ -82,7 +82,7 @@ for (const p of MANIFEST.projects) {
   }
 }
 
-console.log(`\nStrict pass (ZAN ≤1.5%): ${passStrict}/1`);
+console.log(`\nStrict pass (curated ≤1.5%): ${passStrict}/${CURATED_SAMPLE_KEYS.size}`);
 console.log(`Loose pass (≤8% prod+cogs): ${passLoose}/${MANIFEST.projects.length - skipped}`);
-assert.ok(passStrict >= 1, 'ZAN-100 parity required');
+assert.ok(passStrict >= CURATED_SAMPLE_KEYS.size, 'Curated sample parity required');
 console.log('\nAll sample COGS verification: done');

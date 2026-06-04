@@ -7,7 +7,12 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import * as XLSX from 'xlsx';
 import { parseBomWorkbook } from '../src/utils/importBomFromExcel.js';
-import { createProjectFromZanSeed } from '../src/utils/emptyProject.js';
+import {
+  createProjectFromZanSeed,
+  createProjectFromFionaSeed,
+} from '../src/utils/emptyProject.js';
+import { COGS_IMPORT_ROLLUP } from '../src/utils/cogsImportStrategy.js';
+import { dedupeSummaryCostLines } from '../src/utils/excelWorkbookParsers.js';
 import { optimizeImportedProject } from '../src/utils/sampleProjectOptimize.js';
 
 function createDefaultPackingSpec() {
@@ -136,6 +141,31 @@ function main() {
         cogsConfig: {
           ...seed.cogsConfig,
           includeCoatingInCogs: false,
+          cogsImportMode: COGS_IMPORT_ROLLUP,
+          excelProductionCost: raw.excelMirror?.summaryCost?.productionCost || 0,
+          excelTotalCogs: raw.excelMirror?.summaryCost?.totalCogs || 0,
+        },
+      });
+    } else if (key === 'FNA-550') {
+      const seed = createProjectFromFionaSeed();
+      const mirror = raw.excelMirror;
+      if (mirror?.summaryCost?.lines) {
+        mirror.summaryCost.lines = dedupeSummaryCostLines(mirror.summaryCost.lines);
+      }
+      raw = optimizeImportedProject({
+        ...seed,
+        sampleKey: key,
+        sampleSourceFile: file,
+        excelMirror: mirror,
+        importSheets: raw.importSheets,
+        importedFromExcel: true,
+        productInfo: { ...raw.productInfo, ...seed.productInfo },
+        productMeta: { ...seed.productMeta },
+        dimensi: seed.dimensi?.w ? seed.dimensi : raw.dimensi,
+        cogsConfig: {
+          ...seed.cogsConfig,
+          includeCoatingInCogs: false,
+          cogsImportMode: COGS_IMPORT_ROLLUP,
           excelProductionCost: raw.excelMirror?.summaryCost?.productionCost || 0,
           excelTotalCogs: raw.excelMirror?.summaryCost?.totalCogs || 0,
         },

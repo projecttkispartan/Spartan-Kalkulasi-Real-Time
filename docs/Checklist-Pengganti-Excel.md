@@ -35,6 +35,7 @@ Dokumen ini merapikan seluruh data dan langkah agar app **Manufaktur BOM** dapat
 ### COGS & verifikasi
 - [ ] COGS config: OH pabrik **5%** + manajemen **2,5%**, markup **20%**, jalur packing
 - [ ] Production cost > 0
+- [ ] **Tab COGS → Ringkasan biaya & Deviasi Excel:** pie komposisi production (material / proses / packing) + panel deviasi App vs mirror SUMMARY COST (Δ Rp, %, PASS/WARN/FAIL) dan catatan penyebab — lihat `docs/PRD-COGS-Insight-v1.md`
 - [ ] Banding **production & COGS** vs Excel / `excelMirror.summaryCost`
 - [ ] Selisih dalam toleransi
 - [ ] `npm test` lulus

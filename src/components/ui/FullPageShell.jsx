@@ -81,7 +81,7 @@ export default function FullPageShell({
       </header>
 
       <main className="flex-1 min-h-0 flex flex-col overflow-hidden bg-slate-50/80">
-        <div className="flex flex-col flex-1 min-h-0 page-inner-full w-full py-4">
+        <div className="flex flex-col flex-1 min-h-0 h-full page-inner-full w-full py-4 overflow-hidden">
           {children}
         </div>
       </main>

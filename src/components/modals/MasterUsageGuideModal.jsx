@@ -1,6 +1,7 @@
-import { BookOpen, Database, GitBranch, Calculator, Save, RefreshCw } from 'lucide-react';
+import { BookOpen, Database, GitBranch, Calculator, Save, RefreshCw, ListOrdered } from 'lucide-react';
 import FullPageShell from '../ui/FullPageShell.jsx';
 import { MASTER_TAB_META, MASTER_TABS_ORDER } from '../master/masterTabMeta.js';
+import { MASTER_GLOBAL_ADD_STEPS, MASTER_TAB_ADD_STEPS } from '../master/masterAddProcess.js';
 
 const STEPS = [
   {
@@ -54,6 +55,39 @@ export default function MasterUsageGuideModal({ isOpen, onClose }) {
               </li>
             ))}
           </ol>
+        </section>
+
+        <section className="rounded-2xl border border-emerald-200 bg-emerald-50/40 p-5 shadow-sm">
+          <h2 className="text-sm font-black text-emerald-900 uppercase tracking-wide mb-3 flex items-center gap-2">
+            <ListOrdered className="w-4 h-4 text-emerald-600" />
+            Proses penambahan data master
+          </h2>
+          <ol className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 mb-4">
+            {MASTER_GLOBAL_ADD_STEPS.map((s, i) => (
+              <li key={s.id} className="rounded-xl bg-white border border-emerald-100 px-3 py-2.5 text-xs">
+                <span className="font-black text-emerald-800">{i + 1}. {s.title}</span>
+                <p className="text-slate-600 mt-1 leading-relaxed">{s.body}</p>
+              </li>
+            ))}
+          </ol>
+          <p className="text-xs text-slate-600 mb-3">
+            Di Master Data, panel <strong>Proses penambahan data</strong> di atas tabel menampilkan langkah yang sama +
+            petunjuk khusus per tab. Gunakan <strong>Tambah baris</strong> (header) lalu <strong>Simpan tab ini</strong>.
+          </p>
+          <div className="grid gap-2 sm:grid-cols-2 text-[11px]">
+            {Object.entries(MASTER_TAB_ADD_STEPS).map(([id, steps]) => (
+              <div key={id} className="rounded-lg border border-slate-100 bg-white px-3 py-2">
+                <p className="font-bold text-emerald-800">{MASTER_TAB_META[id]?.label || id}</p>
+                <ul className="mt-1 space-y-0.5 text-slate-600">
+                  {steps.map((st) => (
+                    <li key={st.title}>
+                      <span className="font-semibold text-slate-700">{st.title}:</span> {st.body}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </section>
 
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">

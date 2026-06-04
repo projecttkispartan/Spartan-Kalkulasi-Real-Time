@@ -31,7 +31,7 @@ const SKIP_SUMMARY_PART_LABELS = new Set([
 ]);
 
 /** Baris SUMMARY yang dijadikan part proses di BOM (paritas Excel ZAN) */
-const PROCESS_SUMMARY_WHITELIST = new Set([
+export const PROCESS_SUMMARY_WHITELIST = new Set([
   'LAMINATING',
   'ASSEMBLING HARDWARE',
   'FITTING HARDWARE',
@@ -59,6 +59,37 @@ function normLabel(s) {
     .trim()
     .toUpperCase()
     .replace(/\s+/g, ' ');
+}
+
+/**
+ * Satu baris per label — keep total terbesar (tie: baris Excel lebih awal).
+ * Menghindari duplikat blok SUMMARY (mis. Fiona baris 124–127).
+ */
+export function dedupeSummaryCostLines(lines) {
+  if (!lines?.length) return [];
+  const byLabel = new Map();
+  for (const ln of lines) {
+    const label = normLabel(ln.label);
+    if (!label) continue;
+    const prev = byLabel.get(label);
+    const total = Number(ln.total) || 0;
+    const prevTotal = Number(prev?.total) || 0;
+    if (
+      !prev
+      || total > prevTotal
+      || (total === prevTotal && (ln.excelRow || 9999) < (prev.excelRow || 9999))
+    ) {
+      byLabel.set(label, ln);
+    }
+  }
+  return [...byLabel.values()].sort((a, b) => (a.excelRow || 0) - (b.excelRow || 0));
+}
+
+/** Hanya baris proses whitelist untuk appendSummaryProcessParts */
+export function pickSummaryProcessLines(lines) {
+  return dedupeSummaryCostLines(lines).filter((ln) =>
+    PROCESS_SUMMARY_WHITELIST.has(normLabel(ln.label)),
+  );
 }
 
 function mapSummaryLabelToMfg(label) {
@@ -143,8 +174,10 @@ export function parseSummaryCostSheet(rows) {
     }
   }
 
+  const dedupedLines = dedupeSummaryCostLines(lines);
+
   return {
-    lines,
+    lines: dedupedLines,
     packingBox,
     packingSf,
     productionCost,
@@ -514,8 +547,7 @@ function makeSummaryProcessPart(line, idx) {
 export function appendSummaryProcessParts(bomData, summaryLines) {
   if (!bomData || !summaryLines?.length) return bomData;
 
-  const extras = summaryLines
-    .filter((ln) => PROCESS_SUMMARY_WHITELIST.has(normLabel(ln.label)))
+  const extras = pickSummaryProcessLines(summaryLines)
     .filter((ln) => (ln.total || 0) > 0)
     .map((ln, idx) => makeSummaryProcessPart(ln, idx));
 
@@ -547,5 +579,10 @@ export function buildCogsConfigFromSummary(summary, defaults = {}) {
     excelTotalCogs: summary.totalCogs || 0,
     /** Finishing/coating sudah di baris SUMMARY — jangan tambah coatingCost terpisah */
     includeCoatingInCogs: defaults.includeCoatingInCogs ?? false,
+    /**
+     * hybrid: kayu dari CALCULATION + proses dari SUMMARY (dedupe)
+     * rollup: tidak append EXCEL-SUMMARY — gunakan seed terkurati / master
+     */
+    cogsImportMode: defaults.cogsImportMode ?? 'hybrid',
   };
 }

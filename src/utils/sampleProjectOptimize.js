@@ -1,6 +1,7 @@
 /**
  * Normalisasi project sample pasca-import — parity COGS vs Excel.
  */
+import { applyCogsImportStrategy } from './cogsImportStrategy.js';
 
 function walkParts(node, fn) {
   if (node?.tipe === 'PART') fn(node);
@@ -33,5 +34,5 @@ export function optimizeImportedProject(project) {
     excelTotalCogs: excel?.totalCogs || project.cogsConfig?.excelTotalCogs || 0,
   };
 
-  return { ...project, productMeta, cogsConfig };
+  return applyCogsImportStrategy({ ...project, productMeta, cogsConfig });
 }

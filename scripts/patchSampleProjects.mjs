@@ -4,7 +4,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createProjectFromZanSeed } from '../src/utils/emptyProject.js';
+import {
+  createProjectFromZanSeed,
+  createProjectFromFionaSeed,
+  CURATED_SAMPLE_KEYS,
+} from '../src/utils/emptyProject.js';
+import { COGS_IMPORT_ROLLUP } from '../src/utils/cogsImportStrategy.js';
+import { dedupeSummaryCostLines } from '../src/utils/excelWorkbookParsers.js';
 import { optimizeImportedProject } from '../src/utils/sampleProjectOptimize.js';
 import { linkProjectToMasters } from '../src/utils/linkProjectToMasters.js';
 
@@ -39,6 +45,32 @@ for (const p of MANIFEST.projects) {
       cogsConfig: {
         ...seed.cogsConfig,
         includeCoatingInCogs: false,
+        cogsImportMode: COGS_IMPORT_ROLLUP,
+        excelProductionCost: doc.excelMirror?.summaryCost?.productionCost || 0,
+        excelTotalCogs: doc.excelMirror?.summaryCost?.totalCogs || 0,
+      },
+    };
+  } else if (p.sampleKey === 'FNA-550') {
+    const seed = createProjectFromFionaSeed();
+    const mirror = doc.excelMirror;
+    if (mirror?.summaryCost?.lines) {
+      mirror.summaryCost.lines = dedupeSummaryCostLines(mirror.summaryCost.lines);
+    }
+    doc = {
+      ...doc,
+      sampleSeedVersion: 6,
+      bomData: seed.bomData,
+      packingSpec: seed.packingSpec,
+      packingDimensions: seed.packingDimensions,
+      containerCapacity: seed.containerCapacity,
+      productMeta: { ...seed.productMeta },
+      productInfo: { ...doc.productInfo, ...seed.productInfo },
+      dimensi: seed.dimensi?.w ? seed.dimensi : doc.dimensi,
+      excelMirror: mirror || doc.excelMirror,
+      cogsConfig: {
+        ...seed.cogsConfig,
+        includeCoatingInCogs: false,
+        cogsImportMode: COGS_IMPORT_ROLLUP,
         excelProductionCost: doc.excelMirror?.summaryCost?.productionCost || 0,
         excelTotalCogs: doc.excelMirror?.summaryCost?.totalCogs || 0,
       },
@@ -63,10 +95,9 @@ for (const p of MANIFEST.projects) {
   }
 
   doc = optimizeImportedProject(doc);
-  const linkOpts =
-    p.sampleKey === 'ZAN-100'
-      ? { applyBiaya: false, skipBiayaIfExcel: true }
-      : { applyBiaya: true, skipBiayaIfExcel: true };
+  const linkOpts = CURATED_SAMPLE_KEYS.has(p.sampleKey)
+    ? { applyBiaya: false, skipBiayaIfExcel: true }
+    : { applyBiaya: true, skipBiayaIfExcel: true };
   doc = linkProjectToMasters(doc, linkOpts);
   doc.sampleSeedVersion = 5;
   doc.updatedAt = new Date().toISOString();

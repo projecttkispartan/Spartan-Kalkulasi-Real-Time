@@ -7,6 +7,11 @@ import {
 import { SAMPLE_PROJECTS, SAMPLE_MANIFEST_VERSION } from '../data/samples/loadSamples.js';
 import { computeCogs, computePackingTotals } from './bomCalculations.js';
 import { linkProjectToMasters } from '../utils/linkProjectToMasters.js';
+import {
+  addDismissedSampleKey,
+  getDismissedSampleKeys,
+  clearDismissedSampleKeys,
+} from './sampleDismissStorage.js';
 
 const DB_NAME = 'manufaktur-bom';
 const DB_VERSION = 3;
@@ -142,10 +147,12 @@ function findBySampleKey(existing, sampleKey) {
 export async function ensureSeedProjects() {
   let existing = await readAllDocs();
   const out = [...existing];
+  const dismissed = new Set(await getDismissedSampleKeys());
 
   for (const sample of SAMPLE_PROJECTS) {
     const norm = normalizeProject(sample);
     if (!norm) continue;
+    if (norm.sampleKey && dismissed.has(norm.sampleKey)) continue;
     const prev = findBySampleKey(existing, norm.sampleKey) || existing.find((p) => p.id === norm.id);
     const stale = !prev || (prev.sampleSeedVersion ?? 0) < SAMPLE_MANIFEST_VERSION;
 
@@ -218,6 +225,10 @@ export async function createProject() {
 }
 
 export async function deleteProject(id) {
+  const doc = await getProject(id);
+  if (doc?.sampleKey) {
+    await addDismissedSampleKey(doc.sampleKey);
+  }
   if (useFallback) {
     lsWriteAll(lsReadAll().filter((p) => p.id !== id));
     return;
@@ -228,6 +239,12 @@ export async function deleteProject(id) {
     useFallback = true;
     await deleteProject(id);
   }
+}
+
+/** Pulihkan semua project sample Excel yang pernah di-dismiss (QA/dev). */
+export async function restoreDismissedSampleProjects() {
+  await clearDismissedSampleKeys();
+  return ensureSeedProjects();
 }
 
 export async function duplicateProject(id) {

@@ -1,11 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Plus, Server, HelpCircle } from 'lucide-react';
-import { getWorkCenters, saveWorkCenters } from '../../services/masterStorage';
+import { getWorkCenters, saveWorkCenters, reimportMastersFromSeedFiles } from '../../services/masterStorage';
 import FullPageShell from '../ui/FullPageShell.jsx';
 import MasterUsageGuideModal from './MasterUsageGuideModal.jsx';
 import { MasterPanel, MasterLoading, MasterTabHint, MasterDataBody } from '../master/MasterTable.jsx';
 import { WorkCenterTable } from '../master/MasterDataTables.jsx';
 import { MASTER_TAB_META } from '../master/masterTabMeta.js';
+import MasterAddProcessPanel from '../master/MasterAddProcessPanel.jsx';
+import { createMasterRow } from '../master/masterAddProcess.js';
+import {
+  MasterDataLoadError,
+  MasterDataEmptyBanner,
+  MasterDataRowCount,
+} from '../master/MasterDataStatus.jsx';
 
 export default function MasterWorkCenterModal({ isOpen, onClose }) {
   const [list, setList] = useState([]);
@@ -13,20 +20,43 @@ export default function MasterWorkCenterModal({ isOpen, onClose }) {
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState('');
   const [showGuide, setShowGuide] = useState(false);
+  const [loadError, setLoadError] = useState(null);
 
   const wcMeta = MASTER_TAB_META.workCenters;
 
+  const load = useCallback(async () => {
+    setLoading(true);
+    setLoadError(null);
+    try {
+      const data = await getWorkCenters();
+      setList(data);
+    } catch (e) {
+      console.error('WC load failed:', e);
+      setLoadError(e?.message || 'Gagal memuat work center');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (!isOpen) return;
-    setLoading(true);
     setSearch('');
-    getWorkCenters().then((data) => {
-      setList(data);
-      setLoading(false);
-    });
-  }, [isOpen]);
+    load();
+  }, [isOpen, load]);
 
-  if (!isOpen) return null;
+  const handleResetImport = async () => {
+    setLoading(true);
+    setLoadError(null);
+    try {
+      await reimportMastersFromSeedFiles();
+      const data = await getWorkCenters();
+      setList(data);
+    } catch (e) {
+      setLoadError(e?.message || 'Gagal reset import');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -36,25 +66,15 @@ export default function MasterWorkCenterModal({ isOpen, onClose }) {
   };
 
   const addRow = () => {
-    const id = `WC-${Date.now()}`;
-    setList((prev) => [
-      ...prev,
-      {
-        id,
-        kode: id,
-        nama: 'Work Center Baru',
-        ratePerMin: 500,
-        mesin: '—',
-        category: 'ROUTING',
-        aktif: true,
-        source: 'manual',
-      },
-    ]);
+    const row = createMasterRow('workCenters', list);
+    if (row) setList((prev) => [...prev, row]);
   };
 
   const removeRow = (id) => {
     setList((prev) => prev.filter((w) => w.id !== id));
   };
+
+  if (!isOpen) return null;
 
   return (
     <>
@@ -103,22 +123,48 @@ export default function MasterWorkCenterModal({ isOpen, onClose }) {
           </div>
         }
       >
-        <MasterPanel className="flex-1 min-h-0">
-          <div className="flex flex-col flex-1 min-h-0 overflow-hidden p-4 sm:p-5">
-            <MasterDataBody
-              hint={<MasterTabHint sheet={wcMeta.sheet}>{wcMeta.hint}</MasterTabHint>}
-              search={search}
-              onSearchChange={setSearch}
-              searchPlaceholder={wcMeta.searchPlaceholder}
-            >
-              {loading ? (
-                <MasterLoading />
-              ) : (
-                <WorkCenterTable rows={list} setWorkCenters={setList} search={search} onRemove={removeRow} />
-              )}
-            </MasterDataBody>
-          </div>
-        </MasterPanel>
+        <div className="flex flex-col flex-1 min-h-0 w-full h-full">
+          <MasterPanel className="flex-1 min-h-0 h-full">
+            <div className="flex flex-col flex-1 min-h-0 overflow-hidden p-4 sm:p-5 gap-3">
+              <MasterAddProcessPanel
+                tabId="workCenters"
+                tabLabel={wcMeta.label}
+                canAdd
+                onAddRow={addRow}
+              />
+              <MasterDataBody
+                banners={
+                  <>
+                    {loadError && <MasterDataLoadError message={loadError} onRetry={load} />}
+                    {!loadError && !loading && list.length === 0 && (
+                      <MasterDataEmptyBanner
+                        tabLabel={wcMeta.label}
+                        rowCount={0}
+                        totalKayu={0}
+                        totalKatalog={0}
+                        onReload={load}
+                        onResetImport={handleResetImport}
+                      />
+                    )}
+                  </>
+                }
+                statusBar={
+                  <MasterDataRowCount tabLabel={wcMeta.label} count={list.length} loading={loading} />
+                }
+                hint={<MasterTabHint sheet={wcMeta.sheet}>{wcMeta.hint}</MasterTabHint>}
+                search={search}
+                onSearchChange={setSearch}
+                searchPlaceholder={wcMeta.searchPlaceholder}
+              >
+                {loading ? (
+                  <MasterLoading />
+                ) : (
+                  <WorkCenterTable rows={list} setWorkCenters={setList} search={search} onRemove={removeRow} />
+                )}
+              </MasterDataBody>
+            </div>
+          </MasterPanel>
+        </div>
       </FullPageShell>
 
       <MasterUsageGuideModal isOpen={showGuide} onClose={() => setShowGuide(false)} />

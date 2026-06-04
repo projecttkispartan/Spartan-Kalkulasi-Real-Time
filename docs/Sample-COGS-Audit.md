@@ -16,7 +16,7 @@
 |--------|--------------|-------------------|------------------|------------|
 | **ZAN-100** | **~0,01%** | **~0,01%** | 0 | Seed `zanStoolGraph` + mirror Excel |
 | SVDT-120 | ~5,8% | ~5,8% | 0 | Terbaik di kelompok import |
-| FNA-550 | ~8,6% | ~8,6% | 0 | Mendekati toleransi 8% |
+| FNA-550 | ~1,1% | ~1,1% | 0 | PASS (seed terkurati + dedupe SUMMARY) |
 | MF081 | ~10,9% | ~10,9% | 0 | |
 | L-LOU-NAT | ~10,9% | ~10,9% | 0 | |
 | G557 | ~10,0% | ~10,0% | 0 | |

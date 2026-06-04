@@ -1,0 +1,200 @@
+{
+  "generatedAt": "2026-06-04T04:25:26.961Z",
+  "sampleFilter": "FNA-550",
+  "rows": [
+    {
+      "sampleKey": "FNA-550",
+      "file": "fna-550.json",
+      "partCountManifest": 22,
+      "partCountTree": 16,
+      "counts": {
+        "excelSummaryParts": 0,
+        "templateExcelParts": 0,
+        "totalParts": 16
+      },
+      "groups": {
+        "excel-summary": {
+          "partCount": 0,
+          "material": 0,
+          "process": 0,
+          "partTotal": 0,
+          "top10": []
+        },
+        "template-excel": {
+          "partCount": 0,
+          "material": 0,
+          "process": 0,
+          "partTotal": 0,
+          "top10": []
+        },
+        "template-master": {
+          "partCount": 16,
+          "material": 766223,
+          "process": 575883,
+          "partTotal": 1342106,
+          "top10": [
+            {
+              "kode": "FNA-UPHOLSTERY",
+              "nama": "UPHOLSTERY",
+              "group": "template-master",
+              "material": 171765,
+              "process": 58321,
+              "partTotal": 230086,
+              "biayaFromExcel": false,
+              "biaya": 171765,
+              "qty": 1
+            },
+            {
+              "kode": "FNA-FINISHING",
+              "nama": "FINISHING",
+              "group": "template-master",
+              "material": 105307,
+              "process": 73105,
+              "partTotal": 178412,
+              "biayaFromExcel": false,
+              "biaya": 105307,
+              "qty": 1
+            },
+            {
+              "kode": "FNA-ASSEMBLING-HARDWARE",
+              "nama": "ASSEMBLING HARDWARE",
+              "group": "template-master",
+              "material": 36981,
+              "process": 132112,
+              "partTotal": 169093,
+              "biayaFromExcel": false,
+              "biaya": 36981,
+              "qty": 1
+            },
+            {
+              "kode": "FNA-FITTING-HARDWARE",
+              "nama": "FITTING HARDWARE",
+              "group": "template-master",
+              "material": 128654,
+              "process": 26051,
+              "partTotal": 154705,
+              "biayaFromExcel": false,
+              "biaya": 128654,
+              "qty": 1
+            },
+            {
+              "kode": "1200310-1.3.0.2.1",
+              "nama": "KAKI",
+              "group": "template-master",
+              "material": 69992,
+              "process": 36464,
+              "partTotal": 106456,
+              "biayaFromExcel": false,
+              "biaya": 17498,
+              "qty": 4
+            },
+            {
+              "kode": "1200310-1.3.0.2.4",
+              "nama": "TIANG SANDARAN",
+              "group": "template-master",
+              "material": 56402,
+              "process": 29384,
+              "partTotal": 85786,
+              "biayaFromExcel": false,
+              "biaya": 28201,
+              "qty": 2
+            },
+            {
+              "kode": "FNA-AMPLAS",
+              "nama": "AMPLAS",
+              "group": "template-master",
+              "material": 6014,
+              "process": 66581,
+              "partTotal": 72595,
+              "biayaFromExcel": false,
+              "biaya": 6014,
+              "qty": 1
+            },
+            {
+              "kode": "FNA-GERINDA",
+              "nama": "GERINDA",
+              "group": "template-master",
+              "material": 826,
+              "process": 54732,
+              "partTotal": 55558,
+              "biayaFromExcel": false,
+              "biaya": 826,
+              "qty": 1
+            },
+            {
+              "kode": "1200310-1.0.0.2.5",
+              "nama": "TEMPEL TIANG SANDARAN",
+              "group": "template-master",
+              "material": 34610,
+              "process": 18031,
+              "partTotal": 52641,
+              "biayaFromExcel": false,
+              "biaya": 17305,
+              "qty": 2
+            },
+            {
+              "kode": "1200310-1.3.0.2.3",
+              "nama": "SUNDUK DEPAN BELAKANG",
+              "group": "template-master",
+              "material": 31586,
+              "process": 16456,
+              "partTotal": 48042,
+              "biayaFromExcel": false,
+              "biaya": 15793,
+              "qty": 2
+            }
+          ]
+        },
+        "template-other": {
+          "partCount": 0,
+          "material": 0,
+          "process": 0,
+          "partTotal": 0,
+          "top10": []
+        }
+      },
+      "partsRollup": {
+        "material": 766223,
+        "process": 575883,
+        "partTotal": 1342106
+      },
+      "packing": {
+        "jalur": "BOX",
+        "material": 92615,
+        "labor": 33500,
+        "total": 126115,
+        "packBoxMat": 92615,
+        "packSfMat": 0
+      },
+      "coating": {
+        "inCogs": 0,
+        "detail": 453815
+      },
+      "overhead": {
+        "factoryOhPct": 5,
+        "managementOhPct": 2.5,
+        "factoryOh": 73411,
+        "managementOh": 36706
+      },
+      "app": {
+        "totalMaterial": 766223,
+        "totalProcess": 575883,
+        "productionCost": 1468221,
+        "totalCogs": 1578338,
+        "sellingPrice": 1894000
+      },
+      "excel": {
+        "productionCost": 1484080,
+        "totalCogs": 1595386
+      },
+      "deviation": {
+        "productionPct": -0.010686114835233115,
+        "cogsPct": -0.010686114835233079
+      },
+      "reconcile": {
+        "partsPlusPackingPlusCoating": 1468221,
+        "cogsEngineProduction": 1468221
+      }
+    }
+  ]
+}

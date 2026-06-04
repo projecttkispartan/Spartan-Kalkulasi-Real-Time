@@ -7,6 +7,7 @@ import {
   ChevronRight,
   ClipboardList,
   MinusCircle,
+  X,
 } from 'lucide-react';
 import {
   CHECKLIST_GROUP_LABELS,
@@ -49,8 +50,13 @@ export default function ExcelParityChecklistPanel({
   kursUsd,
   kursEur,
   mastersReady,
+  listMaxHeight = 'max-h-[min(360px,38vh)]',
+  className = '',
+  onClose = null,
 }) {
-  const [collapsed, setCollapsed] = useState({});
+  const [collapsed, setCollapsed] = useState(() =>
+    Object.fromEntries(CHECKLIST_GROUP_ORDER.map((g) => [g, true])),
+  );
   const [showOptional, setShowOptional] = useState(false);
 
   const audit = useMemo(
@@ -107,14 +113,17 @@ export default function ExcelParityChecklistPanel({
   const releaseReady = fail === 0 && score >= 85;
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <div className={`bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col min-h-0 ${className}`}>
       <div className="px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-indigo-50/80 to-white flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-xl bg-indigo-100 text-indigo-700">
             <ClipboardList className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-sm font-black text-slate-800 uppercase tracking-wider">
+            <h3
+              id="excel-checklist-modal-title"
+              className="text-sm font-black text-slate-800 uppercase tracking-wider"
+            >
               Checklist Pengganti Excel
             </h3>
             <p className="text-[10px] text-slate-500 font-medium mt-0.5">
@@ -145,6 +154,16 @@ export default function ExcelParityChecklistPanel({
             />
             Tampilkan opsional
           </label>
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-2 rounded-lg hover:bg-slate-100 text-slate-500 ml-1"
+              aria-label="Tutup checklist"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -159,7 +178,7 @@ export default function ExcelParityChecklistPanel({
         </div>
       )}
 
-      <div className="p-4 space-y-3 max-h-[420px] overflow-y-auto scrollbar-hide">
+      <div className={`p-4 space-y-3 overflow-y-auto scrollbar-hide flex-1 min-h-0 ${listMaxHeight}`}>
         {visibleGroups.map((groupKey) => {
           const items = grouped[groupKey].filter(
             (it) => showOptional || it.severity !== 'opsional',

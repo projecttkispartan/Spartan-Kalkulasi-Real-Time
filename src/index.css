@@ -174,12 +174,17 @@
   }
 
   .master-scroll-region {
-    flex: 1 1 0;
+    flex: 1 1 auto;
     min-height: 0;
     overflow-y: auto;
     overflow-x: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
+  }
+
+  .master-table-region {
+    min-height: 240px;
+    max-height: min(62vh, 720px);
   }
 
   .scroll-thin {

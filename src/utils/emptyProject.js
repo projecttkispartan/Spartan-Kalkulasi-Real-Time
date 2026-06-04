@@ -1,6 +1,13 @@
 import { manufactureGraph } from '../data/mockData.js';
 import { zanStoolGraph } from '../data/zanStoolGraph.js';
+import { fionaChairGraph } from '../data/fionaChairGraph.js';
 import { ZAN_EXCEL_BOX_PACKING } from '../data/zanExcelSummary.js';
+import {
+  FIONA_EXCEL_BOX_PACKING,
+  FIONA_EXCEL_COGS,
+  FIONA_EXCEL_PRODUCTION_COST,
+} from '../data/fionaExcelSummary.js';
+import { COGS_IMPORT_ROLLUP } from './cogsImportStrategy.js';
 import {
   ELBA_CHAIR_REFERENCE,
   EXCEL_FACTORY_OH_PCT,
@@ -269,6 +276,10 @@ function buildZanContainerRows() {
 
 /** Versi data sample — naikkan jika seed BOM/HPP diperbarui */
 export const ZAN_SAMPLE_SEED_VERSION = 5;
+export const FNA_SAMPLE_SEED_VERSION = 6;
+
+/** Sample dengan BOM terkurati (parity COGS) — tidak pakai hybrid EXCEL-SUMMARY */
+export const CURATED_SAMPLE_KEYS = new Set(['ZAN-100', 'FNA-550']);
 
 /** Seed ZANZIBAR STOOL — dari 1 - ZAN-100 - 2-12-25.xlsx */
 export function createProjectFromZanSeed() {
@@ -328,17 +339,96 @@ export function createProjectFromZanSeed() {
       routingSF: [],
     },
     containerCapacity: buildZanContainerRows(),
-    cogsConfig: createDefaultCogsConfig(),
+    cogsConfig: {
+      ...createDefaultCogsConfig(),
+      includeCoatingInCogs: false,
+      cogsImportMode: COGS_IMPORT_ROLLUP,
+    },
     kursUsd: 16000,
     kursEur: 17800,
     customErp: createDefaultCustomErp(),
   });
 }
 
+/** Seed FIONA CHAIR — dari 2 - FNA-550 - 4-12-25.xlsx */
+export function createProjectFromFionaSeed() {
+  const now = new Date().toISOString();
+  const packingDimensions = createDefaultPackingDimensions();
+
+  return createEmptyProject({
+    id: newProjectId(),
+    sampleSeedVersion: FNA_SAMPLE_SEED_VERSION,
+    sampleKey: 'FNA-550',
+    kode: 'FNA-550',
+    nama: 'FIONA CHAIR BLACK LIMED',
+    customer: 'AMATA',
+    versi: '1.0',
+    status: 'draft',
+    createdAt: now,
+    updatedAt: now,
+    productInfo: {
+      kode: 'FNA-550',
+      nama: 'FIONA CHAIR BLACK LIMED',
+      varian: '',
+      customer: 'AMATA',
+      kodeBom: 'FNA-550',
+      namaBom: 'FIONA CHAIR BLACK LIMED',
+      versi: '1.0',
+    },
+    productMeta: {
+      itemType: 'CHAIR',
+      wood: 'MINDI - 30 UP 200',
+      woodGradeId: 'wood-11',
+      coating: '43.BLACK LIMED',
+      coatingId: 'coat-43',
+      surfaceM2Coating: 3.9122,
+    },
+    dimensi: { w: 530, d: 575, h: 935 },
+    bomData: structuredClone(fionaChairGraph),
+    packingDimensions,
+    packingSpec: {
+      materialsBox: [
+        {
+          id: 1,
+          nama: 'BOX PACKING (Karton)',
+          qty: 1,
+          unit: 'Pcs',
+          harga: Math.round(FIONA_EXCEL_BOX_PACKING.material),
+        },
+      ],
+      materialsSF: [],
+      routingBox: [
+        {
+          id: 1,
+          nama: 'Tenaga BOX PACKING',
+          waktu: Math.max(1, Math.round(FIONA_EXCEL_BOX_PACKING.labor / 500)),
+          pekerja: 1,
+          rate: 500,
+        },
+      ],
+      routingSF: [],
+    },
+    containerCapacity: buildDefaultContainerRows(),
+    cogsConfig: {
+      ...createDefaultCogsConfig(),
+      includeCoatingInCogs: false,
+      cogsImportMode: COGS_IMPORT_ROLLUP,
+      excelProductionCost: FIONA_EXCEL_PRODUCTION_COST,
+      excelTotalCogs: FIONA_EXCEL_COGS,
+    },
+    kursUsd: 16004,
+    kursEur: 17500,
+    customErp: createDefaultCustomErp(),
+  });
+}
+
 /** Ringkasan untuk baris dashboard */
 export function projectListMeta(doc) {
+  const sampleKey = doc.sampleKey || null;
   return {
     id: doc.id,
+    sampleKey,
+    isSample: Boolean(sampleKey),
     kode: doc.kode || doc.productInfo?.kode || '—',
     nama: doc.nama || doc.productInfo?.namaBom || doc.productInfo?.nama || '—',
     customer: doc.customer || doc.productInfo?.customer || '—',

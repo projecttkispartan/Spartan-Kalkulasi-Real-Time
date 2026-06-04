@@ -18,10 +18,20 @@ export default function App() {
   const [kursEur, setKursEur] = useState(17500);
   const [fontCase, setFontCase] = useState(readStoredFontCase);
   const [mastersReady, setMastersReady] = useState(false);
+  const [mastersBootError, setMastersBootError] = useState(null);
 
   useLayoutEffect(() => {
     hydrateWorkCentersFromMaster();
-    hydrateAllMasters().then(() => setMastersReady(true));
+    hydrateAllMasters()
+      .then(() => {
+        setMastersBootError(null);
+        setMastersReady(true);
+      })
+      .catch((e) => {
+        console.error('hydrateAllMasters failed:', e);
+        setMastersBootError(e?.message || 'Gagal memuat master');
+        setMastersReady(true);
+      });
   }, []);
 
   useLayoutEffect(() => {
@@ -73,8 +83,13 @@ export default function App() {
     <div className="viewport-shell flex flex-col">
       {!mastersReady && (
         <div className="shrink-0 bg-amber-50 border-b border-amber-200 px-4 py-2 text-center text-xs font-bold text-amber-800">
-          Memuat master DATA BASE / FORMULA / COATING… Jika combo kosong, jalankan{' '}
-          <code className="font-mono bg-amber-100 px-1 rounded">npm run import:masters</code> lalu refresh.
+          Memuat master DATA BASE / FORMULA / COATING…
+        </div>
+      )}
+      {mastersReady && mastersBootError && (
+        <div className="shrink-0 bg-red-50 border-b border-red-200 px-4 py-2 text-center text-xs font-bold text-red-800">
+          Master gagal di-cache: {mastersBootError}. Buka Master Data → Reset import, atau jalankan{' '}
+          <code className="font-mono bg-red-100 px-1 rounded">npm run import:masters</code>.
         </div>
       )}
       {currentRoute === 'editor' && loadedProject ? (

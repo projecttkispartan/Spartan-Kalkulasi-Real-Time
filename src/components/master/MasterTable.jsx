@@ -162,16 +162,26 @@ export function MasterTabHint({ sheet, children }) {
   );
 }
 
-export function MasterDataBody({ hint, search, onSearchChange, searchPlaceholder, children }) {
+export function MasterDataBody({
+  hint,
+  search,
+  onSearchChange,
+  searchPlaceholder,
+  statusBar,
+  banners,
+  children,
+}) {
   return (
-    <div className="flex flex-col flex-1 min-h-0 gap-3 overflow-hidden">
+    <div className="flex flex-col flex-1 min-h-[220px] min-h-0 gap-3 overflow-hidden">
+      {banners ? <div className="shrink-0 flex flex-col gap-2">{banners}</div> : null}
+      {statusBar ? <div className="shrink-0">{statusBar}</div> : null}
       {hint ? <div className="shrink-0">{hint}</div> : null}
       {onSearchChange != null && (
         <div className="shrink-0">
           <MasterSearch value={search} onChange={onSearchChange} placeholder={searchPlaceholder} />
         </div>
       )}
-      <div className="master-scroll-region scroll-thin touch-pan-y">
+      <div className="master-scroll-region master-table-region scroll-thin touch-pan-y rounded-xl border border-slate-100 bg-white">
         {children}
       </div>
     </div>

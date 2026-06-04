@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Search, Plus, Network, Package, Image as ImageIcon, SquarePen, Trash2, Copy, FileSpreadsheet } from 'lucide-react';
 import AppHeader from '../components/ui/AppHeader';
 import { CurrencyGroup } from '../components/ui/CurrencyInput';
 import FontCaseToggle from '../components/ui/FontCaseToggle';
 import KpiCard from '../components/ui/KpiCard';
+import ExcelImportOverlay from '../components/ui/ExcelImportOverlay';
 import { formatIDR } from '../utils/formatters';
 import { listProjects, deleteProject, duplicateProject, saveProject } from '../services/projectStorage';
 import { parseBomFromFile } from '../utils/importBomFromExcel';
@@ -34,6 +35,13 @@ export default function Dashboard({
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [importJob, setImportJob] = useState(null);
+  const fileInputRef = useRef(null);
+
+  const clearImportJob = useCallback(() => {
+    setImportJob(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }, []);
 
   const refresh = useCallback(async () => {
     setLoading(true);
@@ -62,8 +70,12 @@ export default function Dashboard({
   const totalBom = projects.length;
   const totalProduk = projects.reduce((sum, p) => sum + (p.jumlahProduk || 1), 0);
 
-  const handleDelete = async (id, nama) => {
-    if (!window.confirm(`Hapus project "${nama}"?`)) return;
+  const handleDelete = async (project) => {
+    const { id, nama, isSample } = project;
+    const sampleNote = isSample
+      ? '\n\nBOM sample dihapus permanen. Master Data tidak berubah.'
+      : '';
+    if (!window.confirm(`Hapus project "${nama}"?${sampleNote}`)) return;
     await deleteProject(id);
     refresh();
   };
@@ -76,11 +88,51 @@ export default function Dashboard({
   const handleImportExcel = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    setImportJob({
+      fileName: file.name,
+      stage: 'validate',
+      detail: 'Memulai import…',
+      done: false,
+      error: null,
+    });
+
     try {
-      const project = await parseBomFromFile(file);
+      const project = await parseBomFromFile(file, ({ stage, detail }) => {
+        setImportJob((prev) => ({
+          ...prev,
+          fileName: file.name,
+          stage,
+          detail: detail || prev?.detail || '',
+          done: false,
+          error: null,
+        }));
+      });
+
+      setImportJob((prev) => ({
+        ...prev,
+        fileName: file.name,
+        stage: 'save',
+        detail: 'Menyimpan ke browser (IndexedDB)…',
+        done: false,
+        error: null,
+      }));
+
       await saveProject(project);
-      refresh();
+      await refresh();
+
+      setImportJob((prev) => ({
+        ...prev,
+        stage: 'save',
+        detail: 'Project tersimpan.',
+        done: true,
+        error: null,
+      }));
+
+      await new Promise((r) => setTimeout(r, 400));
+      clearImportJob();
       onOpenProject(project.id);
+
       const img = project.importImageStats;
       const totalImg = img?.appliedTotal ?? (img?.applied || 0) + (img?.appliedByIndex || 0);
       if (totalImg > 0 || img?.productFoto) {
@@ -96,13 +148,29 @@ export default function Dashboard({
         );
       }
     } catch (err) {
-      window.alert(`Gagal import Excel: ${err.message || err}`);
+      const message = err?.message || String(err) || 'Import gagal tanpa pesan error.';
+      setImportJob((prev) => ({
+        ...prev,
+        fileName: file.name,
+        error: message,
+        done: false,
+      }));
     }
-    e.target.value = '';
   };
+
+  const importBusy = Boolean(importJob && !importJob.error);
 
   return (
     <div className="flex flex-1 flex-col min-h-0 min-w-0">
+      <ExcelImportOverlay
+        open={Boolean(importJob)}
+        fileName={importJob?.fileName}
+        stage={importJob?.stage}
+        detail={importJob?.detail}
+        done={importJob?.done}
+        error={importJob?.error}
+        onDismiss={clearImportJob}
+      />
       <AppHeader>
         <FontCaseToggle value={fontCase} onChange={setFontCase} />
         <CurrencyGroup kursUsd={kursUsd} setKursUsd={setKursUsd} kursEur={kursEur} setKursEur={setKursEur} />
@@ -116,12 +184,19 @@ export default function Dashboard({
             className="pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm w-64 focus:outline-none focus:ring-2 focus:ring-brand-100 focus:border-brand-400 bg-slate-50 transition-all"
           />
         </div>
-        <button type="button" onClick={onNewProject} className="btn-primary shadow-brand-500/30">
+        <button type="button" onClick={onNewProject} disabled={importBusy} className="btn-primary shadow-brand-500/30 disabled:opacity-50">
           <Plus className="w-4 h-4" /> Buat Baru
         </button>
-        <label className="btn-secondary cursor-pointer">
+        <label className={`btn-secondary cursor-pointer ${importBusy ? 'opacity-50 pointer-events-none' : ''}`}>
           <FileSpreadsheet className="w-4 h-4" /> Import Excel
-          <input type="file" accept=".xlsx,.xls" className="hidden" onChange={handleImportExcel} />
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            className="hidden"
+            disabled={importBusy}
+            onChange={handleImportExcel}
+          />
         </label>
       </AppHeader>
 
@@ -224,7 +299,7 @@ export default function Dashboard({
                           </button>
                           <button
                             type="button"
-                            onClick={() => handleDelete(p.id, p.nama)}
+                            onClick={() => handleDelete(p)}
                             className="p-1.5 text-red-500 bg-red-50 border border-red-100 rounded-lg hover:bg-red-100 transition-colors"
                             title="Hapus"
                           >

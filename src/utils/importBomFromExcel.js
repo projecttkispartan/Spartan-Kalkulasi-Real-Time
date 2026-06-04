@@ -11,12 +11,12 @@ import {
   parseFullWorkbookMirror,
   parseCalculationPartsMap,
   mergeCalculationIntoBom,
-  appendSummaryProcessParts,
   buildPackingSpecFromSummary,
   buildCogsConfigFromSummary,
   sumCalculationSurfaceM2,
 } from './excelWorkbookParsers.js';
 import { attachExcelImagesToProject } from './excelImageExtract.js';
+import { attachSummaryPartsForImport, applyCogsImportStrategy } from './cogsImportStrategy.js';
 
 function createEmptyProductInfo() {
   return { kode: '', nama: '', varian: '', customer: '', kodeBom: '', namaBom: '', versi: '' };
@@ -217,7 +217,8 @@ function parseBomTemplateRows(rows) {
  * Impor workbook penuh — BOM TEMPLATE + CALCULATION + SUMMARY COST + KALKULASI + PICK LIST
  */
 export function parseBomWorkbook(wb) {
-  const templateRows = readSheetRows(wb, 'BOM TEMPLATE');
+  const templateName = findBomTemplateSheet(wb) || 'BOM TEMPLATE';
+  const templateRows = readSheetRows(wb, templateName);
   const { productInfo, productMeta, dimensi } = parseProductHeader(templateRows);
   const partRows = parseBomTemplateRows(templateRows);
   let bomData = buildTreeFromFlatRows(partRows);
@@ -226,7 +227,9 @@ export function parseBomWorkbook(wb) {
   const calcMap = parseCalculationPartsMap(readSheetRows(wb, 'CALCULATION'));
 
   mergeCalculationIntoBom(bomData, calcMap);
-  appendSummaryProcessParts(bomData, mirror.summaryCost?.lines || []);
+
+  const cogsImportMode = 'hybrid';
+  attachSummaryPartsForImport(bomData, mirror.summaryCost?.lines || [], cogsImportMode);
 
   const surfaceM2Coating = sumCalculationSurfaceM2(calcMap);
   if (surfaceM2Coating > 0) {
@@ -262,25 +265,127 @@ export function parseBomWorkbook(wb) {
     ],
   });
 
-  return linkProjectToMasters(
+  const linked = linkProjectToMasters(
     optimizeImportedProject({
       ...project,
       productMeta,
+      cogsConfig: { ...cogsConfig, cogsImportMode },
     }),
     {
       applyBiaya: true,
       skipBiayaIfExcel: true,
     },
   );
+  return applyCogsImportStrategy(linked);
 }
 
-export async function parseBomFromArrayBuffer(buffer) {
-  const wb = XLSX.read(buffer, { type: 'array' });
+function countBomParts(node) {
+  if (!node) return 0;
+  let n = node.tipe === 'PART' ? 1 : 0;
+  for (const child of node.children || []) {
+    n += countBomParts(child);
+  }
+  return n;
+}
+
+function findBomTemplateSheet(wb) {
+  if (!wb?.SheetNames?.length) return null;
+  const exact = wb.Sheets['BOM TEMPLATE'];
+  if (exact) return 'BOM TEMPLATE';
+  const match = wb.SheetNames.find((n) => String(n).trim().toUpperCase() === 'BOM TEMPLATE');
+  return match || null;
+}
+
+/** @throws {Error} */
+export function validateExcelFile(file) {
+  if (!file) throw new Error('Tidak ada file dipilih.');
+  if (file.size === 0) throw new Error('File kosong (0 byte). Pilih file Excel yang valid.');
+
+  const ext = String(file.name.split('.').pop() || '').toLowerCase();
+  if (ext === 'xls') {
+    throw new Error(
+      'Format .xls (Excel 97–2003) belum didukung. Buka file di Excel lalu Simpan Sebagai .xlsx.',
+    );
+  }
+  if (ext !== 'xlsx') {
+    throw new Error('Hanya file .xlsx yang didukung. Ekstensi saat ini: .' + (ext || '?'));
+  }
+}
+
+/** @throws {Error} */
+export function validateParsedWorkbook(wb, project) {
+  if (!wb?.SheetNames?.length) {
+    throw new Error('File Excel tidak valid atau tidak berisi sheet.');
+  }
+
+  const templateName = findBomTemplateSheet(wb);
+  if (!templateName) {
+    const preview = wb.SheetNames.slice(0, 6).join(', ');
+    const more = wb.SheetNames.length > 6 ? ` (+${wb.SheetNames.length - 6} lainnya)` : '';
+    throw new Error(
+      `Sheet "BOM TEMPLATE" tidak ditemukan.\n\nSheet dalam file: ${preview}${more}\n\nPastikan ini file BOM Spartan (.xlsx), bukan Excel kosong atau export dari modul lain.`,
+    );
+  }
+
+  const partCount = countBomParts(project?.bomData);
+  if (partCount === 0) {
+    throw new Error(
+      'Tidak ada part terbaca di sheet BOM TEMPLATE.\n\nPeriksa baris part (kolom NO / kode / nama, mulai sekitar baris 21). File mungkin kosong, salah template, atau struktur kolom berbeda.',
+    );
+  }
+
+  const kode = project?.productInfo?.kode || project?.kode || '';
+  const nama = project?.productInfo?.nama || project?.nama || '';
+  return {
+    partCount,
+    sheetCount: wb.SheetNames.length,
+    templateName,
+    hasProductHeader: Boolean(kode || nama),
+  };
+}
+
+/**
+ * @param {(payload: { stage: string, detail?: string }) => void} [onProgress]
+ */
+export async function parseBomFromArrayBuffer(buffer, onProgress) {
+  if (!buffer?.byteLength) {
+    throw new Error('File kosong atau gagal dibaca.');
+  }
+
+  onProgress?.({ stage: 'read', detail: 'Membaca sheet Excel…' });
+
+  let wb;
+  try {
+    wb = XLSX.read(buffer, { type: 'array' });
+  } catch {
+    throw new Error('File Excel rusak atau bukan format .xlsx yang valid.');
+  }
+
+  onProgress?.({ stage: 'parse', detail: 'BOM TEMPLATE · CALCULATION · SUMMARY COST…' });
   const project = parseBomWorkbook(wb);
-  return attachExcelImagesToProject(project, buffer);
+  const meta = validateParsedWorkbook(wb, project);
+
+  onProgress?.({
+    stage: 'images',
+    detail: `Memproses ${meta.partCount} part · ${meta.sheetCount} sheet…`,
+  });
+  const withImages = await attachExcelImagesToProject(project, buffer);
+
+  onProgress?.({
+    stage: 'parse',
+    detail: meta.hasProductHeader
+      ? `${meta.partCount} part siap diimpor.`
+      : `${meta.partCount} part terbaca (header produk kosong — isi manual di editor).`,
+  });
+
+  return withImages;
 }
 
-export async function parseBomFromFile(file) {
+export async function parseBomFromFile(file, onProgress) {
+  onProgress?.({ stage: 'validate', detail: 'Memeriksa nama & ukuran file…' });
+  validateExcelFile(file);
+
+  onProgress?.({ stage: 'read', detail: 'Memuat file ke memori…' });
   const buffer = await file.arrayBuffer();
-  return parseBomFromArrayBuffer(buffer);
+  return parseBomFromArrayBuffer(buffer, onProgress);
 }

@@ -11,6 +11,7 @@ import {
   EXCEL_PARITY_TOLERANCE_IDR,
   EXCEL_PARITY_TOLERANCE_PCT,
 } from '../src/data/excelParityChecklist.js';
+import { CURATED_SAMPLE_KEYS } from '../src/utils/emptyProject.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
@@ -29,10 +30,9 @@ function withinTolerance(actual, expected) {
 
 function loadProject(file, sampleKey) {
   const raw = JSON.parse(fs.readFileSync(path.join(PROJECTS_DIR, file), 'utf8'));
-  const opts =
-    sampleKey === 'ZAN-100'
-      ? { applyBiaya: false, skipBiayaIfExcel: true }
-      : { applyBiaya: true, skipBiayaIfExcel: true };
+  const opts = CURATED_SAMPLE_KEYS.has(sampleKey)
+    ? { applyBiaya: false, skipBiayaIfExcel: true }
+    : { applyBiaya: true, skipBiayaIfExcel: true };
   return linkProjectToMasters(raw, opts);
 }
 

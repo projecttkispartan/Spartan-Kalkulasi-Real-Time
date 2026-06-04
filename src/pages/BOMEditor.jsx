@@ -3,7 +3,7 @@ import {
   ArrowLeft, DollarSign, Euro, FileText, CheckCircle2, ImagePlus, Network, Package, Grid,
   Wrench, Calculator, BookOpen, Plus, Search, Table as TableIcon, ZoomOut, ZoomIn, Maximize,
   Trash2, ChevronDown, Link as LinkIcon, Image as ImageIcon, ChevronRight, Layout, Activity,
-  AlertTriangle, PieChart, Server, Users, QrCode, Briefcase, Edit, Eye, EyeOff, PanelTopClose, PanelTopOpen, TrendingUp, HelpCircle,
+  AlertTriangle, PieChart, Server, Users, QrCode, Briefcase, Edit, Eye, EyeOff, PanelTopClose, PanelTopOpen, TrendingUp, HelpCircle, ClipboardList,
 } from 'lucide-react';
 import { flattenTree, getPartHierarchyLabels } from '../utils/treeHelpers';
 import { formatIDR, formatPrice } from '../utils/formatters';
@@ -32,7 +32,12 @@ import SummaryDetailModal from '../components/modals/SummaryDetailModal';
 import KalkulasiModal from '../components/modals/KalkulasiModal';
 import MarkupPreviewModal from '../components/modals/MarkupPreviewModal';
 import ProductPanel from '../components/product/ProductPanel';
-import ExcelParityChecklistPanel from '../components/cogs/ExcelParityChecklistPanel';
+import ExcelParityChecklistModal from '../components/modals/ExcelParityChecklistModal';
+import { auditExcelParity } from '../utils/excelParityAudit.js';
+import CogsProductionPieCard from '../components/cogs/CogsProductionPieCard';
+import ExcelDeviationCard from '../components/cogs/ExcelDeviationCard';
+import { buildCogsInsight } from '../utils/cogsBreakdown.js';
+import { CURATED_SAMPLE_KEYS } from '../utils/emptyProject.js';
 import OperasiDetailCell from '../components/ui/OperasiDetailCell';
 import FontCaseToggle from '../components/ui/FontCaseToggle';
 import ExportMenu from '../components/ui/ExportMenu';
@@ -439,6 +444,9 @@ export default function BOMEditor({
         markupPct: 20,
       },
   );
+  const [cogsConfigOpen, setCogsConfigOpen] = useState(true);
+  const [cogsInsightOpen, setCogsInsightOpen] = useState(false);
+  const [showExcelChecklistModal, setShowExcelChecklistModal] = useState(false);
 
   const [productMeta, setProductMeta] = useState(
     () =>
@@ -912,6 +920,68 @@ export default function BOMEditor({
   const cogsData = useMemo(
     () => computeCogs({ bomData, cogsConfig, packingTotals, productMeta }),
     [bomData, cogsConfig, packingTotals, productMeta],
+  );
+
+  const cogsInsightSampleKey = CURATED_SAMPLE_KEYS.has(productInfo.kode)
+    ? productInfo.kode
+    : null;
+
+  const cogsInsight = useMemo(
+    () =>
+      buildCogsInsight({
+        bomData,
+        cogsConfig,
+        packingTotals,
+        productMeta,
+        excelMirror,
+        importedFromExcel,
+        cogsData,
+        sampleKey: cogsInsightSampleKey,
+      }),
+    [
+      bomData,
+      cogsConfig,
+      packingTotals,
+      productMeta,
+      excelMirror,
+      importedFromExcel,
+      cogsData,
+      cogsInsightSampleKey,
+    ],
+  );
+
+  const excelParityAudit = useMemo(
+    () =>
+      auditExcelParity({
+        bomData,
+        productMeta,
+        productInfo,
+        dimensi,
+        packingSpec,
+        packingDimensions,
+        cogsConfig,
+        cogsData,
+        excelMirror,
+        importedFromExcel,
+        kursUsd,
+        kursEur,
+        mastersReady,
+      }),
+    [
+      bomData,
+      productMeta,
+      productInfo,
+      dimensi,
+      packingSpec,
+      packingDimensions,
+      cogsConfig,
+      cogsData,
+      excelMirror,
+      importedFromExcel,
+      kursUsd,
+      kursEur,
+      mastersReady,
+    ],
   );
 
   const summaryTotals = useMemo(() => {
@@ -1423,6 +1493,23 @@ export default function BOMEditor({
         totalCogs={cogsData.totalCogs}
         selectedPct={cogsConfig.markupPct}
         onSelect={(pct) => setCogsConfig((p) => ({ ...p, markupPct: pct }))}
+      />
+      <ExcelParityChecklistModal
+        isOpen={showExcelChecklistModal}
+        onClose={() => setShowExcelChecklistModal(false)}
+        bomData={bomData}
+        productMeta={productMeta}
+        productInfo={productInfo}
+        dimensi={dimensi}
+        packingSpec={packingSpec}
+        packingDimensions={packingDimensions}
+        cogsConfig={cogsConfig}
+        cogsData={cogsData}
+        excelMirror={excelMirror}
+        importedFromExcel={importedFromExcel}
+        kursUsd={kursUsd}
+        kursEur={kursEur}
+        mastersReady={mastersReady}
       />
 
       <div className="editor-body">
@@ -2916,27 +3003,42 @@ export default function BOMEditor({
 
           {/* TAB 7: DETAIL COGS & PRICING */}
           {editorTab === 'cogs' && (
-            <div className="flex-1 overflow-y-auto p-6 md:p-8 bg-page flex flex-col gap-6 scrollbar-hide">
-              {/* Header Info */}
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 shrink-0">
-                <div className="flex items-start justify-between gap-4 mb-4">
-                  <div>
-                    <h2 className="text-xl font-black text-slate-800 flex items-center gap-2">
-                      <FileText className="w-6 h-6 text-emerald-600"/> Pembentukan COGS & Harga Jual
-                    </h2>
-                    <p className="text-xs text-slate-500 mt-1 font-medium">Alur perhitungan Cost of Goods Sold berdasarkan material, proses pabrik, metode packing, dan penambahan persentase overhead sesuai referensi sistem.</p>
-                  </div>
-                  <div className="bg-emerald-50 text-emerald-700 px-4 py-2 rounded-lg border border-emerald-100 flex items-center gap-2 shadow-sm shrink-0">
-                    <CheckCircle2 className="w-5 h-5"/>
-                    <div className="flex flex-col">
-                      <span className="text-[10px] font-black uppercase tracking-wider">Harga Jual (FOB)</span>
-                      <span className="text-xl font-black leading-none">Rp {formatIDR(Math.floor(cogsData.sellingPrice / 1000) * 1000)}</span>
+            <div className="flex-1 flex flex-col min-h-0 overflow-y-auto p-4 md:p-6 bg-page gap-4 scrollbar-hide">
+              {/* Konfigurasi — bisa dilipat agar checklist/waterfall lebih tinggi di viewport */}
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm shrink-0 overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setCogsConfigOpen((o) => !o)}
+                  className="w-full flex items-center justify-between gap-3 px-4 py-3 hover:bg-slate-50/80 text-left transition-colors"
+                >
+                  <span className="flex items-center gap-2 min-w-0">
+                    {cogsConfigOpen ? (
+                      <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4 text-slate-400 shrink-0" />
+                    )}
+                    <FileText className="w-5 h-5 text-emerald-600 shrink-0" />
+                    <span className="text-sm font-black text-slate-800 uppercase tracking-wide truncate">
+                      Pembentukan COGS & Harga Jual
+                    </span>
+                  </span>
+                  <div className="bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-lg border border-emerald-100 flex items-center gap-2 shadow-sm shrink-0">
+                    <CheckCircle2 className="w-4 h-4" />
+                    <div className="flex flex-col text-right">
+                      <span className="text-[9px] font-black uppercase tracking-wider">FOB</span>
+                      <span className="text-base font-black leading-none tabular-nums">
+                        Rp {formatIDR(Math.floor(cogsData.sellingPrice / 1000) * 1000)}
+                      </span>
                     </div>
                   </div>
-                </div>
+                </button>
 
-                {/* Configuration Panel */}
-                <div className="bg-slate-50 border border-slate-200 rounded-xl p-5 mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {cogsConfigOpen && (
+                <div className="px-4 pb-4 border-t border-slate-100">
+                <p className="text-[10px] text-slate-500 mt-3 mb-3 font-medium">
+                  Packing, overhead, dan markup — mempengaruhi waterfall & deviasi di bawah.
+                </p>
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {/* Packing Selector */}
                   <div className="flex flex-col gap-2">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">1. Jalur Packing (Fisik)</label>
@@ -3010,32 +3112,46 @@ export default function BOMEditor({
                     </div>
                   </div>
                 </div>
+                </div>
+                )}
               </div>
 
-              <ExcelParityChecklistPanel
-                bomData={bomData}
-                productMeta={productMeta}
-                productInfo={productInfo}
-                dimensi={dimensi}
-                packingSpec={packingSpec}
-                packingDimensions={packingDimensions}
-                cogsConfig={cogsConfig}
-                cogsData={cogsData}
-                excelMirror={excelMirror}
-                importedFromExcel={importedFromExcel}
-                kursUsd={kursUsd}
-                kursEur={kursEur}
-                mastersReady={mastersReady}
-              />
+              <div className="flex flex-wrap items-center gap-3 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setShowExcelChecklistModal(true)}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-800 text-xs font-black uppercase tracking-wide hover:bg-indigo-100 shadow-sm transition-colors"
+                >
+                  <ClipboardList className="w-4 h-4" />
+                  Detail
+                  <span
+                    className={`px-2 py-0.5 rounded-md border text-[10px] tabular-nums ${
+                      excelParityAudit.summary.fail === 0 && excelParityAudit.summary.score >= 85
+                        ? 'bg-emerald-100 border-emerald-200 text-emerald-800'
+                        : 'bg-amber-100 border-amber-200 text-amber-900'
+                    }`}
+                  >
+                    {excelParityAudit.summary.score}%
+                  </span>
+                  {excelParityAudit.summary.fail > 0 && (
+                    <span className="text-[10px] font-bold text-red-600 normal-case tracking-normal">
+                      {excelParityAudit.summary.fail} belum
+                    </span>
+                  )}
+                </button>
+                <span className="text-[10px] text-slate-500 font-medium">
+                  Checklist pengganti Excel — verifikasi parity SUMMARY COST
+                </span>
+              </div>
 
-              {/* COGS Waterfall Table */}
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col mb-8">
-                <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/80 flex items-center gap-3">
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col min-h-0 max-h-[min(420px,50vh)] xl:max-h-[min(520px,58vh)] shrink-0">
+                <div className="px-4 py-3 border-b border-slate-200 bg-slate-50/80 flex items-center gap-2 shrink-0">
                   <Activity className="w-5 h-5 text-indigo-500" />
-                  <h3 className="text-sm font-black text-slate-800 uppercase tracking-wider">Langkah Demi Langkah Pembentukan COGS</h3>
+                  <h3 className="text-sm font-black text-slate-800 uppercase tracking-wider">
+                    Langkah Demi Langkah Pembentukan COGS
+                  </h3>
                 </div>
-                
-                <div className="overflow-x-auto">
+                <div className="overflow-auto flex-1 min-h-0 scrollbar-hide">
                   <table className="w-full text-left text-sm">
                     <thead className="bg-white border-b border-slate-200 text-slate-500 uppercase text-[10px] font-extrabold tracking-widest">
                       <tr>
@@ -3154,6 +3270,33 @@ export default function BOMEditor({
                     </tbody>
                   </table>
                 </div>
+              </div>
+
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm shrink-0 overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setCogsInsightOpen((o) => !o)}
+                  className="w-full flex items-center gap-2 px-4 py-3 hover:bg-slate-50/80 text-left transition-colors"
+                >
+                  {cogsInsightOpen ? (
+                    <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
+                  ) : (
+                    <ChevronRight className="w-4 h-4 text-slate-400 shrink-0" />
+                  )}
+                  <PieChart className="w-5 h-5 text-indigo-500 shrink-0" />
+                  <span className="text-sm font-black text-slate-800 uppercase tracking-wide">
+                    Ringkasan biaya produksi & deviasi Excel
+                  </span>
+                  <span className="text-[10px] font-bold text-slate-400 ml-auto hidden sm:inline">
+                    {cogsInsightOpen ? 'Sembunyikan' : 'Tampilkan chart'}
+                  </span>
+                </button>
+                {cogsInsightOpen && (
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 p-4 border-t border-slate-100 bg-slate-50/30">
+                    <CogsProductionPieCard insight={cogsInsight} compact />
+                    <ExcelDeviationCard insight={cogsInsight} compact />
+                  </div>
+                )}
               </div>
             </div>
           )}

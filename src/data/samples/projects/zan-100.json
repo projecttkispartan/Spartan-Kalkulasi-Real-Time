@@ -6,7 +6,7 @@
   "sampleSourceFile": "1 - ZAN-100 - 2-12-25.xlsx",
   "status": "draft",
   "createdAt": "2026-06-03T07:18:48.392Z",
-  "updatedAt": "2026-06-03T07:18:48.392Z",
+  "updatedAt": "2026-06-04T04:25:15.823Z",
   "createdBy": "Excel Import",
   "kode": "ZAN-10",
   "nama": "ZAN-10 - ZANZIBAR STOOL/ SIDE TABLE",
@@ -140,7 +140,12 @@
               }
             ]
           }
-        ]
+        ],
+        "woodGradeId": "wood-11",
+        "woodSpecification": "MINDI - 30 UP 200",
+        "materialType": "kayu",
+        "sf": 0,
+        "wf": 30
       },
       {
         "id": "zan-sm-bawah",
@@ -231,7 +236,12 @@
               }
             ]
           }
-        ]
+        ],
+        "woodGradeId": "wood-11",
+        "woodSpecification": "MINDI - 30 UP 200",
+        "materialType": "kayu",
+        "sf": 0,
+        "wf": 30
       },
       {
         "id": "zan-sm-samping",
@@ -286,7 +296,12 @@
               }
             ]
           }
-        ]
+        ],
+        "woodGradeId": "wood-11",
+        "woodSpecification": "MINDI - 30 UP 200",
+        "materialType": "kayu",
+        "sf": 0,
+        "wf": 30
       },
       {
         "id": "zan-sm-komponen",
@@ -475,9 +490,19 @@
               }
             ]
           }
-        ]
+        ],
+        "woodGradeId": "wood-11",
+        "woodSpecification": "MINDI - 30 UP 200",
+        "materialType": "kayu",
+        "sf": 0,
+        "wf": 30
       }
-    ]
+    ],
+    "woodGradeId": "wood-11",
+    "woodSpecification": "MINDI - 30 UP 200",
+    "materialType": "kayu",
+    "sf": 0,
+    "wf": 30
   },
   "packingDimensions": [
     {
@@ -586,6 +611,7 @@
     "managementOhPct": 2.5,
     "markupPct": 20,
     "includeCoatingInCogs": false,
+    "cogsImportMode": "rollup",
     "excelProductionCost": 2043406.871939539,
     "excelTotalCogs": 2196662.3873350048
   },
