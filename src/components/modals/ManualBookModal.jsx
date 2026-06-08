@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { BookOpen, List, ChevronRight, CheckCircle2, AlertCircle } from 'lucide-react';
 import FullPageShell from '../ui/FullPageShell.jsx';
-import { MANUAL_BOOK_SECTIONS, MANUAL_SCENARIOS } from '../../data/manualBookSections.js';
+import { MANUAL_BOOK_SECTIONS, MANUAL_SCENARIOS, MANUAL_BEST_PRACTICES } from '../../data/manualBookSections.js';
 import { MANUAL_FLOW_REGISTRY } from '../manual/manualBookFlows.jsx';
 import {
   FlowPreviewModal,
@@ -26,6 +26,16 @@ function StepList({ steps, variant = 'scenario' }) {
             <p className="text-xs text-slate-600 mt-1 leading-relaxed">
               {variant === 'troubleshoot' ? s.fix : s.detail}
             </p>
+            {variant === 'scenario' && s.expected && (
+              <p className="text-[11px] text-emerald-700 mt-2">
+                <span className="font-black">Expected:</span> {s.expected}
+              </p>
+            )}
+            {variant === 'scenario' && s.fail && s.fail !== '—' && (
+              <p className="text-[11px] text-amber-800 mt-1">
+                <span className="font-black">Jika gagal:</span> {s.fail}
+              </p>
+            )}
           </div>
         </li>
       ))}
@@ -59,10 +69,36 @@ function ScenarioCard({ scenario, onPreviewFlow }) {
   );
 }
 
-function SectionContent({ section, scenarios, onPreviewFlow, onPreviewImage }) {
+function BestPracticeCard({ practice, onPreviewFlow }) {
+  const flowMeta = practice.flow ? MANUAL_FLOW_REGISTRY[practice.flow] : null;
+  const FlowComp = flowMeta?.Component;
+  return (
+    <article className="rounded-2xl border border-violet-200 bg-white overflow-hidden shadow-sm">
+      <div className="px-5 py-4 bg-violet-50/80 border-b border-violet-100">
+        <p className="text-[10px] font-bold uppercase text-violet-600 tracking-widest">{practice.persona}</p>
+        <h3 className="text-sm font-black text-violet-900 mt-1">{practice.title}</h3>
+      </div>
+      <div className="p-5 space-y-4">
+        {FlowComp && (
+          <FlowChartCard
+            title={flowMeta.title}
+            flowId={practice.flow}
+            FlowComponent={FlowComp}
+            onPreview={onPreviewFlow}
+          />
+        )}
+        <StepList steps={practice.steps} />
+      </div>
+    </article>
+  );
+}
+
+function SectionContent({ section, scenarios, bestPractices, onPreviewFlow, onPreviewImage }) {
   const flowMeta = section.flow ? MANUAL_FLOW_REGISTRY[section.flow] : null;
   const FlowComp = flowMeta?.Component;
   const isTroubleshoot = section.id === 'troubleshoot';
+
+  const isBestPractices = section.id === 'best-practices';
 
   return (
     <article className="space-y-6 pb-16">
@@ -76,6 +112,29 @@ function SectionContent({ section, scenarios, onPreviewFlow, onPreviewImage }) {
           {para}
         </p>
       ))}
+
+      {section.checklist?.length > 0 && (
+        <div className="rounded-xl border border-brand-200 bg-brand-50/40 p-4 space-y-2">
+          <p className="text-xs font-black text-brand-800 flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4" /> Checklist field wajib
+          </p>
+          <ul className="space-y-1">
+            {section.checklist.map((item) => (
+              <li key={item} className="text-xs text-brand-900/90 flex gap-2">
+                <ChevronRight className="w-3.5 h-3.5 shrink-0 mt-0.5" /> {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {isBestPractices && bestPractices.length > 0 && (
+        <div className="space-y-4">
+          {bestPractices.map((bp) => (
+            <BestPracticeCard key={bp.id} practice={bp} onPreviewFlow={onPreviewFlow} />
+          ))}
+        </div>
+      )}
 
       {section.tips?.length > 0 && (
         <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-4 space-y-2">
@@ -108,7 +167,7 @@ function SectionContent({ section, scenarios, onPreviewFlow, onPreviewImage }) {
         </div>
       )}
 
-      {scenarios.length > 0 && (
+      {scenarios.length > 0 && !isBestPractices && (
         <div className="space-y-4">
           <h3 className="text-lg font-black text-slate-800 flex items-center gap-2">
             <List className="w-5 h-5 text-brand-600" /> Skenario step-by-step
@@ -196,7 +255,7 @@ export default function ManualBookModal({ isOpen, onClose }) {
         contentClassName="flex flex-col flex-1 min-h-0 h-full w-full py-2 md:py-3 px-1 md:px-2 overflow-hidden"
         headerActions={
           <span className="hidden md:inline text-[10px] font-bold uppercase tracking-widest text-white/80 px-2">
-            {MANUAL_BOOK_SECTIONS.length} bab · {MANUAL_SCENARIOS.length} skenario
+            {MANUAL_BEST_PRACTICES.length} skenario terbaik · {MANUAL_SCENARIOS.length} skenario
           </span>
         }
       >
@@ -210,7 +269,31 @@ export default function ManualBookModal({ isOpen, onClose }) {
               <p className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Daftar isi</p>
             </div>
             <div className="flex-1 overflow-y-auto scroll-thin p-2 space-y-0.5">
-              {MANUAL_BOOK_SECTIONS.map((sec) => {
+              <div className="px-2 py-2">
+                <p className="text-[9px] font-bold uppercase text-violet-600 tracking-widest mb-1.5">Skenario Terbaik</p>
+                {MANUAL_BOOK_SECTIONS.filter((s) => s.isBestPractices).map((sec) => {
+                  const active = sec.id === activeSectionId;
+                  return (
+                    <button
+                      key={sec.id}
+                      type="button"
+                      onClick={() => setActiveSectionId(sec.id)}
+                      className={`w-full text-left px-3 py-2.5 rounded-lg text-xs font-bold transition-colors flex items-start gap-2 mb-0.5 ${
+                        active
+                          ? 'bg-violet-50 text-violet-800 border border-violet-200'
+                          : 'text-slate-600 hover:bg-slate-50 border border-transparent'
+                      }`}
+                    >
+                      <ChevronRight className={`w-4 h-4 shrink-0 mt-0.5 ${active ? 'text-violet-600' : 'text-slate-300'}`} />
+                      <span>{sec.title}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="px-2 py-1 border-t border-slate-100 mt-1">
+                <p className="text-[9px] font-bold uppercase text-slate-400 tracking-widest mb-1.5 pt-2">Bab panduan</p>
+              </div>
+              {MANUAL_BOOK_SECTIONS.filter((s) => !s.isBestPractices).map((sec) => {
                 const active = sec.id === activeSectionId;
                 const scCount = scenariosBySection[sec.id]?.length || 0;
                 return (
@@ -265,6 +348,7 @@ export default function ManualBookModal({ isOpen, onClose }) {
               <SectionContent
                 section={activeSection}
                 scenarios={scenariosBySection[activeSectionId] || []}
+                bestPractices={activeSectionId === 'best-practices' ? MANUAL_BEST_PRACTICES : []}
                 onPreviewFlow={setPreviewFlowId}
                 onPreviewImage={setPreviewImage}
               />

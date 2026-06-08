@@ -16,6 +16,7 @@ import { formatIDR } from '../../utils/formatters';
 import { EXCEL_FACTORY_OH_PCT } from '../../data/excelReference';
 import { rollupTreeCosts, computePartsTotals, expandProsesList } from '../../utils/bomCostRollup';
 import { flattenProsesLineItems, sumProsesLineItems } from '../../utils/prosesLineItems';
+import { getFormulaRegistry, describeFormula, FORMULA_GROUPS, ROLLUP_FORMULA_NOTES } from '../../utils/formulaEngine';
 import OperasiDetailCell from '../ui/OperasiDetailCell';
 
 const fmt = (val) => (val === 0 ? '—' : formatIDR(val));
@@ -92,7 +93,18 @@ export default function KalkulasiModal({
   const packingCost = cogsData?.packingCost ?? 0;
   const sellingFob = Math.floor((cogsData?.sellingPrice ?? 0) / 1000) * 1000;
 
-  if (!isOpen || !enrichedBom) return null;
+  const formulaGroups = useMemo(() => {
+    const registry = getFormulaRegistry();
+    return FORMULA_GROUPS.map((group) => ({
+      ...group,
+      formulas: group.ids
+        .map((id) => describeFormula(id))
+        .filter(Boolean)
+        .map((f) => ({ ...f, registryEntry: registry.find((r) => r.id === f.id) })),
+    }));
+  }, []);
+
+  if (!isOpen) return null;
 
   const content = (
     <div className="viewport-shell viewport-shell-modal flex flex-col bg-page">
@@ -122,6 +134,7 @@ export default function KalkulasiModal({
         {[
           { id: 'breakdown', label: 'Breakdown Biaya', icon: Calculator },
           { id: 'skenario', label: 'COGS & Rincian FOB', icon: TrendingUp },
+          { id: 'rumus', label: 'Rumus & Formula', icon: FileText },
         ].map(({ id, label, icon: Icon }) => (
           <button
             key={id}
@@ -141,7 +154,10 @@ export default function KalkulasiModal({
 
       <div className="flex-1 min-h-0 overflow-y-auto scroll-thin p-4 md:p-6">
         <div className="page-inner-full w-full flex flex-col gap-5">
-          {activeTab === 'breakdown' && (
+          {activeTab === 'breakdown' && !enrichedBom && (
+            <p className="text-sm text-slate-500 italic py-8 text-center">Tidak ada data BOM untuk breakdown.</p>
+          )}
+          {activeTab === 'breakdown' && enrichedBom && (
             <>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                 <KpiCard label="Material (dasar)" value={partTotals?.matBase ?? 0} tone="amber" />
@@ -396,6 +412,9 @@ export default function KalkulasiModal({
             </>
           )}
 
+          {activeTab === 'skenario' && !cogsData && (
+            <p className="text-sm text-slate-500 italic py-8 text-center">Data COGS belum tersedia.</p>
+          )}
           {activeTab === 'skenario' && cogsData && (
             <>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -537,6 +556,93 @@ export default function KalkulasiModal({
                   </p>
                 </div>
               </div>
+            </>
+          )}
+
+          {activeTab === 'rumus' && (
+            <>
+              <div className="rounded-xl border border-brand-200 bg-brand-50/50 px-4 py-3 text-xs text-brand-900 leading-relaxed">
+                Daftar rumus terdaftar di <strong>registry.json</strong> — dipakai engine kalkulasi volume, material,
+                COGS, dan container. Tab ini statis (tidak membutuhkan BOM live).
+              </div>
+
+              {formulaGroups.map((group) => (
+                <div key={group.id} className="panel-card">
+                  <div className="panel-card-head">
+                    <h3 className="text-sm font-black text-slate-800 uppercase tracking-wide">{group.label}</h3>
+                    <p className="text-[10px] text-slate-500 font-medium mt-1 normal-case tracking-normal">
+                      {group.formulas.length} formula
+                    </p>
+                  </div>
+                  <div className="divide-y divide-slate-100">
+                    {group.formulas.map((f) => (
+                      <div key={f.id} className="p-4 hover:bg-slate-50/50 transition-colors">
+                        <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
+                          <div>
+                            <p className="text-sm font-black text-slate-800">{f.label}</p>
+                            <p className="text-[10px] font-mono text-slate-400 mt-0.5">{f.id}</p>
+                          </div>
+                          {f.outputUnit && (
+                            <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-600">
+                              {f.outputUnit}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-slate-600 mb-2">{f.description}</p>
+                        <div className="rounded-lg bg-indigo-50/80 border border-indigo-100 px-3 py-2 font-mono text-[11px] text-indigo-900 leading-relaxed">
+                          {f.expression}
+                        </div>
+                        <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 text-[10px]">
+                          <p>
+                            <span className="font-black text-slate-500 uppercase">Input:</span>{' '}
+                            <span className="text-slate-700">{f.inputsLabel || '—'}</span>
+                          </p>
+                          <p>
+                            <span className="font-black text-slate-500 uppercase">Referensi Excel:</span>{' '}
+                            <span className="text-slate-700">{f.excelRef || '—'}</span>
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+
+              <div className="panel-card">
+                <div className="panel-card-head">
+                  <h3 className="text-sm font-black text-slate-800 uppercase tracking-wide">
+                    Rumus proses & SF/WF (rollup PART)
+                  </h3>
+                  <p className="text-[10px] text-slate-500 font-medium mt-1 normal-case tracking-normal">
+                    Dari bomCostRollup.js — tidak ada entry registry terpisah
+                  </p>
+                </div>
+                <div className="divide-y divide-slate-100">
+                  {ROLLUP_FORMULA_NOTES.map((note) => (
+                    <div key={note.id} className="p-4">
+                      <p className="text-sm font-black text-slate-800">{note.label}</p>
+                      <p className="text-xs text-slate-600 mt-1">{note.description}</p>
+                      <div className="rounded-lg bg-amber-50/80 border border-amber-100 px-3 py-2 font-mono text-[11px] text-amber-900 mt-2 leading-relaxed">
+                        {note.expression}
+                      </div>
+                      <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 text-[10px]">
+                        <p>
+                          <span className="font-black text-slate-500 uppercase">Input:</span>{' '}
+                          <span className="text-slate-700">{note.inputs}</span>
+                        </p>
+                        <p>
+                          <span className="font-black text-slate-500 uppercase">Referensi Excel:</span>{' '}
+                          <span className="text-slate-700">{note.excelRef}</span>
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <p className="text-[10px] text-slate-400 text-center pb-2">
+                Total {getFormulaRegistry().length} formula registry + {ROLLUP_FORMULA_NOTES.length} rumus rollup
+              </p>
             </>
           )}
         </div>

@@ -66,7 +66,8 @@ export default function Dashboard({
     return (
       p.kode?.toLowerCase().includes(q) ||
       p.nama?.toLowerCase().includes(q) ||
-      p.customer?.toLowerCase().includes(q)
+      p.customer?.toLowerCase().includes(q) ||
+      p.collection?.toLowerCase().includes(q)
     );
   });
 
@@ -247,6 +248,7 @@ export default function Dashboard({
                     <th className="py-4 px-4 border-r border-slate-100">Kode Produk</th>
                     <th className="py-4 px-4 border-r border-slate-100">Nama Produk</th>
                     <th className="py-4 px-4 border-r border-slate-100">Customer</th>
+                    <th className="py-4 px-4 border-r border-slate-100">Collection</th>
                     <th className="py-4 px-4 text-center border-r border-slate-100">Versi</th>
                     <th className="py-4 px-4 text-right border-r border-slate-100">Harga (HPP)</th>
                     <th className="py-4 px-4 text-right border-r border-slate-100">Harga (Dolar)</th>
@@ -304,6 +306,7 @@ export default function Dashboard({
                         </button>
                       </td>
                       <td className="py-4 px-4 text-sm text-slate-500 font-medium border-r border-slate-100">{p.customer}</td>
+                      <td className="py-4 px-4 text-sm text-slate-500 font-medium border-r border-slate-100 max-w-[120px] truncate" title={p.collection}>{p.collection}</td>
                       <td className="py-4 px-4 text-center border-r border-slate-100">
                         <span className="inline-flex px-2.5 py-1 rounded bg-slate-100 text-slate-500 text-[10px] font-bold border border-slate-200">{p.versi}</span>
                       </td>
@@ -350,7 +353,7 @@ export default function Dashboard({
                     </tr>
                     {expandedId === p.id && (p.previewParts?.length > 0) && (
                       <tr className="bg-slate-50/80 border-b border-slate-100">
-                        <td colSpan={12} className="px-8 py-3 text-xs text-slate-600">
+                        <td colSpan={13} className="px-8 py-3 text-xs text-slate-600">
                           <span className="font-bold text-slate-500 uppercase text-[10px] mr-2">Komponen:</span>
                           {p.previewParts.map((part, i) => (
                             <span key={i} className="inline-block mr-3 mb-1">

@@ -115,3 +115,78 @@ export function evalFormula(id, context = {}) {
 export function listFormulaIds() {
   return registry.map((f) => f.id);
 }
+
+/** Human-readable rumus untuk tab dokumentasi (bukan evaluasi). */
+const FORMULA_EXPRESSIONS = {
+  vol_part_mm: 'Volume (m³) = P × L × T (mm) ÷ 10⁹',
+  vol_packing_box: 'Volume box (m³) = (W + tolW) × (D + tolD) × (H + tolH) ÷ 10⁹',
+  vol_packing_sf: 'Volume SF (m³) = Volume box × 0,6 jika itemType = CHAIR, else = volume box',
+  container_pcs: 'Kapasitas (pcs) = floor(Volume muatan kontainer ÷ volume packing aktif)',
+  wood_material_cost: 'Biaya = harga/m³ × volume × (1 + SF% ÷ 100 + WF% ÷ 100)',
+  coating_cost: 'Biaya = luas permukaan (m²) × tarif coating bulat (Rp/m²)',
+  surface_m2_estimate: 'Luas (m²) = 2 × (P×L + P×T + L×T) mm² ÷ 10⁶',
+  cogs_production: 'Production cost = Total material + Total proses + Biaya packing',
+  cogs_total: 'Total COGS = Production × (1 + Factory OH% + Management OH%)',
+  cogs_selling: 'Harga jual = Total COGS × (1 + Markup% ÷ 100), dibulatkan ribuan',
+  round_table_component: 'Volume segmen = panjang × lebar × tebal (ROUND COMPONENT CALC)',
+};
+
+export const FORMULA_GROUPS = [
+  {
+    id: 'dimensi',
+    label: 'Dimensi & Volume',
+    ids: ['vol_part_mm', 'vol_packing_box', 'vol_packing_sf', 'surface_m2_estimate'],
+  },
+  {
+    id: 'material',
+    label: 'Material & Part',
+    ids: ['wood_material_cost', 'coating_cost'],
+  },
+  {
+    id: 'cogs',
+    label: 'COGS',
+    ids: ['cogs_production', 'cogs_total', 'cogs_selling'],
+  },
+  {
+    id: 'container',
+    label: 'Container',
+    ids: ['container_pcs', 'round_table_component'],
+  },
+];
+
+export const ROLLUP_FORMULA_NOTES = [
+  {
+    id: 'mat_sf_wf',
+    label: 'Penyesuaian material SF / WF',
+    expression: 'matAdjusted = matBase + (matBase × SF% ÷ 100) + (matBase × WF% ÷ 100)',
+    description: 'Default rollup PART — kecuali wasteIncludedInBiaya: biaya unit sudah net, SF/WF hanya informatif.',
+    inputs: 'matBase (biaya × qty), SF%, WF%, wasteIncludedInBiaya',
+    excelRef: 'CALCULATION · MASTER RATIO',
+  },
+  {
+    id: 'proses_cost',
+    label: 'Biaya proses per PART',
+    expression: 'prosesTotal = Σ (waktu × rate WC + pekerja × tarif TK)',
+    description: 'Agregasi routing (multi-langkah) atau work center tunggal per operasi.',
+    inputs: 'waktuOperasi, jumlah pekerja, rate work center',
+    excelRef: 'CALCULATION · WORK CENTER',
+  },
+  {
+    id: 'biaya_produksi',
+    label: 'Biaya produksi PART',
+    expression: 'biayaProduksi = matAdjusted + prosesTotal',
+    description: 'Rollup hierarki MODUL/SUBMODUL = Σ biayaProduksi anak.',
+    inputs: 'matAdjusted, prosesTotal',
+    excelRef: 'SUMMARY COST · rollup BOM',
+  },
+];
+
+export function describeFormula(id) {
+  const meta = getFormulaMeta(id);
+  if (!meta) return null;
+  return {
+    ...meta,
+    expression: FORMULA_EXPRESSIONS[id] || meta.description,
+    inputsLabel: (meta.inputs || []).join(', '),
+  };
+}

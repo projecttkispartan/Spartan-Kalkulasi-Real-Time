@@ -158,8 +158,19 @@
   }
 
   .editor-product-panel {
-    @apply shrink-0 w-full border-b border-slate-200/80 bg-page overflow-x-hidden overflow-y-auto;
-    max-height: min(42vh, 28rem);
+    @apply shrink-0 w-full border-b border-slate-200/80 bg-page overflow-x-hidden;
+  }
+
+  .product-panel-section {
+    @apply pt-2 pb-2 border-t border-slate-100 first:border-t-0 first:pt-0;
+  }
+
+  .product-panel-section--last {
+    @apply pb-0;
+  }
+
+  .product-panel-section__title {
+    @apply text-[8px] font-black uppercase tracking-[0.14em] text-slate-400 mb-1;
   }
 
   .tab-page {
@@ -218,7 +229,7 @@
   }
 
   .product-dim-cols-wrap {
-    @apply rounded-lg border border-slate-200 bg-slate-50/50 space-y-1.5 w-full max-w-full;
+    @apply rounded-lg border border-slate-200 bg-slate-50/50 space-y-1.5 w-full max-w-full overflow-x-auto scroll-thin;
     padding: 0.5rem 0.625rem;
   }
 

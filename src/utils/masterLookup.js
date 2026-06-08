@@ -370,6 +370,28 @@ export function kodeFromMaster(mat) {
   return String(mat.kode || '').trim();
 }
 
+/** Nama tampilan PART dari spec manual atau master id yang terhubung */
+export function partNameFromMaterialFields(node) {
+  if (!node) return '';
+  const mt = String(node.materialType || '').toLowerCase();
+  if (mt === 'kayu') {
+    const spec = String(node.woodSpecification || '').trim();
+    if (spec) return spec;
+    if (node.woodGradeId) {
+      const mat = resolveMaterial(node.woodGradeId);
+      if (mat) return displayNameFromMaster(mat);
+    }
+  } else {
+    const spec = String(node.materialSpecification || '').trim();
+    if (spec) return spec;
+    if (node.materialMasterId) {
+      const mat = resolveMaterial(node.materialMasterId);
+      if (mat) return displayNameFromMaster(mat);
+    }
+  }
+  return String(node.nama || '').trim();
+}
+
 /** Isi nama, kode, vendor dari SKU master (mode DATA BASE) */
 export function patchNodeIdentityFromMaster(nodeData, mat) {
   if (!mat || !nodeData) return nodeData;
@@ -554,6 +576,13 @@ export function enrichNodeFromMaster(node, { productInfo, productMeta } = {}) {
     if (pi.kode && !String(n.kode || '').trim()) n.kode = pi.kode;
     const productName = pi.namaBom || pi.nama;
     if (productName && !String(n.nama || '').trim()) n.nama = productName;
+  }
+
+  if (n.tipe === 'PART') {
+    if (n.materialSourceMode === 'manual') return n;
+    const hasManualSpec = Boolean(String(n.materialSpecification || n.woodSpecification || '').trim());
+    const hasMasterId = Boolean(n.materialMasterId || n.woodGradeId);
+    if (hasManualSpec && !hasMasterId) return n;
   }
 
   const existingMt = String(n.materialType || '').toLowerCase();

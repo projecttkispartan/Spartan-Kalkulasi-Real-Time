@@ -36,8 +36,7 @@ import ProductPanel from '../components/product/ProductPanel';
 import ProductInlineBar from '../components/product/ProductInlineBar';
 import ExcelParityChecklistModal from '../components/modals/ExcelParityChecklistModal';
 import { auditExcelParity } from '../utils/excelParityAudit.js';
-import CogsProductionPieCard from '../components/cogs/CogsProductionPieCard';
-import ExcelDeviationCard from '../components/cogs/ExcelDeviationCard';
+import CogsInsightModal from '../components/modals/CogsInsightModal.jsx';
 import { buildCogsInsight } from '../utils/cogsBreakdown.js';
 import { CURATED_SAMPLE_KEYS } from '../utils/emptyProject.js';
 import OperasiDetailCell from '../components/ui/OperasiDetailCell';
@@ -53,6 +52,7 @@ import {
   applyMasterToPart,
   enrichNodeFromMaster,
   getWasteRatioForMaterialType,
+  partNameFromMaterialFields,
   recalcPartBiayaForSfWf,
 } from '../utils/masterLookup';
 import {
@@ -478,6 +478,27 @@ function applyProjectToStates(project, setters) {
   if (setters.setCogsMode) setters.setCogsMode(resolveCogsMode(p));
 }
 
+const PRODUCT_PANEL_STORAGE_KEY = 'bomEditor.showProductPanel';
+
+function readProductPanelPref() {
+  try {
+    const stored = sessionStorage.getItem(PRODUCT_PANEL_STORAGE_KEY);
+    if (stored === 'true') return true;
+    if (stored === 'false') return false;
+  } catch {
+    /* private mode / SSR */
+  }
+  return false;
+}
+
+function persistProductPanelPref(value) {
+  try {
+    sessionStorage.setItem(PRODUCT_PANEL_STORAGE_KEY, String(value));
+  } catch {
+    /* ignore */
+  }
+}
+
 export default function BOMEditor({
   onBack,
   projectId,
@@ -501,9 +522,16 @@ export default function BOMEditor({
   const [showKalkulasi, setShowKalkulasi] = useState(false);
   const [showMarkupPreview, setShowMarkupPreview] = useState(false);
   const [detailSummaryNode, setDetailSummaryNode] = useState(null);
-  const [showProductPanel, setShowProductPanel] = useState(
-    () => !!safeProject?.importedFromExcel,
-  );
+  const [showProductPanel, setShowProductPanel] = useState(readProductPanelPref);
+  const [productInlineExpanded, setProductInlineExpanded] = useState(false);
+  const toggleProductPanel = useCallback(() => {
+    setShowProductPanel((prev) => {
+      const next = !prev;
+      persistProductPanelPref(next);
+      if (!next) setProductInlineExpanded(false);
+      return next;
+    });
+  }, []);
   const [priceDisplay] = useState('IDR');
   const [showHiddenContainers, setShowHiddenContainers] = useState(false);
   const [showMasterWc, setShowMasterWc] = useState(false);
@@ -544,7 +572,7 @@ export default function BOMEditor({
       },
   );
   const [cogsConfigOpen, setCogsConfigOpen] = useState(true);
-  const [cogsInsightOpen, setCogsInsightOpen] = useState(false);
+  const [showCogsInsightModal, setShowCogsInsightModal] = useState(false);
   const [showExcelChecklistModal, setShowExcelChecklistModal] = useState(false);
 
   const [productMeta, setProductMeta] = useState(
@@ -755,15 +783,19 @@ export default function BOMEditor({
     );
   };
 
-  const handleStructureWoodSelect = (nodeId, gradeId, mat, manualSpec) => {
+  const handleStructureWoodSelect = (nodeId, gradeId, mat, manualSpec, modeHint) => {
     const updateTree = (node) => {
       if (node.id === nodeId) {
-        if (manualSpec != null && manualSpec !== undefined && !gradeId && !mat) {
+        const manualText = String(manualSpec ?? '').trim();
+        const forceManual = modeHint?.sourceMode === 'manual';
+        if ((forceManual || manualText) && !gradeId && !mat) {
           return {
             ...node,
             woodGradeId: '',
-            woodSpecification: String(manualSpec),
+            woodSpecification: String(manualSpec ?? ''),
             materialType: node.materialType || 'kayu',
+            materialSourceMode: 'manual',
+            ...(node.tipe === 'PART' && manualText ? { nama: manualText } : {}),
           };
         }
         if (!gradeId && !mat) {
@@ -771,6 +803,7 @@ export default function BOMEditor({
             ...node,
             woodGradeId: '',
             woodSpecification: '',
+            materialSourceMode: 'database',
           };
         }
         const ratio = getWasteRatioForMaterialType(mat?.materialType || 'kayu');
@@ -779,6 +812,7 @@ export default function BOMEditor({
           woodGradeId: gradeId || '',
           woodSpecification: mat?.specification || '',
           materialType: node.materialType || (gradeId ? (mat?.materialType || 'kayu') : node.materialType || ''),
+          materialSourceMode: 'database',
         };
         if (gradeId) {
           updated.sf = updated.sf ?? ratio.sf;
@@ -972,10 +1006,22 @@ export default function BOMEditor({
   };
 
   // HANDLER EDIT NODE SECARA INLINE
+  const resolvePartSourceMode = (d) => {
+    if (d.materialSourceMode === 'manual' || d.materialSourceMode === 'database') {
+      return d.materialSourceMode;
+    }
+    if (d.woodGradeId || d.materialMasterId) return 'database';
+    if (d.woodSpecification || d.materialSpecification) return 'manual';
+    return 'database';
+  };
+
   const handleWoodGradeSelect = (nodeId, gradeId) => {
     const updateTree = (node) => {
       if (node.id === nodeId) {
-        return applyMasterToWoodPart({ ...node, woodGradeId: gradeId }, gradeId);
+        return applyMasterToWoodPart(
+          { ...node, woodGradeId: gradeId, materialSourceMode: 'database' },
+          gradeId,
+        );
       }
       if (node.children) {
         return { ...node, children: node.children.map(updateTree) };
@@ -985,17 +1031,25 @@ export default function BOMEditor({
     setBomData((prev) => updateTree(prev));
   };
 
-  const handlePartWoodField = (nodeId, gradeId, mat, manualSpec) => {
+  const handlePartWoodField = (nodeId, gradeId, mat, manualSpec, modeHint) => {
     if (gradeId && mat) {
       handleWoodGradeSelect(nodeId, gradeId);
       return;
     }
     const updateTree = (node) => {
       if (node.id === nodeId) {
-        if (manualSpec != null && manualSpec !== undefined && !gradeId) {
-          return { ...node, woodGradeId: '', woodSpecification: String(manualSpec) };
+        const manualText = String(manualSpec ?? '').trim();
+        const forceManual = modeHint?.sourceMode === 'manual';
+        if ((forceManual || manualText) && !gradeId) {
+          return {
+            ...node,
+            woodGradeId: '',
+            woodSpecification: String(manualSpec ?? ''),
+            materialSourceMode: 'manual',
+            ...(manualText ? { nama: manualText } : {}),
+          };
         }
-        return { ...node, woodGradeId: '', woodSpecification: '' };
+        return { ...node, woodGradeId: '', woodSpecification: '', materialSourceMode: 'database' };
       }
       if (node.children) {
         return { ...node, children: node.children.map(updateTree) };
@@ -1005,18 +1059,27 @@ export default function BOMEditor({
     setBomData((prev) => updateTree(prev));
   };
 
-  const handlePartMaterialField = (nodeId, masterId, mat, manualSpec) => {
+  const handlePartMaterialField = (nodeId, masterId, mat, manualSpec, modeHint) => {
     const updateTree = (node) => {
       if (node.id === nodeId) {
-        if (manualSpec != null && manualSpec !== undefined && !masterId) {
+        const manualText = String(manualSpec ?? '').trim();
+        const forceManual = modeHint?.sourceMode === 'manual';
+        if ((forceManual || manualText) && !masterId) {
           return {
             ...node,
             materialMasterId: '',
-            materialSpecification: String(manualSpec),
+            materialSpecification: String(manualSpec ?? ''),
+            materialSourceMode: 'manual',
+            ...(manualText ? { nama: manualText } : {}),
           };
         }
         if (!masterId && !mat) {
-          return { ...node, materialMasterId: '', materialSpecification: '' };
+          return {
+            ...node,
+            materialMasterId: '',
+            materialSpecification: '',
+            materialSourceMode: 'database',
+          };
         }
         if (masterId && mat) {
           let updated = {
@@ -1025,6 +1088,7 @@ export default function BOMEditor({
             materialSpecification: mat.specification || '',
             materialType: mat.materialType || node.materialType,
             materialSection: mat.section || node.materialSection,
+            materialSourceMode: 'database',
           };
           if (node.tipe === 'PART') {
             updated = applyMasterToPart(updated, masterId);
@@ -1575,25 +1639,28 @@ export default function BOMEditor({
                       </td>
                       <td className="sticky left-[600px] z-10 bg-inherit py-2 px-2 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] border-r border-slate-100">
                         <div className="flex flex-col gap-2 min-w-[250px]">
-                          <input
-                            type="text"
-                            value={d.nama}
-                            onChange={(e) => handleUpdateNode(node.id, 'nama', e.target.value)}
-                            className={`${inputClasses} font-bold text-slate-800 w-full`}
-                            placeholder={
-                              d.tipe === 'MODUL' ? 'Nama produk / BOM…' : 'Nama komponen…'
-                            }
-                          />
-                          {(d.tipe === 'SUBMODUL' || d.tipe === 'SUBMODUL 2') && (
-                            <WoodGradeField
-                              mastersTick={mastersTick}
-                              compact
-                              value={d.woodGradeId || ''}
-                              manualSpec={d.woodSpecification || ''}
-                              onChange={(gradeId, mat, manualSpec) =>
-                                handleStructureWoodSelect(node.id, gradeId, mat, manualSpec)
+                          {d.tipe === 'PART' ? (
+                            resolvePartSourceMode(d) !== 'manual' ? (
+                              <span
+                                className={`block text-xs font-bold leading-tight px-1 py-0.5 ${
+                                  partNameFromMaterialFields(d)
+                                    ? 'text-slate-800'
+                                    : 'text-slate-400 italic'
+                                }`}
+                                title={partNameFromMaterialFields(d) || 'Nama dari material'}
+                              >
+                                {partNameFromMaterialFields(d) || '— Pilih material —'}
+                              </span>
+                            ) : null
+                          ) : (
+                            <input
+                              type="text"
+                              value={d.nama}
+                              onChange={(e) => handleUpdateNode(node.id, 'nama', e.target.value)}
+                              className={`${inputClasses} font-bold text-slate-800 w-full`}
+                              placeholder={
+                                d.tipe === 'MODUL' ? 'Nama produk / BOM…' : 'Nama komponen…'
                               }
-                              className="min-w-0 w-full"
                             />
                           )}
                           {d.tipe === 'PART' && (
@@ -1603,8 +1670,9 @@ export default function BOMEditor({
                                 compact
                                 value={d.woodGradeId || ''}
                                 manualSpec={d.woodSpecification || ''}
-                                onChange={(gradeId, mat, manualSpec) =>
-                                  handleStructureWoodSelect(node.id, gradeId, mat, manualSpec)
+                                sourceMode={resolvePartSourceMode(d)}
+                                onChange={(gradeId, mat, manualSpec, modeHint) =>
+                                  handleStructureWoodSelect(node.id, gradeId, mat, manualSpec, modeHint)
                                 }
                                 className="min-w-0 w-full"
                               />
@@ -1616,8 +1684,9 @@ export default function BOMEditor({
                                 materialType={d.materialType || ''}
                                 value={d.materialMasterId || ''}
                                 manualSpec={d.materialSpecification || ''}
-                                onChange={(masterId, mat, manualSpec) =>
-                                  handlePartMaterialField(node.id, masterId, mat, manualSpec)
+                                sourceMode={resolvePartSourceMode(d)}
+                                onChange={(masterId, mat, manualSpec, modeHint) =>
+                                  handlePartMaterialField(node.id, masterId, mat, manualSpec, modeHint)
                                 }
                                 className="min-w-0 w-full"
                               />
@@ -1804,7 +1873,7 @@ export default function BOMEditor({
         <div className="flex items-center gap-3 flex-wrap justify-end">
           <button
             type="button"
-            onClick={() => setShowProductPanel((v) => !v)}
+            onClick={toggleProductPanel}
             className="border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors"
             title={showProductPanel ? 'Sembunyikan data produk' : 'Tampilkan data produk'}
           >
@@ -1869,6 +1938,12 @@ export default function BOMEditor({
         selectedPct={cogsConfig.markupPct}
         onSelect={(pct) => setCogsConfig((p) => ({ ...p, markupPct: pct }))}
       />
+      <CogsInsightModal
+        isOpen={showCogsInsightModal}
+        onClose={() => setShowCogsInsightModal(false)}
+        insight={cogsInsight}
+        productInfo={productInfo}
+      />
       <ExcelParityChecklistModal
         isOpen={showExcelChecklistModal}
         onClose={() => setShowExcelChecklistModal(false)}
@@ -1910,15 +1985,27 @@ export default function BOMEditor({
           />
         ) : (
           <ProductInlineBar
+            expanded={productInlineExpanded}
+            onToggleExpand={() => setProductInlineExpanded((v) => !v)}
+            onShowFullPanel={() => {
+              setShowProductPanel(true);
+              persistProductPanelPref(true);
+            }}
             productInfo={productInfo}
             onProductInfoChange={handleProductInfoChange}
             productMeta={productMeta}
             onProductMetaChange={handleProductMetaChange}
             dimensi={dimensi}
             onDimensiChange={updateDimensi}
+            volProduk={volProduk}
+            packingDimensions={packingDimensions}
+            onPackingTolChange={(id, tol, val) => handleUpdatePackingDim(id, tol, val)}
+            packingVolOpts={packingVolOpts}
             mastersTick={mastersTick}
             onWoodGradeChange={handleProductWoodGrade}
             onCoatingChange={handleProductCoating}
+            coatingPreview={coatingPreview}
+            productImage={resolveNodeFoto(bomData)}
           />
         )}
 
@@ -2568,20 +2655,26 @@ export default function BOMEditor({
                             <td className="px-4 py-3 border-r border-slate-100 font-mono text-slate-500">{d.kode}</td>
                             <td className="px-4 py-3 border-r border-slate-100 align-top">
                               <div className="flex flex-col gap-2 min-w-[260px]">
-                                <input
-                                  type="text"
-                                  value={d.nama}
-                                  onChange={(e) => handleUpdateNode(node.id, 'nama', e.target.value)}
-                                  className={`${inputClasses} font-bold text-slate-800 w-full`}
-                                  placeholder="Nama part…"
-                                />
+                                {resolvePartSourceMode(d) !== 'manual' ? (
+                                  <span
+                                    className={`block text-xs font-bold leading-tight px-1 py-0.5 ${
+                                      partNameFromMaterialFields(d)
+                                        ? 'text-slate-800'
+                                        : 'text-slate-400 italic'
+                                    }`}
+                                    title={partNameFromMaterialFields(d) || 'Nama dari material'}
+                                  >
+                                    {partNameFromMaterialFields(d) || '— Pilih material —'}
+                                  </span>
+                                ) : null}
                                 {d.materialType === 'kayu' ? (
                                   <WoodGradeField
                                     mastersTick={mastersTick}
                                     value={d.woodGradeId || ''}
                                     manualSpec={d.woodSpecification || ''}
-                                    onChange={(gradeId, mat, manualSpec) =>
-                                      handlePartWoodField(node.id, gradeId, mat, manualSpec)
+                                    sourceMode={resolvePartSourceMode(d)}
+                                    onChange={(gradeId, mat, manualSpec, modeHint) =>
+                                      handlePartWoodField(node.id, gradeId, mat, manualSpec, modeHint)
                                     }
                                     className="min-w-0 w-full"
                                   />
@@ -2593,8 +2686,9 @@ export default function BOMEditor({
                                     section={partMaterialSection(d)}
                                     value={d.materialMasterId || ''}
                                     manualSpec={d.materialSpecification || ''}
-                                    onChange={(masterId, mat, manualSpec) =>
-                                      handlePartMaterialField(node.id, masterId, mat, manualSpec)
+                                    sourceMode={resolvePartSourceMode(d)}
+                                    onChange={(masterId, mat, manualSpec, modeHint) =>
+                                      handlePartMaterialField(node.id, masterId, mat, manualSpec, modeHint)
                                     }
                                     className="min-w-0 w-full"
                                   />
@@ -3660,6 +3754,29 @@ export default function BOMEditor({
                     </span>
                   )}
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setShowCogsInsightModal(true)}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-violet-200 bg-violet-50 text-violet-800 text-xs font-black uppercase tracking-wide hover:bg-violet-100 shadow-sm transition-colors"
+                >
+                  <PieChart className="w-4 h-4" />
+                  View Deviasi
+                  {cogsInsight?.excelCompare?.totalCogs?.status ? (
+                    <span
+                      className={`px-2 py-0.5 rounded-md border text-[10px] uppercase ${
+                        cogsInsight.excelCompare.totalCogs.status === 'pass'
+                          ? 'bg-emerald-100 border-emerald-200 text-emerald-800'
+                          : cogsInsight.excelCompare.totalCogs.status === 'warn'
+                            ? 'bg-amber-100 border-amber-200 text-amber-900'
+                            : cogsInsight.excelCompare.totalCogs.status === 'fail'
+                              ? 'bg-red-100 border-red-200 text-red-800'
+                              : 'bg-slate-100 border-slate-200 text-slate-500'
+                      }`}
+                    >
+                      {cogsInsight.excelCompare.totalCogs.status}
+                    </span>
+                  ) : null}
+                </button>
                 <span className="text-[10px] text-slate-500 font-medium">
                   Checklist pengganti Excel — verifikasi parity SUMMARY COST
                 </span>
@@ -3829,32 +3946,6 @@ export default function BOMEditor({
                 </div>
               </div>
 
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm shrink-0 overflow-hidden">
-                <button
-                  type="button"
-                  onClick={() => setCogsInsightOpen((o) => !o)}
-                  className="w-full flex items-center gap-2 px-4 py-3 hover:bg-slate-50/80 text-left transition-colors"
-                >
-                  {cogsInsightOpen ? (
-                    <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
-                  ) : (
-                    <ChevronRight className="w-4 h-4 text-slate-400 shrink-0" />
-                  )}
-                  <PieChart className="w-5 h-5 text-indigo-500 shrink-0" />
-                  <span className="text-sm font-black text-slate-800 uppercase tracking-wide">
-                    Ringkasan biaya produksi & deviasi Excel
-                  </span>
-                  <span className="text-[10px] font-bold text-slate-400 ml-auto hidden sm:inline">
-                    {cogsInsightOpen ? 'Sembunyikan' : 'Tampilkan chart'}
-                  </span>
-                </button>
-                {cogsInsightOpen && (
-                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 p-4 border-t border-slate-100 bg-slate-50/30">
-                    <CogsProductionPieCard insight={cogsInsight} compact />
-                    <ExcelDeviationCard insight={cogsInsight} compact />
-                  </div>
-                )}
-              </div>
             </div>
           )}
 

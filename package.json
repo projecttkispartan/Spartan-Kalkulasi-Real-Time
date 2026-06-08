@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "node scripts/dev.mjs",
     "build": "node scripts/build.mjs",
-    "test": "node scripts/runElbaTests.mjs && node scripts/testFormulaEngine.mjs && node scripts/testRoundingEngine.mjs && node scripts/testCoatingCost.mjs && node scripts/testCalculationParser.mjs && node scripts/testExcelParityAudit.mjs && node scripts/testMaterialBiayaFromMaster.mjs && node scripts/testSfWfEnrich.mjs && node scripts/testFobCost.mjs && node scripts/verifyZanCogs.mjs && node scripts/verifyImportedZanCogs.mjs && node scripts/verifyAllSampleCogs.mjs && node scripts/testCogsBreakdown.mjs && node scripts/smokeAppFlow.mjs",
+    "test": "node scripts/runElbaTests.mjs && node scripts/testFormulaEngine.mjs && node scripts/testRoundingEngine.mjs && node scripts/testCoatingCost.mjs && node scripts/testCalculationParser.mjs && node scripts/testExcelParityAudit.mjs && node scripts/testMaterialBiayaFromMaster.mjs && node scripts/testSfWfEnrich.mjs && node scripts/testMaterialManualMode.mjs && node scripts/testFobCost.mjs && node scripts/verifyZanCogs.mjs && node scripts/verifyImportedZanCogs.mjs && node scripts/verifyAllSampleCogs.mjs && node scripts/testCogsBreakdown.mjs && node scripts/smokeAppFlow.mjs",
     "patch:g632l": "node scripts/patchG632lSample.mjs",
     "audit:database": "node scripts/auditDataBaseSections.mjs",
     "import:masters": "node scripts/importAllMasters.mjs",

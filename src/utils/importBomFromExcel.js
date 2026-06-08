@@ -19,7 +19,7 @@ import { attachExcelImagesToProject } from './excelImageExtract.js';
 import { attachSummaryPartsForImport, applyCogsImportStrategy } from './cogsImportStrategy.js';
 
 function createEmptyProductInfo() {
-  return { kode: '', nama: '', varian: '', customer: '', kodeBom: '', namaBom: '', versi: '' };
+  return { kode: '', nama: '', varian: '', customer: '', collection: '', kodeBom: '', namaBom: '', versi: '' };
 }
 
 function createEmptyProductMeta() {

@@ -1,5 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { X } from 'lucide-react';
+
+const MANUAL_DEBOUNCE_MS = 220;
 import {
   listActiveWoodMaterials,
   listActiveCoatings,
@@ -38,6 +40,45 @@ function ModeToggle({ mode, onModeChange }) {
   );
 }
 
+/** Draft lokal + debounce agar ketikan manual tidak memicu re-render BOM tiap key. */
+function useManualDraft(manualSpec, activeMode) {
+  const [draft, setDraft] = useState(manualSpec || '');
+  const debounceRef = useRef(null);
+
+  useEffect(() => {
+    setDraft(manualSpec || '');
+  }, [manualSpec, activeMode]);
+
+  useEffect(() => () => clearTimeout(debounceRef.current), []);
+
+  const scheduleCommit = useCallback((value, onCommit) => {
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => onCommit(value), MANUAL_DEBOUNCE_MS);
+  }, []);
+
+  const flushCommit = useCallback(
+    (onCommit) => {
+      clearTimeout(debounceRef.current);
+      onCommit(draft);
+    },
+    [draft],
+  );
+
+  return { draft, setDraft, scheduleCommit, flushCommit };
+}
+
+/** Toggle mode langsung di UI sebelum parent state selesai update. */
+function useOptimisticMode(derivedMode) {
+  const [pending, setPending] = useState(null);
+  const activeMode = pending ?? derivedMode;
+
+  useEffect(() => {
+    setPending(null);
+  }, [derivedMode]);
+
+  return [activeMode, setPending];
+}
+
 /**
  * Grade kayu: satu mode aktif (master ATAU manual).
  * onChange(gradeId, mat, manualSpec) — manualSpec hanya untuk mode manual.
@@ -45,6 +86,8 @@ function ModeToggle({ mode, onModeChange }) {
 export function WoodGradeField({
   value = '',
   manualSpec = '',
+  sourceMode,
+  onSourceModeChange,
   onChange,
   className = '',
   mastersTick = 0,
@@ -53,33 +96,47 @@ export function WoodGradeField({
   const materials = useMemo(() => listActiveWoodMaterials(), [mastersTick]);
   const linkedMat = materials.find((m) => m.id === value);
 
-  const [mode, setMode] = useState('master');
+  const [internalMode, setInternalMode] = useState('master');
 
-  const activeMode = useMemo(() => {
+  const derivedMode = useMemo(() => {
+    if (sourceMode === 'manual') return 'manual';
+    if (sourceMode === 'database') return 'master';
     if (value && linkedMat) return 'master';
     if (manualSpec && !value) return 'manual';
-    return mode;
-  }, [value, linkedMat, manualSpec, mode]);
+    return internalMode;
+  }, [sourceMode, value, linkedMat, manualSpec, internalMode]);
+
+  const [activeMode, setPendingMode] = useOptimisticMode(derivedMode);
+  const { draft, setDraft, scheduleCommit, flushCommit } = useManualDraft(manualSpec, activeMode);
+
+  const commitManual = useCallback(
+    (text) => {
+      onChange('', null, text, { sourceMode: 'manual' });
+    },
+    [onChange],
+  );
 
   const handleModeChange = (next) => {
-    setMode(next);
+    setPendingMode(next);
+    setInternalMode(next);
     if (next === 'manual') {
-      onChange('', null, manualSpec || '');
+      onChange('', null, draft || manualSpec || '', { sourceMode: 'manual' });
     } else {
-      onChange('', null, '');
+      onChange('', null, '', { sourceMode: 'database' });
     }
   };
 
   const handleClearMaster = () => {
-    setMode('master');
-    onChange('', null, '');
+    setPendingMode('master');
+    setInternalMode('master');
+    onChange('', null, '', { sourceMode: 'database' });
   };
 
   return (
     <div className={`flex flex-col gap-1.5 min-w-[200px] ${className}`}>
       <div className="flex items-center gap-1.5 flex-wrap">
         <ModeToggle mode={activeMode} onModeChange={handleModeChange} />
-        {(value || manualSpec) && (
+        {(value || manualSpec || draft) && (
           <button
             type="button"
             onClick={handleClearMaster}
@@ -94,10 +151,11 @@ export function WoodGradeField({
       {activeMode === 'master' ? (
         <>
           <SearchableSelect
+            key={`wood-db-${activeMode}`}
             value={value || ''}
             onChange={(v, mat) => {
               if (!v || !mat) {
-                onChange('', null, '');
+                onChange('', null, '', { sourceMode: 'database' });
                 return;
               }
               onChange(mat.id, mat, '');
@@ -121,10 +179,16 @@ export function WoodGradeField({
       ) : (
         <input
           type="text"
-          value={manualSpec}
-          onChange={(e) => onChange('', null, e.target.value)}
+          value={draft}
+          onChange={(e) => {
+            const next = e.target.value;
+            setDraft(next);
+            scheduleCommit(next, commitManual);
+          }}
+          onBlur={() => flushCommit(commitManual)}
           placeholder="Spec / grade manual…"
           className={fieldInputCls}
+          autoFocus
         />
       )}
     </div>
@@ -195,6 +259,8 @@ export function DatabaseMaterialField({
   section = '',
   value = '',
   manualSpec = '',
+  sourceMode,
+  onSourceModeChange,
   onChange,
   className = '',
   mastersTick = 0,
@@ -217,27 +283,50 @@ export function DatabaseMaterialField({
     [materials],
   );
 
-  const [mode, setMode] = useState('master');
-  const activeMode = useMemo(() => {
+  const [internalMode, setInternalMode] = useState('master');
+  const derivedMode = useMemo(() => {
+    if (sourceMode === 'manual') return 'manual';
+    if (sourceMode === 'database') return 'master';
     if (value && linkedMat) return 'master';
     if (manualSpec && !value) return 'manual';
-    return mode;
-  }, [value, linkedMat, manualSpec, mode]);
+    return internalMode;
+  }, [sourceMode, value, linkedMat, manualSpec, internalMode]);
+
+  const [activeMode, setPendingMode] = useOptimisticMode(derivedMode);
+  const { draft, setDraft, scheduleCommit, flushCommit } = useManualDraft(manualSpec, activeMode);
+
+  const commitManual = useCallback(
+    (text) => {
+      onChange('', null, text, { sourceMode: 'manual' });
+    },
+    [onChange],
+  );
+
+  const handleModeChange = (next) => {
+    setPendingMode(next);
+    setInternalMode(next);
+    if (next === 'manual') {
+      onChange('', null, draft || manualSpec || '', { sourceMode: 'manual' });
+    } else {
+      onChange('', null, '', { sourceMode: 'database' });
+    }
+  };
 
   return (
     <div className={`flex flex-col gap-1.5 min-w-[220px] ${className}`}>
       <div className="flex items-center gap-1.5 flex-wrap">
         <ModeToggle
           mode={activeMode}
-          onModeChange={(next) => {
-            setMode(next);
-            onChange('', null, next === 'manual' ? manualSpec || '' : '');
-          }}
+          onModeChange={handleModeChange}
         />
-        {(value || manualSpec) && (
+        {(value || manualSpec || draft) && (
           <button
             type="button"
-            onClick={() => onChange('', null, '')}
+            onClick={() => {
+              setPendingMode('master');
+              setInternalMode('master');
+              onChange('', null, '', { sourceMode: 'database' });
+            }}
             className="p-1 rounded border border-slate-200 text-slate-400 hover:text-red-600 hover:border-red-200 hover:bg-red-50"
             title="Kosongkan material"
           >
@@ -254,10 +343,11 @@ export function DatabaseMaterialField({
         ) : (
           <>
             <SearchableSelect
+              key={`mat-db-${activeMode}-${materialType}-${section}`}
               value={value || ''}
               onChange={(v, mat) => {
                 if (!v || !mat) {
-                  onChange('', null, '');
+                  onChange('', null, '', { sourceMode: 'database' });
                   return;
                 }
                 onChange(mat.id, mat, '');
@@ -279,10 +369,16 @@ export function DatabaseMaterialField({
       ) : (
         <input
           type="text"
-          value={manualSpec}
-          onChange={(e) => onChange('', null, e.target.value)}
+          value={draft}
+          onChange={(e) => {
+            const next = e.target.value;
+            setDraft(next);
+            scheduleCommit(next, commitManual);
+          }}
+          onBlur={() => flushCommit(commitManual)}
           placeholder="Spec material manual…"
           className={fieldInputCls}
+          autoFocus
         />
       )}
     </div>

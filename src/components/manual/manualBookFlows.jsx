@@ -201,6 +201,37 @@ export function ManualFromZeroFlow({ large = false }) {
   );
 }
 
+export function MaterialManualModeFlow({ large = false }) {
+  const sz = large ? 'scale-110' : '';
+  return (
+    <div className={sz}>
+      <FlowColumn>
+        <FlowRow wrap={false}>
+          <FlowStep label="PART" sub="Tab Struktur/Material" tone="brand" />
+          <FlowArrow />
+          <FlowStep label="Toggle Manual" sub="materialSourceMode" tone="amber" />
+          <FlowArrow />
+          <FlowStep label="Isi spec" sub="woodSpecification" tone="emerald" />
+        </FlowRow>
+        <FlowArrow dir="down" />
+        <FlowRow wrap={false}>
+          <FlowStep label="Tab Proses" sub="routing WC" tone="slate" />
+          <FlowArrow />
+          <FlowStep label="Kembali Material" sub="mode tetap Manual" tone="emerald" />
+          <FlowArrow />
+          <FlowStep label="enrich skip" sub="no auto-link master" tone="violet" />
+        </FlowRow>
+        <FlowArrow dir="down" />
+        <FlowRow wrap={false}>
+          <FlowStep label="Switch DATA BASE" sub="opsional" tone="brand" />
+          <FlowArrow />
+          <FlowStep label="Picker master" sub="harga dari DATABASE" tone="emerald" />
+        </FlowRow>
+      </FlowColumn>
+    </div>
+  );
+}
+
 export const MANUAL_FLOW_REGISTRY = {
   dashboard: { Component: DashboardFlow, title: 'Alur Dashboard → Editor' },
   editor: { Component: EditorFlow, title: 'Alur 7 Tab Editor' },
@@ -210,4 +241,5 @@ export const MANUAL_FLOW_REGISTRY = {
   modes: { Component: ModesFlow, title: 'Mode Excel Fixed vs Live Master' },
   importExcel: { Component: ImportExcelFlow, title: 'Alur Import Excel' },
   manualFromZero: { Component: ManualFromZeroFlow, title: 'Input Manual dari Nol' },
+  materialManualMode: { Component: MaterialManualModeFlow, title: 'Material Manual vs DATA BASE' },
 };

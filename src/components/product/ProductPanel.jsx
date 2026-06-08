@@ -5,11 +5,25 @@ import { resolveNodeFoto } from '../../utils/images';
 import { formatIDR } from '../../utils/formatters';
 import { WoodGradeField, CoatingField } from '../fields/MasterCombos';
 
-const fieldLabel = 'label-field mb-1 block';
+const fieldLabel = 'label-field mb-0.5 block text-[10px]';
 const fieldInput =
-  'w-full border-b-2 border-slate-200 px-0 py-2 text-sm font-bold text-slate-700 focus:outline-none focus:border-brand-500 bg-transparent transition-colors hover:border-slate-300';
+  'w-full border-b-2 border-slate-200 px-0 py-1 text-xs font-bold text-slate-700 focus:outline-none focus:border-brand-500 bg-transparent transition-colors hover:border-slate-300';
 
-/** Satu baris rumus packing — tinggi & kotak sama dengan input Produk (nett + tol = gross). */
+function SectionTitle({ children }) {
+  return (
+    <p className="product-panel-section__title col-span-full">{children}</p>
+  );
+}
+
+function Field({ label, children, className = '' }) {
+  return (
+    <div className={`min-w-0 ${className}`}>
+      <label className={fieldLabel}>{label}</label>
+      {children}
+    </div>
+  );
+}
+
 function PackingAxisFormula({ base, tolVal, gross, theme, onTol }) {
   const field = `product-dim-produk-in shrink-0 ${theme.field}`;
   return (
@@ -156,153 +170,165 @@ export default function ProductPanel({
   return (
     <div className="editor-product-panel">
       <div className="surface-card-lg overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(10.5rem,12.5rem)_1fr] gap-0 lg:gap-0">
-          <div className="flex flex-row lg:flex-col gap-4 p-4 lg:p-5 border-b lg:border-b-0 lg:border-r border-slate-100 bg-slate-50/40">
+        <div className="grid grid-cols-1 xl:grid-cols-[6.5rem_1fr] gap-0">
+          <div className="flex flex-row xl:flex-col items-center gap-2 p-2 xl:p-3 border-b xl:border-b-0 xl:border-r border-slate-100 bg-slate-50/40 shrink-0">
             <ClickZoomImage
               fill
               src={fotoSrc}
               alt={productInfo.nama}
-              className="h-24 w-24 sm:h-28 sm:w-28 lg:h-auto lg:w-full lg:aspect-square rounded-xl border-slate-200"
+              className="h-16 w-16 xl:h-[4.5rem] xl:w-full xl:aspect-square rounded-lg border-slate-200"
             />
-            <div className="flex flex-wrap lg:flex-col gap-1.5 flex-1 min-w-0">
-              <span className="px-2 py-0.5 rounded-md bg-brand-100 text-brand-800 text-[10px] font-black uppercase">
+            <div className="flex flex-wrap xl:flex-col gap-1 min-w-0">
+              <span className="px-1.5 py-0.5 rounded bg-brand-100 text-brand-800 text-[9px] font-black uppercase truncate max-w-full">
                 {productMeta.itemType || '—'}
               </span>
-              <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-bold">
-                v{productInfo.versi}
+              <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[9px] font-bold">
+                v{productInfo.versi || '—'}
               </span>
             </div>
           </div>
 
-          <div className="flex flex-col gap-4 p-4 md:p-5 min-w-0">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-3">
-              <div className="sm:col-span-2">
-                <label className={fieldLabel}>Nama Produk</label>
-                <input
-                  type="text"
-                  value={productInfo.nama}
-                  onChange={(e) => onProductInfoChange('nama', e.target.value)}
-                  className={`${fieldInput} text-lg font-black text-slate-800 py-1`}
-                />
-              </div>
-              <div>
-                <label className={fieldLabel}>Kode Produk</label>
-                <input type="text" value={productInfo.kode} onChange={(e) => onProductInfoChange('kode', e.target.value)} className={fieldInput} />
-              </div>
-              <div>
-                <label className={fieldLabel}>Varian</label>
-                <input type="text" value={productInfo.varian} onChange={(e) => onProductInfoChange('varian', e.target.value)} className={fieldInput} />
-              </div>
-              <div className="sm:col-span-2">
-                <label className={fieldLabel}>Nama BOM</label>
-                <div className="flex items-center gap-2 border-b-2 border-slate-200 focus-within:border-brand-500">
-                  <Network className="w-4 h-4 text-brand-500 shrink-0" />
+          <div className="flex flex-col gap-0 p-2 md:p-3 min-w-0">
+            <section className="product-panel-section">
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-x-3 gap-y-1.5">
+                <SectionTitle>Identitas</SectionTitle>
+                <Field label="Nama Produk" className="col-span-2 sm:col-span-2">
                   <input
                     type="text"
-                    value={productInfo.namaBom}
-                    onChange={(e) => onProductInfoChange('namaBom', e.target.value)}
-                    className="w-full py-2 text-sm font-bold text-brand-700 focus:outline-none bg-transparent"
+                    value={productInfo.nama}
+                    onChange={(e) => onProductInfoChange('nama', e.target.value)}
+                    className={`${fieldInput} text-sm font-black text-slate-800`}
+                  />
+                </Field>
+                <Field label="Kode Produk">
+                  <input type="text" value={productInfo.kode} onChange={(e) => onProductInfoChange('kode', e.target.value)} className={fieldInput} />
+                </Field>
+                <Field label="Varian">
+                  <input type="text" value={productInfo.varian} onChange={(e) => onProductInfoChange('varian', e.target.value)} className={fieldInput} />
+                </Field>
+                <Field label="Collection">
+                  <input type="text" value={productInfo.collection || ''} onChange={(e) => onProductInfoChange('collection', e.target.value)} className={fieldInput} placeholder="Nama koleksi" />
+                </Field>
+                <Field label="Customer">
+                  <input type="text" value={productInfo.customer} onChange={(e) => onProductInfoChange('customer', e.target.value)} className={fieldInput} />
+                </Field>
+              </div>
+            </section>
+
+            <section className="product-panel-section">
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-x-3 gap-y-1.5">
+                <SectionTitle>BOM</SectionTitle>
+                <Field label="Nama BOM" className="col-span-2 sm:col-span-2">
+                  <div className="flex items-center gap-1.5 border-b-2 border-slate-200 focus-within:border-brand-500">
+                    <Network className="w-3.5 h-3.5 text-brand-500 shrink-0" />
+                    <input
+                      type="text"
+                      value={productInfo.namaBom}
+                      onChange={(e) => onProductInfoChange('namaBom', e.target.value)}
+                      className="w-full py-1 text-xs font-bold text-brand-700 focus:outline-none bg-transparent"
+                    />
+                  </div>
+                </Field>
+                <Field label="Kode BOM">
+                  <input type="text" value={productInfo.kodeBom} onChange={(e) => onProductInfoChange('kodeBom', e.target.value)} className={`${fieldInput} text-brand-700`} />
+                </Field>
+                <Field label="Versi">
+                  <input type="text" value={productInfo.versi} onChange={(e) => onProductInfoChange('versi', e.target.value)} className={fieldInput} />
+                </Field>
+                <Field label="Item Type">
+                  <input
+                    type="text"
+                    value={productMeta.itemType}
+                    onChange={(e) => onProductMetaChange('itemType', e.target.value)}
+                    className={fieldInput}
+                    placeholder="CHAIR"
+                  />
+                </Field>
+              </div>
+            </section>
+
+            <section className="product-panel-section">
+              <SectionTitle>Material produk</SectionTitle>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mt-1">
+                <div className="min-w-0">
+                  <label className={fieldLabel}>
+                    Kayu (DATA BASE)
+                    {productMeta.woodGradeId ? (
+                      <span className="ml-1.5 text-[9px] font-mono text-emerald-600 normal-case">terhubung</span>
+                    ) : null}
+                  </label>
+                  <WoodGradeField
+                    mastersTick={mastersTick}
+                    compact
+                    value={productMeta.woodGradeId || ''}
+                    manualSpec={productMeta.woodGradeId ? '' : productMeta.wood || ''}
+                    className="min-w-0 w-full"
+                    onChange={(id, mat, manualSpec) => {
+                      if (onWoodGradeChange) {
+                        if (id && mat) onWoodGradeChange(id, mat);
+                        else if (manualSpec != null && !id) {
+                          onProductMetaChange('woodGradeId', '');
+                          onProductMetaChange('wood', manualSpec);
+                        } else if (!id && !mat) {
+                          onProductMetaChange('woodGradeId', '');
+                          onProductMetaChange('wood', '');
+                        }
+                      } else {
+                        onProductMetaChange('woodGradeId', id || '');
+                        onProductMetaChange('wood', mat?.specification || manualSpec || '');
+                      }
+                    }}
                   />
                 </div>
-              </div>
-              <div>
-                <label className={fieldLabel}>Kode BOM</label>
-                <input type="text" value={productInfo.kodeBom} onChange={(e) => onProductInfoChange('kodeBom', e.target.value)} className={`${fieldInput} text-brand-700`} />
-              </div>
-              <div>
-                <label className={fieldLabel}>Versi</label>
-                <input type="text" value={productInfo.versi} onChange={(e) => onProductInfoChange('versi', e.target.value)} className={fieldInput} />
-              </div>
-              <div className="sm:col-span-2">
-                <label className={fieldLabel}>Customer</label>
-                <input type="text" value={productInfo.customer} onChange={(e) => onProductInfoChange('customer', e.target.value)} className={fieldInput} />
-              </div>
-              <div>
-                <label className={fieldLabel}>Item Type</label>
-                <input
-                  type="text"
-                  value={productMeta.itemType}
-                  onChange={(e) => onProductMetaChange('itemType', e.target.value)}
-                  className={fieldInput}
-                  placeholder="CHAIR"
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <label className={fieldLabel}>
-                  Kayu (DATA BASE)
-                  {productMeta.woodGradeId ? (
-                    <span className="ml-2 text-[9px] font-mono text-emerald-600 normal-case">
-                      terhubung
-                    </span>
-                  ) : null}
-                </label>
-                <WoodGradeField
-                  mastersTick={mastersTick}
-                  value={productMeta.woodGradeId || ''}
-                  manualSpec={productMeta.woodGradeId ? '' : productMeta.wood || ''}
-                  onChange={(id, mat, manualSpec) => {
-                    if (onWoodGradeChange) {
-                      if (id && mat) onWoodGradeChange(id, mat);
-                      else if (manualSpec != null && !id) {
-                        onProductMetaChange('woodGradeId', '');
-                        onProductMetaChange('wood', manualSpec);
-                      } else if (!id && !mat) {
-                        onProductMetaChange('woodGradeId', '');
-                        onProductMetaChange('wood', '');
+                <div className="min-w-0">
+                  <label className={fieldLabel}>Coating (COATING RATIO)</label>
+                  <CoatingField
+                    mastersTick={mastersTick}
+                    value={productMeta.coating || ''}
+                    coatingId={productMeta.coatingId || ''}
+                    className="min-w-0 w-full"
+                    onChange={(payload) => {
+                      if (onCoatingChange) onCoatingChange(payload);
+                      else {
+                        onProductMetaChange('coatingId', payload.coatingId || '');
+                        onProductMetaChange('coating', payload.coating || '');
                       }
-                    } else {
-                      onProductMetaChange('woodGradeId', id || '');
-                      onProductMetaChange('wood', mat?.specification || manualSpec || '');
-                    }
-                  }}
-                />
+                    }}
+                  />
+                  {coatingPreview && productMeta.coatingId ? (
+                    <p className="text-[9px] text-indigo-600 font-bold mt-0.5 leading-tight">
+                      Σ {coatingPreview.surfaceM2?.toFixed(4) ?? 0} m² · Rp {formatIDR(coatingPreview.coatingCost || 0)}
+                    </p>
+                  ) : null}
+                </div>
               </div>
-              <div className="sm:col-span-2">
-                <label className={fieldLabel}>Coating (COATING RATIO)</label>
-                <CoatingField
-                  mastersTick={mastersTick}
-                  value={productMeta.coating || ''}
-                  coatingId={productMeta.coatingId || ''}
-                  onChange={(payload) => {
-                    if (onCoatingChange) onCoatingChange(payload);
-                    else {
-                      onProductMetaChange('coatingId', payload.coatingId || '');
-                      onProductMetaChange('coating', payload.coating || '');
-                    }
-                  }}
-                />
-                {coatingPreview && productMeta.coatingId ? (
-                  <p className="text-[10px] text-indigo-600 font-bold mt-1">
-                    Σ luas part: {coatingPreview.surfaceM2?.toFixed(4) ?? 0} m² · estimasi coating Rp{' '}
-                    {formatIDR(coatingPreview.coatingCost || 0)}
-                  </p>
-                ) : null}
-              </div>
-            </div>
+            </section>
 
-            <div className="product-dim-cols-wrap mt-0.5">
-              <p className="product-dim-cols__legend">Dimensi (mm) · W × D × H</p>
-              <div className="product-dim-cols">
-                <DimColumn icon={Layout} title="Produk" vol={volProduk} accent={PRODUK_ACCENT} variant="produk">
-                  {axes.map(({ label, dimKey }) => (
-                    <AxisSlot key={dimKey} label={label}>
-                      <input
-                        type="number"
-                        inputMode="numeric"
-                        step="1"
-                        value={dimensi[dimKey]}
-                        onChange={(e) => onDimensiChange(dimKey, e.target.value)}
-                        className={`product-dim-produk-in ${PRODUK_ACCENT.input}`}
-                        title={`Dimensi ${label} (mm)`}
-                        aria-label={`Produk ${label} mm`}
-                      />
-                    </AxisSlot>
-                  ))}
-                </DimColumn>
-                {renderPackingCol(boxItem, 'box', 'Box Packing')}
-                {renderPackingCol(sfItem, 'sf', 'Single Face')}
+            <section className="product-panel-section product-panel-section--last">
+              <div className="product-dim-cols-wrap">
+                <p className="product-dim-cols__legend">Dimensi (mm) · W × D × H</p>
+                <div className="product-dim-cols">
+                  <DimColumn icon={Layout} title="Produk" vol={volProduk} accent={PRODUK_ACCENT} variant="produk">
+                    {axes.map(({ label, dimKey }) => (
+                      <AxisSlot key={dimKey} label={label}>
+                        <input
+                          type="number"
+                          inputMode="numeric"
+                          step="1"
+                          value={dimensi[dimKey]}
+                          onChange={(e) => onDimensiChange(dimKey, e.target.value)}
+                          className={`product-dim-produk-in ${PRODUK_ACCENT.input}`}
+                          title={`Dimensi ${label} (mm)`}
+                          aria-label={`Produk ${label} mm`}
+                        />
+                      </AxisSlot>
+                    ))}
+                  </DimColumn>
+                  {renderPackingCol(boxItem, 'box', 'Box Packing')}
+                  {renderPackingCol(sfItem, 'sf', 'Single Face')}
+                </div>
               </div>
-            </div>
+            </section>
           </div>
         </div>
       </div>
