@@ -17,14 +17,28 @@ export function expandProsesList(nodeData, options = {}) {
 
 /** Biaya per PART: material + SF/WF + proses */
 export function computePartCostRow(d) {
-  const sf = Number(d.sf) || 0;
-  const wf = Number(d.wf) || 0;
+  const sf = Number(d.sf) || Number(d.masterWasteSfPct) || Number(d.woodWasteSfPct) || 0;
+  const wf = Number(d.wf) || Number(d.masterWasteWfPct) || Number(d.woodWasteWfPct) || 0;
   const qty = Number(d.qty) || 1;
   const unitMat = Number(d.biaya) || 0;
   const matBase = unitMat * qty;
-  const sfAmt = matBase * (sf / 100);
-  const wfAmt = matBase * (wf / 100);
-  const matAdjusted = matBase + sfAmt + wfAmt;
+  let sfAmt = 0;
+  let wfAmt = 0;
+  let matAdjusted = matBase;
+  if (d.wasteIncludedInBiaya) {
+    const ratio = 1 + sf / 100 + wf / 100;
+    if (ratio > 0) {
+      const baseUnit = unitMat / ratio;
+      const baseTotal = baseUnit * qty;
+      sfAmt = baseTotal * (sf / 100);
+      wfAmt = baseTotal * (wf / 100);
+      matAdjusted = matBase;
+    }
+  } else {
+    sfAmt = matBase * (sf / 100);
+    wfAmt = matBase * (wf / 100);
+    matAdjusted = matBase + sfAmt + wfAmt;
+  }
 
   let mesin = 0;
   let wc = 0;

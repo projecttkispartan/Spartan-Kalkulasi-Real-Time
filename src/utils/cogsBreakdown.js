@@ -127,7 +127,7 @@ export function findDuplicateSummaryProcessLabels(summaryLines) {
   return dupes;
 }
 
-function buildPieSlices(material, process, packing, coatingInCogs, total) {
+function buildPieSlices(material, process, packing, coatingInCogs, fobExport, total) {
   const slices = [
     { id: 'material', label: 'Material', amount: material, color: PIE_COLORS.material },
     { id: 'process', label: 'Proses', amount: process, color: PIE_COLORS.process },
@@ -139,6 +139,14 @@ function buildPieSlices(material, process, packing, coatingInCogs, total) {
       label: 'Coating',
       amount: coatingInCogs,
       color: PIE_COLORS.coating,
+    });
+  }
+  if (fobExport > 0) {
+    slices.push({
+      id: 'fob',
+      label: 'FOB Export',
+      amount: fobExport,
+      color: '#8b5cf6',
     });
   }
   const denom = total > 0 ? total : slices.reduce((s, x) => s + x.amount, 0);
@@ -159,11 +167,22 @@ function buildDeviationNotes(ctx) {
     coating,
     importedFromExcel,
     groups,
+    cogsMode,
   } = ctx;
 
-  if (counts.excelSummaryParts > 0 && counts.templateExcelParts > 0) {
+  const isHybrid =
+    counts.excelSummaryParts > 0 && counts.templateExcelParts > 0;
+  const masterInExcelFixed =
+    cogsMode === 'excel-fixed' && (groups['template-master']?.partCount || 0) > 0;
+
+  if (isHybrid) {
     notes.push(
       `Model hybrid: ${counts.templateExcelParts} part dari CALCULATION (biayaFromExcel) + ${counts.excelSummaryParts} part proses SUMMARY (EXCEL-*) — risiko double-count.`,
+    );
+  }
+  if (cogsMode === 'excel-fixed' && masterInExcelFixed) {
+    notes.push(
+      `Mode Excel Fixed: ${groups['template-master'].partCount} part dihitung ulang dari master — campur sumber biaya.`,
     );
   }
 
@@ -236,6 +255,7 @@ function compareMetric(app, excel, strictPct) {
  * @param {object} [params.productMeta]
  * @param {object} [params.excelMirror]
  * @param {boolean} [params.importedFromExcel]
+ * @param {string} [params.cogsMode] — excel-fixed | live-master
  * @param {object} [params.cogsData] — jika sudah di-compute di UI
  * @param {string} [params.sampleKey] — untuk toleransi curated 1,5%
  */
@@ -246,6 +266,7 @@ export function buildCogsInsight({
   productMeta = {},
   excelMirror = null,
   importedFromExcel = false,
+  cogsMode = 'live-master',
   cogsData: cogsDataIn = null,
   sampleKey = null,
 }) {
@@ -300,6 +321,7 @@ export function buildCogsInsight({
   const packing = Math.round(cogs.packingCost);
   const coatingInCogs = Math.round(cogs.coatingCost);
   const coatingDetail = Math.round(cogs.coatingCostDetail);
+  const fobExport = Math.round(cogs.fobExportCost || 0);
   const productionTotal = Math.round(cogs.productionCost);
 
   const excel = excelMirror?.summaryCost || {};
@@ -323,6 +345,31 @@ export function buildCogsInsight({
     totalCogs: compareMetric(cogs.totalCogs, excelCogs, strictPct),
   };
 
+  const hybridBlocked =
+    cogsMode === 'excel-fixed' &&
+    ((excelSummaryPartCount > 0 && templateExcelPartCount > 0) ||
+      (byGroup['template-master']?.partCount || 0) > 0);
+  if (hybridBlocked && comparable) {
+    const hybridReason =
+      'Mode Excel Fixed: campur part CALCULATION + SUMMARY/master — perbaiki BOM atau ubah ke Live Master.';
+    if (excelCompare.production.status === 'pass') {
+      excelCompare.production = {
+        ...excelCompare.production,
+        status: 'fail',
+        hybridBlocked: true,
+        reason: hybridReason,
+      };
+    }
+    if (excelCompare.totalCogs.status === 'pass') {
+      excelCompare.totalCogs = {
+        ...excelCompare.totalCogs,
+        status: 'fail',
+        hybridBlocked: true,
+        reason: hybridReason,
+      };
+    }
+  }
+
   const counts = {
     excelSummaryParts: excelSummaryPartCount,
     templateExcelParts: templateExcelPartCount,
@@ -337,6 +384,7 @@ export function buildCogsInsight({
     coating: { inCogs: coatingInCogs, detail: coatingDetail },
     importedFromExcel,
     groups: byGroup,
+    cogsMode,
   });
 
   return {
@@ -346,9 +394,10 @@ export function buildCogsInsight({
       packing,
       coatingInCogs,
       coatingDetail,
+      fobExport,
       total: productionTotal,
     },
-    pieSlices: buildPieSlices(material, process, packing, coatingInCogs, productionTotal),
+    pieSlices: buildPieSlices(material, process, packing, coatingInCogs, fobExport, productionTotal),
     groups: byGroup,
     counts,
     excelCompare,
@@ -376,6 +425,7 @@ export function buildDiagnoseReportRow(manifestEntry, doc, cogsDataIn = null) {
     productMeta: doc.productMeta,
     excelMirror: doc.excelMirror,
     importedFromExcel: doc.importedFromExcel,
+    cogsMode: doc.cogsMode,
     cogsData: cogsDataIn,
     sampleKey: manifestEntry?.sampleKey,
   });

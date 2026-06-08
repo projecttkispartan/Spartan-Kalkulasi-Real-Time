@@ -86,11 +86,49 @@ export function createDefaultCogsConfig() {
     managementOhPct: 2.5,
     markupPct: 20,
     includeCoatingInCogs: true,
+    includeFobExport: false,
+    exportContainer: '20foot',
+    fobVolumeM3: 28,
   };
 }
 
 export function createDefaultCustomErp() {
-  return { parts: [], machines: [], workers: [] };
+  return {
+    parts: [],
+    machines: [],
+    workers: [],
+  };
+}
+
+export const COGS_MODES = {
+  EXCEL_FIXED: 'excel-fixed',
+  LIVE_MASTER: 'live-master',
+};
+
+export function resolveCogsMode(doc) {
+  if (doc?.cogsMode === COGS_MODES.EXCEL_FIXED || doc?.cogsMode === COGS_MODES.LIVE_MASTER) {
+    return doc.cogsMode;
+  }
+  return doc?.importedFromExcel ? COGS_MODES.EXCEL_FIXED : COGS_MODES.LIVE_MASTER;
+}
+
+/** Buat project kosong — langsung ke halaman kalkulasi */
+export function createBlankProject({ dimensi, kode, nama, customer } = {}) {
+  const label = nama?.trim() || 'Proyek Baru';
+  return createEmptyProject({
+    kode: kode?.trim() || '',
+    nama: label,
+    customer: customer?.trim() || '',
+    productInfo: {
+      kode: kode?.trim() || '',
+      nama: label,
+      namaBom: label,
+      customer: customer?.trim() || '',
+      versi: '1.0',
+    },
+    dimensi: dimensi || { w: 0, d: 0, h: 0 },
+    cogsMode: COGS_MODES.LIVE_MASTER,
+  });
 }
 
 /** Pastikan dokumen project punya field wajib — cegah crash saat dibuka di editor */
@@ -152,6 +190,7 @@ export function normalizeProject(doc) {
     excelMirror: doc.excelMirror ?? null,
     importSheets: doc.importSheets ?? [],
     importedFromExcel: doc.importedFromExcel ?? false,
+    cogsMode: resolveCogsMode(doc),
   };
 }
 
@@ -186,6 +225,7 @@ export function createEmptyProject(overrides = {}) {
     excelMirror: overrides.excelMirror ?? null,
     importSheets: overrides.importSheets ?? [],
     importedFromExcel: overrides.importedFromExcel ?? false,
+    cogsMode: overrides.cogsMode ?? resolveCogsMode(overrides),
   };
 }
 
@@ -422,9 +462,33 @@ export function createProjectFromFionaSeed() {
   });
 }
 
+/** Versi Mayor.Minor — bump minor saat duplikat */
+export function bumpMinorVersion(versi) {
+  const s = String(versi || '1.0').trim();
+  const m = s.match(/^(\d+)\.(\d+)(?:\.\d+)?$/);
+  if (!m) return '1.1';
+  return `${m[1]}.${Number(m[2]) + 1}`;
+}
+
+function walkPartPreview(node, out, limit) {
+  if (!node || out.length >= limit) return;
+  if (node.tipe === 'PART') {
+    out.push({ kode: node.kode || '—', nama: node.nama || '—' });
+    return;
+  }
+  (node.children || []).forEach((ch) => walkPartPreview(ch, out, limit));
+}
+
+export function extractPartPreview(bomData, limit = 5) {
+  const out = [];
+  walkPartPreview(bomData, out, limit);
+  return out;
+}
+
 /** Ringkasan untuk baris dashboard */
 export function projectListMeta(doc) {
   const sampleKey = doc.sampleKey || null;
+  const itemType = doc.productMeta?.itemType || '';
   return {
     id: doc.id,
     sampleKey,
@@ -441,5 +505,9 @@ export function projectListMeta(doc) {
     tanggalUpdate: doc.updatedAt,
     jumlahBom: 1,
     jumlahProduk: 1,
+    bomType: itemType ? 'Produk' : 'Material',
+    itemType: itemType || '—',
+    previewParts: extractPartPreview(doc.bomData, 5),
+    cogsMode: resolveCogsMode(doc),
   };
 }

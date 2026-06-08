@@ -14,7 +14,7 @@ export function optimizeImportedProject(project) {
 
   let explicitM2 = 0;
   walkParts(project.bomData, (part) => {
-    if (part.biayaFromExcel && Number(part.biaya) > 0) {
+    if (part.biayaFromExcel && Number(part.biaya) > 0 && !part.sfWfManual) {
       part.sf = 0;
       part.wf = 0;
     }

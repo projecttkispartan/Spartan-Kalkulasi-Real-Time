@@ -6,6 +6,10 @@ Dokumen ini merapikan seluruh data dan langkah agar app **Manufaktur BOM** dapat
 
 **Regresi otomatis:** `npm test`
 
+**Backlog perbaikan dev:** [docs/qa/07-Dev-Improvement-Backlog.mmd](./qa/07-Dev-Improvement-Backlog.mmd)
+
+**Acceptance criteria programmer:** [docs/qa/08-Acceptance-Criteria-Perbaikan-BOM.mmd](./qa/08-Acceptance-Criteria-Perbaikan-BOM.mmd)
+
 ---
 
 ## Ringkasan cepat (centang manual)

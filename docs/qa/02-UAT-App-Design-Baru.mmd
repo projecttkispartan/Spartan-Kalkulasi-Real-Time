@@ -1,0 +1,174 @@
+# UAT — BOM Design by Gemini (UX Design Baru)
+
+| Field | Value |
+|-------|-------|
+| **Aplikasi** | Manufaktur BOM · BOM Design by Gemini v1.0 |
+| **Deploy lokal** | `npm run dev` |
+| **Storage** | IndexedDB browser + seed `src/data/masters/` |
+| **Metode** | Code audit + `npm test` + UAT G632L |
+| **Tanggal** | 5 Juni 2026 |
+
+---
+
+## 1. Ringkasan eksekutif
+
+| Aspek | Status | Catatan |
+|-------|--------|---------|
+| Daftar project BOM | PASS | Dashboard + CRUD |
+| Panel produk | PASS | Wood/coating master-linked |
+| 7 tab editor | PASS | Excel-aligned workflow |
+| Master DATA BASE | PASS (seed) | Dummy/import ZAN — **bukan live ERP DB** |
+| Import Excel | PASS | `.xlsx` full workbook |
+| COGS parity | PARTIAL | ZAN/FNA OK; G632L ~47% gap |
+| Integrasi ERP API | N/A | SPA standalone |
+
+---
+
+## 2. Arsitektur tab editor (Design Baru)
+
+```mermaid
+flowchart TB
+  D[Dashboard] --> E[BOM Editor]
+  E --> P[Product Panel]
+  E --> T1[Struktur Perakitan & Modul]
+  E --> T2[Container Capacity]
+  E --> T3[Kebutuhan Material]
+  E --> T4[Kebutuhan Proses]
+  E --> T5[Summary Kalkulasi]
+  E --> T6[Detail COGS & Pricing]
+  E --> T7[FOB Informasi Jurnal]
+  E --> MD[Master Data Modal]
+```
+
+---
+
+## 3. Step-by-step UAT
+
+### Step 1 — Dashboard · Daftar project BOM
+
+| # | Langkah | Expected | Actual | Status |
+|---|---------|----------|--------|--------|
+| 1.1 | Buat Baru | Proyek kosong | `createEmptyProject()` 1 MODUL root | PASS |
+| 1.2 | Import Excel | Parse workbook | Overlay validate → save → editor | PASS |
+| 1.3 | Duplikat / Hapus | CRUD | `projectStorage` | PASS |
+| 1.4 | Cari produk | Filter kode/nama/customer | Works | PASS |
+
+**Kolom tabel (Actual):**
+
+| No | Gambar | Kode | Nama | Customer | Versi | HPP IDR | HPP USD | Status | Update | Aksi |
+
+### Step 2 — Produk (Product Panel)
+
+| Field | Expected | Actual | Status |
+|-------|----------|--------|--------|
+| Identitas | kode, nama, varian, customer, BOM codes | Editable | PASS |
+| Kayu | WoodGradeField DATA BASE | Searchable + sync | PASS |
+| Coating | CoatingField | Master COATING RATIO | PASS |
+| Dimensi produk + packing | W/D/H nett + toleransi box/SF | Volume m³ calc | PASS |
+
+### Step 3 — Struktur Perakitan & Modul
+
+| # | Expected | Actual | Status |
+|---|----------|--------|--------|
+| 3.1 | Hierarki MODUL→SUBMODUL→SUBMODUL2→PART | Enforced | PASS |
+| 3.2 | Tipe material hanya di kolom tipe | Bukan di combo SKU | PASS |
+| 3.3 | Combo SKU di NAMA/GRADE | SearchableSelect | PASS |
+| 3.4 | Nama sync dari DATA BASE | `patchNodeIdentityFromMaster` | PASS |
+| 3.5 | Nominal warna | amber/indigo/violet | PASS |
+| 3.6 | Visual graph | Pan/zoom TreeNode | PASS |
+| 3.7 | Routing modal | WC + multi-step routing | PASS |
+
+**Kolom utama (sticky + scroll):** NO, AKSI, TIPE, KODE, NAMA/GRADE, GAMBAR, TIPE MATERIAL, QTY, W×D×H, VOL, MAT/PROD/PROD/U (IDR/USD/EUR), PROSES, CATATAN
+
+### Step 4 — Container Capacity Per Item
+
+| Section | Expected | Actual | Status |
+|---------|----------|--------|--------|
+| Dimensi packing dinamis | Box + SF rows | Editable tol W/D/H | PASS |
+| BOM Material Packing | Box / SF tables | qty, unit, harga | PASS |
+| Routing pekerja packing | Box / SF | waktu, pekerja, rate | PASS |
+| Container presets | 20ft/40ft/40hc/1pc | Net capacity + cost cols | PASS |
+
+**Gap ERP:** Tab ini **tidak ada** di ERPKu staging BOM.
+
+### Step 5 — Kebutuhan Material
+
+| Expected | Actual | Status |
+|----------|--------|--------|
+| Hanya baris PART | Filter `tipe === PART` | PASS |
+| SF/WF editable | amber/red inputs | PASS |
+| Vendor field | Free text / master | PASS |
+| Hitung harga kayu dari master | Bulk recalc | PASS |
+| STOCK / STATUS | UI placeholder | WARN |
+
+### Step 6 — Kebutuhan Proses
+
+| Table | Kolom kunci | Status |
+|-------|-------------|--------|
+| Rekapitulasi | Kategori, operasi, durasi, WC, MP, total | PASS |
+| Detail | Part, operasi, tahap, WC/routing, biaya | PASS |
+
+### Step 7 — Summary Kalkulasi
+
+| Expected | Actual | Status |
+|----------|--------|--------|
+| PART-only atau full tree | Toggle hierarchy cols | PASS |
+| Nested operasi per part | QR detail modal | PASS |
+| SF/WF editable | Inline | PASS |
+
+### Step 8 — Detail COGS & Pricing
+
+| Expected | Actual | Status |
+|----------|--------|--------|
+| Waterfall RAW→OH→COGS→Selling | Table steps | PASS |
+| Factory/Mgmt OH editable | Inline % | PASS |
+| FOB export toggle | Master FOB COST engine | PASS |
+| Excel parity checklist | Modal score % | PASS (imported) |
+| Pie chart breakdown | CogsProductionPieCard | PASS |
+
+### Step 9 — FOB Informasi (Jurnal)
+
+| Section | Expected | Actual | Status |
+|---------|----------|--------|--------|
+| Custom part/machine/worker | ERP-style journal | PASS |
+| Grand total HPP | Sum base+custom | PASS |
+
+**Catatan:** Berbeda dari toggle FOB export di tab COGS.
+
+### Step 10 — Master Data
+
+| Tab master | Sumber saat ini | Status |
+|------------|-----------------|--------|
+| DATA BASE kayu + katalog | Seed JSON / import ZAN | PASS (dummy) |
+| FOB COST | Seed | PASS |
+| WC, coating, ratio, formula | Seed | PASS |
+| Reset import | Re-hydrate seed | PASS |
+
+---
+
+## 4. Hasil `npm test` (Actual)
+
+| Suite | Result |
+|-------|--------|
+| Formula / Rounding / FOB / Material biaya | PASS |
+| ZAN COGS parity | PASS (~0,01%) |
+| G632L sample COGS | **FAIL ~46,9%** |
+| Empty project COGS | 0 (PASS) |
+
+---
+
+## 5. Kesimpulan QA Design Baru
+
+**Kekuatan:**
+- Workflow selaras **Excel Spartan** (8 area vs 4 wizard ERP)
+- Engine COGS, parity audit, export multi-sheet
+- UX material picker + nominal color + nama sync master
+
+**Kelemahan vs ERP production:**
+- Master masih **dummy lokal**, belum DB ERP terpusat
+- Belum auth multi-user / approval workflow ERP
+- Beberapa kolom placeholder (stock, status material)
+
+---
+
+*Perbandingan kolom: `03-Perbandingan-Tabel.mmd`*

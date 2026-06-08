@@ -1,199 +1,529 @@
 {
-  "generatedAt": "2026-06-04T04:25:26.961Z",
-  "sampleFilter": "FNA-550",
+  "generatedAt": "2026-06-06T15:00:42.045Z",
+  "sampleFilter": "G632L-RO",
   "rows": [
     {
-      "sampleKey": "FNA-550",
-      "file": "fna-550.json",
-      "partCountManifest": 22,
-      "partCountTree": 16,
+      "sampleKey": "G632L-RO",
+      "file": "g632l-ro.json",
+      "partCountManifest": 28,
+      "partCountTree": 24,
       "counts": {
-        "excelSummaryParts": 0,
-        "templateExcelParts": 0,
-        "totalParts": 16
+        "excelSummaryParts": 2,
+        "templateExcelParts": 17,
+        "totalParts": 24
       },
       "groups": {
         "excel-summary": {
-          "partCount": 0,
-          "material": 0,
-          "process": 0,
-          "partTotal": 0,
-          "top10": []
-        },
-        "template-excel": {
-          "partCount": 0,
-          "material": 0,
-          "process": 0,
-          "partTotal": 0,
-          "top10": []
-        },
-        "template-master": {
-          "partCount": 16,
-          "material": 766223,
-          "process": 575883,
-          "partTotal": 1342106,
+          "partCount": 2,
+          "material": 83775,
+          "process": 139957,
+          "partTotal": 223732,
           "top10": [
             {
-              "kode": "FNA-UPHOLSTERY",
-              "nama": "UPHOLSTERY",
-              "group": "template-master",
-              "material": 171765,
-              "process": 58321,
-              "partTotal": 230086,
-              "biayaFromExcel": false,
-              "biaya": 171765,
-              "qty": 1
-            },
-            {
-              "kode": "FNA-FINISHING",
-              "nama": "FINISHING",
-              "group": "template-master",
-              "material": 105307,
-              "process": 73105,
-              "partTotal": 178412,
-              "biayaFromExcel": false,
-              "biaya": 105307,
-              "qty": 1
-            },
-            {
-              "kode": "FNA-ASSEMBLING-HARDWARE",
+              "kode": "EXCEL-assembling_hardware",
               "nama": "ASSEMBLING HARDWARE",
-              "group": "template-master",
-              "material": 36981,
-              "process": 132112,
-              "partTotal": 169093,
-              "biayaFromExcel": false,
-              "biaya": 36981,
-              "qty": 1
+              "group": "excel-summary",
+              "material": 63247,
+              "process": 120183,
+              "partTotal": 183430,
+              "biayaFromExcel": false
             },
             {
-              "kode": "FNA-FITTING-HARDWARE",
+              "kode": "EXCEL-fitting_hardware",
               "nama": "FITTING HARDWARE",
-              "group": "template-master",
-              "material": 128654,
-              "process": 26051,
-              "partTotal": 154705,
-              "biayaFromExcel": false,
-              "biaya": 128654,
-              "qty": 1
+              "group": "excel-summary",
+              "material": 20528,
+              "process": 19774,
+              "partTotal": 40302,
+              "biayaFromExcel": false
+            }
+          ]
+        },
+        "template-excel": {
+          "partCount": 17,
+          "material": 1216905,
+          "process": 0,
+          "partTotal": 1216905,
+          "top10": [
+            {
+              "kode": "WOOD-019",
+              "nama": "TEAK KAMPUNG - 30 UP 250",
+              "group": "template-excel",
+              "material": 196862,
+              "process": 0,
+              "partTotal": 196862,
+              "biayaFromExcel": true
             },
             {
-              "kode": "1200310-1.3.0.2.1",
-              "nama": "KAKI",
-              "group": "template-master",
-              "material": 69992,
-              "process": 36464,
-              "partTotal": 106456,
-              "biayaFromExcel": false,
-              "biaya": 17498,
-              "qty": 4
+              "kode": "WOOD-WOOD NAME-18",
+              "nama": "TEAK KAMPUNG - 30 UP 200",
+              "group": "template-excel",
+              "material": 131242,
+              "process": 0,
+              "partTotal": 131242,
+              "biayaFromExcel": true
             },
             {
-              "kode": "1200310-1.3.0.2.4",
-              "nama": "TIANG SANDARAN",
-              "group": "template-master",
-              "material": 56402,
-              "process": 29384,
-              "partTotal": 85786,
-              "biayaFromExcel": false,
-              "biaya": 28201,
-              "qty": 2
+              "kode": "WOOD-019",
+              "nama": "TEAK KAMPUNG - 30 UP 250",
+              "group": "template-excel",
+              "material": 131242,
+              "process": 0,
+              "partTotal": 131242,
+              "biayaFromExcel": true
             },
             {
-              "kode": "FNA-AMPLAS",
-              "nama": "AMPLAS",
-              "group": "template-master",
-              "material": 6014,
-              "process": 66581,
-              "partTotal": 72595,
-              "biayaFromExcel": false,
-              "biaya": 6014,
-              "qty": 1
+              "kode": "WOOD-019",
+              "nama": "TEAK KAMPUNG - 30 UP 250",
+              "group": "template-excel",
+              "material": 131242,
+              "process": 0,
+              "partTotal": 131242,
+              "biayaFromExcel": true
             },
             {
-              "kode": "FNA-GERINDA",
+              "kode": "WOOD-WOOD NAME-18",
+              "nama": "TEAK KAMPUNG - 30 UP 200",
+              "group": "template-excel",
+              "material": 116444,
+              "process": 0,
+              "partTotal": 116444,
+              "biayaFromExcel": true
+            },
+            {
+              "kode": "WOOD-WOOD NAME-18",
+              "nama": "TEAK KAMPUNG - 30 UP 200",
+              "group": "template-excel",
+              "material": 102882,
+              "process": 0,
+              "partTotal": 102882,
+              "biayaFromExcel": true
+            },
+            {
+              "kode": "WOOD-WOOD NAME-18",
+              "nama": "TEAK KAMPUNG - 30 UP 200",
+              "group": "template-excel",
+              "material": 85640,
+              "process": 0,
+              "partTotal": 85640,
+              "biayaFromExcel": true
+            },
+            {
+              "kode": "WOOD-WOOD NAME-18",
+              "nama": "TEAK KAMPUNG - 30 UP 200",
+              "group": "template-excel",
+              "material": 73302,
+              "process": 0,
+              "partTotal": 73302,
+              "biayaFromExcel": true
+            },
+            {
+              "kode": "WOOD-WOOD NAME-18",
+              "nama": "TEAK KAMPUNG - 30 UP 200",
+              "group": "template-excel",
+              "material": 68342,
+              "process": 0,
+              "partTotal": 68342,
+              "biayaFromExcel": true
+            },
+            {
+              "kode": "WOOD-WOOD NAME-18",
+              "nama": "TEAK KAMPUNG - 30 UP 200",
+              "group": "template-excel",
+              "material": 45876,
+              "process": 0,
+              "partTotal": 45876,
+              "biayaFromExcel": true
+            }
+          ]
+        },
+        "template-master": {
+          "partCount": 4,
+          "material": 1901614,
+          "process": 488281,
+          "partTotal": 2389895,
+          "top10": [
+            {
+              "kode": "WOOD-020",
+              "nama": "TEAK KAMPUNG - 30 UP 300",
+              "group": "template-master",
+              "material": 1851449,
+              "process": 343829,
+              "partTotal": 2195278,
+              "biayaFromExcel": false
+            },
+            {
+              "kode": "FINISHINGMATERIAL-069",
               "nama": "GERINDA",
               "group": "template-master",
-              "material": 826,
-              "process": 54732,
-              "partTotal": 55558,
-              "biayaFromExcel": false,
-              "biaya": 826,
-              "qty": 1
+              "material": 1329,
+              "process": 99120,
+              "partTotal": 100449,
+              "biayaFromExcel": false
             },
             {
-              "kode": "1200310-1.0.0.2.5",
-              "nama": "TEMPEL TIANG SANDARAN",
+              "kode": "WOOD-020",
+              "nama": "TEAK KAMPUNG - 30 UP 300",
               "group": "template-master",
-              "material": 34610,
-              "process": 18031,
-              "partTotal": 52641,
-              "biayaFromExcel": false,
-              "biaya": 17305,
-              "qty": 2
+              "material": 38008,
+              "process": 27226,
+              "partTotal": 65234,
+              "biayaFromExcel": false
             },
             {
-              "kode": "1200310-1.3.0.2.3",
-              "nama": "SUNDUK DEPAN BELAKANG",
+              "kode": "006-003-001-002",
+              "nama": "AMPLAS STROKE SANDER 180",
               "group": "template-master",
-              "material": 31586,
-              "process": 16456,
-              "partTotal": 48042,
-              "biayaFromExcel": false,
-              "biaya": 15793,
-              "qty": 2
+              "material": 10828,
+              "process": 18106,
+              "partTotal": 28934,
+              "biayaFromExcel": false
             }
           ]
         },
         "template-other": {
-          "partCount": 0,
+          "partCount": 1,
           "material": 0,
           "process": 0,
           "partTotal": 0,
-          "top10": []
+          "top10": [
+            {
+              "kode": "ASSEMBLINGHARDWARE-064",
+              "nama": "SCREW FFO 8X2",
+              "group": "template-other",
+              "material": 0,
+              "process": 0,
+              "partTotal": 0,
+              "biayaFromExcel": false
+            }
+          ]
         }
       },
       "partsRollup": {
-        "material": 766223,
-        "process": 575883,
-        "partTotal": 1342106
+        "material": 3202294,
+        "process": 628238,
+        "partTotal": 3830532
       },
       "packing": {
         "jalur": "BOX",
-        "material": 92615,
-        "labor": 33500,
-        "total": 126115,
-        "packBoxMat": 92615,
-        "packSfMat": 0
+        "material": 376914,
+        "labor": 28000,
+        "total": 404914,
+        "packBoxMat": 376914,
+        "packSfMat": 52851
       },
       "coating": {
         "inCogs": 0,
-        "detail": 453815
+        "detail": 0
       },
       "overhead": {
-        "factoryOhPct": 5,
-        "managementOhPct": 2.5,
-        "factoryOh": 73411,
-        "managementOh": 36706
+        "factoryOhPct": 2,
+        "managementOhPct": 1.5,
+        "factoryOh": 84709,
+        "managementOh": 63532
       },
       "app": {
-        "totalMaterial": 766223,
-        "totalProcess": 575883,
-        "productionCost": 1468221,
-        "totalCogs": 1578338,
-        "sellingPrice": 1894000
+        "totalMaterial": 3202294,
+        "totalProcess": 628238,
+        "productionCost": 4235446,
+        "totalCogs": 4383687,
+        "sellingPrice": 5260000
       },
       "excel": {
-        "productionCost": 1484080,
-        "totalCogs": 1595386
+        "productionCost": 4406938,
+        "totalCogs": 4561180
       },
       "deviation": {
-        "productionPct": -0.010686114835233115,
-        "cogsPct": -0.010686114835233079
+        "productionPct": 0.03891399616168781,
+        "cogsPct": 0.03891399616168783
+      },
+      "insight": {
+        "production": {
+          "material": 3202294,
+          "process": 628238,
+          "packing": 404914,
+          "coatingInCogs": 0,
+          "coatingDetail": 0,
+          "fobExport": 0,
+          "total": 4235446
+        },
+        "pieSlices": [
+          {
+            "id": "material",
+            "label": "Material",
+            "amount": 3202294,
+            "color": "#3b82f6",
+            "pct": 0.7560700809312644
+          },
+          {
+            "id": "process",
+            "label": "Proses",
+            "amount": 628238,
+            "color": "#f97316",
+            "pct": 0.1483286529919163
+          },
+          {
+            "id": "packing",
+            "label": "Packing",
+            "amount": 404914,
+            "color": "#22c55e",
+            "pct": 0.0956012660768193
+          }
+        ],
+        "groups": {
+          "excel-summary": {
+            "partCount": 2,
+            "material": 83775,
+            "process": 139957,
+            "partTotal": 223732,
+            "top10": [
+              {
+                "kode": "EXCEL-assembling_hardware",
+                "nama": "ASSEMBLING HARDWARE",
+                "group": "excel-summary",
+                "material": 63247,
+                "process": 120183,
+                "partTotal": 183430,
+                "biayaFromExcel": false
+              },
+              {
+                "kode": "EXCEL-fitting_hardware",
+                "nama": "FITTING HARDWARE",
+                "group": "excel-summary",
+                "material": 20528,
+                "process": 19774,
+                "partTotal": 40302,
+                "biayaFromExcel": false
+              }
+            ]
+          },
+          "template-excel": {
+            "partCount": 17,
+            "material": 1216905,
+            "process": 0,
+            "partTotal": 1216905,
+            "top10": [
+              {
+                "kode": "WOOD-019",
+                "nama": "TEAK KAMPUNG - 30 UP 250",
+                "group": "template-excel",
+                "material": 196862,
+                "process": 0,
+                "partTotal": 196862,
+                "biayaFromExcel": true
+              },
+              {
+                "kode": "WOOD-WOOD NAME-18",
+                "nama": "TEAK KAMPUNG - 30 UP 200",
+                "group": "template-excel",
+                "material": 131242,
+                "process": 0,
+                "partTotal": 131242,
+                "biayaFromExcel": true
+              },
+              {
+                "kode": "WOOD-019",
+                "nama": "TEAK KAMPUNG - 30 UP 250",
+                "group": "template-excel",
+                "material": 131242,
+                "process": 0,
+                "partTotal": 131242,
+                "biayaFromExcel": true
+              },
+              {
+                "kode": "WOOD-019",
+                "nama": "TEAK KAMPUNG - 30 UP 250",
+                "group": "template-excel",
+                "material": 131242,
+                "process": 0,
+                "partTotal": 131242,
+                "biayaFromExcel": true
+              },
+              {
+                "kode": "WOOD-WOOD NAME-18",
+                "nama": "TEAK KAMPUNG - 30 UP 200",
+                "group": "template-excel",
+                "material": 116444,
+                "process": 0,
+                "partTotal": 116444,
+                "biayaFromExcel": true
+              },
+              {
+                "kode": "WOOD-WOOD NAME-18",
+                "nama": "TEAK KAMPUNG - 30 UP 200",
+                "group": "template-excel",
+                "material": 102882,
+                "process": 0,
+                "partTotal": 102882,
+                "biayaFromExcel": true
+              },
+              {
+                "kode": "WOOD-WOOD NAME-18",
+                "nama": "TEAK KAMPUNG - 30 UP 200",
+                "group": "template-excel",
+                "material": 85640,
+                "process": 0,
+                "partTotal": 85640,
+                "biayaFromExcel": true
+              },
+              {
+                "kode": "WOOD-WOOD NAME-18",
+                "nama": "TEAK KAMPUNG - 30 UP 200",
+                "group": "template-excel",
+                "material": 73302,
+                "process": 0,
+                "partTotal": 73302,
+                "biayaFromExcel": true
+              },
+              {
+                "kode": "WOOD-WOOD NAME-18",
+                "nama": "TEAK KAMPUNG - 30 UP 200",
+                "group": "template-excel",
+                "material": 68342,
+                "process": 0,
+                "partTotal": 68342,
+                "biayaFromExcel": true
+              },
+              {
+                "kode": "WOOD-WOOD NAME-18",
+                "nama": "TEAK KAMPUNG - 30 UP 200",
+                "group": "template-excel",
+                "material": 45876,
+                "process": 0,
+                "partTotal": 45876,
+                "biayaFromExcel": true
+              }
+            ]
+          },
+          "template-master": {
+            "partCount": 4,
+            "material": 1901614,
+            "process": 488281,
+            "partTotal": 2389895,
+            "top10": [
+              {
+                "kode": "WOOD-020",
+                "nama": "TEAK KAMPUNG - 30 UP 300",
+                "group": "template-master",
+                "material": 1851449,
+                "process": 343829,
+                "partTotal": 2195278,
+                "biayaFromExcel": false
+              },
+              {
+                "kode": "FINISHINGMATERIAL-069",
+                "nama": "GERINDA",
+                "group": "template-master",
+                "material": 1329,
+                "process": 99120,
+                "partTotal": 100449,
+                "biayaFromExcel": false
+              },
+              {
+                "kode": "WOOD-020",
+                "nama": "TEAK KAMPUNG - 30 UP 300",
+                "group": "template-master",
+                "material": 38008,
+                "process": 27226,
+                "partTotal": 65234,
+                "biayaFromExcel": false
+              },
+              {
+                "kode": "006-003-001-002",
+                "nama": "AMPLAS STROKE SANDER 180",
+                "group": "template-master",
+                "material": 10828,
+                "process": 18106,
+                "partTotal": 28934,
+                "biayaFromExcel": false
+              }
+            ]
+          },
+          "template-other": {
+            "partCount": 1,
+            "material": 0,
+            "process": 0,
+            "partTotal": 0,
+            "top10": [
+              {
+                "kode": "ASSEMBLINGHARDWARE-064",
+                "nama": "SCREW FFO 8X2",
+                "group": "template-other",
+                "material": 0,
+                "process": 0,
+                "partTotal": 0,
+                "biayaFromExcel": false
+              }
+            ]
+          }
+        },
+        "counts": {
+          "excelSummaryParts": 2,
+          "templateExcelParts": 17,
+          "totalParts": 24
+        },
+        "excelCompare": {
+          "comparable": true,
+          "emptyReason": null,
+          "production": {
+            "app": 4235446,
+            "excel": 4406938,
+            "diffIdr": -171492,
+            "diffPct": 0.03891399616168781,
+            "status": "warn"
+          },
+          "totalCogs": {
+            "app": 4383687,
+            "excel": 4561180,
+            "diffIdr": -177494,
+            "diffPct": 0.03891399616168783,
+            "status": "warn"
+          }
+        },
+        "duplicateSummaryLabels": [
+          {
+            "label": "GERINDA",
+            "excelRow": 124,
+            "total": 2659,
+            "primaryRow": 26
+          },
+          {
+            "label": "AMPLAS",
+            "excelRow": 125,
+            "total": 28934,
+            "primaryRow": 27
+          },
+          {
+            "label": "FINISHING",
+            "excelRow": 126,
+            "total": 10629,
+            "primaryRow": 28
+          },
+          {
+            "label": "UPHOLSTERY",
+            "excelRow": 127,
+            "total": 2195279,
+            "primaryRow": 29
+          }
+        ],
+        "notes": [
+          "Model hybrid: 17 part dari CALCULATION (biayaFromExcel) + 2 part proses SUMMARY (EXCEL-*) — risiko double-count.",
+          "Mode Excel Fixed: 4 part dihitung ulang dari master — campur sumber biaya.",
+          "Sheet SUMMARY punya baris proses duplikat (GERINDA, AMPLAS, FINISHING, UPHOLSTERY) — perkiraan inflasi ~Rp 2.237.501 jika dijadikan part BOM."
+        ],
+        "suggestedAction": "Siap bandingkan dengan baris SUMMARY COST di Excel mirror.",
+        "cogsSummary": {
+          "totalMaterial": 3202294,
+          "totalProcess": 628238,
+          "factoryOh": 84709,
+          "managementOh": 63532,
+          "totalCogs": 4383687,
+          "packingJalur": "BOX"
+        }
       },
       "reconcile": {
-        "partsPlusPackingPlusCoating": 1468221,
-        "cogsEngineProduction": 1468221
+        "partsPlusPackingPlusCoating": 4235446,
+        "cogsEngineProduction": 4235446
       }
     }
   ]

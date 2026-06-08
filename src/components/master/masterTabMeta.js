@@ -7,8 +7,22 @@ export const MASTER_TAB_META = {
     searchFields: ['kode', 'nama', 'vendorSupplier', 'materialType'],
     searchPlaceholder: 'Cari kode, nama, vendor, jenis…',
   },
+  fobCost: {
+    label: 'FOB COST',
+    sheet: 'DATA BASE — FOB COST (export kontainer)',
+    hint: '15 layanan export per kontainer (20 FT / 40 FT / 40 HC). Rumus: (Qty×Harga)×1,05 per baris + SF total 5% → rounded Rp/m³. Dipakai COGS jika «Aktifkan biaya FOB».',
+    searchFields: ['description'],
+    searchPlaceholder: 'Cari layanan trucking, fumigation, …',
+  },
+  databaseSections: {
+    label: 'DATABASE (Material)',
+    sheet: 'DATA BASE — panel, veneer, hardware, finishing, packing',
+    hint: 'Harga SKU dari DATA BASE Excel (kiri: PLYWOOD/MDF/HPL; kanan: ASSEMBLING, VENEER, SANDING, FINISHING, PACKING). Dipakai picker Part untuk kalkulasi biaya.',
+    searchFields: ['kode', 'specification', 'nama', 'section', 'materialType', 'itemCode', 'units'],
+    searchPlaceholder: 'Cari kode, specification, section…',
+  },
   materials: {
-    label: 'DATA BASE',
+    label: 'DATA BASE (Kayu)',
     sheet: 'Sheet DATA BASE (kayu)',
     hint: 'Harga log & material per grade kayu (buyer/supplier). Part kayu di BOM memakai specification / woodGradeId untuk tarif m³.',
     searchFields: ['kode', 'woodName', 'specification', 'vendorSupplier', 'diameterGrade'],
@@ -74,6 +88,8 @@ export const MASTER_TAB_META = {
 
 export const MASTER_TABS_ORDER = [
   'materials',
+  'fobCost',
+  'databaseSections',
   'nonWood',
   'ratios',
   'woodLabor',

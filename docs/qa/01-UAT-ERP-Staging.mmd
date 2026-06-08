@@ -1,0 +1,222 @@
+# UAT — ERPKu Staging · Manufacture Bill of Materials
+
+| Field | Value |
+|-------|-------|
+| **URL** | https://erp.stg.solusiuntuknegeri.com/manufacture/bill-of-materials |
+| **Login** | nrw / *(staging)* |
+| **Platform** | Next.js SPA · **ERPKu Staging** |
+| **Metode** | Automated UI probe (Playwright) + checklist QA |
+| **Tanggal** | 5 Juni 2026 |
+
+---
+
+## 1. Ringkasan eksekutif
+
+| Aspek | Status | Catatan |
+|-------|--------|---------|
+| Akses & login | PASS | Redirect ke `/dashboard` setelah login |
+| Daftar BOM | PASS | Tabel + filter + pagination |
+| BOM Baru (wizard) | PASS | 4 step wizard teridentifikasi |
+| Expand row komponen | PASS | Nested table Components |
+| Modul terpisah (WC, Routing) | PASS | Sidebar manufacture |
+| Container / COGS / FOB dedicated tab | **Tidak ditemukan** di editor BOM | Kemungkinan modul lain / post-save |
+
+---
+
+## 2. Arsitektur navigasi Manufacture
+
+```mermaid
+flowchart LR
+  subgraph sidebar [Sidebar Manufacture]
+    P[Products]
+    PV[Product Variants]
+    BOM[Bill of Materials]
+    RT[Raw Ticket]
+    WC[Work Centers]
+    R[Routings]
+    KN[Knife]
+    AP[Approval]
+    QC[QC Packing]
+  end
+  subgraph purchasing [Purchasing]
+    MAT[Materials]
+  end
+  BOM --> NEW["/bill-of-materials/new"]
+  BOM --> LIST["/bill-of-materials"]
+```
+
+**Link terdeteksi (Actual):**
+
+| Menu | Path |
+|------|------|
+| Products | `/manufacture/products` |
+| Product Variants | `/manufacture/product-variants` |
+| **Bill of Materials** | `/manufacture/bill-of-materials` |
+| Raw Ticket | `/manufacture/raw-ticket` |
+| Work Centers | `/manufacture/work-centers` |
+| Routings | `/manufacture/routings` |
+| Knife | `/manufacture/knife` |
+| Approval | `/manufacture/approval` |
+| QC Packing | `/manufacture/qc-packing` |
+| Materials (Purchasing) | `/purchasing/materials` |
+
+---
+
+## 3. Step-by-step UAT
+
+### Step 1 — Login & buka daftar BOM
+
+| # | Langkah | Expected | Actual | Status |
+|---|---------|----------|--------|--------|
+| 1.1 | Buka URL staging | Halaman login atau dashboard | HTTP 200, login form | PASS |
+| 1.2 | Login user nrw | Masuk aplikasi | Redirect `/dashboard` | PASS |
+| 1.3 | Navigasi ke BOM | Daftar BOM | URL `/manufacture/bill-of-materials` | PASS |
+| 1.4 | Judul halaman | Daftar BOM / Bill of Materials | Heading area "Daftar Bahan" *(label UI)* | WARN |
+
+### Step 2 — Daftar project BOM (list table)
+
+**Kolom tabel (Actual):**
+
+| No | Kolom ERP | Contoh data |
+|----|-----------|-------------|
+| 1 | Perluas | Expand nested components |
+| 2 | No | 1, 2, 3… |
+| 3 | Nama BOM | BOM @KAKI MEJAKU |
+| 4 | Kode BOM | BOM-KAKU-001 |
+| 5 | Tipe | Material / Produk |
+| 6 | Varian | Standar / COLOR: BLACK |
+| 7 | Jumlah | 2 Pcs |
+| 8 | Biaya | Rp 550.833 |
+| 9 | Versi | 1.3 |
+| 10 | Tanggal Dibuat | 29 Apr 2026 |
+| 11 | Aksi | Icon buttons (edit/view/delete) |
+
+**Aksi header:**
+
+| Tombol | Expected | Actual |
+|--------|----------|--------|
+| Filters | Filter kolom | Ada | PASS |
+| BOM Baru | Wizard create | Link `/manufacture/bill-of-materials/new` | PASS |
+| Pagination | 1,2,3…24 | Ada | PASS |
+
+### Step 3 — Expand row (preview komponen)
+
+| # | Expected | Actual | Status |
+|---|----------|--------|--------|
+| 3.1 | Klik Perluas | Nested components | PASS |
+| 3.2 | Sub-table kolom | Order, Code, Name, Qty, Unit Cost, Total | PASS |
+| 3.3 | Total cost child | Agregasi | Contoh: Total Cost Rp 120.000 (1 component) | PASS |
+
+### Step 4 — BOM Baru (wizard 4 langkah)
+
+```mermaid
+flowchart LR
+  S1[1 Produk Akhir] --> S2[2 Komponen]
+  S2 --> S3[3 Sub Perakitan & Bahan Baku]
+  S3 --> S4[4 Operasi]
+  S4 --> SAVE[Simpan / Buat]
+```
+
+#### Step 4.1 — Tab 1: Produk Akhir
+
+| Field form | name attribute | Required |
+|------------|----------------|----------|
+| Tipe BOM | itemType | * |
+| Nama Item | picker | * |
+| Nama BOM | name | * |
+| Kode BOM | code | * |
+| Kuantitas | quantity | |
+| Versi | Mayor / Minor | |
+| Dimensi P×L×T | measurement.length/width/height | |
+| Volume (m³) | computation.volume | |
+
+**Navigasi:** `Lanjut ke Komponen` | `Simpan Item Baru`
+
+#### Step 4.2 — Tab 2: Komponen
+
+**Sub-section komponen item (5 grup kolom):**
+
+| Grup | Kolom |
+|------|-------|
+| 1. Identitas Komponen | ITEM, INFO BOM, AKSI |
+| 2. Spesifikasi Teknis | DIMENSI (MM), VOLUME (m³), KUANTITAS |
+| 3. Manufaktur | PUSAT KERJA, ROUTING, PERAWATAN |
+| 4. Keuangan | BIAYA SATUAN, BIAYA MESIN, BIAYA TENAGA KERJA, TOTAL BIAYA |
+| 5. Tambahan | CATATAN |
+
+**Aksi:** Add Item, Add Catalog, Identitas/Spesifikasi/Manufaktur/Keuangan/Tambahan toggles, **Buat**
+
+#### Step 4.3 — Tab 3: Sub Perakitan & Bahan Baku
+
+**Tabel material (Actual headers):**
+
+| # | Kode Material | Nama Material | Modul | Submodul | Jumlah | Satuan | Dimensi | Harga Satuan | Total Harga |
+
+#### Step 4.4 — Tab 4: Operasi
+
+**Tabel operasi (Actual headers):**
+
+| # | Modul | Nama Operasi | Tipe | Durasi (M) | Tenaga Kerja | Mesin | Biaya Tenaga Kerja | Biaya Operasi | Total Biaya | Catatan |
+
+### Step 5 — Master data (ERP terpisah)
+
+| Modul | Fungsi | Integrasi BOM |
+|-------|--------|---------------|
+| `/purchasing/materials` | Master material | Picker "Pilih Nama Item", Add Catalog |
+| `/manufacture/work-centers` | Work center | Kolom Pusat Kerja |
+| `/manufacture/routings` | Routing template | Kolom Routing |
+| Products / Variants | Produk jadi | Link itemType |
+
+**Catatan QA:** Master **live di database ERP**, bukan seed file lokal.
+
+### Step 6 — Fitur yang **belum** terobservasi di BOM editor
+
+| Fitur (Design Baru) | Status di ERP Staging |
+|---------------------|----------------------|
+| Container capacity per item | Tidak ada tab dedicated |
+| Summary kalkulasi Excel-like | Tidak ada tab |
+| Detail COGS waterfall | Tidak ada tab |
+| FOB informasi / jurnal | Tidak ada tab |
+| Import Excel BOM | Tidak terlihat di list |
+| Visual tree graph | Tidak ada (tabel + expand) |
+
+---
+
+## 4. Sample data staging (Actual)
+
+| Nama BOM | Kode | Tipe | Biaya |
+|----------|------|------|-------|
+| BOM @KAKI MEJAKU | BOM-KAKU-001 | Material | Rp 550.833 |
+| BOM MFC | MFC-002 | Material | Rp 2.909.399 |
+| BOM CHI Gaming | CHIG002 | Produk | Rp 363.023 |
+| BOM Ciero Barstool | CBTL252 | Produk | Rp 14.143.214 |
+
+---
+
+## 5. Evidence
+
+| File | Isi |
+|------|-----|
+| `evidence/erp-01-bom-list.png` | Screenshot daftar BOM |
+| `evidence/erp-new-page.png` | Wizard BOM Baru |
+| `erp-wizard-steps.json` | Scraped headers per tab |
+| `erp-bom-structure.json` | Row sample + wizard |
+
+---
+
+## 6. Kesimpulan QA ERP (referensi PRD)
+
+**Kekuatan ERP staging:**
+- Wizard terstruktur 4 langkah (produk → komponen → material → operasi)
+- Master terintegrasi (material, WC, routing) via modul terpisah
+- List BOM dengan expand preview komponen + biaya
+- Multi-tipe BOM (Material vs Produk)
+
+**Gap vs kebutuhan costing Excel Spartan:**
+- Tidak ada parity SUMMARY COST / COGS / container / FOB dalam satu alur editor
+- Hierarki MODUL/SUBMODUL/PART kurang eksplisit vs Excel BOM TEMPLATE
+- Kalkulasi multi-mata uang / SF-WF / coating surface belum terlihat di wizard
+
+---
+
+*Lanjut: perbandingan tabel → `03-Perbandingan-Tabel.mmd`*

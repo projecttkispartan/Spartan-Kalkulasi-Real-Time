@@ -1,0 +1,170 @@
+# Dev Improvement Backlog — Penggantian Kalkulasi Excel
+
+| Field | Value |
+|-------|-------|
+| **Produk** | Manufaktur BOM v1.0 (BOM Design by Gemini) |
+| **Tanggal** | 5 Juni 2026 |
+| **Target rilis** | Deviasi Total COGS ≤ **1,5%** atau ≤ **Rp 25.000** vs SUMMARY COST |
+| **Referensi** | [05-Rekomendasi-Improvement.mmd](./05-Rekomendasi-Improvement.mmd) · [UAT-G632L](../UAT-G632L-Manual-From-Zero.mmd) · [Checklist](../Checklist-Pengganti-Excel.md) |
+
+---
+
+## Ringkasan skor (baseline → pasca-fix S1–S2, Jun 2026)
+
+| Area | Baseline | Pasca-fix | Target |
+|------|----------|-----------|--------|
+| Parity COGS G632L | 4/10 | **8/10** (~0,58%) | ≤ 3% |
+| SF/WF & konsistensi antar tab | 6/10 | **9/10** | 9/10 |
+| Master data live ERP | 3/10 | 4/10 (adapter) | 8/10 |
+| BOM manual dari nol | 5/10 | 6/10 (wizard) | 8/10 |
+| Persistensi & multi-user | 3/10 | 4/10 (adapter) | 7/10 |
+| UX placeholder / ERP parity | 6/10 | 7/10 | 8/10 |
+
+**Acceptance criteria lengkap:** [08-Acceptance-Criteria-Perbaikan-BOM.mmd](./08-Acceptance-Criteria-Perbaikan-BOM.mmd)
+
+---
+
+## Ringkasan skor baseline (referensi awal)
+
+| Area | Skor saat ini | Target |
+|------|---------------|--------|
+| Parity COGS G632L | 4/10 | 8/10 (≤ 3%) |
+| SF/WF & konsistensi antar tab | 6/10 | 9/10 |
+| Master data live ERP | 3/10 | 8/10 |
+| BOM manual dari nol | 5/10 | 8/10 |
+| Persistensi & multi-user | 3/10 | 7/10 |
+| UX placeholder / ERP parity | 6/10 | 8/10 |
+
+---
+
+## P0 — Blokir go-live
+
+### P0-1 · Master data dummy lokal
+
+| | |
+|---|---|
+| **Posisi** | Modal Master Data · Picker Struktur/Material · `masterLookup.js` |
+| **SEBELUM** | Seed JSON ZAN + IndexedDB; SKU G632L incomplete |
+| **SESUDAH** | Read-only API ERP; `MASTER_SOURCE=seed\|api` |
+| **File** | `src/services/masterStorage.js`, `masterApiAdapter.js`, `MasterCombos.jsx` |
+| **Acceptance** | SKU G632L hardware/upholstery = ERP; `npm test` green dengan seed |
+
+### P0-2 · G632L COGS gap ~47%
+
+| | |
+|---|---|
+| **Posisi** | Tab COGS · `verifyAllSampleCogs.mjs` |
+| **SEBELUM** | Excel ~Rp 4.561.180 · App ~Rp 6.699.498 (+46,9%) |
+| **SESUDAH** | Deviasi ≤ 3%; root cause per komponen terdokumentasi |
+| **File** | `cogsBreakdown.js`, `bomCalculations.js`, `g632l-ro.json` |
+
+### P0-3 · Template BOM / wizard
+
+| | |
+|---|---|
+| **Posisi** | Dashboard → Proyek Baru |
+| **SEBELUM** | 1 MODUL kosong; G632L manual puluhan part |
+| **SESUDAH** | Wizard itemType → template ≥80% struktur SOFA |
+| **File** | `bomTemplates.json`, `emptyProject.js`, `Dashboard.jsx` |
+
+### P0-4 · Save IndexedDB only
+
+| | |
+|---|---|
+| **Posisi** | Dashboard CRUD · auto-save |
+| **SEBELUM** | Browser-only; tidak multi-user |
+| **SESUDAH** | Persist ERP draft/submitted/approved; IDB = cache |
+| **File** | `projectStorage.js`, `projectApiAdapter.js` |
+
+### P0-5 · SF/WF reset pada part Excel
+
+| | |
+|---|---|
+| **Posisi** | Tab Material/Summary · enrich master |
+| **SEBELUM** | `biayaFromExcel` → SF/WF=0; abaikan `sfWfManual` |
+| **SESUDAH** | `sfWfManual` → keep; else `biayaFromExcel` → 0; else MASTER RATIO |
+| **File** | `linkProjectToMasters.js`, `masterLookup.js` |
+
+### P0-6 · Summary total ≠ engine
+
+| | |
+|---|---|
+| **Posisi** | Tab Summary Kalkulasi |
+| **SEBELUM** | Formula lokal JSX vs `computePartCostRow` |
+| **SESUDAH** | Satu sumber: `computePartCostRow(d)` |
+| **File** | `BOMEditor.jsx`, `SummaryDetailModal.jsx` |
+
+### P0-7 · Mode dual Excel vs live
+
+| | |
+|---|---|
+| **Posisi** | Import · COGS checklist |
+| **SEBELUM** | Hybrid campur tanpa guard |
+| **SESUDAH** | `cogsMode: excel-fixed \| live-master`; badge UI |
+| **File** | `emptyProject.js`, `excelWorkbookParsers.js`, `cogsBreakdown.js` |
+
+---
+
+## P1 — Parity ERP + Excel
+
+| ID | Item | SEBELUM | SESUDAH |
+|----|------|---------|---------|
+| P1-1 | STOCK GUDANG | Kolom kosong | Wire API atau hide + tooltip |
+| P1-2 | COGS defaults | Mgmt 2,5% default | Copy dari excelMirror / preset itemType |
+| P1-3 | Routing auto | Manual per part | Generate routing default |
+| P1-4 | COGS live parity | Kosong tanpa mirror | Upload referensi / snapshot |
+| P1-5 | Dashboard list | Kolom minimal | Tipe BOM + expand row |
+| P1-6 | Product picker | Free text | ERP `/manufacture/products` |
+| P1-7 | Versi BOM | String bebas | Mayor.Minor |
+
+---
+
+## P2 — UX & technical debt
+
+| ID | Item |
+|----|------|
+| P2-1 | Tab Material layout regression guard |
+| P2-2 | Rename label FOB (COGS vs Jurnal) |
+| P2-3 | ELB fixture CI — tidak SKIP |
+| P2-4 | Glosarium label konsisten |
+| P2-5 | Playwright smoke 7-tab |
+
+---
+
+## Sprint roadmap
+
+| Sprint | Deliverable |
+|--------|-------------|
+| S1 | P0-5, P0-6, P0-7 |
+| S2 | P0-2 G632L audit + fix |
+| S3 | P0-1 master API + P0-3 template |
+| S4 | P0-4 persist + P1 dashboard |
+| S5 | P1 remainder + P2 QA |
+
+---
+
+## KPI sign-off
+
+| Metrik | Gate |
+|--------|------|
+| ZAN COGS | ≤ 1,5% |
+| G632L COGS | ≤ 3% |
+| SF/WF persist | Edit → F5 → sama |
+| Summary Δ | Row = kartu = 0 |
+| `npm test` | Full green |
+
+---
+
+## Jira backlog (usulan)
+
+| Epic | Story | Priority |
+|------|-------|----------|
+| BOM-BE-001 | Master materials + WC API | P0 |
+| BOM-BE-001 | Persist BOM draft ERP | P0 |
+| BOM-BE-001 | Audit G632L COGS | P0 |
+| BOM-FE-001 | SF/WF persist + enrich | P0 |
+| BOM-FE-001 | Summary → computePartCostRow | P0 |
+| BOM-FE-001 | cogsMode excel-fixed/live | P0 |
+| BOM-FE-001 | Template BOM wizard | P0 |
+| BOM-QA-001 | G632L E2E + evidence | P0 |
+| BOM-QA-001 | Playwright smoke | P2 |

@@ -1098,6 +1098,37 @@
         "unit": "SET",
         "children": [
           {
+            "id": "excel-proc-kayu-labor",
+            "no": 899,
+            "nama": "KAYU — proses (SUMMARY)",
+            "kode": "EXCEL-kayu_labor",
+            "tipe": "PART",
+            "qty": 1,
+            "unit": "SET",
+            "p": 0,
+            "l": 0,
+            "t": 0,
+            "vol": 0,
+            "biaya": 0,
+            "materialType": "kayu",
+            "sf": 0,
+            "wf": 0,
+            "catatan": "Impor SUMMARY KAYU labor+mesin (material dari CALCULATION)",
+            "proses_count": 1,
+            "proses": [
+              {
+                "nama": "KAYU — proses SUMMARY",
+                "mfgProcess": "Woodworking",
+                "summaryKey": "kayu",
+                "waktuOperasi": 0,
+                "totalPerson": 1,
+                "biayaMesin": 2873,
+                "biayaPekerja": 143179
+              }
+            ],
+            "children": []
+          },
+          {
             "id": "excel-proc-0",
             "no": 900,
             "nama": "ASSEMBLING HARDWARE",
@@ -1269,130 +1300,6 @@
             "sf": 0,
             "wf": 0,
             "catatan": "Impor SUMMARY COST baris 29",
-            "proses_count": 1,
-            "proses": [
-              {
-                "nama": "UPHOLSTERY — proses",
-                "mfgProcess": "Upholstery",
-                "summaryKey": "upholstery",
-                "waktuOperasi": 0,
-                "totalPerson": 1,
-                "biayaMesin": 0,
-                "biayaPekerja": 343829
-              }
-            ],
-            "children": []
-          },
-          {
-            "id": "excel-proc-6",
-            "no": 906,
-            "nama": "GERINDA",
-            "kode": "EXCEL-gerinda",
-            "tipe": "PART",
-            "qty": 1,
-            "unit": "SET",
-            "p": 0,
-            "l": 0,
-            "t": 0,
-            "vol": 0,
-            "biaya": 1329,
-            "materialType": "komponen",
-            "sf": 0,
-            "wf": 0,
-            "catatan": "Impor SUMMARY COST baris 124",
-            "proses_count": 1,
-            "proses": [
-              {
-                "nama": "GERINDA — proses",
-                "mfgProcess": "Finishing",
-                "summaryKey": "finishing",
-                "waktuOperasi": 0,
-                "totalPerson": 1,
-                "biayaMesin": 0,
-                "biayaPekerja": 1329
-              }
-            ],
-            "children": []
-          },
-          {
-            "id": "excel-proc-7",
-            "no": 907,
-            "nama": "AMPLAS",
-            "kode": "EXCEL-amplas",
-            "tipe": "PART",
-            "qty": 1,
-            "unit": "SET",
-            "p": 0,
-            "l": 0,
-            "t": 0,
-            "vol": 0,
-            "biaya": 10828,
-            "materialType": "komponen",
-            "sf": 0,
-            "wf": 0,
-            "catatan": "Impor SUMMARY COST baris 125",
-            "proses_count": 1,
-            "proses": [
-              {
-                "nama": "AMPLAS — proses",
-                "mfgProcess": "Finishing",
-                "summaryKey": "finishing",
-                "waktuOperasi": 0,
-                "totalPerson": 1,
-                "biayaMesin": 0,
-                "biayaPekerja": 18106
-              }
-            ],
-            "children": []
-          },
-          {
-            "id": "excel-proc-8",
-            "no": 908,
-            "nama": "FINISHING",
-            "kode": "EXCEL-finishing",
-            "tipe": "PART",
-            "qty": 1,
-            "unit": "SET",
-            "p": 0,
-            "l": 0,
-            "t": 0,
-            "vol": 0,
-            "biaya": 0,
-            "materialType": "komponen",
-            "sf": 0,
-            "wf": 0,
-            "catatan": "Impor SUMMARY COST baris 126",
-            "proses_count": 1,
-            "proses": [
-              {
-                "nama": "FINISHING — proses",
-                "mfgProcess": "Finishing",
-                "summaryKey": "finishing",
-                "waktuOperasi": 0,
-                "totalPerson": 1,
-                "biayaMesin": 0,
-                "biayaPekerja": 10629
-              }
-            ],
-            "children": []
-          },
-          {
-            "id": "excel-proc-9",
-            "no": 909,
-            "nama": "UPHOLSTERY",
-            "kode": "EXCEL-upholstery",
-            "tipe": "PART",
-            "qty": 1,
-            "unit": "SET",
-            "p": 0,
-            "l": 0,
-            "t": 0,
-            "vol": 0,
-            "biaya": 1851449,
-            "materialType": "komponen",
-            "sf": 0,
-            "wf": 0,
-            "catatan": "Impor SUMMARY COST baris 127",
             "proses_count": 1,
             "proses": [
               {
@@ -4344,5 +4251,6 @@
   },
   "kursUsd": 16004,
   "kursEur": 17500,
-  "importedFromExcel": true
+  "importedFromExcel": true,
+  "cogsMode": "excel-fixed"
 }

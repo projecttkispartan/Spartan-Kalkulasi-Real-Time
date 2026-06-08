@@ -248,6 +248,7 @@ export function parseBomWorkbook(wb) {
     cogsConfig,
     excelMirror: mirror,
     importedFromExcel: true,
+    cogsMode: 'excel-fixed',
     importSheets: [
       'SUMMARY COST',
       'BOM TEMPLATE',

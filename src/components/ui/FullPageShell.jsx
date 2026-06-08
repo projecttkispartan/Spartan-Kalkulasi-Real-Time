@@ -15,6 +15,8 @@ export default function FullPageShell({
   footer,
   children,
   accent = 'emerald',
+  headerLabel,
+  contentClassName = 'page-inner-full w-full py-4 overflow-hidden',
 }) {
   useEffect(() => {
     if (!isOpen) return undefined;
@@ -58,7 +60,9 @@ export default function FullPageShell({
               </div>
             )}
             <div className="min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-widest opacity-80">Master</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest opacity-80">
+                {headerLabel || 'Master'}
+              </p>
               <h1 className="text-lg sm:text-xl md:text-2xl font-black tracking-tight truncate">{title}</h1>
               {subtitle && (
                 <p className="text-xs opacity-90 mt-1 max-w-4xl line-clamp-2 sm:line-clamp-none">{subtitle}</p>
@@ -81,7 +85,7 @@ export default function FullPageShell({
       </header>
 
       <main className="flex-1 min-h-0 flex flex-col overflow-hidden bg-slate-50/80">
-        <div className="flex flex-col flex-1 min-h-0 h-full page-inner-full w-full py-4 overflow-hidden">
+        <div className={`flex flex-col flex-1 min-h-0 h-full ${contentClassName}`}>
           {children}
         </div>
       </main>

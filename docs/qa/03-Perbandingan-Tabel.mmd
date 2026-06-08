@@ -1,0 +1,198 @@
+# Perbandingan Tabel — ERP Staging vs BOM Design Baru
+
+| Tanggal | 5 Juni 2026 |
+|---------|-------------|
+| ERP | [ERPKu Staging BOM](https://erp.stg.solusiuntuknegeri.com/manufacture/bill-of-materials) |
+| App baru | BOM Design by Gemini |
+
+---
+
+## 1. Peta layar (high level)
+
+```mermaid
+flowchart TB
+  subgraph erp [ERP Staging]
+    EL[List BOM]
+    EW[Wizard 4 step]
+    EM[Master terpisah: Materials / WC / Routing]
+  end
+  subgraph app [Design Baru]
+    AL[Dashboard List]
+    AP[Product Panel]
+    AT7[7 Tab Editor]
+    AM[Master Modal 12 tab]
+  end
+  EL --> EW
+  AL --> AP --> AT7
+```
+
+| Area UX | ERP Staging | Design Baru | Selisih utama |
+|---------|-------------|-------------|---------------|
+| Daftar project BOM | ✅ 1 tabel | ✅ 1 tabel | App + import Excel, HPP USD |
+| Produk | ✅ Step 1 wizard (form) | ✅ Panel collapsible | App + coating m² preview |
+| Struktur | ✅ Step 2 Komponen (5 grup kolom) | ✅ Tab tree + visual | App: SUBMODUL 2, Excel tipe |
+| Material | ✅ Step 3 tabel bahan baku | ✅ Tab PART-only + SF/WF | App: vendor, multi-currency |
+| Proses | ✅ Step 4 tabel operasi | ✅ Tab rekap + detail | App: routing steps breakdown |
+| Container | ❌ Tidak ada | ✅ Tab lengkap | **Hanya app** |
+| Summary | ❌ Tidak ada | ✅ Tab + nested ops | **Hanya app** |
+| COGS | ❌ Tidak ada di editor | ✅ Waterfall + parity | **Hanya app** |
+| FOB / Jurnal | ❌ Tidak ada | ✅ Tab ERP journal | **Hanya app** |
+| Master | ✅ Modul ERP terpisah | ✅ Modal seed dummy | ERP live DB vs local seed |
+
+---
+
+## 2. Tabel 1 — Daftar project BOM
+
+| Kolom / Fitur | ERP Staging | Design Baru | Match? |
+|---------------|-------------|-------------|--------|
+| No | ✅ | ✅ | ✅ |
+| Gambar | ❌ | Placeholder icon | Partial |
+| Kode produk/BOM | Kode BOM | Kode Produk | ✅ |
+| Nama | Nama BOM | Nama Produk | ✅ |
+| Customer | ❌ | ✅ | App+ |
+| Tipe | ✅ Material/Produk | ❌ (di detail) | ERP+ |
+| Varian | ✅ | ✅ (productInfo.varian) | ✅ |
+| Jumlah/Qty header | ✅ | ❌ | ERP+ |
+| Biaya/HPP | ✅ Biaya | ✅ HPP IDR + USD | App+ |
+| Versi | ✅ Mayor.Minor | ✅ | ✅ |
+| Tanggal dibuat | ✅ | ✅ Update | Partial |
+| Status | ❌ | ✅ draft | App+ |
+| Expand preview | ✅ Components nested | ❌ | ERP+ |
+| Filter | ✅ Filters | ✅ Search | ✅ |
+| Import Excel | ❌ | ✅ | App+ |
+| BOM Baru | ✅ Wizard | ✅ Buat Baru | ✅ |
+
+---
+
+## 3. Tabel 2 — Produk / Header BOM
+
+| Field | ERP (Wizard Step 1) | Design Baru (Product Panel) |
+|-------|---------------------|----------------------------|
+| Tipe BOM / Item Type | itemType * | itemType |
+| Nama Item | Picker master produk * | nama produk |
+| Nama BOM | name * | namaBom |
+| Kode BOM | code * | kode / kodeBom |
+| Kuantitas | quantity | qty root MODUL |
+| Versi | Mayor / Minor | versi |
+| Dimensi mm | P×L×T + volume | produk + packing dims |
+| Kayu / grade | via item master? | WoodGradeField |
+| Coating | ❌ | CoatingField + cost/m² |
+| Customer | ❌ | ✅ |
+| Foto produk | ❌ | ✅ zoom |
+
+---
+
+## 4. Tabel 3 — Struktur perakitan & modul
+
+| Aspek | ERP (Step 2 Komponen) | Design Baru (Tab Struktur) |
+|-------|----------------------|----------------------------|
+| Model hierarki | Item tree flat in wizard | MODUL → SUBMODUL → SUBMODUL 2 → PART |
+| Tipe node | ITEM + grup kolom | Badge tipe + rules add child |
+| Kode | Part of ITEM | Kode material editable |
+| Nama + grade | ITEM identity | Nama + combo DATA BASE |
+| Dimensi | DIMENSI MM, VOLUME, QTY | W/D/H, vol m³ |
+| Tipe material | ❌ explicit column | Dropdown kayu/plywood/… |
+| Pusat kerja | ✅ | Via routing modal |
+| Routing | ✅ | ✅ multi-step |
+| Perawatan | ✅ | ❌ |
+| Biaya satuan | ✅ | MAT IDR + USD/EUR |
+| Biaya mesin / TK | ✅ kolom terpisah | PROD rollup |
+| Visual graph | ❌ | ✅ canvas |
+| Catatan | ✅ | ✅ |
+
+---
+
+## 5. Tabel 4 — Kebutuhan material
+
+| Kolom | ERP (Step 3) | Design Baru (Tab Material) |
+|-------|--------------|----------------------------|
+| # | ✅ | NO |
+| Kode material | ✅ | Kode material |
+| Nama material | ✅ | Nama + picker |
+| Modul / Submodul | ✅ | Hierarchy toggles |
+| Jumlah / Satuan | ✅ | QTY / UNIT |
+| Dimensi | ✅ | Dimensi & volume |
+| Harga satuan | ✅ | MAT IDR/USD/EUR |
+| Total harga | ✅ | PROD total |
+| SF / WF | ❌ | ✅ % |
+| Vendor | ❌ | ✅ |
+| Tipe material | ❌ | ✅ |
+| Foto part | ❌ | ✅ |
+| Stock gudang | ❌ | UI only |
+
+---
+
+## 6. Tabel 5 — Kebutuhan proses
+
+| Kolom | ERP (Step 4 Operasi) | Design Baru (Tab Proses) |
+|-------|----------------------|--------------------------|
+| Modul | ✅ | ✅ hierarchy |
+| Nama operasi | ✅ | ✅ |
+| Tipe | ✅ | Routing vs WC |
+| Durasi (menit) | ✅ | ✅ |
+| Tenaga kerja | ✅ | ✅ org × mnt |
+| Mesin | ✅ | ✅ biaya WC |
+| Biaya TK / operasi | ✅ | ✅ terpisah |
+| Total biaya | ✅ | ✅ + FX |
+| Rekap kategori | ❌ | ✅ table A |
+| Detail per part | ❌ | ✅ table B |
+
+---
+
+## 7. Tabel 6–9 — Hanya di Design Baru
+
+### Container capacity
+
+| Kolom ERP | Design Baru |
+|-----------|-------------|
+| — | Dimensi packing, material box/SF, routing packing, container presets, unified cost table |
+
+### Summary kalkulasi
+
+| — | PART tree, SF/WF, nested operasi, total biaya per part |
+
+### Detail COGS
+
+| — | RAW material, proses, packing, FOB opt, factory OH, mgmt OH, total COGS, selling price, parity score |
+
+### FOB informasi (jurnal)
+
+| — | Custom parts, mesin, karyawan, grand total HPP |
+
+---
+
+## 8. Master data
+
+| Master | ERP Staging | Design Baru (saat ini) |
+|--------|-------------|-------------------------|
+| Material | `/purchasing/materials` DB | Seed JSON + picker |
+| Work Center | `/manufacture/work-centers` | Master modal tab |
+| Routing | `/manufacture/routings` | Per-node routing + catalog |
+| Products | `/manufacture/products` | productInfo only |
+| Variants | `/manufacture/product-variants` | varian field |
+| COATING / RATIO / FORMULA | ❌ dedicated UI | ✅ modal tabs |
+| FOB COST kontainer | ❌ | ✅ tab FOB COST |
+| Import Excel master | ❌ | `npm run import:masters:zan` |
+
+---
+
+## 9. Matriks coverage (ringkas)
+
+| Modul UX | ERP | App | Rekomendasi |
+|----------|-----|-----|-------------|
+| Daftar BOM | ●●●○ | ●●●● | Samakan kolom Tipe/Expand |
+| Produk | ●●●○ | ●●●● | ERP perlu coating SF |
+| Struktur | ●●●○ | ●●●● | App perlu perawatan? |
+| Material | ●●○○ | ●●●● | — |
+| Proses | ●●●○ | ●●●● | — |
+| Container | ○○○○ | ●●●● | Wajib di app (Excel) |
+| Summary | ○○○○ | ●●●● | Wajib di app |
+| COGS | ○○○○ | ●●●● | Parity engine app |
+| FOB | ○○○○ | ●●●○ | Integrasi ERP journal |
+| Master live | ●●●● | ●○○○ | **Migrasi ke API ERP** |
+
+● = coverage relatif (4 = lengkap)
+
+---
+
+*PRD migrasi: `04-PRD-Migrasi-BOM.mmd`*

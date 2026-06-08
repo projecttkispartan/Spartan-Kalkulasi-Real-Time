@@ -97,6 +97,170 @@ export function MaterialsTable({ rows, setMaterials, search = '' }) {
   );
 }
 
+export function DatabaseSectionTable({ rows, setRows, search = '' }) {
+  const list = filterMasterRows(rows, search, ['kode', 'specification', 'nama', 'section', 'materialType']);
+  if (!list.length) return <MasterEmpty message="Tidak ada baris DATABASE P0 — jalankan npm run import:masters" />;
+
+  return (
+    <MasterTableWrap minWidth="1100px">
+      <MasterThead>
+        <tr>
+          <MasterTh narrow align="center">No</MasterTh>
+          <MasterTh>Section</MasterTh>
+          <MasterTh>Kode</MasterTh>
+          <MasterTh>Specification</MasterTh>
+          <MasterTh>Item code</MasterTh>
+          <MasterTh>Tipe</MasterTh>
+          <MasterTh align="center">Unit</MasterTh>
+          <MasterTh align="right" money>Harga supplier</MasterTh>
+          <MasterTh align="right" money>Harga buyer</MasterTh>
+          <MasterTh>Sumber</MasterTh>
+        </tr>
+      </MasterThead>
+      <tbody>
+        {list.map((m, i) => (
+          <MasterTr key={m.id} index={i}>
+            <MasterTd narrow align="center" mono>{m.no}</MasterTd>
+            <MasterTd>
+              <TypeChip type={m.section || m.materialType} />
+            </MasterTd>
+            <MasterTd mono>
+              <CellInput value={m.kode} onChange={(v) => patchRow(setRows, m.id, 'kode', v)} mono />
+            </MasterTd>
+            <MasterTd>
+              <CellInput value={m.specification} onChange={(v) => patchRow(setRows, m.id, 'specification', v)} />
+            </MasterTd>
+            <MasterTd mono>
+              <CellInput value={m.itemCode || ''} onChange={(v) => patchRow(setRows, m.id, 'itemCode', v)} mono />
+            </MasterTd>
+            <MasterTd>
+              <TypeChip type={m.materialType} />
+            </MasterTd>
+            <MasterTd align="center" mono>{m.units || m.unit || 'm3'}</MasterTd>
+            <MasterTd align="right">
+              <RpInput
+                className="ml-auto"
+                emphasize
+                value={m.hargaMaterialSupplier ?? m.pricePerUnitSupplier ?? m.pricePerM3Supplier ?? 0}
+                onChange={(v) => patchRow(setRows, m.id, 'hargaMaterialSupplier', v)}
+                suffix={
+                  m.unit === 'm2' ? 'm²' : ['pcs', 'lbr', 'kg', 'm', 'ltr', 'roll'].includes(m.unit) ? '/unit' : 'm³'
+                }
+              />
+            </MasterTd>
+            <MasterTd align="right">
+              <RpInput
+                className="ml-auto"
+                value={m.hargaMaterialBuyer ?? m.buyerTotalPerM3 ?? 0}
+                onChange={(v) => patchRow(setRows, m.id, 'hargaMaterialBuyer', v)}
+              />
+            </MasterTd>
+            <MasterTd className="text-[10px] text-slate-500 max-w-[100px] truncate" title={m.excelRef}>
+              {m.excelRef || 'DATA BASE'}
+            </MasterTd>
+          </MasterTr>
+        ))}
+      </tbody>
+    </MasterTableWrap>
+  );
+}
+
+export function FobCostTable({ master, setMaster, search = '' }) {
+  const m = master || {};
+  const containerKey = m.selectedContainer || '20foot';
+  const container = m.containers?.[containerKey];
+  const items = (container?.lineItems || []).filter((it) => {
+    const q = String(search || '').trim().toLowerCase();
+    if (!q) return true;
+    return String(it.description || '').toLowerCase().includes(q);
+  });
+
+  if (!container?.lineItems?.length) {
+    return <MasterEmpty message="FOB COST kosong — jalankan npm run import:masters:zan" />;
+  }
+
+  const patchLine = (no, field, value) => {
+    setMaster((prev) => {
+      const key = prev.selectedContainer || '20foot';
+      const c = { ...prev.containers[key] };
+      c.lineItems = c.lineItems.map((it) =>
+        it.no === no ? { ...it, [field]: value } : it,
+      );
+      return {
+        ...prev,
+        containers: { ...prev.containers, [key]: c },
+      };
+    });
+  };
+
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap gap-2 items-center">
+        {['20foot', '40foot', '40hc'].map((k) => (
+          <button
+            key={k}
+            type="button"
+            onClick={() => setMaster((p) => ({ ...p, selectedContainer: k }))}
+            className={`px-3 py-1 rounded-lg text-[10px] font-bold border ${
+              containerKey === k
+                ? 'bg-violet-600 text-white border-violet-600'
+                : 'bg-white text-slate-600 border-slate-200'
+            }`}
+          >
+            {m.containers?.[k]?.label || k}
+          </button>
+        ))}
+        <span className="text-[10px] text-slate-500 ml-2">
+          Kurs: US$ 1 = Rp {Number(m.exchangeRateUsd || 0).toLocaleString('id-ID')} · SF baris/total:{' '}
+          {(Number(m.lineSafetyPct || 0.05) * 100).toFixed(0)}%
+        </span>
+        <span className="text-[10px] font-bold text-violet-700">
+          Rounded: Rp {Number(container.roundedFobPerM3 || 0).toLocaleString('id-ID')}/m³
+        </span>
+      </div>
+      <MasterTableWrap minWidth="1000px">
+        <MasterThead>
+          <tr>
+            <MasterTh narrow align="center">No</MasterTh>
+            <MasterTh>Layanan</MasterTh>
+            <MasterTh align="center">Qty</MasterTh>
+            <MasterTh align="right" money>Biaya/unit</MasterTh>
+            <MasterTh align="center">SF</MasterTh>
+            <MasterTh align="right" money>Total (+SF)</MasterTh>
+          </tr>
+        </MasterThead>
+        <tbody>
+          {items.map((it, i) => (
+            <MasterTr key={it.no} index={i}>
+              <MasterTd narrow align="center" mono>{it.no}</MasterTd>
+              <MasterTd>{it.description}</MasterTd>
+              <MasterTd align="center">
+                <NumInput value={it.qty} onChange={(v) => patchLine(it.no, 'qty', v)} />
+              </MasterTd>
+              <MasterTd align="right">
+                <RpInput
+                  className="ml-auto"
+                  value={it.costPerUnit}
+                  onChange={(v) => patchLine(it.no, 'costPerUnit', v)}
+                />
+              </MasterTd>
+              <MasterTd align="center">
+                <PctInput
+                  value={(Number(it.safetyFactor) || 0) * 100}
+                  onChange={(v) => patchLine(it.no, 'safetyFactor', v / 100)}
+                />
+              </MasterTd>
+              <MasterTd align="right" mono>
+                Rp {Number(it.totalCost || 0).toLocaleString('id-ID')}
+              </MasterTd>
+            </MasterTr>
+          ))}
+        </tbody>
+      </MasterTableWrap>
+    </div>
+  );
+}
+
 export function NonWoodTable({ rows, setNonWood, search = '' }) {
   const list = filterMasterRows(rows, search, ['specification', 'woodName', 'materialType']);
   if (!list.length) return <MasterEmpty />;

@@ -12,7 +12,9 @@ import {
   EXCEL_PARITY_TOLERANCE_IDR,
   EXCEL_PARITY_TOLERANCE_PCT,
 } from '../src/data/excelParityChecklist.js';
-import { CURATED_SAMPLE_KEYS } from '../src/utils/emptyProject.js';
+import { CURATED_SAMPLE_KEYS, resolveCogsMode, COGS_MODES } from '../src/utils/emptyProject.js';
+
+const STRICT_IMPORT_KEYS = new Set(['G632L-RO']);
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
@@ -32,9 +34,12 @@ function withinTolerance(actual, expected, pctOverride) {
 
 function loadProject(file, sampleKey) {
   const raw = JSON.parse(fs.readFileSync(path.join(PROJECTS_DIR, file), 'utf8'));
-  const opts = CURATED_SAMPLE_KEYS.has(sampleKey)
-    ? { applyBiaya: false, skipBiayaIfExcel: true }
-    : { applyBiaya: true, skipBiayaIfExcel: true };
+  const cogsMode = resolveCogsMode(raw);
+  const excelFixed = cogsMode === COGS_MODES.EXCEL_FIXED || raw.importedFromExcel;
+  const opts =
+    CURATED_SAMPLE_KEYS.has(sampleKey) || excelFixed
+      ? { applyBiaya: false, skipBiayaIfExcel: true }
+      : { applyBiaya: true, skipBiayaIfExcel: true };
   return linkProjectToMasters(raw, opts);
 }
 
@@ -54,7 +59,11 @@ for (const p of MANIFEST.projects) {
     productMeta: doc.productMeta,
   });
   const excel = doc.excelMirror?.summaryCost || {};
-  const strictPct = CURATED_SAMPLE_KEYS.has(p.sampleKey) ? 0.015 : 0.08;
+  const strictPct = CURATED_SAMPLE_KEYS.has(p.sampleKey)
+    ? 0.015
+    : STRICT_IMPORT_KEYS.has(p.sampleKey)
+      ? 0.03
+      : 0.08;
   const prodT = withinTolerance(cogs.productionCost, excel.productionCost, strictPct);
   const cogsT = withinTolerance(cogs.totalCogs, excel.totalCogs, strictPct);
 
@@ -75,6 +84,9 @@ for (const p of MANIFEST.projects) {
   if (CURATED_SAMPLE_KEYS.has(p.sampleKey)) {
     if (ok) passStrict += 1;
     assert.ok(ok, `${p.sampleKey} must be within ${strictPct * 100}%`);
+  } else if (STRICT_IMPORT_KEYS.has(p.sampleKey)) {
+    assert.ok(ok, `${p.sampleKey} must be within ${strictPct * 100}%`);
+    if (ok) passLoose += 1;
   } else if (ok) {
     passLoose += 1;
   } else if (cogsT.pct <= 0.12 && prodT.pct <= 0.12) {

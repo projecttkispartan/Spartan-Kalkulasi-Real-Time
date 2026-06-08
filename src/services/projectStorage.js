@@ -1,12 +1,9 @@
-import {
-  createEmptyProject,
-  newProjectId,
-  normalizeProject,
-  projectListMeta,
-} from '../utils/emptyProject.js';
+import { createEmptyProject, newProjectId, normalizeProject, projectListMeta, bumpMinorVersion } from '../utils/emptyProject.js';
 import { SAMPLE_PROJECTS, SAMPLE_MANIFEST_VERSION } from '../data/samples/loadSamples.js';
 import { computeCogs, computePackingTotals } from './bomCalculations.js';
 import { linkProjectToMasters } from '../utils/linkProjectToMasters.js';
+import { resolveCogsMode, COGS_MODES } from '../utils/emptyProject.js';
+import { scheduleProjectApiSync } from './projectApiAdapter.js';
 import {
   addDismissedSampleKey,
   getDismissedSampleKeys,
@@ -124,7 +121,11 @@ async function writeDoc(doc) {
 
 function enrichCachedHpp(doc) {
   try {
-    const linked = linkProjectToMasters(doc, { applyBiaya: true });
+    const cogsMode = resolveCogsMode(doc);
+    const linked = linkProjectToMasters(doc, {
+      applyBiaya: cogsMode !== COGS_MODES.EXCEL_FIXED,
+      skipBiayaIfExcel: true,
+    });
     const packingTotals = computePackingTotals(doc.packingSpec);
     const cogs = computeCogs({
       bomData: linked.bomData,
@@ -216,7 +217,9 @@ export async function getProject(id) {
 export async function saveProject(doc) {
   const normalized = normalizeProject(doc);
   if (!normalized) throw new Error('Invalid project document');
-  return writeDoc({ ...normalized, updatedAt: new Date().toISOString() });
+  const saved = await writeDoc({ ...normalized, updatedAt: new Date().toISOString() });
+  scheduleProjectApiSync(saved);
+  return saved;
 }
 
 export async function createProject() {
@@ -250,17 +253,20 @@ export async function restoreDismissedSampleProjects() {
 export async function duplicateProject(id) {
   const src = await getProject(id);
   if (!src) throw new Error('Project not found');
+  const nextVersi = bumpMinorVersion(src.versi || src.productInfo?.versi || '1.0');
   const copy = {
     ...structuredClone(src),
     id: newProjectId(),
     status: 'draft',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    versi: `${src.versi || '1.0'}-copy`,
+    versi: nextVersi,
     productInfo: {
       ...src.productInfo,
-      versi: `${src.productInfo?.versi || '1.0'}-copy`,
+      versi: nextVersi,
     },
+    sampleKey: undefined,
+    _erpId: undefined,
   };
   return saveProject(copy);
 }

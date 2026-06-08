@@ -1,0 +1,973 @@
+# PRD — Sistem Manufaktur Bill of Materials (BOM)
+
+| Field | Value |
+|-------|-------|
+| **Nama produk** | Manufaktur BOM · Spartan Kalkulasi Real-Time |
+| **Versi dokumen** | 2.0 — Improvement Design (Flow & Table) |
+| **Tanggal** | 5 Juni 2026 |
+| **Status** | Draft — improvement UX untuk modul ERP existing |
+| **Owner** | Product / Manufacture Costing |
+| **Sistem existing** | [ERPKu Production](https://erp.solusinegeri.com/manufacture/bill-of-materials) · [Staging](https://erp.stg.solusiuntuknegeri.com/manufacture/bill-of-materials) |
+| **Design reference** | BOM Design by Gemini (prototipe 7 tab) |
+| **Stack target** | Modul ERP (Next.js) + engine costing + API master live |
+| **Referensi Excel** | ZAN-100, FNA-550, G632L-RO, ELB-555-98 |
+
+---
+
+## Daftar isi
+
+1. [Ringkasan eksekutif](#1-ringkasan-eksekutif)
+2. [Masalah & latar belakang](#2-masalah--latar-belakang)
+3. [Visi, tujuan & metrik sukses](#3-visi-tujuan--metrik-sukses)
+4. [Persona & peran](#4-persona--peran)
+5. [Scope produk](#5-scope-produk)
+6. [Arsitektur sistem](#6-arsitektur-sistem)
+7. [Requirement fungsional per modul](#7-requirement-fungsional-per-modul)
+8. [Master data & engine kalkulasi](#8-master-data--engine-kalkulasi)
+9. [User experience & alur kerja](#9-user-experience--alur-kerja)
+10. [User stories & acceptance criteria](#10-user-stories--acceptance-criteria)
+11. [Requirement non-fungsional](#11-requirement-non-fungsional)
+12. [Integrasi ERP](#12-integrasi-erp)
+13. [Export & output](#13-export--output)
+14. [Fase rilis & roadmap](#14-fase-rilis--roadmap)
+15. [Risiko & mitigasi](#15-risiko--mitigasi)
+16. [Glosarium](#16-glosarium)
+17. [Dokumen terkait](#17-dokumen-terkait)
+18. **[Improvement Design — Flow & Tabel](#18-improvement-design--flow--tabel)** ← fokus v2.0
+
+---
+
+## 1. Ringkasan eksekutif
+
+Modul **Bill of Materials sudah live** di **ERPKu** (`erp.solusinegeri.com` → Manufacture → Bill of Materials): daftar BOM, wizard 4 langkah, master material/WC/routing terpusat.
+
+**Improvement v2.0** tidak membangun sistem paralel, melainkan **evolusi modul ERP existing** dengan:
+- **Flow** tab-based (7 area kerja) menggantikan wizard linear, tetap satu entry point ERP
+- **Tabel** gabungan kolom ERP + kolom Excel costing + fitur prototipe (SF/WF, multi-currency, parity)
+
+Workbook Excel tetap referensi angka; engine COGS, container, summary, dan waterfall menjadi **tab baru di dalam editor BOM ERP**.
+
+---
+
+## 2. Masalah & latar belakang
+
+### 2.1 Pain points hari ini
+
+| # | Masalah | Dampak |
+|---|---------|--------|
+| P1 | Kalkulasi BOM masih di Excel multi-sheet | Versi file bercabang, human error, sulit audit |
+| P2 | ERP staging tidak punya SUMMARY COST / COGS / container | Costing tetap di spreadsheet |
+| P3 | App prototipe pakai master seed lokal | Harga SKU tidak sinkron pabrik |
+| P4 | Produk kompleks (SOFA G632L) deviasi COGS tinggi jika import mentah | Kepercayaan stakeholder rendah |
+| P5 | Dua sistem (ERP + Excel + app) tanpa single source of truth | Duplikasi input |
+
+### 2.2 Konteks sistem existing
+
+```mermaid
+flowchart TB
+  subgraph today [Kondisi Today]
+    EX[Excel Workbook]
+    ERP[ERPKu Staging BOM]
+    APP[BOM Design App]
+  end
+  EX -->|referensi angka| APP
+  ERP -->|master live| MAT[Materials WC Routing]
+  APP -->|seed dummy| IDB[(IndexedDB)]
+```
+
+| Sistem | Kekuatan | Kelemahan |
+|--------|----------|-----------|
+| **Excel** | Source of truth costing, familiar tim | Manual, tidak terintegrasi |
+| **ERPKu (production)** | Master DB live, wizard 4 step, list + expand row | Tanpa tab Container/Summary/COGS/Excel import |
+| **Prototipe design** | 7 tab, engine COGS, import Excel | Belum terpasang di ERP production |
+
+---
+
+## 3. Visi, tujuan & metrik sukses
+
+### 3.1 Visi
+
+> Tim costing dan engineering dapat membangun, memvalidasi, dan mempublikasikan BOM dengan angka **setara Excel** dalam satu aplikasi terintegrasi master ERP — tanpa duplikasi spreadsheet.
+
+### 3.2 Tujuan produk
+
+| ID | Tujuan |
+|----|--------|
+| G1 | Ganti Excel untuk kalkulasi inti (material, proses, packing, COGS) |
+| G2 | Pertahankan struktur hierarki BOM TEMPLATE (MODUL → PART) |
+| G3 | Sediakan audit parity otomatis vs SUMMARY COST |
+| G4 | Integrasi master material/WC/routing dari ERP |
+| G5 | Export deliverable setara workbook (xlsx/PDF) untuk sales & ERP journal |
+
+### 3.3 Metrik sukses (KPI)
+
+| KPI | Baseline (Jun 2026) | Target v1.0 | Target v2.0 |
+|-----|---------------------|-------------|-------------|
+| COGS parity ZAN/FNA | ≤ 1,5% | Maintain | Maintain |
+| COGS parity G632L | ~47% gap | ≤ 15% | ≤ 3% |
+| Waktu buat BOM manual (SOFA) | ~8–16 jam est. | ≤ 4 jam | ≤ 2 jam (template) |
+| Import Excel → editor | Ada | < 5 menit | < 2 menit |
+| Master dari ERP API | 0% | 30% (hybrid) | 100% |
+| `npm test` regression | Pass | Pass | Pass + E2E |
+| User adoption costing | Pilot | 3 produk pilot | Replace Excel default |
+
+---
+
+## 4. Persona & peran
+
+| Persona | Peran | Modul utama digunakan |
+|---------|-------|------------------------|
+| **Costing Analyst** | Hitung HPP, COGS, selling price | COGS, Summary, Import/Export |
+| **BOM Engineer** | Struktur modul, part, dimensi, routing | Struktur, Material, Proses |
+| **Master Data Admin** | Maintain SKU, WC, ratio (ERP) | Master Data (read di app) |
+| **Logistics / Export** | Container, packing, FOB | Container, COGS FOB |
+| **Sales / Pricing** | Markup, harga jual FOB | COGS, Export PDF |
+| **QA / Finance** | Validasi vs Excel | Parity checklist, Export |
+
+---
+
+## 5. Scope produk
+
+### 5.1 In scope
+
+| Modul | ID | Deskripsi singkat |
+|-------|-----|-------------------|
+| Dashboard | M0 | Daftar project BOM, CRUD, import Excel |
+| Produk | M1 | Identitas, dimensi, kayu, coating |
+| Struktur | M2 | Hierarki MODUL/SUBMODUL/PART, visual graph |
+| Container | M3 | Packing, routing packing, kapasitas kontainer |
+| Material | M4 | Kebutuhan material per PART |
+| Proses | M5 | Rekap & detail operasi manufaktur |
+| Summary | M6 | Kalkulasi per part + operasi nested |
+| COGS | M7 | Waterfall biaya + markup + parity |
+| FOB Jurnal | M8 | Baris journal ERP-style (custom lines) |
+| Master Data | M9 | Mirror DATA BASE, ratio, coating, FOB, WC |
+| Engine | M10 | Formula, rounding, biaya master, FOB cost |
+
+### 5.2 Out of scope (v1.x)
+
+- Modul ERP: Approval, QC Packing, Knife, Raw Ticket
+- PLM / CAD sync
+- MRP / work order execution
+- Multi-company / multi-plant
+- Mobile native app
+
+### 5.3 Asumsi
+
+- User memiliki akses master ERP (staging → production)
+- Workbook Excel mengikuti template Spartan (sheet standar)
+- Kurs USD/EUR di-set di header app (default 16004 / 17500)
+
+### 5.4 Constraint
+
+- Browser modern (Chrome/Edge); offline hanya mode dev seed
+- Parity ketat (≤1,5%) prioritas produk curated (ZAN, FNA) dulu
+
+---
+
+## 6. Arsitektur sistem
+
+```mermaid
+flowchart TB
+  subgraph ui [Presentation Layer]
+    DASH[Dashboard]
+    ED[BOM Editor 7 Tabs]
+    MD[Master Modal]
+  end
+  subgraph app [Application Layer]
+    PS[projectStorage]
+    MS[masterStorage]
+    BC[bomCalculations]
+    ML[masterLookup]
+    IMP[importBomFromExcel]
+    EXP[bomExport]
+    AUD[excelParityAudit]
+  end
+  subgraph data [Data Layer - Current]
+    IDB[(IndexedDB)]
+    SEED[seed JSON masters]
+  end
+  subgraph future [Data Layer - Target]
+    API[REST API ERP]
+    PG[(ERP Database)]
+  end
+  ui --> app
+  PS --> IDB
+  MS --> IDB
+  MS --> SEED
+  app -.-> API
+  API --> PG
+```
+
+### 6.1 Komponen teknis utama
+
+| Layer | File / area | Tanggung jawab |
+|-------|-------------|----------------|
+| UI | `Dashboard.jsx`, `BOMEditor.jsx` | Tab editor, forms, tables |
+| Fields | `MasterCombos.jsx`, `SearchableSelect` | Picker DATA BASE + search |
+| Engine | `bomCalculations.js`, `formulaEngine.js`, `roundingEngine.js` | COGS, packing, FOB |
+| Master | `masterLookup.js`, `masterStorage.js` | Resolve SKU, biaya, ratio |
+| Import | `importBomFromExcel.js`, parsers | Workbook → project |
+| Test | `npm test` (12+ scripts) | Regression parity |
+
+---
+
+## 7. Requirement fungsional per modul
+
+### M0 — Dashboard · Daftar project BOM
+
+| ID | Requirement | Priority | Status |
+|----|-------------|----------|--------|
+| M0-F1 | Tampilkan list project: kode, nama, customer, versi, HPP IDR/USD, status, tanggal update | P0 | ✅ |
+| M0-F2 | Buat project kosong (1 MODUL root) | P0 | ✅ |
+| M0-F3 | Import `.xlsx` → parse BOM TEMPLATE + mirror sheets | P0 | ✅ |
+| M0-F4 | Duplikat & hapus project | P1 | ✅ |
+| M0-F5 | Cari/filter kode, nama, customer | P1 | ✅ |
+| M0-F6 | Kolom Tipe BOM (Material/Produk) parity ERP | P1 | 🔲 |
+| M0-F7 | Expand row preview komponen + total cost | P1 | 🔲 |
+| M0-F8 | Thumbnail produk di list | P2 | 🔲 |
+
+### M1 — Produk (Product Panel)
+
+| ID | Requirement | Priority | Status |
+|----|-------------|----------|--------|
+| M1-F1 | Field: kode, nama, varian, customer, kode/nama BOM, versi | P0 | ✅ |
+| M1-F2 | Item type (CHAIR, SOFA, …) | P0 | ✅ |
+| M1-F3 | Pilih grade kayu dari DATA BASE (searchable) | P0 | ✅ |
+| M1-F4 | Pilih coating dari COATING RATIO | P0 | ✅ |
+| M1-F5 | Dimensi produk W×D×H (mm) + volume | P0 | ✅ |
+| M1-F6 | Dimensi packing Box & Single Face + toleransi | P0 | ✅ |
+| M1-F7 | Preview biaya coating (m² × rate) | P1 | ✅ |
+| M1-F8 | Picker produk dari ERP `/manufacture/products` | P1 | 🔲 |
+| M1-F9 | Versi format Mayor.Minor (ERP) | P2 | 🔲 |
+
+### M2 — Struktur Perakitan & Modul
+
+| ID | Requirement | Priority | Status |
+|----|-------------|----------|--------|
+| M2-F1 | Hierarki: MODUL → SUBMODUL → SUBMODUL 2 → PART | P0 | ✅ |
+| M2-F2 | Aturan tambah child sesuai tipe parent | P0 | ✅ |
+| M2-F3 | Kolom: kode, nama, qty, dimensi, volume, catatan | P0 | ✅ |
+| M2-F4 | Tipe material (PART): kayu, plywood, veneer, komponen, steel, hardware | P0 | ✅ |
+| M2-F5 | Combo SKU di kolom **NAMA/GRADE** (bukan tipe material) | P0 | ✅ |
+| M2-F6 | Nama/kode/vendor auto dari master saat pilih DATA BASE | P0 | ✅ |
+| M2-F7 | Nominal MAT/PROD/PROD/U warna amber/indigo/violet + USD/EUR | P1 | ✅ |
+| M2-F8 | Mode tabel + visual graph (pan/zoom) | P1 | ✅ |
+| M2-F9 | Routing multi-operasi per node (modal) | P0 | ✅ |
+| M2-F10 | Sinkron ulang semua baris ke master | P1 | ✅ |
+| M2-F11 | Kolom perawatan (opsional, parity ERP) | P2 | 🔲 |
+
+### M3 — Container Capacity Per Item
+
+| ID | Requirement | Priority | Status |
+|----|-------------|----------|--------|
+| M3-F1 | Dimensi packing dinamis (Box, Single Face) + toleransi | P0 | ✅ |
+| M3-F2 | Material packing Box/SF: qty, unit, harga | P0 | ✅ |
+| M3-F3 | Routing pekerja packing Box/SF | P0 | ✅ |
+| M3-F4 | Preset kontainer 20ft / 40ft / 40HC / 1 piece | P0 | ✅ |
+| M3-F5 | Tabel terpadu: net capacity, mat/routing/mgmt cost, total | P0 | ✅ |
+| M3-F6 | Rollup packing cost ke tab COGS (jalur BOX/SF) | P0 | ✅ |
+
+### M4 — Kebutuhan Material
+
+| ID | Requirement | Priority | Status |
+|----|-------------|----------|--------|
+| M4-F1 | List semua PART dengan hierarchy toggles | P0 | ✅ |
+| M4-F2 | Picker material + search; sync nama dari master | P0 | ✅ |
+| M4-F3 | SF % / WF % editable per part | P0 | ✅ |
+| M4-F4 | Vendor field | P1 | ✅ |
+| M4-F5 | Harga material & produksi multi-mata uang | P0 | ✅ |
+| M4-F6 | Bulk "Hitung harga kayu dari master" | P1 | ✅ |
+| M4-F7 | Stock gudang real-time dari ERP | P2 | 🔲 |
+
+### M5 — Kebutuhan Proses
+
+| ID | Requirement | Priority | Status |
+|----|-------------|----------|--------|
+| M5-F1 | Rekapitulasi per kategori manufaktur | P0 | ✅ |
+| M5-F2 | Detail operasi per part: WC, routing, durasi, biaya | P0 | ✅ |
+| M5-F3 | Subtotal mesin (biru) vs pekerja (hijau) vs total (indigo) | P1 | ✅ |
+| M5-F4 | Rollup biaya proses ke COGS | P0 | ✅ |
+
+### M6 — Summary Kalkulasi
+
+| ID | Requirement | Priority | Status |
+|----|-------------|----------|--------|
+| M6-F1 | View PART-only atau full tree | P0 | ✅ |
+| M6-F2 | Edit SF/WF, dimensi, qty inline | P0 | ✅ |
+| M6-F3 | Nested tabel operasi per part | P0 | ✅ |
+| M6-F4 | Modal detail QR per part | P1 | ✅ |
+| M6-F5 | Total biaya per part (material + operasi) | P0 | ✅ |
+
+### M7 — Detail COGS & Pricing
+
+| ID | Requirement | Priority | Status |
+|----|-------------|----------|--------|
+| M7-F1 | Waterfall: material → proses → packing → (FOB) → OH → COGS → selling | P0 | ✅ |
+| M7-F2 | Factory OH % & Management OH % editable | P0 | ✅ |
+| M7-F3 | Markup % + preview harga jual (rounded thousands) | P0 | ✅ |
+| M7-F4 | Toggle FOB export cost (20/40/40HC dari master) | P1 | ✅ |
+| M7-F5 | Excel parity checklist + score % | P0 | ✅ |
+| M7-F6 | Pie chart breakdown production cost | P1 | ✅ |
+| M7-F7 | Deviasi live tanpa excel mirror | P1 | 🔲 |
+
+### M8 — FOB Informasi (Jurnal)
+
+| ID | Requirement | Priority | Status |
+|----|-------------|----------|--------|
+| M8-F1 | Ringkasan hirarki BOM (counts) | P1 | ✅ |
+| M8-F2 | Tabel part/material: system + custom lines | P1 | ✅ |
+| M8-F3 | Tabel beban mesin & karyawan: system + custom | P1 | ✅ |
+| M8-F4 | Grand total estimasi HPP | P0 | ✅ |
+
+### M9 — Master Data
+
+| ID | Requirement | Priority | Status |
+|----|-------------|----------|--------|
+| M9-F1 | Tab: kayu, database sections, FOB, ratio, coating, formula, WC, … | P0 | ✅ |
+| M9-F2 | Import master dari Excel ZAN (`npm run import:masters:zan`) | P0 | ✅ |
+| M9-F3 | Reset import ke seed bundled | P1 | ✅ |
+| M9-F4 | Simpan per tab ke IndexedDB | P0 | ✅ |
+| M9-F5 | Read master dari API ERP | P0 | 🔲 |
+| M9-F6 | Indikator sumber master (seed vs ERP) | P1 | 🔲 |
+
+**Legend:** ✅ Implemented · 🔲 Planned
+
+---
+
+## 8. Master data & engine kalkulasi
+
+### 8.1 Section DATA BASE (Excel → app)
+
+| Section Excel | Unit umum | Picker |
+|---------------|-----------|--------|
+| WOOD | m³ | WoodGradeField |
+| PLYWOOD, MDF, CORE, HPL, VENEER, EDGING | m³ / m² | DatabaseMaterialField |
+| ASSEMBLING / FITTING HARDWARE | pcs, lbr, … | DatabaseMaterialField |
+| TYPE OF VENEER, SANDING, FINISHING, PACKING | varies | DatabaseMaterialField |
+| FOB COST | Rp/m³ per kontainer | COGS toggle |
+
+### 8.2 Engine rules
+
+| Engine | Input | Output |
+|--------|-------|--------|
+| `computeMaterialBiayaFromMaster` | masterId, qty, vol, unit | biaya, SF, WF |
+| `computeCogs` | bom tree, packing, config | productionCost, totalCogs, sellingPrice |
+| `computeFobExportCost` | container type, volume m³ | FOB Rp |
+| `evalFormula` | FORMULA DATA registry | line costs |
+| `roundingEngine` | ROUND COMPONENT | selling price rounded |
+| `excelParityAudit` | project + mirror | score %, pass/fail items |
+
+### 8.3 Strategi master (transisi)
+
+| Fase | Sumber master | Catatan |
+|------|---------------|---------|
+| T0 (now) | Seed JSON + IndexedDB | Dummy/demo |
+| T1 | Hybrid ERP + seed fallback | Pilot production |
+| T2 | ERP API primary | Target go-live |
+
+Detail: `docs/qa/06-Master-Data-Strategy.mmd`
+
+---
+
+## 9. User experience & alur kerja
+
+### 9.1 Alur utama — buat BOM dari nol
+
+```mermaid
+flowchart TD
+  A[Dashboard: Buat Baru] --> B[Isi Product Panel]
+  B --> C[Tab Struktur: bangun tree]
+  C --> D[Pilih material DATA BASE per PART]
+  D --> E[Atur routing / proses]
+  E --> F[Tab Container: packing]
+  F --> G[Tab COGS: review waterfall]
+  G --> H{Parity OK?}
+  H -->|Ya| I[Export xlsx/PDF]
+  H -->|Tidak| C
+```
+
+### 9.2 Alur alternatif — import Excel
+
+```mermaid
+flowchart LR
+  I[Import xlsx] --> P[Parse sheets]
+  P --> E[Editor terisi]
+  E --> V[Parity checklist]
+  V --> A[Adjust manual]
+```
+
+### 9.3 Prinsip UX
+
+| Prinsip | Implementasi |
+|---------|--------------|
+| **Excel-first mental model** | 7 tab map ke sheet/workflow Excel |
+| **Master-driven pricing** | Pilih SKU → harga & nama terisi |
+| **Non-blocking navigation** | Tab bebas, tidak wizard paksa |
+| **Visual hierarchy** | Graph + sticky columns struktur |
+| **Auditability** | Parity score, colored nominal, export mirror |
+| **Progressive disclosure** | Product panel collapse; FAQ modal |
+
+### 9.4 Mode panduan (optional, parity ERP)
+
+Overlay wizard 4 langkah untuk user migrasi dari ERPKu:
+1. Produk Akhir → 2. Komponen → 3. Bahan Baku → 4. Operasi
+
+---
+
+## 10. User stories & acceptance criteria
+
+### Epic E1 — Project lifecycle
+
+| Story | Acceptance criteria |
+|-------|---------------------|
+| **US-E1-01** Buat project kosong | Root MODUL, productInfo empty, COGS = 0, save IndexedDB |
+| **US-E1-02** Import Excel | BOM TEMPLATE + SUMMARY mirror; buka editor < 5 menit |
+| **US-E1-03** Auto-save | Debounce save; indikator Tersimpan/Menyimpan |
+
+### Epic E2 — Struktur & material
+
+| Story | Acceptance criteria |
+|-------|---------------------|
+| **US-E2-01** Tambah PART di SUBMODUL | Child muncul; tipe PART wajib materialType untuk picker |
+| **US-E2-02** Pilih SKU DATA BASE | nama, kode, biaya terisi; kolom tipe hanya kategori |
+| **US-E2-03** Search 800+ SKU | SearchableSelect filter < 300ms perceived |
+
+### Epic E3 — Costing
+
+| Story | Acceptance criteria |
+|-------|---------------------|
+| **US-E3-01** COGS waterfall | Setiap step running total benar vs manual Excel |
+| **US-E3-02** Parity ZAN | totalCogs within 1,5% atau Rp 25.000 |
+| **US-E3-03** FOB optional | COGS naik hanya jika checkbox aktif |
+| **US-E3-04** Markup selling | ROUNDDOWN ribuan selaras ROUND COMPONENT |
+
+### Epic E4 — Integrasi ERP (planned)
+
+| Story | Acceptance criteria |
+|-------|---------------------|
+| **US-E4-01** Picker material ERP | API list materials; harga = ERP supplier price |
+| **US-E4-02** Save draft ERP | POST project; status draft di ERP list |
+| **US-E4-03** SSO login | Same session ERP staging |
+
+### Epic E5 — Export
+
+| Story | Acceptance criteria |
+|-------|---------------------|
+| **US-E5-01** Export Excel | Sheets: Struktur, Material, Proses, COGS, Summary |
+| **US-E5-02** Export PDF lengkap | COGS + summary untuk review sales |
+
+---
+
+## 11. Requirement non-fungsional
+
+| Kategori | Requirement |
+|----------|-------------|
+| **Performance** | Editor 500 node tree usable; picker search ≤ 120 items visible batch |
+| **Availability** | SPA offline after load (master cached); ERP mode needs network |
+| **Security** | No credentials in repo; auth via ERP SSO (target) |
+| **Compatibility** | Chrome/Edge latest; desktop 1440px+ recommended |
+| **Maintainability** | `npm test` regression; modular engine vs UI |
+| **Localization** | UI Bahasa Indonesia; format IDR `id-ID` |
+| **Data integrity** | `schemaVersion` on project; normalize on load |
+| **Auditability** | `excelMirror`, `importedFromExcel`, parity checklist export |
+
+---
+
+## 12. Integrasi ERP
+
+> **Improvement UX (flow & tabel):** lihat **[§18](#18-improvement-design--flow--tabel)** — implementasi di modul production `erp.solusinegeri.com`, bukan app terpisah.
+
+### 12.1 Mapping modul
+
+| App modul | ERP endpoint / modul |
+|-----------|---------------------|
+| Material picker | `/purchasing/materials` |
+| Work center | `/manufacture/work-centers` |
+| Routing template | `/manufacture/routings` |
+| Product picker | `/manufacture/products` |
+| BOM list (future) | `/manufacture/bill-of-materials` |
+| Approval (link) | `/manufacture/approval` |
+
+### 12.2 API contract
+
+Draft REST v1: `docs/API-Contract-BOM-Platform.mmd`
+
+---
+
+## 13. Export & output
+
+| Format | Isi | User |
+|--------|-----|------|
+| **Excel (.xlsx)** | Multi-sheet workbook parity | Costing, arsip |
+| **PDF** | BOM ringkas | Engineering |
+| **PDF Lengkap** | COGS + Summary | Sales, management |
+| **Parity report** | Checklist modal → export | QA |
+
+---
+
+## 14. Fase rilis & roadmap
+
+```mermaid
+gantt
+  title Roadmap Manufaktur BOM
+  dateFormat YYYY-MM-DD
+  section v0.9 Current
+  Core 7 tabs + engine     :done, 2026-03-01, 2026-05-01
+  UAT ERP vs App           :done, 2026-06-01, 2026-06-05
+  section v1.0
+  ZAN/FNA production gate  :2026-06-10, 21d
+  Master API hybrid        :2026-06-15, 28d
+  section v1.1
+  G632L parity + template  :2026-07-15, 35d
+  Dashboard ERP columns    :2026-07-01, 21d
+  section v2.0
+  ERP persist + SSO        :2026-09-01, 45d
+  E2E + approval hook      :2026-10-01, 30d
+```
+
+| Release | Gate | Deliverables |
+|---------|------|--------------|
+| **v0.9** (current) | Demo / pilot | 7 tab, seed master, import Excel, ZAN parity |
+| **v1.0** | Costing pilot | Hybrid master API, FAQ, export stable |
+| **v1.1** | Multi-SKU | G632L ≤3%, BOM templates, list expand row |
+| **v2.0** | ERP embed | §18 flow 7 tab + tabel A–I, Mode Panduan, save ERP |
+
+---
+
+## 15. Risiko & mitigasi
+
+| Risiko | Probabilitas | Impact | Mitigasi |
+|--------|--------------|--------|----------|
+| COGS gap produk kompleks | Tinggi | Tinggi | Import-first; template; line-by-line audit |
+| Master dummy ≠ ERP | Tinggi | Tinggi | Hybrid API phase T1 |
+| User resistance (Excel) | Sedang | Tinggi | Parity checklist; export xlsx identical |
+| Dual system confusion | Sedang | Sedang | Single entry from ERP menu embed |
+| Performance large BOM | Sedang | Sedang | Virtualize tables; lazy load picker |
+| Scope creep ERP modules | Sedang | Sedang | Strict out-of-scope list §5.2 |
+
+---
+
+## 16. Glosarium
+
+| Istilah | Definisi |
+|---------|----------|
+| **BOM** | Bill of Materials — daftar komponen & proses produk |
+| **COGS** | Cost of Goods Sold — total biaya pokok penjualan |
+| **DATA BASE** | Sheet master SKU + harga di Excel |
+| **MODUL / PART** | Level hierarki struktur BOM |
+| **SF / WF** | Safety factor / Waste factor (%) |
+| **FOB** | Free On Board — biaya export kontainer |
+| **Parity** | Kesesuaian angka app vs Excel mirror |
+| **WC** | Work Center — pusat kerja / mesin |
+| **HPP** | Harga pokok produksi |
+
+---
+
+## 17. Dokumen terkait
+
+| Dokumen | Path |
+|---------|------|
+| Panduan Excel vs App | `docs/Excel-vs-App.md` |
+| UAT ERP Staging | `docs/qa/01-UAT-ERP-Staging.mmd` |
+| UAT App Design Baru | `docs/qa/02-UAT-App-Design-Baru.mmd` |
+| Perbandingan tabel (AS-IS) | `docs/qa/03-Perbandingan-Tabel.mmd` |
+| Improvement flow & tabel (TO-BE) | **§18 dokumen ini** |
+| Rekomendasi improvement | `docs/qa/05-Rekomendasi-Improvement.mmd` |
+| Master data strategy | `docs/qa/06-Master-Data-Strategy.mmd` |
+| API contract | `docs/API-Contract-BOM-Platform.mmd` |
+| UAT G632L | `docs/UAT-G632L-Manual-From-Zero.mmd` |
+| Checklist ganti Excel | `docs/Checklist-Pengganti-Excel.md` |
+
+---
+
+## 18. Improvement Design — Flow & Tabel
+
+> **Scope bagian ini:** perubahan UX modul BOM **di dalam ERPKu** — bukan app terpisah. Fokus **alur kerja (flow)** dan **definisi kolom tabel** per layar.
+
+### 18.1 Tujuan improvement
+
+| ID | Tujuan |
+|----|--------|
+| IF-1 | Satu modul BOM ERP menggantikan Excel untuk costing tanpa kehilangan kolom ERP |
+| IF-2 | Flow non-linear (tab) + opsi **Mode Panduan** 4 langkah untuk user lama |
+| IF-3 | Setiap tabel punya spec kolom frozen (tidak berubah tanpa PRD update) |
+| IF-4 | Kolom costing Excel (SF/WF, MAT/PROD/PROD/U FX) masuk tab yang relevan |
+| IF-5 | Expand row list + 7 tab detail = preview cepat + edit dalam |
+
+### 18.2 Flow — AS-IS (ERP today) vs TO-BE (target)
+
+#### AS-IS — Flow ERP saat ini
+
+```mermaid
+flowchart TD
+  L[List /manufacture/bill-of-materials] --> F{Filters}
+  F --> N[BOM Baru]
+  N --> S1[Step 1: Produk Akhir]
+  S1 --> S2[Step 2: Komponen]
+  S2 --> S3[Step 3: Sub Perakitan & Bahan Baku]
+  S3 --> S4[Step 4: Operasi]
+  S4 --> SAVE[Simpan / Buat]
+  L --> EXP[Expand row → preview Components]
+```
+
+**Karakteristik AS-IS:**
+- Linear — harus lewat step berurutan
+- Material & operasi di step terpisah, **tanpa** rollup COGS
+- Master di sidebar (`/purchasing/materials`, WC, routing)
+- Tidak ada import Excel / export SUMMARY COST
+
+#### TO-BE — Flow improvement (target ERP)
+
+```mermaid
+flowchart TD
+  L2[List BOM — kolom ERP + expand] --> ACT{BOM Baru / Buka / Import Excel}
+  ACT --> ED[Editor BOM — shell ERP]
+  ED --> PP[Panel Produk — always visible]
+  ED --> TABS{Tab navigator}
+  TABS --> T1[Struktur]
+  TABS --> T2[Container]
+  TABS --> T3[Material]
+  TABS --> T4[Proses]
+  TABS --> T5[Summary]
+  TABS --> T6[COGS]
+  TABS --> T7[FOB Jurnal]
+  TABS --> GUIDE[Mode Panduan 4 step — optional overlay]
+  T6 --> PUB{COGS valid?}
+  PUB -->|Ya| APR[Submit → Approval ERP]
+  PUB -->|Tidak| T1
+  APR --> EXP2[Export xlsx / PDF]
+```
+
+**Aturan flow TO-BE:**
+
+| Aturan | Deskripsi |
+|--------|-----------|
+| F-01 | Entry **hanya** dari menu Manufacture → Bill of Materials (sama URL) |
+| F-02 | Tab bebas; urutan rekomendasi: Produk → Struktur → Material → Proses → Container → Summary → COGS |
+| F-03 | **Mode Panduan** = overlay step 1–4 map ke tab (lihat §18.3) |
+| F-04 | Import Excel = path alternatif; hasil langsung ke tab terisi |
+| F-05 | Simpan draft otomatis; finalisasi trigger approval ERP |
+| F-06 | Master picker **selalu** API ERP (materials, products, WC) — bukan seed lokal |
+
+#### Mapping flow wizard → tab (Mode Panduan)
+
+| Step ERP lama | Tab TO-BE | Aksi user |
+|---------------|-----------|-----------|
+| 1 Produk Akhir | Panel Produk + tab Struktur (root) | Isi identitas + dimensi |
+| 2 Komponen | Tab Struktur | Add ITEM / 5 grup kolom |
+| 3 Sub Perakitan & Bahan Baku | Tab Material | Review PART + SF/WF |
+| 4 Operasi | Tab Proses | Routing + biaya |
+| — (baru) | Tab Container | Packing + kontainer |
+| — (baru) | Tab Summary | Validasi per part |
+| — (baru) | Tab COGS | Waterfall + parity |
+| — (baru) | Tab FOB Jurnal | Journal lines |
+
+**Acceptance criteria flow:**
+- [ ] User dapat selesaikan BOM tanpa Mode Panduan (power user)
+- [ ] User ERP lama dapat selesaikan dengan Mode Panduan tanpa training tab
+- [ ] Import Excel → semua tab terisi ≥80% field vs manual
+- [ ] Waktu navigasi antar-tab < 200ms perceived
+
+---
+
+### 18.3 Tabel — spec kolom TO-BE (per layar)
+
+Legenda aksi kolom: **KEEP** = pertahankan ERP · **ADD** = dari design/Excel · **MERGE** = gabung · **MOVE** = pindah tab
+
+---
+
+#### Tabel A — Daftar BOM (`/manufacture/bill-of-materials`)
+
+| # | Kolom TO-BE | Sumber | Aksi | Keterangan |
+|---|-------------|--------|------|------------|
+| A1 | Perluas | ERP | KEEP | Nested preview komponen |
+| A2 | No | ERP | KEEP | |
+| A3 | Gambar | Design | ADD | Thumbnail produk |
+| A4 | Nama BOM | ERP | KEEP | |
+| A5 | Kode BOM | ERP | KEEP | |
+| A6 | Tipe | ERP | KEEP | Material / Produk |
+| A7 | Varian | ERP | KEEP | |
+| A8 | Customer | Design | ADD | Dari productInfo |
+| A9 | Jumlah | ERP | KEEP | Qty header BOM |
+| A10 | Biaya / HPP | ERP + Design | MERGE | IDR primary + tooltip USD |
+| A11 | Versi | ERP | KEEP | Mayor.Minor |
+| A12 | Tanggal dibuat | ERP | KEEP | |
+| A13 | Status | Design | ADD | draft / review / approved |
+| A14 | Parity % | Design | ADD | Hanya jika import Excel |
+| A15 | Aksi | ERP | KEEP | Buka · Duplikat · Hapus · Export |
+
+**Expand row nested (KEEP + enhance):**
+
+| Kolom nested | ERP | TO-BE |
+|--------------|-----|-------|
+| Order | ✅ | KEEP |
+| Code | ✅ | KEEP |
+| Name | ✅ | KEEP |
+| Quantity | ✅ | KEEP |
+| Unit Cost | ✅ | KEEP |
+| Total Cost | ✅ | KEEP |
+| Modul / Submodul | ❌ | ADD (dari hierarki) |
+
+**AC Tabel A:** Expand row menampilkan ≥1 level; filter ERP + search text; kolom A6–A15 sesuai spec.
+
+---
+
+#### Tabel B — Panel Produk (sticky header editor)
+
+| # | Field / kolom | ERP Step 1 | TO-BE | Aksi |
+|---|---------------|------------|-------|------|
+| B1 | Tipe BOM | itemType * | itemType | KEEP |
+| B2 | Nama Item | picker products * | API `/manufacture/products` | KEEP |
+| B3 | Nama BOM | name * | namaBom | KEEP |
+| B4 | Kode BOM | code * | kodeBom | KEEP |
+| B5 | Customer | — | customer | ADD |
+| B6 | Varian | varian ERP | varian + link `/product-variants` | KEEP+ |
+| B7 | Kuantitas | quantity | qty SET | KEEP |
+| B8 | Versi | Mayor / Minor | mayor.minor | KEEP |
+| B9 | Dimensi P×L×T | measurement.* | mm + auto volume | KEEP |
+| B10 | Volume m³ | computation.volume | readonly calc | KEEP |
+| B11 | Grade kayu | via product | picker ERP materials (wood) | ADD |
+| B12 | Coating | — | picker COATING RATIO + m² cost | ADD |
+| B13 | Foto produk | — | upload / zoom | ADD |
+
+**Layout:** form 2 kolom; sticky saat scroll tab.
+
+**AC Tabel B:** Field B1–B4 required; B11–B12 dari master ERP live.
+
+---
+
+#### Tabel C — Tab Struktur Perakitan & Modul
+
+**Grup kolom sticky (identitas & aksi):**
+
+| # | Kolom | ERP Step 2 | TO-BE | Aksi |
+|---|-------|------------|-------|------|
+| C1 | NO | — | no | ADD |
+| C2 | AKSI (tambah/hapus) | AKSI | contextual by tipe | KEEP |
+| C3 | TIPE | — | MODUL/SUBMODUL/SUBMODUL2/PART | ADD |
+| C4 | KODE MATERIAL | ITEM | kode | KEEP |
+| C5 | NAMA / GRADE | ITEM + picker | nama + SearchableSelect master | MERGE |
+| C6 | GAMBAR | — | foto part | ADD |
+
+**Grup spesifikasi & costing (scroll):**
+
+| # | Kolom | ERP | TO-BE | Aksi |
+|---|-------|-----|-------|------|
+| C7 | TIPE MATERIAL | — | kayu/plywood/… | ADD |
+| C8 | QTY | KUANTITAS | qty | KEEP |
+| C9 | W / D / H (mm) | DIMENSI | p/l/t | KEEP |
+| C10 | VOLUME m³ | VOLUME | vol calc | KEEP |
+| C11 | MAT (IDR) | BIAYA SATUAN | amber | MERGE |
+| C12 | MAT (USD/EUR) | — | amber subcols | ADD |
+| C13 | PROD total (IDR) | TOTAL BIAYA | indigo | MERGE |
+| C14 | PROD/U (IDR) | — | violet | ADD |
+| C15 | PUSAT KERJA | ✅ | via routing | KEEP |
+| C16 | ROUTING | ✅ | modal steps | KEEP |
+| C17 | PERAWATAN | ✅ | optional col | KEEP |
+| C18 | PROSES (link) | — | count + modal | ADD |
+| C19 | CATATAN | CATATAN | catatan | KEEP |
+
+**View alternatif:** toggle **Tabel / Visual graph** (ADD — dari design).
+
+**AC Tabel C:** Hierarki 4 level; combo SKU hanya di C5; C7 hanya dropdown kategori.
+
+---
+
+#### Tabel D — Tab Kebutuhan Material (PART only)
+
+| # | Kolom | ERP Step 3 | TO-BE | Aksi |
+|---|-------|------------|-------|------|
+| D1 | NO | # | no | KEEP |
+| D2 | FOTO | — | thumb | ADD |
+| D3 | MODUL | Modul | toggle col | KEEP |
+| D4 | SUBMODUL | Submodul | toggle col | KEEP |
+| D5 | SUBMODUL 2 | — | toggle col | ADD |
+| D6 | TIPE MATERIAL | — | select | ADD |
+| D7 | KODE MATERIAL | Kode Material | readonly/edit | KEEP |
+| D8 | NAMA / GRADE | Nama Material | input + picker | MERGE |
+| D9 | VENDOR | — | VendorField ERP | ADD |
+| D10 | SF % | — | amber input | ADD |
+| D11 | WF % | — | red input | ADD |
+| D12 | DIMENSI & VOLUME | Dimensi | display | KEEP |
+| D13 | QTY / UNIT | Jumlah/Satuan | qty/unit | KEEP |
+| D14 | MAT IDR/USD/EUR | Harga Satuan | 3 subcols | MERGE |
+| D15 | PROD total IDR/USD/EUR | Total Harga | 3 subcols | MERGE |
+| D16 | PROD/U IDR/USD/EUR | — | 3 subcols | ADD |
+| D17 | STOCK | — | API inventory atau hide | ADD* |
+
+**AC Tabel D:** Hanya `tipe=PART`; bulk action "Hitung kayu dari master produk".
+
+---
+
+#### Tabel E — Tab Kebutuhan Proses
+
+**E1 — Rekapitulasi manufaktur (ADD — tidak ada di ERP wizard):**
+
+| Kolom | TO-BE |
+|-------|-------|
+| NO | idx |
+| KATEGORI MANUFAKTUR | SUMMARY line key |
+| TOTAL OPERASI | count |
+| TOTAL DURASI | minutes |
+| SUBTOTAL WC | biru |
+| SUBTOTAL MP | hijau |
+| TOTAL BIAYA | indigo |
+
+**E2 — Detail operasi (merge ERP Step 4 + design):**
+
+| # | Kolom | ERP Step 4 | TO-BE | Aksi |
+|---|-------|------------|-------|------|
+| E2-1 | MODUL / SUBMODUL | Modul | hierarchy cols | KEEP |
+| E2-2 | KODE / NAMA PART | — | part ref | ADD |
+| E2-3 | OPERASI | Nama Operasi | nama | KEEP |
+| E2-4 | TIPE | Tipe | Routing / WC | KEEP |
+| E2-5 | TAHAP | — | mfgProcess | ADD |
+| E2-6 | WC / LANGKAH | Mesin | WC name or steps | MERGE |
+| E2-7 | DURASI | Durasi (M) | minutes | KEEP |
+| E2-8 | ORG / ORG·MNT | Tenaga Kerja | headcount × min | MERGE |
+| E2-9 | BIAYA WC | Biaya Operasi | biru | MERGE |
+| E2-10 | BIAYA TK | Biaya Tenaga Kerja | hijau | KEEP |
+| E2-11 | SUBTOTAL | Total Biaya | indigo + FX | MERGE |
+| E2-12 | DETAIL | Catatan | modal routing | MERGE |
+
+---
+
+#### Tabel F — Tab Container Capacity (**tab baru di ERP**)
+
+| # | Section | Kolom utama | Sumber |
+|---|---------|-------------|--------|
+| F1 | Dimensi packing | Tipe, W/D/H gross, toleransi, vol | Excel + design |
+| F2 | Material Box/SF | Item, Qty, Unit, Harga, Total | design |
+| F3 | Routing packing | Proses, Waktu, Pekerja, Rate, Total | design |
+| F4 | Container unified | TYPE, NET CAP Box/SF, MAT/ROUT/MGMT/TOTAL cost | design |
+
+**AC:** Rollup F2+F3 → tab COGS packing lane (BOX/SF).
+
+---
+
+#### Tabel G — Tab Summary Kalkulasi (**tab baru**)
+
+| # | Kolom | TO-BE |
+|---|-------|-------|
+| G1 | NO / REF | # + QR detail |
+| G2 | HIERARKI | optional modul cols |
+| G3 | NAMA PART / tree | indented / PART-only mode |
+| G4 | KODE, QTY, DIMENSI, VOLUME | inline edit |
+| G5 | SF / WF | editable |
+| G6 | HARGA PART (IDR) | unit material |
+| G7 | RINCIAN OPERASI | nested table per part |
+| G8 | TOTAL BIAYA (IDR) | material + ops |
+
+**Nested operasi cols:** Posisi, Proses, Tahap, Durasi, WC, Pekerja & biaya, Subtotal.
+
+---
+
+#### Tabel H — Tab Detail COGS (**tab baru**)
+
+| Step | Kolom waterfall | Warna |
+|------|-----------------|-------|
+| H1 | Bahan Baku & Material | amber |
+| H2 | Proses Pabrik | indigo |
+| H3 | Biaya Packing | blue |
+| H3b | FOB Export (optional) | teal |
+| H4 | Factory OH % | amber |
+| H5 | Management OH % | amber |
+| H6 | TOTAL COGS | indigo bold |
+| H7 | Harga Jual FOB (+markup) | emerald |
+
+**Kolom config (sidebar):** Jalur packing, OH %, markup %, FOB toggle, kontainer type.
+
+**AC:** Parity score badge; deviasi per baris vs excelMirror.
+
+---
+
+#### Tabel I — Tab FOB Informasi / Jurnal (**tab baru**)
+
+| Section | Kolom | ERP journal pattern |
+|---------|-------|---------------------|
+| I1 Part & material | Tipe, Deskripsi, Qty, Harga satuan, Subtotal, Aksi | system + custom rows |
+| I2 Beban mesin | Tipe, Deskripsi, Waktu, Rate/mnt, Subtotal | system + custom |
+| I3 Beban karyawan | Tipe, Deskripsi, Org, Waktu, Rate, Subtotal | system + custom |
+| I4 Footer | Grand Total Estimasi HPP | rollup |
+
+---
+
+### 18.4 Matriks flow × tabel (coverage target)
+
+```mermaid
+quadrantChart
+  title Prioritas Improvement
+  x-axis "Effort implement" --> "Tinggi"
+  y-axis "Impact costing" --> "Tinggi"
+  quadrant-1 "Quick wins"
+  quadrant-2 "Strategic"
+  quadrant-3 "Backlog"
+  quadrant-4 "Reconsider"
+  "Tabel A expand+status": [0.3, 0.5]
+  "Panel B produk": [0.4, 0.6]
+  "Tab C struktur": [0.7, 0.85]
+  "Tab D material SF": [0.5, 0.8]
+  "Tab E proses rekap": [0.5, 0.75]
+  "Tab F container": [0.8, 0.9]
+  "Tab G summary": [0.7, 0.85]
+  "Tab H COGS": [0.85, 0.95]
+  "Mode Panduan": [0.4, 0.6]
+```
+
+| Prioritas | Flow / Tabel | Release |
+|-----------|--------------|---------|
+| **P0** | Tab H COGS + Tab C struktur (combo master ERP) | v2.0.1 |
+| **P0** | Tabel A expand + Panel B picker products | v2.0.1 |
+| **P1** | Tab D material + Tab E proses rekap | v2.0.2 |
+| **P1** | Tab F container + Tab G summary | v2.0.3 |
+| **P1** | Mode Panduan overlay | v2.0.3 |
+| **P2** | Tab I FOB jurnal + import Excel | v2.1 |
+| **P2** | Tabel A gambar + parity column | v2.1 |
+
+---
+
+### 18.5 User stories improvement (flow & table)
+
+| ID | Story | Acceptance criteria |
+|----|-------|---------------------|
+| **US-IMP-01** | Sebagai user ERP, saya buka BOM yang sama di tab bukan wizard | 7 tab visible; data sama dengan wizard lama |
+| **US-IMP-02** | Sebagai costing, saya lihat SF/WF di tab Material | Kolom D10/D11 editable; rollup ke COGS |
+| **US-IMP-03** | Sebagai user lama, saya pakai Mode Panduan | Overlay 4 step; progress indicator |
+| **US-IMP-04** | Sebagai manager, saya preview komponen di list | Expand row kolom nested §18.3 A |
+| **US-IMP-05** | Sebagai costing, saya validasi di tab Summary sebelum COGS | Nested operasi G7 wajib terisi jika part punya routing |
+| **US-IMP-06** | Sebagai finance, saya lihat waterfall COGS | Tabel H step H1–H7 running total benar |
+
+---
+
+### 18.6 Non-goals improvement flow/table
+
+- Mengubah schema database master ERP (hanya UI + read API)
+- Menghapus wizard legacy sebelum Mode Panduan parity 100%
+- Menggabungkan tab COGS + FOB menjadi satu tabel (tetap terpisah)
+
+---
+
+### 18.7 Definition of Done — improvement v2.0
+
+- [ ] Semua kolom TO-BE §18.3 implemented di staging ERP
+- [ ] UAT flow: buat BOM via tab + via Mode Panduan — same output JSON
+- [ ] UAT tabel: QA checklist per kolom A–I
+- [ ] Zero regression: kolom ERP KEEP masih ada & populated
+- [ ] Performance: list 100 BOM + expand < 2s
+- [ ] Dokumen `03-Perbandingan-Tabel.mmd` updated → semua row **Match = ✅**
+
+---
+
+## Persetujuan
+
+| Role | Nama | Tanggal | Tanda |
+|------|------|---------|-------|
+| Product Owner | | | |
+| Manufacture Lead | | | |
+| Engineering Lead | | | |
+| QA Lead | | | |
+
+---
+
+*PRD induk v2.0 — baseline §1–17 + **Improvement Design Flow & Tabel §18** untuk modul existing `erp.solusinegeri.com`. Perubahan kolom wajib update §18.3.*

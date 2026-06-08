@@ -1,0 +1,35 @@
+{
+  "version": "5.1.0",
+  "sections": [
+    {
+      "section": "PLYWOOD",
+      "file": "plywood.json",
+      "count": 16
+    },
+    {
+      "section": "MDF",
+      "file": "mdf.json",
+      "count": 7
+    },
+    {
+      "section": "CORE",
+      "file": "core.json",
+      "count": 1
+    },
+    {
+      "section": "HPL",
+      "file": "hpl.json",
+      "count": 20
+    },
+    {
+      "section": "VENEER",
+      "file": "veneer.json",
+      "count": 51
+    },
+    {
+      "section": "EDGING",
+      "file": "edging.json",
+      "count": 4
+    }
+  ]
+}

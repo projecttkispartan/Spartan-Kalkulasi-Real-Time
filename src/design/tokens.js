@@ -5,5 +5,5 @@ export const editorTabs = [
   { id: 'proses', label: 'Kebutuhan Proses', icon: 'Wrench' },
   { id: 'summary', label: 'Summary Kalkulasi', icon: 'Calculator' },
   { id: 'cogs', label: 'Detail COGS & Pricing', icon: 'DollarSign', accent: 'emerald' },
-  { id: 'erp', label: 'FOB Informasi (Jurnal)', icon: 'BookOpen', accent: 'indigo' },
+  { id: 'erp', label: 'Jurnal FOB / HPP Custom', icon: 'BookOpen', accent: 'indigo' },
 ];

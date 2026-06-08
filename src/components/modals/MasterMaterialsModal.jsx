@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
-import { Database, RefreshCw, Save, HelpCircle, Plus } from 'lucide-react';
+import { Database, RefreshCw, Save, BookOpen, Plus } from 'lucide-react';
 import {
   getMaterials,
   getNonWoodMaterials,
@@ -24,11 +24,15 @@ import {
   saveRoundComponentPresets,
   getMaterialCatalog,
   saveMaterialCatalog,
+  getDatabaseSections,
+  saveDatabaseSections,
+  getFobCostMaster,
+  saveFobCostMaster,
   reimportMastersFromSeedFiles,
 } from '../../services/masterStorage';
 import { restoreDismissedSampleProjects } from '../../services/projectStorage';
 import FullPageShell from '../ui/FullPageShell.jsx';
-import MasterUsageGuideModal from './MasterUsageGuideModal.jsx';
+import ManualBookModal from './ManualBookModal.jsx';
 import { MASTER_TAB_META, MASTER_TABS_ORDER } from '../master/masterTabMeta.js';
 import MasterAddProcessPanel from '../master/MasterAddProcessPanel.jsx';
 import { createMasterRow, tabAllowsAdd } from '../master/masterAddProcess.js';
@@ -47,6 +51,8 @@ import {
 import {
   CatalogTable,
   MaterialsTable,
+  DatabaseSectionTable,
+  FobCostTable,
   NonWoodTable,
   RatiosTable,
   WoodLaborTable,
@@ -57,9 +63,34 @@ import {
   RoundingTables,
 } from '../master/MasterDataTables.jsx';
 
+function slugSectionKey(sec) {
+  return String(sec || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '');
+}
+
+const P0_SECTION_FILTER = [
+  'ALL',
+  'PLYWOOD',
+  'MDF',
+  'CORE',
+  'HPL',
+  'VENEER',
+  'EDGING',
+  'ASSEMBLING HARDWARE',
+  'FITTING HARDWARE',
+  'TYPE OF VENEER',
+  'SANDING MATERIAL',
+  'FINISHING MATERIAL',
+  'PACKING MATERIAL',
+];
+
 const TAB_COUNTS = {
   catalog: (s) => s.catalog.length,
   materials: (s) => s.materials.length,
+  fobCost: (s) => (s.fobCost?.containers?.[s.fobCost?.selectedContainer || '20foot']?.lineItems || []).length,
+  databaseSections: (s) => s.databaseSectionRows.length,
   nonWood: (s) => s.nonWood.length,
   ratios: (s) => s.ratios.length,
   woodLabor: (s) => s.woodLabor.length,
@@ -73,6 +104,8 @@ const TAB_COUNTS = {
 const SEARCH_TABS = new Set([
   'catalog',
   'materials',
+  'fobCost',
+  'databaseSections',
   'nonWood',
   'ratios',
   'woodLabor',
@@ -83,7 +116,7 @@ const SEARCH_TABS = new Set([
 
 export default function MasterMaterialsModal({ isOpen, onClose, onReimported }) {
   const [tab, setTab] = useState('materials');
-  const [showGuide, setShowGuide] = useState(false);
+  const [showManual, setShowManual] = useState(false);
   const [materials, setMaterials] = useState([]);
   const [nonWood, setNonWood] = useState([]);
   const [ratios, setRatios] = useState([]);
@@ -95,6 +128,9 @@ export default function MasterMaterialsModal({ isOpen, onClose, onReimported }) 
   const [formulaRows, setFormulaRows] = useState([]);
   const [roundPresets, setRoundPresets] = useState([]);
   const [catalog, setCatalog] = useState([]);
+  const [databaseSections, setDatabaseSections] = useState({});
+  const [fobCost, setFobCost] = useState({ selectedContainer: '20foot', containers: {} });
+  const [dbSectionFilter, setDbSectionFilter] = useState('ALL');
   const [meta, setMeta] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -115,10 +151,15 @@ export default function MasterMaterialsModal({ isOpen, onClose, onReimported }) 
     setFormulaRows(payload.formulaRows);
     setRoundPresets(payload.roundPresets);
     setCatalog(payload.catalog);
+    setDatabaseSections(payload.databaseSections || {});
+    setFobCost({
+      selectedContainer: '20foot',
+      ...(payload.fobCost || {}),
+    });
   }, []);
 
   const fetchAllMasters = useCallback(async () => {
-    const [m, nw, r, c, f, rd, metaDoc, wc, wl, fr, rp, cat] = await Promise.all([
+    const [m, nw, r, c, f, rd, metaDoc, wc, wl, fr, rp, cat, dbSec, fob] = await Promise.all([
       getMaterials(),
       getNonWoodMaterials(),
       getWasteRatios(),
@@ -131,9 +172,13 @@ export default function MasterMaterialsModal({ isOpen, onClose, onReimported }) 
       getFormulaDataRows(),
       getRoundComponentPresets(),
       getMaterialCatalog(),
+      getDatabaseSections(),
+      getFobCostMaster(),
     ]);
     return {
       materials: m,
+      databaseSections: dbSec,
+      fobCost: { selectedContainer: '20foot', ...fob },
       nonWood: nw,
       ratios: r,
       coatings: c,
@@ -169,9 +214,64 @@ export default function MasterMaterialsModal({ isOpen, onClose, onReimported }) 
     }
   }, [isOpen, load]);
 
+  const databaseSectionRows = useMemo(() => {
+    const all = Object.values(databaseSections || {}).flat();
+    if (dbSectionFilter === 'ALL') return all;
+    return all.filter((r) => r.section === dbSectionFilter);
+  }, [databaseSections, dbSectionFilter]);
+
+  const setDatabaseSectionRows = useCallback(
+    (updater) => {
+      setDatabaseSections((prev) => {
+        const all = Object.values(prev || {}).flat();
+        const nextAll = typeof updater === 'function' ? updater(all) : updater;
+        const next = { ...prev };
+        for (const key of Object.keys(next)) next[key] = [];
+        for (const row of nextAll) {
+          const sec = row.section;
+          const fileKey =
+            {
+              PLYWOOD: 'plywood',
+              MDF: 'mdf',
+              CORE: 'core',
+              HPL: 'hpl',
+              VENEER: 'veneer',
+              EDGING: 'edging',
+              'ASSEMBLING HARDWARE': 'assemblingHardware',
+              'FITTING HARDWARE': 'fittingHardware',
+              'TYPE OF VENEER': 'veneerTypes',
+              'SANDING MATERIAL': 'sandingMaterial',
+              'FINISHING MATERIAL': 'finishingMaterial',
+              'PACKING MATERIAL': 'packingMaterial',
+            }[sec] || slugSectionKey(sec);
+          if (!next[fileKey]) next[fileKey] = [];
+          const idx = next[fileKey].findIndex((x) => x.id === row.id);
+          if (idx >= 0) next[fileKey][idx] = row;
+          else next[fileKey].push(row);
+        }
+        return next;
+      });
+    },
+    [],
+  );
+
   const stateSnap = useMemo(
-    () => ({ catalog, materials, nonWood, ratios, woodLabor, coatings, formulaRows, formulas, rounding, roundPresets, workCenters }),
-    [catalog, materials, nonWood, ratios, woodLabor, coatings, formulaRows, formulas, rounding, roundPresets, workCenters],
+    () => ({
+      catalog,
+      materials,
+      databaseSectionRows,
+      fobCost,
+      nonWood,
+      ratios,
+      woodLabor,
+      coatings,
+      formulaRows,
+      formulas,
+      rounding,
+      roundPresets,
+      workCenters,
+    }),
+    [catalog, materials, databaseSectionRows, fobCost, nonWood, ratios, woodLabor, coatings, formulaRows, formulas, rounding, roundPresets, workCenters],
   );
 
   const tabsWithCount = useMemo(
@@ -231,6 +331,8 @@ export default function MasterMaterialsModal({ isOpen, onClose, onReimported }) 
         return catalog;
       case 'materials':
         return materials;
+      case 'databaseSections':
+        return databaseSectionRows;
       case 'nonWood':
         return nonWood;
       case 'ratios':
@@ -294,6 +396,8 @@ export default function MasterMaterialsModal({ isOpen, onClose, onReimported }) 
     try {
       if (tab === 'catalog') await saveMaterialCatalog(catalog);
       else if (tab === 'materials') await saveMaterials(materials);
+      else if (tab === 'databaseSections') await saveDatabaseSections(databaseSections);
+      else if (tab === 'fobCost') await saveFobCostMaster(fobCost);
       else if (tab === 'nonWood') await saveNonWoodMaterials(nonWood);
       else if (tab === 'ratios') await saveWasteRatios(ratios);
       else if (tab === 'coatings') await saveCoatings(coatings);
@@ -319,6 +423,34 @@ export default function MasterMaterialsModal({ isOpen, onClose, onReimported }) 
         return <CatalogTable rows={catalog} setCatalog={setCatalog} search={search} />;
       case 'materials':
         return <MaterialsTable rows={materials} setMaterials={setMaterials} search={search} />;
+      case 'fobCost':
+        return <FobCostTable master={fobCost} setMaster={setFobCost} search={search} />;
+      case 'databaseSections':
+        return (
+          <>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {P0_SECTION_FILTER.map((f) => (
+                <button
+                  key={f}
+                  type="button"
+                  onClick={() => setDbSectionFilter(f)}
+                  className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border ${
+                    dbSectionFilter === f
+                      ? 'bg-emerald-600 text-white border-emerald-600'
+                      : 'bg-white text-slate-600 border-slate-200'
+                  }`}
+                >
+                  {f}
+                </button>
+              ))}
+            </div>
+            <DatabaseSectionTable
+              rows={databaseSectionRows}
+              setRows={setDatabaseSectionRows}
+              search={search}
+            />
+          </>
+        );
       case 'nonWood':
         return <NonWoodTable rows={nonWood} setNonWood={setNonWood} search={search} />;
       case 'ratios':
@@ -373,10 +505,10 @@ export default function MasterMaterialsModal({ isOpen, onClose, onReimported }) 
           <>
             <button
               type="button"
-              onClick={() => setShowGuide(true)}
+              onClick={() => setShowManual(true)}
               className="text-xs font-bold text-white border border-white/30 px-3 py-2 rounded-lg hover:bg-white/15 flex items-center gap-1.5"
             >
-              <HelpCircle className="w-3.5 h-3.5" /> Panduan
+              <BookOpen className="w-3.5 h-3.5" /> Manual Book
             </button>
             {tabAllowsAdd(tab) && (
               <button
@@ -468,7 +600,7 @@ export default function MasterMaterialsModal({ isOpen, onClose, onReimported }) 
         </div>
       </FullPageShell>
 
-      <MasterUsageGuideModal isOpen={showGuide} onClose={() => setShowGuide(false)} />
+      <ManualBookModal isOpen={showManual} onClose={() => setShowManual(false)} />
     </>
   );
 }

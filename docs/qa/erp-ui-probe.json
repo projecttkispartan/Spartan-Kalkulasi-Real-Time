@@ -1,0 +1,66 @@
+﻿{
+  "timestamp": "2026-06-05T00:05:49.375Z",
+  "url": "https://erp.stg.solusiuntuknegeri.com/manufacture/bill-of-materials",
+  "login": {
+    "ok": true,
+    "note": "https://erp.stg.solusiuntuknegeri.com/dashboard"
+  },
+  "pageTitle": "ERPKu Staging",
+  "headings": [
+    "Aa",
+    "Daftar Bahan",
+    "78",
+    "138",
+    "18"
+  ],
+  "tabs": [
+    "Iconly/Bulk/Category",
+    "Stock Adjustment Icon",
+    "Stock Alert Icon",
+    "Stock Summary Icon",
+    "Purchase Order",
+    "Room Overview"
+  ],
+  "buttons": [
+    "Aa",
+    "Filters",
+    "BOM Baru",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "24"
+  ],
+  "tableHeaders": [
+    "Perluas",
+    "No",
+    "Nama BOM0",
+    "Kode BOM0",
+    "Tipe0",
+    "Varian",
+    "Jumlah",
+    "Biaya0",
+    "Versi",
+    "Tanggal Dibuat0",
+    "Aksi"
+  ],
+  "links": [
+    " ΓåÆ /manufacture/products",
+    " ΓåÆ /manufacture/product-variants",
+    " ΓåÆ /manufacture/bill-of-materials",
+    " ΓåÆ /manufacture/raw-ticket",
+    " ΓåÆ /manufacture/work-centers",
+    " ΓåÆ /manufacture/routings",
+    " ΓåÆ /manufacture/knife",
+    " ΓåÆ /manufacture/approval",
+    " ΓåÆ /manufacture/qc-packing",
+    " ΓåÆ /purchasing/materials",
+    "BOM Baru ΓåÆ /manufacture/bill-of-materials/new"
+  ],
+  "screenshots": [
+    "docs/qa/evidence/erp-bom-list.png",
+    "docs/qa/evidence/erp-bom-detail.png"
+  ],
+  "errors": []
+}

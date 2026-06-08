@@ -1,0 +1,162 @@
+{
+  "rows": [
+    {
+      "tds": [
+        "",
+        "1",
+        "BOM @KAKI MEJAKU",
+        "BOM-KAKU-001",
+        "Material",
+        "Standar",
+        "2 Pcs",
+        "Rp 550.833",
+        "1.3",
+        "29 Apr 2026, 16.05",
+        ""
+      ],
+      "links": [],
+      "btns": [
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "tds": [
+        ""
+      ],
+      "links": [],
+      "btns": []
+    },
+    {
+      "tds": [
+        "",
+        "2",
+        "BOM MFC",
+        "MFC-002",
+        "Material",
+        "Standar",
+        "1 Pcs",
+        "Rp 2.909.399",
+        "1.0",
+        "29 Apr 2026, 16.05",
+        ""
+      ],
+      "links": [],
+      "btns": [
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "tds": [
+        ""
+      ],
+      "links": [],
+      "btns": []
+    },
+    {
+      "tds": [
+        "",
+        "3",
+        "BOM MFC",
+        "MFC-001",
+        "Material",
+        "Standar",
+        "1 Pcs",
+        "Rp 63.229",
+        "1.2",
+        "28 Apr 2026, 11.23",
+        ""
+      ],
+      "links": [],
+      "btns": [
+        "",
+        "",
+        ""
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "new",
+      "url": "https://erp.stg.solusiuntuknegeri.com/manufacture/bill-of-materials/new",
+      "headings": [
+        "Aa",
+        "Baru"
+      ],
+      "tabs": [
+        "1Produk Akhir",
+        "2Komponen",
+        "3Sub Perakitan & Bahan Baku",
+        "4Operasi"
+      ],
+      "th": [
+        "1. Identitas Komponen",
+        "2. Spesifikasi Teknis",
+        "3. Manufaktur",
+        "4. Keuangan",
+        "5. Tambahan",
+        "ITEM",
+        "DIMENSI (MM)",
+        "VOLUME (m³)",
+        "KUANTITAS",
+        "PUSAT KERJA",
+        "ROUTING",
+        "PERAWATAN",
+        "BIAYA SATUAN",
+        "BIAYA MESIN",
+        "BIAYA TENAGA KERJA",
+        "TOTAL BIAYA",
+        "CATATAN",
+        "INFO BOM",
+        "AKSI",
+        "#",
+        "Kode Material",
+        "Nama Material",
+        "Modul",
+        "Submodul",
+        "Jumlah",
+        "Satuan",
+        "Dimensi",
+        "Harga Satuan",
+        "Total Harga",
+        "#",
+        "Modul",
+        "Nama Operasi",
+        "Tipe",
+        "Durasi (M)",
+        "Tenaga Kerja",
+        "Mesin",
+        "Biaya Tenaga Kerja",
+        "Biaya Operasi",
+        "Total Biaya",
+        "Catatan",
+        "Identitas Komponen",
+        "ITEM",
+        "AKSI"
+      ],
+      "btns": [
+        "Aa",
+        "1Produk Akhir",
+        "2Komponen",
+        "3Sub Perakitan & Bahan Baku",
+        "4Operasi",
+        "Add Item",
+        "Kembali",
+        "Lanjut ke Komponen",
+        "Simpan Item Baru",
+        "Identitas Komponen",
+        "Spesifikasi Teknis",
+        "Manufaktur",
+        "Keuangan",
+        "Tambahan",
+        "Add Catalog",
+        "Tambah"
+      ]
+    }
+  ],
+  "detailHrefs": [],
+  "actionMenu": []
+}

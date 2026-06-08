@@ -1,0 +1,113 @@
+# Rekomendasi Improvement — BOM Design Baru
+
+| Tanggal | 5 Juni 2026 |
+|---------|-------------|
+| Sumber | UAT ERP staging + UAT app + gap analysis |
+
+---
+
+## 1. Prioritas P0 (blokir go-live)
+
+| # | Masalah | Rekomendasi | Dampak UX |
+|---|---------|-------------|-----------|
+| P0-1 | Master dummy lokal | Integrasi API `/purchasing/materials`, WC, routings ERP | Harga & SKU konsisten pabrik |
+| P0-2 | G632L COGS gap ~47% | Audit import SUMMARY + upholstery mapping | Kepercayaan costing |
+| P0-3 | Tidak ada wizard onboarding | **Template BOM** per itemType (SOFA/CHAIR/TABLE) | Turunkan waktu input manual |
+| P0-4 | Save hanya IndexedDB | Persist ke backend ERP + draft status | Multi-user |
+
+---
+
+## 2. Prioritas P1 (parity ERP + Excel)
+
+| # | Area | Rekomendasi |
+|---|------|-------------|
+| P1-1 | Daftar BOM | Tambah kolom **Tipe** (Material/Produk) + **expand row** preview komponen seperti ERP |
+| P1-2 | Struktur | Kolom **Perawatan** (dari ERP step 2) opsional |
+| P1-3 | Produk | Picker **Nama Item** dari `/manufacture/products` (bukan free text) |
+| P1-4 | Versi | Format **Mayor.Minor** selaras ERP |
+| P1-5 | Material tab | Wire **STOCK GUDANG** ke API inventory atau hapus placeholder |
+| P1-6 | Approval | Link ke `/manufacture/approval` saat BOM final |
+| P1-7 | COGS | Deviasi live tanpa harus import mirror |
+
+---
+
+## 3. Prioritas P2 (UX polish)
+
+| # | Rekomendasi |
+|---|-------------|
+| P2-1 | Thumbnail gambar di dashboard list |
+| P2-2 | Breadcrumb wizard optional untuk user ERP lama (4 step overlay) |
+| P2-3 | Duplicate BOM + version bump |
+| P2-4 | Filter advanced seperti ERP "Filters" button |
+| P2-5 | E2E Playwright suite (regression ERP + app) |
+| P2-6 | Bahasa label konsisten ("Daftar Bahan" vs "Daftar BOM") |
+
+---
+
+## 4. Yang **pertahankan** dari Design Baru (jangan turunkan ke ERP lama)
+
+```mermaid
+mindmap
+  root((Pertahankan))
+    Container tab
+    Summary kalkulasi
+    COGS waterfall
+    Excel import export
+    Parity audit
+    Visual BOM graph
+    Multi currency display
+    FOB export engine
+    SF WF per part
+```
+
+---
+
+## 5. Yang **adopsi** dari ERP Staging
+
+| Fitur ERP | Cara adopsi di app baru |
+|-----------|-------------------------|
+| Wizard 4 step | Mode "Panduan" optional first-run |
+| Add Catalog material | Tombol di picker → modal katalog ERP |
+| Expand components di list | Accordion row dashboard |
+| Tipe BOM Material vs Produk | Field + filter list |
+| Sidebar modul terkait | Quick links: WC, Routing, Materials |
+| Pagination server-side | API list BOM |
+
+---
+
+## 6. Technical debt
+
+| Item | Action |
+|------|--------|
+| ELB test path broken | Fix env `ELB_EXCEL` di CI |
+| `erp-ui-probe` scripts | Masukkan `npm run qa:erp-probe` scheduled |
+| Playwright dependency | DevDependency + CI artifact screenshots |
+| Duplicate tab naming | Rename "FOB Informasi" vs COGS FOB toggle di FAQ |
+
+---
+
+## 7. Roadmap singkat
+
+| Sprint | Deliverable |
+|--------|-------------|
+| S1 | Master API read + picker |
+| S2 | Dashboard ERP column parity |
+| S3 | G632L COGS fix + template SOFA |
+| S4 | Save draft ERP + approval hook |
+| S5 | E2E + UAT sign-off |
+
+---
+
+## 8. KPI acceptance
+
+| Metrik | Target |
+|--------|--------|
+| Kolom list BOM parity | ≥ 90% kolom ERP mapped |
+| Master SKU from ERP | 100% picker non-wood/kayu |
+| COGS G632L | ≤ 3% vs Excel |
+| User task time (new BOM) | -60% vs manual today |
+| QA regression | `npm test` + ERP probe green |
+
+---
+
+*Master strategy detail: `06-Master-Data-Strategy.mmd`*

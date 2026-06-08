@@ -1,0 +1,443 @@
+# API Contract — Platform Manufaktur BOM (Draft v1)
+
+| Field | Value |
+|-------|-------|
+| **Versi kontrak** | 1.0.0-draft |
+| **Tanggal** | 4 Juni 2026 |
+| **Base URL (rencana)** | `https://api.<domain>/v1` |
+| **Format** | JSON (`application/json`) |
+| **Auth (rencana)** | Bearer JWT / API Key header |
+| **Idempotensi** | Header `Idempotency-Key` pada POST/PATCH |
+
+---
+
+## 1. Prinsip desain
+
+```mermaid
+flowchart TB
+  Client[ERP / Portal / Mobile]
+  API[API Gateway v1]
+  Svc[Calculation Service]
+  Master[(Master Store)]
+  Proj[(Project Store)]
+  Client --> API
+  API --> Svc
+  Svc --> Master
+  Svc --> Proj
+```
+
+| Prinsip | Deskripsi |
+|---------|-----------|
+| **Stateless API** | Kalkulasi deterministik dari payload + `masterVersion` |
+| **Schema versioned** | `schemaVersion` pada Project (saat ini `1`) |
+| **Mirror opsional** | `excelMirror` untuk parity; tidak wajib untuk hitung COGS |
+| **Rounding terpisah** | Endpoint `/calculate/round` mengikuti ROUND COMPONENT |
+
+---
+
+## 2. Resource map
+
+| Resource | Path prefix | CRUD |
+|----------|-------------|------|
+| Projects | `/projects` | CRUD |
+| BOM tree | `/projects/{id}/bom` | GET, PATCH |
+| COGS | `/projects/{id}/cogs` | GET, POST recalculate |
+| Masters | `/masters` | GET, POST import |
+| Templates | `/product-templates` | GET |
+| Parity | `/projects/{id}/parity` | GET audit |
+| Export | `/projects/{id}/export` | POST |
+
+---
+
+## 3. Model data (ringkas)
+
+### 3.1 Project
+
+```json
+{
+  "schemaVersion": 1,
+  "id": "uuid",
+  "kode": "G632L-RO",
+  "nama": "MARIO 3 SEATER",
+  "customer": "GOMMAIRE",
+  "status": "draft",
+  "productInfo": { "kode": "G632L-RO", "namaBom": "MARIO 3 SEATER" },
+  "productMeta": {
+    "itemType": "SOFA 3 SEATERS",
+    "woodGradeId": "wood-20",
+    "coatingId": "coat-xx",
+    "surfaceM2Coating": 3.499
+  },
+  "dimensi": { "w": 2200, "d": 775, "h": 760 },
+  "cogsConfig": {
+    "factoryOhPct": 2,
+    "managementOhPct": 1.5,
+    "markupPct": 20,
+    "includeCoatingInCogs": false,
+    "includeFobExport": false,
+    "exportContainer": "20foot"
+  },
+  "kursUsd": 16004,
+  "kursEur": 17500,
+  "importedFromExcel": false,
+  "excelMirror": null
+}
+```
+
+### 3.2 BOM Node
+
+```json
+{
+  "id": "part-uuid",
+  "tipe": "PART",
+  "nama": "KAKI DEPAN",
+  "kode": "1858130-1.5.0.2.1",
+  "qty": 2,
+  "unit": "EA",
+  "p": 565,
+  "l": 60,
+  "t": 45,
+  "vol": 0.0015255,
+  "materialType": "kayu",
+  "woodGradeId": "wood-20",
+  "materialMasterId": null,
+  "biaya": 30550,
+  "sf": 0,
+  "wf": 0,
+  "children": []
+}
+```
+
+### 3.3 COGS Result
+
+```json
+{
+  "totalMaterial": 5065900,
+  "totalProcess": 1002131,
+  "packingCost": 404914,
+  "coatingCost": 0,
+  "productionCost": 6472945,
+  "factoryOh": 129459,
+  "managementOh": 100492,
+  "totalCogs": 6699498,
+  "sellingPrice": 8039000,
+  "fobExportCost": 0,
+  "breakdown": {
+    "parts": [],
+    "summaryLines": []
+  }
+}
+```
+
+---
+
+## 4. Endpoints
+
+### 4.1 Projects
+
+#### `POST /projects`
+
+Buat proyek kosong (tanpa import).
+
+**Request**
+
+```json
+{
+  "kode": "G632L-RO",
+  "nama": "MARIO 3 SEATER",
+  "customer": "GOMMAIRE",
+  "templateId": "tpl-sofa-3-seater"
+}
+```
+
+**Response `201`**
+
+```json
+{
+  "id": "uuid",
+  "schemaVersion": 1,
+  "status": "draft",
+  "createdAt": "2026-06-04T10:00:00Z"
+}
+```
+
+| Field | Expected | Error |
+|-------|----------|-------|
+| `kode` | unik opsional | — |
+| `templateId` | kerangka BOM | `404` template tidak ada |
+
+---
+
+#### `GET /projects/{projectId}`
+
+**Response `200`:** Project lengkap.
+
+---
+
+#### `PATCH /projects/{projectId}`
+
+Partial update header, `productMeta`, `cogsConfig`, `dimensi`.
+
+---
+
+#### `DELETE /projects/{projectId}`
+
+**Response `204`**
+
+---
+
+### 4.2 BOM
+
+#### `GET /projects/{projectId}/bom`
+
+**Response `200`:** `{ "bomData": { ... root MODUL } }`
+
+---
+
+#### `PATCH /projects/{projectId}/bom`
+
+Patch tree (JSON Patch atau replace node by id).
+
+**Request (contoh replace node)**
+
+```json
+{
+  "op": "updateNode",
+  "nodeId": "part-uuid",
+  "patch": {
+    "materialMasterId": "hw-123",
+    "qty": 4
+  }
+}
+```
+
+**Expected side-effects**
+
+| Patch field | Engine behavior |
+|-------------|-----------------|
+| `materialMasterId` | `applyMasterToPart` → `nama`, `kode`, `biaya` |
+| `woodGradeId` | `applyMasterToWoodPart` |
+| `qty` / `vol` | Recalc `biaya` jika master terlink |
+
+---
+
+### 4.3 Calculate
+
+#### `POST /projects/{projectId}/cogs/recalculate`
+
+Hitung ulang COGS tanpa simpan (preview).
+
+**Response `200`:** COGS Result + `parity` jika `excelMirror` ada.
+
+```json
+{
+  "cogs": { "totalCogs": 6699498 },
+  "parity": {
+    "excelTotalCogs": 4561180,
+    "deltaPct": 0.469,
+    "status": "FAIL"
+  }
+}
+```
+
+---
+
+#### `POST /calculate/material-price`
+
+Stateless — harga satu part.
+
+**Request**
+
+```json
+{
+  "masterId": "wood-20",
+  "materialType": "kayu",
+  "qty": 2,
+  "vol": 0.0015255,
+  "masterVersion": "2026-06-04"
+}
+```
+
+**Response**
+
+```json
+{
+  "biaya": 30550,
+  "sf": 0,
+  "wf": 0,
+  "wasteIncludedInBiaya": true
+}
+```
+
+---
+
+### 4.4 Masters
+
+#### `GET /masters`
+
+Query: `?section=fittingHardware&active=true&search=screw`
+
+**Response `200`**
+
+```json
+{
+  "items": [
+    {
+      "id": "hw-1",
+      "kode": "ABC",
+      "specification": "SCREW 4x40",
+      "section": "FITTING HARDWARE",
+      "materialType": "hardware",
+      "unit": "pcs",
+      "hargaMaterialSupplier": 1200
+    }
+  ],
+  "meta": { "version": "seed-zan-2026-05-29", "count": 882 }
+}
+```
+
+---
+
+#### `POST /masters/import`
+
+Async job — upload Excel DATA BASE.
+
+**Request:** `multipart/form-data` file `.xlsx`
+
+**Response `202`**
+
+```json
+{
+  "jobId": "import-uuid",
+  "status": "queued"
+}
+```
+
+---
+
+#### `GET /masters/import/{jobId}`
+
+**Response:** `queued | processing | completed | failed` + statistik section.
+
+---
+
+### 4.5 Parity & Export
+
+#### `GET /projects/{projectId}/parity`
+
+Jalankan `excelParityAudit` — sama dengan panel COGS.
+
+**Response**
+
+```json
+{
+  "score": 78,
+  "pass": 28,
+  "warn": 4,
+  "fail": 2,
+  "items": [{ "id": "cogs-total", "status": "fail", "hint": "..." }]
+}
+```
+
+---
+
+#### `POST /projects/{projectId}/export`
+
+**Request**
+
+```json
+{
+  "format": "summary-cost-xlsx",
+  "includeImages": false
+}
+```
+
+**Response `200`:** `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` atau URL unduhan.
+
+---
+
+## 5. Error model
+
+```json
+{
+  "error": {
+    "code": "MASTER_NOT_FOUND",
+    "message": "materialMasterId hw-999 tidak ada",
+    "details": { "masterId": "hw-999" }
+  }
+}
+```
+
+| HTTP | Code | Kapan |
+|------|------|-------|
+| 400 | `VALIDATION_ERROR` | Payload invalid |
+| 404 | `PROJECT_NOT_FOUND` | id tidak ada |
+| 404 | `MASTER_NOT_FOUND` | SKU tidak ada |
+| 409 | `CONFLICT` | versi schema tidak cocok |
+| 422 | `CALCULATION_ERROR` | vol/qty hilang untuk kayu |
+| 500 | `INTERNAL` | engine error |
+
+---
+
+## 6. Event webhook (rencana v1.1)
+
+```mermaid
+sequenceDiagram
+  participant API
+  participant Hook as Customer webhook
+  API->>Hook: project.cogs.recalculated
+  Note over Hook: payload projectId, totalCogs, parityStatus
+```
+
+| Event | Payload utama |
+|-------|----------------|
+| `project.created` | `projectId`, `kode` |
+| `project.cogs.recalculated` | `totalCogs`, `deltaPctVsExcel` |
+| `masters.import.completed` | `sections`, `skuCount` |
+
+---
+
+## 7. Versioning & kompatibilitas
+
+| Header | Fungsi |
+|--------|--------|
+| `X-Schema-Version` | `1` (wajib) |
+| `X-Master-Version` | hash/tanggal import master |
+| `Accept` | `application/json` |
+
+Breaking change → `/v2` dengan migration guide.
+
+---
+
+## 8. Mapping app saat ini → API
+
+| App (SPA) | API future |
+|-----------|------------|
+| `createEmptyProject()` | `POST /projects` |
+| `saveProject()` | `PUT /projects/{id}` |
+| `handlePartMaterialField` | `PATCH /bom` + server-side `applyMasterToPart` |
+| `computeCogs()` | `POST /cogs/recalculate` |
+| `hydrateAllMasters()` | `GET /masters` |
+| `importZanMasters.mjs` | `POST /masters/import` |
+| `excelParityAudit` | `GET /parity` |
+
+---
+
+## 9. Security (draft)
+
+- RBAC: `costing`, `viewer`, `admin` (master import).
+- Rate limit: 60 req/min per API key.
+- Audit log: siapa ubah `cogsConfig` / hapus proyek.
+
+---
+
+## 10. Checklist implementasi API
+
+- [ ] OpenAPI 3.1 YAML generate dari dokumen ini
+- [ ] Contract test (Dredd / Prism mock)
+- [ ] Align `schemaVersion` dengan migrasi DB
+- [ ] Endpoint recalculate pakai `computeCogs` + `computePackingTotals` sama persis SPA
+
+---
+
+*Uji coba yang memicu kontrak ini: `UAT-G632L-Manual-From-Zero.mmd`*

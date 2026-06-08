@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { Search, Plus, Network, Package, Image as ImageIcon, SquarePen, Trash2, Copy, FileSpreadsheet } from 'lucide-react';
+import { useState, useEffect, useCallback, useRef, Fragment } from 'react';
+import { Search, Plus, Network, Package, Image as ImageIcon, SquarePen, Trash2, Copy, FileSpreadsheet, ChevronDown, ChevronRight, BookOpen } from 'lucide-react';
 import AppHeader from '../components/ui/AppHeader';
 import { CurrencyGroup } from '../components/ui/CurrencyInput';
 import FontCaseToggle from '../components/ui/FontCaseToggle';
 import KpiCard from '../components/ui/KpiCard';
 import ExcelImportOverlay from '../components/ui/ExcelImportOverlay';
+import ManualBookModal from '../components/modals/ManualBookModal';
 import { formatIDR } from '../utils/formatters';
 import { listProjects, deleteProject, duplicateProject, saveProject } from '../services/projectStorage';
 import { parseBomFromFile } from '../utils/importBomFromExcel';
@@ -36,6 +37,8 @@ export default function Dashboard({
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [importJob, setImportJob] = useState(null);
+  const [showManual, setShowManual] = useState(false);
+  const [expandedId, setExpandedId] = useState(null);
   const fileInputRef = useRef(null);
 
   const clearImportJob = useCallback(() => {
@@ -158,10 +161,19 @@ export default function Dashboard({
     }
   };
 
+  const handleNewProject = async () => {
+    try {
+      await onNewProject();
+    } catch (err) {
+      window.alert(err?.message || 'Gagal membuat proyek.');
+    }
+  };
+
   const importBusy = Boolean(importJob && !importJob.error);
 
   return (
     <div className="flex flex-1 flex-col min-h-0 min-w-0">
+      <ManualBookModal isOpen={showManual} onClose={() => setShowManual(false)} />
       <ExcelImportOverlay
         open={Boolean(importJob)}
         fileName={importJob?.fileName}
@@ -184,7 +196,14 @@ export default function Dashboard({
             className="pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm w-64 focus:outline-none focus:ring-2 focus:ring-brand-100 focus:border-brand-400 bg-slate-50 transition-all"
           />
         </div>
-        <button type="button" onClick={onNewProject} disabled={importBusy} className="btn-primary shadow-brand-500/30 disabled:opacity-50">
+        <button
+          type="button"
+          onClick={() => setShowManual(true)}
+          className="border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-2"
+        >
+          <BookOpen className="w-4 h-4" /> Manual Book
+        </button>
+        <button type="button" onClick={handleNewProject} disabled={importBusy} className="btn-primary shadow-brand-500/30 disabled:opacity-50">
           <Plus className="w-4 h-4" /> Buat Baru
         </button>
         <label className={`btn-secondary cursor-pointer ${importBusy ? 'opacity-50 pointer-events-none' : ''}`}>
@@ -223,6 +242,8 @@ export default function Dashboard({
                   <tr className="table-head">
                     <th className="py-4 px-4 text-center w-12 border-r border-slate-100">No</th>
                     <th className="py-4 px-6 w-20 text-center border-r border-slate-100">Gambar</th>
+                    <th className="py-4 px-4 text-center border-r border-slate-100 w-10" />
+                    <th className="py-4 px-4 border-r border-slate-100">Tipe BOM</th>
                     <th className="py-4 px-4 border-r border-slate-100">Kode Produk</th>
                     <th className="py-4 px-4 border-r border-slate-100">Nama Produk</th>
                     <th className="py-4 px-4 border-r border-slate-100">Customer</th>
@@ -236,7 +257,8 @@ export default function Dashboard({
                 </thead>
                 <tbody>
                   {filtered.map((p, index) => (
-                    <tr key={p.id} className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors group">
+                    <Fragment key={p.id}>
+                    <tr className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors group">
                       <td className="py-4 px-4 text-center border-r border-slate-100">
                         <span className="text-sm font-medium text-slate-500">{index + 1}</span>
                       </td>
@@ -244,6 +266,24 @@ export default function Dashboard({
                         <div className="w-12 h-12 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center text-slate-300 mx-auto group-hover:border-brand-200 transition-colors">
                           <ImageIcon className="w-5 h-5" />
                         </div>
+                      </td>
+                      <td className="py-4 px-2 text-center border-r border-slate-100">
+                        <button
+                          type="button"
+                          onClick={() => setExpandedId(expandedId === p.id ? null : p.id)}
+                          className="p-1 text-slate-400 hover:text-brand-600"
+                          title="Preview komponen"
+                        >
+                          {expandedId === p.id ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                        </button>
+                      </td>
+                      <td className="py-4 px-4 border-r border-slate-100">
+                        <span className="text-[10px] font-bold uppercase px-2 py-1 rounded bg-slate-100 text-slate-600 border border-slate-200">
+                          {p.bomType || 'Produk'}
+                        </span>
+                        {p.itemType && p.itemType !== '—' && (
+                          <div className="text-[9px] text-slate-400 mt-1 truncate max-w-[120px]" title={p.itemType}>{p.itemType}</div>
+                        )}
                       </td>
                       <td className="py-4 px-4 border-r border-slate-100">
                         <button
@@ -308,6 +348,19 @@ export default function Dashboard({
                         </div>
                       </td>
                     </tr>
+                    {expandedId === p.id && (p.previewParts?.length > 0) && (
+                      <tr className="bg-slate-50/80 border-b border-slate-100">
+                        <td colSpan={12} className="px-8 py-3 text-xs text-slate-600">
+                          <span className="font-bold text-slate-500 uppercase text-[10px] mr-2">Komponen:</span>
+                          {p.previewParts.map((part, i) => (
+                            <span key={i} className="inline-block mr-3 mb-1">
+                              <span className="font-mono text-slate-400">{part.kode}</span> — {part.nama}
+                            </span>
+                          ))}
+                        </td>
+                      </tr>
+                    )}
+                    </Fragment>
                   ))}
                 </tbody>
               </table>

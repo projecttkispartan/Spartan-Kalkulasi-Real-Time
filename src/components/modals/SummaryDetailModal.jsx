@@ -15,6 +15,9 @@ export default function SummaryDetailModal({ node, onClose }) {
   
   const costRow = d.tipe === 'PART' ? computePartCostRow(d) : null;
   const materialCostWithFactors = costRow?.matAdjusted ?? 0;
+  const sf = costRow?.sf ?? (Number(d.sf) || Number(d.masterWasteSfPct) || 0);
+  const wf = costRow?.wf ?? (Number(d.wf) || Number(d.masterWasteWfPct) || 0);
+  const baseMaterialCost = costRow?.matBase ?? (Number(d.biaya) || 0) * (Number(d.qty) || 1);
 
   let totalWaktuAll = 0;
   let totalMesinAll = 0;

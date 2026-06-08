@@ -158,7 +158,8 @@
   }
 
   .editor-product-panel {
-    @apply shrink-0 w-full border-b border-slate-200/80 bg-page overflow-visible;
+    @apply shrink-0 w-full border-b border-slate-200/80 bg-page overflow-x-hidden overflow-y-auto;
+    max-height: min(42vh, 28rem);
   }
 
   .tab-page {

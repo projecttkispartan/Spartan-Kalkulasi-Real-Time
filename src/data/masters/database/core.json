@@ -1,0 +1,41 @@
+[
+  {
+    "id": "core-1",
+    "kode": "CORE-5.25-1",
+    "no": 1,
+    "section": "CORE",
+    "nama": "ALBASIA 18 MM",
+    "specification": "ALBASIA 18 MM",
+    "woodName": "18",
+    "diameterGrade": "MDF 22 MM",
+    "finishingCode": "5.25",
+    "dimensi": {
+      "p": 0,
+      "l": 0,
+      "t": 0,
+      "label": "MDF 22 MM"
+    },
+    "hargaLogBuyer": 143000,
+    "safetyFactorBuyer": 0,
+    "buyerSafetyPct": 0.1,
+    "hargaMaterialBuyer": 143000,
+    "hargaLogSupplier": 2600000,
+    "safetyFactorSupplier": 0,
+    "hargaMaterialSupplier": 2600000,
+    "pricePerM3Buyer": 143000,
+    "priceSafetyFactorBuyer": 0,
+    "buyerTotalPerM3": 143000,
+    "pricePerM3Supplier": 2600000,
+    "pricePerM2Supplier": 0,
+    "pricePerM2Buyer": 0,
+    "invoiceCostPerM3": 0,
+    "vendorSupplier": "MDF 22 MM",
+    "supplierName": "MDF 22 MM",
+    "supplierChannel": "LOKAL",
+    "unit": "m3",
+    "materialType": "komponen",
+    "source": "DATA BASE",
+    "excelRef": "DATA BASE row 149",
+    "aktif": true
+  }
+]

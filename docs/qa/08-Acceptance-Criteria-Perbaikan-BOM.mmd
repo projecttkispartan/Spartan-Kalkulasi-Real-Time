@@ -1,0 +1,255 @@
+# Acceptance Criteria — Perbaikan BOM (untuk Programmer)
+
+| Field | Value |
+|-------|-------|
+| **Produk** | Manufaktur BOM v1.0 |
+| **Tanggal** | 5 Juni 2026 |
+| **Tujuan** | Kriteria penerimaan (sign-off) untuk sisa perbaikan setelah implementasi plan Excel replacement |
+| **Referensi** | [07-Dev-Improvement-Backlog.mmd](./07-Dev-Improvement-Backlog.mmd) · [G632L root-cause](../evidence/G632L-RO/root-cause.md) · Plan S1–S5 |
+
+---
+
+## Cara baca dokumen ini
+
+Setiap item punya:
+
+| Kolom | Arti |
+|-------|------|
+| **ID** | Referensi backlog |
+| **Posisi** | Tab / modul UI atau file |
+| **SEBELUM** | Kondisi saat ini |
+| **SESUDAH** | Target setelah selesai |
+| **Acceptance criteria** | Checklist PASS/FAIL yang bisa diuji |
+| **Regresi** | Command / test wajib lulus |
+
+---
+
+## A. Sudah selesai — verifikasi regresi (jangan rusak)
+
+Programmer **wajib** pastikan item ini tetap PASS setelah perubahan baru.
+
+### A1 · SF/WF persist (P0-5)
+
+| | |
+|---|---|
+| **Posisi** | Tab Kebutuhan Material & Summary · enrich master |
+| **SEBELUM** | Edit SF/WF pada part import Excel → hilang setelah refresh master |
+| **SESUDAH** | Nilai manual persist jika `sfWfManual: true` |
+| **Acceptance** | 1. Import project TEAK/pol-tab → edit SF=5 pada part `biayaFromExcel` → F5 → SF tetap 5<br>2. Part tanpa `sfWfManual` + `biayaFromExcel` → SF/WF = 0<br>3. `node scripts/testSfWfEnrich.mjs` → exit 0 |
+| **File** | `src/utils/masterLookup.js`, `src/utils/linkProjectToMasters.js` |
+
+### A2 · Summary total unified (P0-6)
+
+| | |
+|---|---|
+| **Posisi** | Tab Summary Kalkulasi |
+| **SEBELUM** | Total baris ≠ kartu header (formula JSX lokal) |
+| **SESUDAH** | Semua pakai `computePartCostRow(d)` |
+| **Acceptance** | 1. Per PART: TOTAL baris = `costRow.biayaProduksi`<br>2. Σ baris PART = kartu `SummaryTotalCards` (Δ = 0)<br>3. Modal detail summary = angka baris yang sama<br>4. Sample ZAN & G632L: tidak ada selisih visual > Rp 1 |
+| **File** | `src/pages/BOMEditor.jsx`, `src/utils/bomCostRollup.js` |
+
+### A3 · cogsMode excel-fixed / live-master (P0-7)
+
+| | |
+|---|---|
+| **Posisi** | Header editor · import Excel · COGS checklist |
+| **SEBELUM** | Campur CALCULATION + master recalc tanpa guard |
+| **SESUDAH** | Mode eksplisit + hybrid FAIL di excel-fixed |
+| **Acceptance** | 1. Import `.xlsx` → `cogsMode: excel-fixed` + badge **Mode: Excel Fixed**<br>2. Proyek kosong / wizard → `live-master` + badge **Mode: Live Master**<br>3. Tombol "Hitung harga kayu dari master" di excel-fixed → konfirmasi + switch ke live-master<br>4. Project hybrid (template-excel + template-master) di excel-fixed → COGS insight status FAIL |
+| **File** | `src/utils/emptyProject.js`, `src/utils/cogsBreakdown.js`, `src/pages/BOMEditor.jsx` |
+
+### A4 · G632L COGS parity (P0-2)
+
+| | |
+|---|---|
+| **Posisi** | Regresi `npm test` · sample `g632l-ro.json` |
+| **SEBELUM** | Deviasi ~+47% |
+| **SESUDAH** | Deviasi ≤ **3%** vs `excelMirror.summaryCost` |
+| **Acceptance** | 1. `verifyAllSampleCogs.mjs` → baris `OK G632L-RO` prod & cogs ≤ 3%<br>2. Sample punya `EXCEL-kayu_labor` + dedupe EXCEL-SUMMARY<br>3. `cogsMode: excel-fixed` pada sample<br>4. Dokumen root-cause ter-update jika ada perubahan mapping |
+| **Regresi** | `npm test` full green · ZAN/FNA tetap ≤ 1,5% |
+
+---
+
+## B. Partial — harus dilengkapi (prioritas tinggi)
+
+### B1 · Master API live ERP (P0-1) — BLOCKER go-live
+
+| | |
+|---|---|
+| **Posisi** | Master Data modal · picker material (Struktur, Material) |
+| **SEBELUM** | Adapter `masterApiAdapter.js` sync ke cache; UI tetap baca seed IndexedDB; flag API via `window.__BOM_*__` |
+| **SESUDAH** | Mode `MASTER_SOURCE=api` → picker non-kayu 100% dari ERP; seed hanya fallback dev |
+| **Acceptance** | 1. Set `window.__BOM_MASTER_SOURCE__='api'` + `__BOM_API_BASE__` → picker hardware/upholstery G632L tampil SKU ERP<br>2. Harga satuan = API (bukan seed ZAN stale)<br>3. Mode `seed` (default) → `npm test` tetap green tanpa API<br>4. Gagal API → fallback seed + banner warning (tidak crash)<br>5. Mapping field ERP → shape `resolveMaterial()` terdokumentasi 1 halaman |
+| **File** | `src/services/masterApiAdapter.js`, `src/services/masterStorage.js`, `src/components/fields/MasterCombos.jsx`, `SearchableSelect.jsx` |
+| **Owner** | BE (endpoint) + FE (wire picker + error state) |
+
+### B2 · Persist project ke ERP (P0-4) — BLOCKER multi-user
+
+| | |
+|---|---|
+| **Posisi** | Auto-save editor · Dashboard CRUD |
+| **SEBELUM** | `projectApiAdapter.js` debounce PATCH; IndexedDB = source of truth; conflict hanya throw console |
+| **SESUDAH** | Draft/submitted/approved di ERP; IDB = cache offline |
+| **Acceptance** | 1. Mode `PROJECT_SOURCE=api` → save editor → PATCH `/v1/projects/{id}` ≤ 3 detik setelah edit<br>2. Status: `draft` default, bisa set `submitted`<br>3. Conflict 409 → toast user: "BOM diubah user lain"<br>4. 2 browser/tab: edit bersamaan → tidak silent overwrite<br>5. Mode `local` → perilaku sekarang unchanged |
+| **File** | `src/services/projectApiAdapter.js`, `src/services/projectStorage.js`, `src/pages/BOMEditor.jsx` |
+| **Kontrak** | [API-Contract-BOM-Platform.mmd](../API-Contract-BOM-Platform.mmd) § Projects |
+
+### B3 · Product picker ERP (P1-6)
+
+| | |
+|---|---|
+| **Posisi** | Product Panel — Kode/Nama BOM |
+| **SEBELUM** | Input teks bebas |
+| **SESUDAH** | SearchableSelect dari `/manufacture/products` atau API contract |
+| **Acceptance** | 1. Pilih produk ERP → auto-fill: kode, nama, customer, itemType, dimensi (jika ada)<br>2. Manual override nama tetap boleh<br>3. Offline/seed mode → free text seperti sekarang<br>4. UAT: buat project G632L dari wizard + pilih produk ERP → header terisi konsisten |
+
+---
+
+## C. Partial — UX & workflow (prioritas medium)
+
+### C1 · Template BOM wizard (P0-3) — validasi UAT
+
+| | |
+|---|---|
+| **Posisi** | Dashboard → Buat Baru → wizard 3 langkah |
+| **SEBELUM** | Template SOFA/CHAIR/TABLE + ~10 part placeholder ada |
+| **SESUDAH** | SOFA ≥80% struktur G632L; UAT manual from zero feasible |
+| **Acceptance** | 1. Wizard SOFA → ≥ 5 submodul (rangka, kaki, upholstery, hardware, finishing)<br>2. Dimensi default G632L (2200×775×760) terisi<br>3. Skenario [UAT-G632L-Manual-From-Zero.mmd](../UAT-G632L-Manual-From-Zero.mmd) Step 1–2 bisa diselesaikan tanpa import<br>4. Waktu input struktur vs proyek kosong: turun ≥ 60% (ukur 1 sesi UAT) |
+| **File** | `src/data/templates/bomTemplates.json`, `NewProjectWizardModal.jsx`, `src/utils/bomTemplates.js` |
+
+### C2 · Dashboard ERP parity (P1-5) — polish
+
+| | |
+|---|---|
+| **Posisi** | Dashboard tabel |
+| **SEBELUM** | Kolom Tipe BOM + expand preview 5 komponen ada |
+| **SESUDAH** | Parity ≥90% kolom ERP list BOM |
+| **Acceptance** | 1. Kolom: Tipe, Kode, Nama, Customer, Versi, HPP, Status, Update, Aksi (existing)<br>2. Expand row: min 3, max 5 komponen + kode<br>3. Bandingkan dengan [03-Perbandingan-Tabel.mmd](./03-Perbandingan-Tabel.mmd) — gap kolom terdokumentasi |
+| **Optional** | Server pagination jika API ready |
+
+### C3 · Versi Mayor.Minor (P1-7) — validasi
+
+| | |
+|---|---|
+| **Posisi** | Duplikat project · kolom Versi |
+| **SEBELUM** | `bumpMinorVersion()` → 1.0 → 1.1 |
+| **SESUDAH** | Format valid Mayor.Minor; reject format invalid |
+| **Acceptance** | 1. Duplikat `1.0` → `1.1`; duplikat `2.3` → `2.4`<br>2. Input manual `abc` → validation error atau normalize<br>3. Selaras format ERP staging |
+
+---
+
+## D. Belum dikerjakan — backlog sisa plan
+
+### D1 · COGS defaults per produk (P1-2)
+
+| | |
+|---|---|
+| **SEBELUM** | Proyek kosong: Mgmt OH 2,5%, coating ON |
+| **SESUDAH** | Import → copy OH + `includeCoatingInCogs` dari `excelMirror`; kosong → preset per itemType |
+| **Acceptance** | 1. Import G632L → Mgmt OH **1,5%**, coating **OFF** otomatis<br>2. Wizard SOFA → preset OH selaras Excel G632L<br>3. ZAN import → OH selaras mirror ZAN |
+
+### D2 · Generate routing default (P1-3)
+
+| | |
+|---|---|
+| **SEBELUM** | Routing manual per part (modal) |
+| **SESUDAH** | Tombol "Generate routing default" dari struktur BOM |
+| **Acceptance** | 1. SOFA template + generate → part kayu punya ≥1 operasi Woodworking<br>2. Tidak overwrite routing yang sudah diisi user<br>3. Total proses tab > 0 untuk template SOFA |
+
+### D3 · COGS live parity tanpa mirror (P1-4)
+
+| | |
+|---|---|
+| **SEBELUM** | Panel deviasi kosong jika `excelMirror === null` |
+| **SESUDAH** | Upload referensi one-shot ATAU snapshot sign-off |
+| **Acceptance** | 1. Proyek manual → upload `.xlsx` referensi → panel deviasi aktif<br>2. Atau: tombol "Simpan baseline parity" → bandingkan later<br>3. PASS/WARN/FAIL per kategori material/proses/packing |
+
+### D4 · Playwright E2E (P2-5)
+
+| | |
+|---|---|
+| **SEBELUM** | `scripts/smokeAppFlow.mjs` (Node only) |
+| **SESUDAH** | Playwright: Dashboard → buka ZAN → tab COGS parity PASS |
+| **Acceptance** | 1. `@playwright/test` di CI<br>2. Screenshot artifact on fail<br>3. Smoke ≤ 3 menit |
+
+### D5 · Update dokumentasi skor (housekeeping)
+
+| | |
+|---|---|
+| **SEBELUM** | [07-Dev-Improvement-Backlog.mmd](./07-Dev-Improvement-Backlog.mmd) skor baseline G632L 4/10 |
+| **SESUDAH** | Skor pasca-fix selaras `npm test` + tanggal verifikasi |
+| **Acceptance** | Doc selaras hasil regresi terakhir |
+
+---
+
+## E. KPI sign-off release (semua tim)
+
+Centang **semua** sebelum declare "siap ganti Excel penuh":
+
+| # | Kriteria | Metode uji | Gate |
+|---|----------|------------|------|
+| E1 | ZAN COGS | `npm test` | ≤ **1,5%** |
+| E2 | FNA COGS | `npm test` | ≤ **1,5%** |
+| E3 | G632L COGS | `npm test` | ≤ **3%** |
+| E4 | SF/WF persist | Manual + `testSfWfEnrich` | PASS |
+| E5 | Summary konsisten | Manual ZAN/G632L | Δ = **0** |
+| E6 | Regresi otomatis | `npm test` + `smokeAppFlow` | exit **0** |
+| E7 | Master ERP live | Staging API | picker non-kayu 100% |
+| E8 | Persist ERP | 2-user test | no silent conflict |
+| E9 | G632L manual UAT | Browser checklist | Step 1–4 PASS |
+| E10 | Evidence | Folder `docs/evidence/` | screenshot COGS |
+
+---
+
+## F. Urutan sprint disarankan
+
+```mermaid
+flowchart LR
+  A[Regresi A1-A4] --> B[B1 Master API]
+  B --> C[B2 Persist API]
+  C --> D[B3 Product picker]
+  D --> E[C1-C3 UAT polish]
+  E --> F[D1-D4 Backlog P1/P2]
+```
+
+| Sprint | Deliverable | Unblock |
+|--------|-------------|---------|
+| **S-now** | Jangan rusak A1–A4; fix jika regresi | Stabilitas angka |
+| **S+1** | B1 + B2 | Go-live staging |
+| **S+2** | B3 + C1 UAT G632L manual | Input manual feasible |
+| **S+3** | D1–D3 + D4 Playwright | Parity tanpa Excel file |
+
+---
+
+## G. Template ticket Jira
+
+```
+Title: [BOM-FE-xxx] {ID} — {judul singkat}
+
+Description:
+- Posisi: {tab/modul}
+- SEBELUM: {kondisi}
+- SESUDAH: {target}
+
+Acceptance criteria:
+- [ ] AC1 ...
+- [ ] AC2 ...
+- [ ] npm test exit 0
+- [ ] Tidak regresi ZAN ≤1.5% / G632L ≤3%
+
+Files: {path}
+Depends on: {BE ticket jika ada}
+```
+
+---
+
+## H. Command regresi wajib (setiap PR)
+
+```bash
+npm test
+node scripts/diagnoseSampleCogsBreakdown.mjs --sample=G632L-RO
+node scripts/smokeAppFlow.mjs
+npm run build
+```
+
+**PR ditolak jika:** G632L atau ZAN/FNA fail gate · `testSfWfEnrich` fail · build error.

@@ -16,6 +16,7 @@ import {
 } from '../data/excelReference.js';
 import { resolveProductCoatingCost } from '../utils/masterLookup.js';
 import { applyRoundingForTarget } from '../utils/roundingEngine.js';
+import { computeFobExportCost } from '../utils/fobCostEngine.js';
 
 const LIVE_OPTIONS = { allowEstimateFallback: false };
 
@@ -114,6 +115,7 @@ export function computeCogs({
   cogsConfig = {},
   packingTotals,
   productMeta = {},
+  packingVolumeM3 = 0,
 }) {
   const parts = computePartsTotals(bomData);
   const totalMaterial = parts.matAdjusted;
@@ -129,7 +131,19 @@ export function computeCogs({
   const packingLab = jalur === 'BOX' ? packingTotals.packBoxLab : packingTotals.packSfLab;
   const packingCost = packingMat + packingLab;
 
-  const productionCost = totalMaterial + totalProcess + packingCost + coatingForCogs;
+  const includeFob =
+    cogsConfig.includeFobExport === true || cogsConfig.includeFobExport === 'true';
+  const fobDetail = includeFob
+    ? computeFobExportCost({
+        packingVolumeM3: Number(packingVolumeM3) || Number(cogsConfig.packingVolumeM3) || 0,
+        containerKey: cogsConfig.exportContainer || cogsConfig.fobContainer || '20foot',
+        volumeM3Variant: cogsConfig.fobVolumeM3,
+      })
+    : { fobExportCost: 0, fobPerM3: 0, containerKey: null, packingVolumeM3: 0 };
+  const fobExportCost = Number(fobDetail.fobExportCost) || 0;
+
+  const productionCost =
+    totalMaterial + totalProcess + packingCost + coatingForCogs + fobExportCost;
   const factoryOhPct = Number(cogsConfig.factoryOhPct) || 0;
   const managementOhPct = Number(cogsConfig.managementOhPct) || 0;
   const markupPct = Number(cogsConfig.markupPct) || 0;
@@ -150,6 +164,8 @@ export function computeCogs({
     packingLab,
     packingCost,
     packingJalur: jalur,
+    fobExportCost,
+    fobDetail,
     productionCost,
     factoryOh,
     managementOh,

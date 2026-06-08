@@ -1,0 +1,238 @@
+# UAT — Produk Kalkulasi G632L-RO (Manual dari Nol)
+
+| Field | Value |
+|-------|-------|
+| **Tanggal uji** | 4 Juni 2026 |
+| **Tester** | Agent otomatis + checklist UI |
+| **Referensi Excel** | `17 - G632L-RO - MARIO 3 S - 12-5-26.xlsx` |
+| **Path Excel** | `d:\Project Spartan Jepara\03. DOKUMEN\Support Dokumen\Excel\` |
+| **Mode uji** | **Tanpa import Excel** — mulai proyek kosong, isi manual mengacu Excel |
+| **App** | Manufaktur BOM v1.0 (`npm run dev`) |
+| **Master** | Seed bundled (`src/data/masters/`) — bukan import live G632L DATA BASE |
+
+---
+
+## Referensi angka Excel (SUMMARY COST)
+
+| Metrik | Excel (mirror sample) | Catatan |
+|--------|----------------------|---------|
+| Production Cost | Rp 4.406.938 | `excelMirror.summaryCost.productionCost` |
+| Total COGS | Rp 4.561.180 | + Factory OH 2% + Mgmt OH 1,5% |
+| Markup penjualan | 20% | ROUND COMPONENT |
+| Produk | G632L-RO / MARIO 3 SEATER | Customer GOMMAIRE |
+| Dimensi produk | 2200 × 775 × 760 mm | SOFA 3 SEATERS |
+| Kayu produk | TEAK KAMPUNG - 30 UP 200 | |
+| Coating | 3,CEMENT GREY GOMM | |
+
+---
+
+## Hasil `npm test` (regresi engine)
+
+```mermaid
+flowchart LR
+  subgraph pass [Lulus]
+    A[Formula Engine]
+    B[Rounding Engine]
+    C[FOB Cost]
+    D[Material Biaya Master]
+    E[ZAN COGS parity]
+    F[Parity Audit 94%]
+  end
+  subgraph warn [Catatan]
+    G[ELB parser SKIP - file path]
+    H[G632L sample FAIL 46.9% vs Excel]
+  end
+  pass --> ReleaseZAN[Release gate: ZAN/FNA curated]
+  warn --> ManualUAT[UAT manual G632L wajib]
+```
+
+| Suite | Expected | Actual | Status |
+|-------|----------|--------|--------|
+| ELBA + ZAN regression | OK | OK | PASS |
+| Formula engine | OK | OK | PASS |
+| Rounding engine | OK | OK | PASS |
+| Coating / master lookup | OK | OK | PASS |
+| Calculation parser (ELB file) | OK jika file ada | SKIP (path ELB tidak ditemukan) | WARN |
+| Excel parity audit (ZAN seed) | Score ≥ 90% | 94% (33 pass, 2 warn) | PASS |
+| Material biaya from master | plywood/hpl/wood OK | OK | PASS |
+| FOB cost engine | 20ft/40ft/40hc | OK | PASS |
+| ZAN COGS verify | diff ≤ 1,5% | prod Δ Rp 206, COGS Δ Rp 222 | PASS |
+| All samples COGS | curated ≤ 1,5% | ZAN + FNA PASS; **G632L FAIL 46,9%** | PARTIAL |
+| G632L harness (`testG632lManualFromZero.mjs`) | empty COGS ≈ 0 | material 0, COGS 0 | PASS |
+
+---
+
+## Skenario 1 — Buat proyek baru tanpa import
+
+### Step 1.1 — Dashboard: proyek baru
+
+| | Expected | Actual |
+|---|----------|--------|
+| Aksi | Klik **Proyek Baru** / tombol + | Proyek UUID baru dibuat (`createEmptyProject`) |
+| Header produk | Form kosong siap diisi | `bomData` = 1 MODUL kosong, tanpa children |
+| `importedFromExcel` | `false` | `false` |
+| `excelMirror` | `null` | `null` |
+
+**Status:** PASS (engine)
+
+### Step 1.2 — Isi identitas produk (acuan Excel)
+
+| Field | Expected (dari Excel) | Actual (input manual) | Status |
+|-------|----------------------|------------------------|--------|
+| Kode BOM | G632L-RO | _(isi manual sesuai)_ | CHECKLIST UI |
+| Nama BOM | MARIO 3 SEATER | _(isi manual)_ | CHECKLIST UI |
+| Customer | GOMMAIRE | _(isi manual)_ | CHECKLIST UI |
+| Item type | SOFA 3 SEATERS | _(isi manual)_ | CHECKLIST UI |
+| Dimensi W×D×H | 2200 / 775 / 760 | _(isi manual)_ | CHECKLIST UI |
+| Grade kayu produk | TEAK KAMPUNG - 30 UP 200 | Pilih **DATA BASE** di panel produk | CHECKLIST UI |
+| Coating | 3,CEMENT GREY GOMM | Pilih master coating | CHECKLIST UI |
+
+### Step 1.3 — COGS awal (belum ada part)
+
+| Metrik | Expected | Actual (script) | Status |
+|--------|----------|-----------------|--------|
+| Total material | 0 | 0 | PASS |
+| Total proses | 0 | 0 | PASS |
+| Production cost | 0 (atau hanya packing jika diisi) | 0 | PASS |
+| Total COGS | 0 | 0 | PASS |
+
+---
+
+## Skenario 2 — Struktur BOM manual (tanpa import)
+
+```mermaid
+flowchart TB
+  M[MODUL BODI] --> SM1[SUBMODUL KAKI DEPAN]
+  M --> SM2[SUBMODUL lain...]
+  SM1 --> P1[PART kayu KAKI DEPAN]
+  SM2 --> P2[PART hardware / upholstery / finishing]
+```
+
+### Step 2.1 — Tambah hierarki
+
+| Step | Expected | Actual | Status |
+|------|----------|--------|--------|
+| Tambah SUBMODUL di MODUL | Child SUBMODUL muncul | Tree update | CHECKLIST UI |
+| Tambah PART di SUBMODUL | Child PART muncul | Tree update | CHECKLIST UI |
+| Kolom TIPE MATERIAL (PART) | Hanya dropdown kategori | Tidak ada combo SKU di kolom tipe | PASS (kode) |
+| Kolom NAMA / GRADE | Combo DATA BASE + nama | SearchableSelect + sync nama | PASS (kode) |
+
+### Step 2.2 — Pilih material DATA BASE pada PART
+
+| Step | Expected | Actual | Status |
+|------|----------|--------|--------|
+| Mode **DATA BASE** | Dropdown + search SKU | Search → pilih → panel tutup | PASS (kode) |
+| `nama` part | Mengikuti `specification` master | `patchNodeIdentityFromMaster` | PASS (kode) |
+| `kode` part | Mengikuti `kode` master jika ada | Terisi dari master | PASS (kode) |
+| `biaya` satuan | Terisi dari `computeMaterialBiayaFromMaster` | Terhitung saat ada vol/qty | CHECKLIST UI |
+| SF/WF kayu | Dari MASTER RATIO | Terisi saat tipe kayu | CHECKLIST UI |
+
+### Step 2.3 — Part kayu pertama (contoh Excel: KAKI DEPAN)
+
+| Field | Expected (Excel CALCULATION) | Actual manual | Status |
+|-------|------------------------------|---------------|--------|
+| Kode | 1858130-1.5.0.2.1 | _(ketik / auto dari master)_ | CHECKLIST UI |
+| Qty | 2 | _(input)_ | CHECKLIST UI |
+| P×L×T | 565 × 60 × 45 | _(input)_ | CHECKLIST UI |
+| Vol | ~0,0015255 m³ | `vol` terhitung | CHECKLIST UI |
+| Material | TEAK KAMPUNG | Grade dari DATA BASE | CHECKLIST UI |
+
+---
+
+## Skenario 3 — Tab Material, Proses, Packing, Container
+
+| Tab | Expected | Actual | Status |
+|-----|----------|--------|--------|
+| Material | Daftar PART; nama + combo; nominal warna amber/indigo/violet | Sesuai implementasi terbaru | PASS (kode) |
+| Proses | Routing WC; biaya mesin biru, pekerja hijau | Kolom berwarna | PASS (kode) |
+| Packing BOX/SF | Input material + routing; total rollup | Default kosong → isi manual | CHECKLIST UI |
+| Container | Net capacity dari dimensi packing | `buildDefaultContainerRows` | CHECKLIST UI |
+| FOB export | Opsional; OFF default | `includeFobExport: false` | PASS (kode) |
+
+---
+
+## Skenario 4 — COGS & parity vs Excel
+
+### Step 4.1 — Konfigurasi COGS (G632L)
+
+| Parameter | Expected (Excel) | Actual default app | Status |
+|-----------|------------------|-------------------|--------|
+| Factory OH | 2% | 2% (Excel ref) | PASS |
+| Management OH | 1,5% | 2,5% default empty — **ubah manual ke 1,5%** | CHECKLIST UI |
+| Markup | 20% | 20% | PASS |
+| Include coating | OFF di sample G632L | `includeCoatingInCogs: false` pada sample | CHECKLIST UI |
+
+### Step 4.2 — Perbandingan angka
+
+| Metrik | Expected (Excel) | Actual proyek kosong | Actual sample import | Gap |
+|--------|------------------|----------------------|----------------------|-----|
+| Production | Rp 4.406.938 | Rp 0 | Rp 6.472.945 | Import +46,9% |
+| Total COGS | Rp 4.561.180 | Rp 0 | Rp 6.699.498 | Import +46,9% |
+| Selling (≈+20%) | ~Rp 5.473.000 | Rp 0 | Rp 8.039.000 | Import tinggi |
+
+```mermaid
+xychart-beta
+    title "COGS G632L — Excel vs App (sample import)"
+    x-axis ["Production", "Total COGS"]
+    y-axis "Rp juta" 0 --> 7000000
+    bar [4406938, 4561180]
+    bar [6472945, 6699498]
+```
+
+**Kesimpulan skenario 4:** Membangun G632L **dari nol secara manual** saat ini **belum diuji end-to-end** sampai parity Excel; sample hasil **import** masih deviasi **~47%**. Target rilis tetap mengacu sample **ZAN-100 / FNA-550** (≤ 1,5%).
+
+---
+
+## Skenario 5 — Master Data & fitur pendukung
+
+| Fitur | Expected | Actual | Status |
+|-------|----------|--------|--------|
+| Master Data modal | Tab wood, database sections, FOB, WC | Terbuka dari header | CHECKLIST UI |
+| Reset import master | Reload dari `src/data/masters` | `hydrateAllMasters` | CHECKLIST UI |
+| FAQ | Modal panduan sistem | Menggantikan panduan lama | PASS (kode) |
+| Export menu | PDF / struktur BOM | Tersedia di editor | CHECKLIST UI |
+| Excel parity checklist | Panel COGS jika ada mirror | Kosong pada proyek manual | PASS |
+| Duplikat / hapus proyek | CRUD localStorage/IDB | `projectStorage` | CHECKLIST UI |
+
+---
+
+## Skenario 6 — Regresi otomatis (perintah)
+
+```bash
+npm test
+node scripts/testG632lManualFromZero.mjs
+node scripts/inspectG632lReference.mjs
+```
+
+| Perintah | Expected | Actual (4 Jun 2026) |
+|----------|----------|---------------------|
+| `npm test` | exit 0 | exit 0 (~158s) |
+| `testG632lManualFromZero.mjs` | empty COGS 0; sample gap >10% | OK |
+
+---
+
+## Ringkasan UAT
+
+| Kategori | PASS | FAIL / GAP | CHECKLIST UI |
+|----------|------|------------|--------------|
+| Engine / unit test | 10 | 1 (G632L COGS parity) | — |
+| Proyek kosong | 3 | 0 | 5 |
+| BOM manual G632L penuh | 4 | 1 (parity Excel) | 15+ |
+| **Total siap ganti Excel G632L** | | | **Belum** |
+
+### Blocker utama (Actual)
+
+1. **Tidak ada wizard “bangun BOM G632L dari referensi”** — user harus mengetik puluhan part sofa manual.
+2. **Master DATA BASE** di app = seed ZAN-centric; SKU G632L upholstery/hardware bisa tidak lengkap vs Excel G632L.
+3. **Proses / SUMMARY COST** tidak ter-generate otomatis dari struktur manual (harus routing per modul).
+4. Sample import G632L **over-count** material vs Excel (~+47% COGS).
+
+### Rekomendasi QA manual (langkah berikutnya)
+
+1. Jalankan skenario 1–2 di browser; centang CHECKLIST UI.
+2. Bangun minimal 5 part (1 kayu, 1 hardware, 1 finishing, 1 upholstery, 1 plywood) → bandingkan subtotal material dengan Excel.
+3. Dokumentasikan screenshot COGS vs Excel di folder `docs/evidence/G632L-RO/`.
+
+---
+
+*Dokumen terkait: `PRD-System-Improvement-v2.mmd`, `API-Contract-BOM-Platform.mmd`*

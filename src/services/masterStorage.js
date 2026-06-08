@@ -12,6 +12,21 @@ import masterRatioBlocksSeed from '../data/masters/tables/masterRatioBlocks.json
 import formulaDataRowsSeed from '../data/masters/tables/formulaDataRows.json' with { type: 'json' };
 import roundPresetsSeed from '../data/masters/tables/roundComponentPresets.json' with { type: 'json' };
 import catalogSeed from '../data/masters/catalog/materialCatalog.json' with { type: 'json' };
+import plywoodSeed from '../data/masters/database/plywood.json' with { type: 'json' };
+import mdfSeed from '../data/masters/database/mdf.json' with { type: 'json' };
+import coreSeed from '../data/masters/database/core.json' with { type: 'json' };
+import hplSeed from '../data/masters/database/hpl.json' with { type: 'json' };
+import veneerSeed from '../data/masters/database/veneer.json' with { type: 'json' };
+import edgingSeed from '../data/masters/database/edging.json' with { type: 'json' };
+import assemblingHardwareSeed from '../data/masters/database/assemblingHardware.json' with { type: 'json' };
+import fittingHardwareSeed from '../data/masters/database/fittingHardware.json' with { type: 'json' };
+import veneerTypesSeed from '../data/masters/database/veneerTypes.json' with { type: 'json' };
+import sandingMaterialSeed from '../data/masters/database/sandingMaterial.json' with { type: 'json' };
+import finishingMaterialSeed from '../data/masters/database/finishingMaterial.json' with { type: 'json' };
+import packingMaterialSeed from '../data/masters/database/packingMaterial.json' with { type: 'json' };
+import fobCostSeed from '../data/masters/database/fobCost.json' with { type: 'json' };
+import { setFobCostMaster } from '../utils/fobCostEngine.js';
+import { trySyncMastersFromApi } from './masterApiAdapter.js';
 // Legacy fallbacks
 import legacyMaterials from '../data/masters/materials.json' with { type: 'json' };
 import legacyRatios from '../data/masters/wasteRatios.json' with { type: 'json' };
@@ -35,6 +50,8 @@ const KEYS = {
   formulaDataRows: 'formulaDataRows_v1',
   roundPresets: 'roundPresets_v1',
   materialCatalog: 'materialCatalog_v1',
+  databaseSections: 'database_sections_v1',
+  fobCost: 'fob_cost_v1',
 };
 
 const LS_KEYS = {
@@ -51,6 +68,39 @@ const LS_KEYS = {
   formulaDataRows: 'bom_master_formula_rows_v1',
   roundPresets: 'bom_master_round_presets_v1',
   materialCatalog: 'bom_master_catalog_v1',
+  databaseSections: 'bom_master_db_sections_v1',
+  fobCost: 'bom_master_fob_cost_v1',
+};
+
+/** DATA BASE sections → file key (P0 vertikal + katalog horizontal) */
+export const DATABASE_SECTION_KEYS = {
+  PLYWOOD: 'plywood',
+  MDF: 'mdf',
+  CORE: 'core',
+  HPL: 'hpl',
+  VENEER: 'veneer',
+  EDGING: 'edging',
+  'ASSEMBLING HARDWARE': 'assemblingHardware',
+  'FITTING HARDWARE': 'fittingHardware',
+  'TYPE OF VENEER': 'veneerTypes',
+  'SANDING MATERIAL': 'sandingMaterial',
+  'FINISHING MATERIAL': 'finishingMaterial',
+  'PACKING MATERIAL': 'packingMaterial',
+};
+
+const databaseSectionSeeds = {
+  plywood: plywoodSeed,
+  mdf: mdfSeed,
+  core: coreSeed,
+  hpl: hplSeed,
+  veneer: veneerSeed,
+  edging: edgingSeed,
+  assemblingHardware: assemblingHardwareSeed,
+  fittingHardware: fittingHardwareSeed,
+  veneerTypes: veneerTypesSeed,
+  sandingMaterial: sandingMaterialSeed,
+  finishingMaterial: finishingMaterialSeed,
+  packingMaterial: packingMaterialSeed,
 };
 
 const materialsDefault = woodSeed?.length ? woodSeed : legacyMaterials;
@@ -203,6 +253,81 @@ export async function saveCoatings(list) {
   return filtered;
 }
 
+function defaultDatabaseSections() {
+  return { ...databaseSectionSeeds };
+}
+
+export async function getDatabaseSections() {
+  return getStoreItem(KEYS.databaseSections, LS_KEYS.databaseSections, defaultDatabaseSections());
+}
+
+export async function getFobCostMaster() {
+  const data = await getStoreItem(KEYS.fobCost, LS_KEYS.fobCost, fobCostSeed);
+  setFobCostMaster(data);
+  return data;
+}
+
+export async function saveFobCostMaster(data) {
+  try {
+    await idbPut(KEYS.fobCost, data);
+  } catch {
+    lsSet(LS_KEYS.fobCost, data);
+  }
+  cache.fobCost = data;
+  setFobCostMaster(data);
+  return data;
+}
+
+export function getCachedFobCostMaster() {
+  return cache.fobCost ?? fobCostSeed;
+}
+
+export async function getDatabaseSectionMaterials(sectionOrKey) {
+  const key =
+    DATABASE_SECTION_KEYS[sectionOrKey] ||
+    String(sectionOrKey || '').toLowerCase();
+  const all = await getDatabaseSections();
+  return all[key] || databaseSectionSeeds[key] || [];
+}
+
+export async function saveDatabaseSectionMaterials(sectionOrKey, list) {
+  const key =
+    DATABASE_SECTION_KEYS[sectionOrKey] ||
+    String(sectionOrKey || '').toLowerCase();
+  const all = await getDatabaseSections();
+  const next = { ...all, [key]: list };
+  try {
+    await idbPut(KEYS.databaseSections, next);
+  } catch {
+    lsSet(LS_KEYS.databaseSections, next);
+  }
+  if (cache.databaseSections) cache.databaseSections[key] = list;
+  return list;
+}
+
+export async function saveDatabaseSections(all) {
+  try {
+    await idbPut(KEYS.databaseSections, all);
+  } catch {
+    lsSet(LS_KEYS.databaseSections, all);
+  }
+  cache.databaseSections = all;
+  return all;
+}
+
+export function getCachedDatabaseSections() {
+  return cache.databaseSections ?? defaultDatabaseSections();
+}
+
+export function getAllDatabaseMaterials() {
+  const wood = getCachedMaterials();
+  const sections = getCachedDatabaseSections();
+  return [
+    ...wood,
+    ...Object.values(sections).flat().filter((m) => m && m.aktif !== false),
+  ];
+}
+
 export async function saveNonWoodMaterials(list) {
   try {
     await idbPut(KEYS.nonWood, list);
@@ -323,11 +448,20 @@ let cache = {
   formulas: null,
   rounding: null,
   materialCatalog: null,
+  databaseSections: null,
   loadedAt: 0,
 };
 
 export async function hydrateAllMasters() {
-  const [materials, nonWood, wasteRatios, coatings, formulas, rounding, materialCatalog] =
+  const apiSync = await trySyncMastersFromApi();
+  if (apiSync?.materials?.length) {
+    try {
+      await saveMaterials(apiSync.materials);
+    } catch {
+      cache.materials = apiSync.materials;
+    }
+  }
+  const [materials, nonWood, wasteRatios, coatings, formulas, rounding, materialCatalog, databaseSections, fobCost] =
     await Promise.all([
       getMaterials(),
       getNonWoodMaterials(),
@@ -336,6 +470,8 @@ export async function hydrateAllMasters() {
       getFormulas(),
       getRoundingRules(),
       getMaterialCatalog(),
+      getDatabaseSections(),
+      getFobCostMaster(),
     ]);
   cache = {
     materials,
@@ -345,7 +481,26 @@ export async function hydrateAllMasters() {
     formulas,
     rounding,
     materialCatalog,
+    databaseSections,
+    fobCost,
     loadedAt: Date.now(),
+  };
+  return cache;
+}
+
+/** Hanya untuk unit test Node (tanpa IndexedDB) */
+export function seedMasterCacheForTests(overrides = {}) {
+  cache = {
+    materials: materialsDefault,
+    nonWood: nonWoodSeed,
+    wasteRatios: ratiosDefault,
+    coatings: coatingsDefault,
+    formulas: formulasSeed,
+    rounding: roundingSeed,
+    materialCatalog: catalogSeed,
+    databaseSections: defaultDatabaseSections(),
+    loadedAt: Date.now(),
+    ...overrides,
   };
   return cache;
 }
@@ -389,6 +544,8 @@ export async function reimportMastersFromSeedFiles() {
     idbPut(KEYS.formulaDataRows, formulaDataRowsSeed),
     idbPut(KEYS.roundPresets, roundPresetsSeed),
     idbPut(KEYS.materialCatalog, catalogSeed),
+    idbPut(KEYS.databaseSections, defaultDatabaseSections()),
+    idbPut(KEYS.fobCost, fobCostSeed),
   ];
   await Promise.all(puts).catch(() => {
     lsSet(LS_KEYS.materials, materialsDefault);
@@ -404,6 +561,8 @@ export async function reimportMastersFromSeedFiles() {
     lsSet(LS_KEYS.formulaDataRows, formulaDataRowsSeed);
     lsSet(LS_KEYS.roundPresets, roundPresetsSeed);
     lsSet(LS_KEYS.materialCatalog, catalogSeed);
+    lsSet(LS_KEYS.databaseSections, defaultDatabaseSections());
+    lsSet(LS_KEYS.fobCost, fobCostSeed);
   });
   return hydrateAllMasters();
 }

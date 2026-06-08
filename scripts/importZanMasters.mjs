@@ -7,6 +7,16 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
+import {
+  parseAllDataBaseSections,
+  P0_SECTIONS,
+  sectionToFileKey,
+} from './lib/parseDataBaseSections.mjs';
+import {
+  parseAllCatalogTables,
+  CATALOG_TABLE_SECTIONS,
+} from './lib/parseCatalogTables.mjs';
+import { parseFobCostSheet } from './lib/parseFobCost.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
@@ -15,7 +25,7 @@ const EXCEL_PATH =
   'd:/Project Spartan Jepara/03. DOKUMEN/Modul Document/Manufacture Management/1. Excel Bill Of Material/1 - ZAN-100 - 2-12-25.xlsx';
 
 const OUT = path.join(ROOT, 'src/data/masters');
-const IMPORT_VERSION = '4.0.0';
+const IMPORT_VERSION = '5.3.0';
 
 function slug(s) {
   return String(s)
@@ -35,65 +45,10 @@ function writeJson(relPath, data) {
   fs.writeFileSync(full, JSON.stringify(data, null, 2));
 }
 
+/** @deprecated — use parseAllDataBaseSections from lib */
 function parseWoodMaterials(rows) {
-  const materials = [];
-  const buyerSafetyPct = Number(rows[5]?.[4]) || 0.1;
-
-  for (let i = 7; i < rows.length; i++) {
-    const r = rows[i];
-    const no = Number(r[0]);
-    const spec = String(r[1] ?? '').trim();
-    if (!no || !spec) {
-      if (materials.length > 0 && !spec) break;
-      continue;
-    }
-    if (String(r[35] ?? '').trim() === 'NO' && String(r[36] ?? '').includes('FINISHING')) break;
-
-    const priceBuyer = Number(r[3]) || 0;
-    const priceSupplier = Number(r[13]) || 0;
-    if (!priceSupplier && !priceBuyer) continue;
-
-    const safetyBuyer = Number(r[4]) || 0;
-    const totalBuyer = Number(r[5]) || 0;
-    const safetySupplier = Number(r[14]) || 0;
-    const totalSupplier = Number(r[15]) || priceSupplier;
-    const finishingCode = String(r[36] ?? '').trim();
-    const diameterGrade = String(r[39] ?? '').trim();
-    const supplierChannel = String(r[23] ?? '').trim() === '1' ? 'IMPORT' : 'LOKAL';
-
-    materials.push({
-      id: `wood-${no}`,
-      kode: finishingCode ? `WOOD-${finishingCode}-${no}` : `WOOD-${String(no).padStart(3, '0')}`,
-      no,
-      nama: spec,
-      specification: spec,
-      woodName: String(r[2] ?? '').trim(),
-      diameterGrade,
-      finishingCode,
-      dimensi: { p: 0, l: 0, t: 0, label: diameterGrade || spec },
-      hargaLogBuyer: priceBuyer,
-      safetyFactorBuyer: safetyBuyer,
-      buyerSafetyPct,
-      hargaMaterialBuyer: totalBuyer,
-      hargaLogSupplier: priceSupplier,
-      safetyFactorSupplier: safetySupplier,
-      hargaMaterialSupplier: totalSupplier,
-      pricePerM3Buyer: priceBuyer,
-      priceSafetyFactorBuyer: safetyBuyer,
-      buyerTotalPerM3: totalBuyer,
-      pricePerM3Supplier: totalSupplier || priceSupplier || priceBuyer,
-      invoiceCostPerM3: Number(r[12]) || 0,
-      vendorSupplier: diameterGrade,
-      supplierName: diameterGrade,
-      supplierChannel,
-      unit: 'm³',
-      materialType: 'kayu',
-      source: 'DATA BASE',
-      excelRef: `DATA BASE row ${i + 1}`,
-      aktif: true,
-    });
-  }
-  return materials;
+  const { bySection } = parseAllDataBaseSections(rows);
+  return bySection.WOOD || [];
 }
 
 /** Material non-kayu dari FORMULA DATA (baris jenis komponen) */
@@ -616,7 +571,21 @@ async function main() {
     ? XLSX.utils.sheet_to_json(wb.Sheets['ROUND COMPONENT CALC'], { header: 1, defval: '' })
     : [];
 
-  const wood = parseWoodMaterials(dbRows);
+  const { bySection, counts: dbSectionCounts } = parseAllDataBaseSections(dbRows);
+  const { byKey: catalogByKey, counts: catalogCounts } = parseAllCatalogTables(dbRows);
+  const fobCost = parseFobCostSheet(dbRows);
+  writeJson('database/fobCost.json', fobCost);
+  const wood = bySection.WOOD || parseWoodMaterials(dbRows);
+  const databaseSections = {};
+  for (const sec of P0_SECTIONS) {
+    const key = sectionToFileKey(sec);
+    databaseSections[key] = bySection[sec] || [];
+    writeJson(`database/${key}.json`, databaseSections[key]);
+  }
+  for (const cfg of CATALOG_TABLE_SECTIONS) {
+    databaseSections[cfg.key] = catalogByKey[cfg.key] || [];
+    writeJson(`database/${cfg.key}.json`, databaseSections[cfg.key]);
+  }
   const nonWood = parseNonWoodFromFormula(fdRows);
   const ratios = mergeRatios(parseRatiosFromFormula(fdRows), parseRatiosFromMasterRatio(mrRows));
   const coatings = parseCoatings(crRows);
@@ -635,12 +604,18 @@ async function main() {
   const supplierParts = parseSupplierSheets(wb);
 
   const { buildMaterialCatalog } = await import('../src/utils/buildMaterialCatalog.js');
+  const sectionMaterials = [
+    ...P0_SECTIONS.flatMap((sec) => bySection[sec] || []),
+    ...CATALOG_TABLE_SECTIONS.flatMap((cfg) => catalogByKey[cfg.key] || []),
+  ];
+
   const materialCatalog = buildMaterialCatalog({
     wood,
     coatings,
     formulaDataRows,
     nonWood,
     supplierParts,
+    sectionMaterials,
   });
 
   const meta = {
@@ -654,6 +629,38 @@ async function main() {
       'COATING RATIO': crRows.length,
       'FORMULA DATA': fdRows.length,
       'ROUND COMPONENT CALC': rcRows.length,
+    },
+    databaseSections: {
+      ...Object.fromEntries(
+        P0_SECTIONS.map((sec) => [sectionToFileKey(sec), (bySection[sec] || []).length]),
+      ),
+      ...Object.fromEntries(
+        CATALOG_TABLE_SECTIONS.map((cfg) => [cfg.key, (catalogByKey[cfg.key] || []).length]),
+      ),
+    },
+    databaseSectionsWithPrice: {
+      ...Object.fromEntries(
+        P0_SECTIONS.map((sec) => [
+          sectionToFileKey(sec),
+          (bySection[sec] || []).filter((m) => (m.hargaMaterialSupplier || 0) > 0).length,
+        ]),
+      ),
+      ...Object.fromEntries(
+        CATALOG_TABLE_SECTIONS.map((cfg) => [
+          cfg.key,
+          (catalogByKey[cfg.key] || []).filter((m) => (m.hargaMaterialSupplier || 0) > 0).length,
+        ]),
+      ),
+    },
+    catalogSections: catalogCounts,
+    fobCost: {
+      exchangeRateUsd: fobCost.exchangeRateUsd,
+      containers: Object.fromEntries(
+        Object.entries(fobCost.containers || {}).map(([k, v]) => [
+          k,
+          { roundedFobPerM3: v.roundedFobPerM3, totalIncludingSafety: v.totalIncludingSafety },
+        ]),
+      ),
     },
     counts: {
       wood: wood.length,
@@ -693,6 +700,16 @@ async function main() {
 
   console.log('Imported masters → src/data/masters/');
   console.log('  wood:', wood.length);
+  for (const sec of P0_SECTIONS) {
+    console.log(`  ${sectionToFileKey(sec)}:`, (bySection[sec] || []).length);
+  }
+  for (const cfg of CATALOG_TABLE_SECTIONS) {
+    console.log(`  ${cfg.key}:`, (catalogByKey[cfg.key] || []).length);
+  }
+  console.log('  fobCost containers:', Object.keys(fobCost.containers || {}).join(', '));
+  for (const [k, v] of Object.entries(fobCost.containers || {})) {
+    console.log(`    ${k}: Rp ${v.roundedFobPerM3}/m³ (total incl. SF: ${v.totalIncludingSafety})`);
+  }
   console.log('  nonWood:', nonWood.length);
   console.log('  ratios:', ratios.length);
   console.log('  coatings:', coatings.length);

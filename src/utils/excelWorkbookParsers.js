@@ -501,6 +501,51 @@ export function mergeCalculationIntoBom(bomData, calcMap) {
   return bomData;
 }
 
+function makeSummaryKayuLaborPart(line, idx = 'kayu-labor') {
+  const labor = line.labor || 0;
+  const machine = line.machine || 0;
+  if (!labor && !machine) return null;
+
+  return {
+    id: `excel-proc-${idx}`,
+    no: 899,
+    nama: 'KAYU — proses (SUMMARY)',
+    kode: 'EXCEL-kayu_labor',
+    tipe: 'PART',
+    qty: 1,
+    unit: 'SET',
+    p: 0,
+    l: 0,
+    t: 0,
+    vol: 0,
+    biaya: 0,
+    materialType: 'kayu',
+    sf: 0,
+    wf: 0,
+    catatan: `Impor SUMMARY COST baris ${line.excelRow} (labor+mesin; material dari CALCULATION)`,
+    proses_count: 1,
+    proses: [
+      {
+        nama: 'KAYU — proses SUMMARY',
+        mfgProcess: 'Woodworking',
+        summaryKey: 'kayu',
+        waktuOperasi: 0,
+        totalPerson: 1,
+        biayaMesin: Math.round(machine),
+        biayaPekerja: Math.round(labor),
+      },
+    ],
+    children: [],
+  };
+}
+
+/** Baris KAYU: labor+mesin SUMMARY (material sudah di CALCULATION). */
+export function pickSummaryKayuLaborLine(lines) {
+  return dedupeSummaryCostLines(lines || []).find(
+    (ln) => normLabel(ln.label) === 'KAYU' && ((ln.labor || 0) + (ln.machine || 0) > 0),
+  );
+}
+
 function makeSummaryProcessPart(line, idx) {
   const material = line.material || 0;
   const labor = line.labor || 0;
@@ -547,9 +592,20 @@ function makeSummaryProcessPart(line, idx) {
 export function appendSummaryProcessParts(bomData, summaryLines) {
   if (!bomData || !summaryLines?.length) return bomData;
 
+  const seen = new Set();
+  const kayuLabor = pickSummaryKayuLaborLine(summaryLines);
+  const kayuPart = kayuLabor ? makeSummaryKayuLaborPart(kayuLabor) : null;
   const extras = pickSummaryProcessLines(summaryLines)
     .filter((ln) => (ln.total || 0) > 0)
+    .filter((ln) => {
+      const key = normLabel(ln.label);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
     .map((ln, idx) => makeSummaryProcessPart(ln, idx));
+
+  if (kayuPart) extras.unshift(kayuPart);
 
   if (!extras.length) return bomData;
 

@@ -1,5 +1,13 @@
 # Panduan: Excel vs App (Manufaktur BOM)
 
+**Dokumen uji & roadmap (format `.mmd`):**
+
+- **PRD Sistem (induk):** [PRD-Manufaktur-BOM-System.mmd](./PRD-Manufaktur-BOM-System.mmd)
+- **QA ERP vs App (folder `docs/qa/`)** — [README qa](./qa/README.md)
+- [UAT G632L manual dari nol](./UAT-G632L-Manual-From-Zero.mmd)
+- [PRD peningkatan sistem v2](./PRD-System-Improvement-v2.mmd)
+- [API contract draft v1](./API-Contract-BOM-Platform.mmd)
+
 ## Ringkasan angka
 
 | Referensi | Total COGS (ZAN-100) | Catatan |
@@ -42,6 +50,47 @@ npm run import:masters
 
 Output: `src/data/masters/` (database, ratios, coatings, formulas, rounding, meta).
 
+### DATA BASE — section P0 (material part)
+
+| Section Excel | File master | Unit | Picker Part |
+|---------------|-------------|------|-------------|
+| WOOD | `database/wood.json` | m³ | `WoodGradeField` |
+| PLYWOOD | `database/plywood.json` | m³ | `MaterialMasterField` |
+| MDF | `database/mdf.json` | m³ | `MaterialMasterField` + section MDF |
+| CORE | `database/core.json` | m³ | `MaterialMasterField` + section CORE |
+| HPL | `database/hpl.json` | m² | `MaterialMasterField` + section HPL |
+| VENEER | `database/veneer.json` | m² | `MaterialMasterField` (vertikal; kosong di ZAN-100) |
+| EDGING | `database/edging.json` | m² | `MaterialMasterField` (kosong di ZAN-100) |
+
+### DATA BASE — katalog horizontal (kolom kanan)
+
+| Section Excel | File master | Unit umum | Picker Part |
+|---------------|-------------|-----------|-------------|
+| ASSEMBLING HARDWARE | `database/assemblingHardware.json` | PCS, LBR, KG, M | `MaterialMasterField` (hardware) |
+| FITTING HARDWARE | `database/fittingHardware.json` | PCS, … | `MaterialMasterField` (hardware) |
+| TYPE OF VENEER | `database/veneerTypes.json` | m² | `MaterialMasterField` (veneer) |
+| SANDING MATERIAL | `database/sandingMaterial.json` | PCS, LBR, LTR | `MaterialMasterField` (komponen) |
+| FINISHING MATERIAL | `database/finishingMaterial.json` | LTR, LBR, KG, … | `MaterialMasterField` (finishing) |
+| PACKING MATERIAL | `database/packingMaterial.json` | M, M2, PCS, KG | `MaterialMasterField` (komponen) |
+
+Harga satuan = kolom **TOTAL PRICE** (sudah termasuk safety factor 5–10%).
+
+Audit section: `npm run audit:database` (env `ZAN_EXCEL`) — vertikal + katalog.
+
+Engine: `computeMaterialBiayaFromMaster` / `applyMasterToPart` di `masterLookup.js`.
+
+### DATA BASE — FOB COST (export kontainer)
+
+| Kontainer | Volume referensi (m³) | Rounded FOB / m³ |
+|-----------|----------------------|------------------|
+| 20 FT | 28 / 32 | Rp 500.000 |
+| 40 FT | 55 / 64 | Rp 300.000 |
+| 40 HC | 62 / 70 | Rp 300.000 |
+
+Rumus: per baris `(Qty × Biaya) × 1,05` → total + SF 5% → **rounded Rp/m³** × **volume packing produk** (m³).
+
+Master: `database/fobCost.json` · Tab Master **FOB COST** · COGS: centang **Aktifkan biaya FOB** + pilih kontainer.
+
 ## Environment
 
 | Variable | Fungsi |
@@ -57,6 +106,8 @@ Output: `src/data/masters/` (database, ratios, coatings, formulas, rounding, met
 | Volume packing | `vol_packing_box` / `vol_packing_sf` |
 | Kapasitas kontainer | `container_pcs` — floor(netM³ / vol) |
 | Biaya kayu | DATA BASE harga/m³ × vol × (1+SF+WF) |
+| Biaya plywood/MDF/CORE | DATA BASE harga/m³ × vol × (1+SF+WF) |
+| Biaya HPL/veneer (m²) | DATA BASE harga/m² × surfaceM2 × (1+SF%) |
 | Biaya coating | COATING RATIO rounded/m² × Σ surfaceM2 part |
 | Harga jual | ROUND rules (floor ribuan) + markup |
 

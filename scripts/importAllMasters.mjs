@@ -128,6 +128,21 @@ async function main() {
 
   const wood = readJson('database/wood.json', []);
   const nonWood = readJson('database/nonWood.json', []);
+  const sectionKeys = [
+    'plywood',
+    'mdf',
+    'core',
+    'hpl',
+    'veneer',
+    'edging',
+    'assemblingHardware',
+    'fittingHardware',
+    'veneerTypes',
+    'sandingMaterial',
+    'finishingMaterial',
+    'packingMaterial',
+  ];
+  const sectionMaterials = sectionKeys.flatMap((k) => readJson(`database/${k}.json`, []));
   const coatings = readJson('coatings/systems.json', []);
   const formulaDataRows = readJson('tables/formulaDataRows.json', []);
   const zanSupplierParts = readJson('catalog/supplierParts.json', []);
@@ -141,6 +156,7 @@ async function main() {
     supplierParts: mergeByKode(existingSupplier, extraSupplierParts, (x) => x.partCode || `${x.source}::${x.no}`),
     calculationComponents,
     hppMentahParts,
+    sectionMaterials,
   });
 
   writeJson('catalog/materialCatalog.json', materialCatalog);

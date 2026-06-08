@@ -1,0 +1,1053 @@
+{
+  "source": "DATA BASE",
+  "excelRef": "DATA BASE FOB COST col 144+",
+  "exchangeRateUsd": 16000,
+  "lineSafetyPct": 0.05,
+  "totalSafetyPct": 0.05,
+  "lineItems": [
+    {
+      "no": 1,
+      "description": "TRUCKING + CUSTOM",
+      "byContainer": {
+        "20foot": {
+          "qty": 1,
+          "costPerUnit": 3000000,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 3150000,
+          "costPerUnitUsd": 187.5,
+          "totalCostUsd": 196.875
+        },
+        "40foot": {
+          "qty": 3500000,
+          "costPerUnit": 218.75,
+          "safetyFactor": 36750,
+          "safetyFactorPct": 3675000,
+          "totalCost": 229.6875,
+          "costPerUnitUsd": 0.013671875,
+          "totalCostUsd": 0.01435546875
+        },
+        "40hc": {
+          "qty": 218.75,
+          "costPerUnit": 0.05,
+          "safetyFactor": 2.296875,
+          "safetyFactorPct": 229.7,
+          "totalCost": 59274.1935483871,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 3.7046370967741935
+        }
+      }
+    },
+    {
+      "no": 2,
+      "description": "FUMIGATION",
+      "byContainer": {
+        "20foot": {
+          "qty": 1,
+          "costPerUnit": 1350000,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 1417500,
+          "costPerUnitUsd": 84.375,
+          "totalCostUsd": 88.59375
+        },
+        "40foot": {
+          "qty": 1450000,
+          "costPerUnit": 90.625,
+          "safetyFactor": 15225,
+          "safetyFactorPct": 1522500,
+          "totalCost": 95.15625,
+          "costPerUnitUsd": 0.0056640625,
+          "totalCostUsd": 0.005947265625
+        },
+        "40hc": {
+          "qty": 90.625,
+          "costPerUnit": 0.05,
+          "safetyFactor": 0.9515625,
+          "safetyFactorPct": 95.2,
+          "totalCost": 24556.451612903227,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 1.5347782258064517
+        }
+      }
+    },
+    {
+      "no": 3,
+      "description": "SENDING DOCUMENT",
+      "byContainer": {
+        "20foot": {
+          "qty": 1,
+          "costPerUnit": 550000,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 577500,
+          "costPerUnitUsd": 34.375,
+          "totalCostUsd": 36.09375
+        },
+        "40foot": {
+          "qty": 550000,
+          "costPerUnit": 34.375,
+          "safetyFactor": 5775,
+          "safetyFactorPct": 577500,
+          "totalCost": 36.09375,
+          "costPerUnitUsd": 0.0021484375,
+          "totalCostUsd": 0.002255859375
+        },
+        "40hc": {
+          "qty": 34.375,
+          "costPerUnit": 0.05,
+          "safetyFactor": 0.3609375,
+          "safetyFactorPct": 36.1,
+          "totalCost": 9314.516129032258,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 0.5821572580645161
+        }
+      }
+    },
+    {
+      "no": 4,
+      "description": "ORIGIN THC",
+      "byContainer": {
+        "20foot": {
+          "qty": 1,
+          "costPerUnit": 1500000,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 1575000,
+          "costPerUnitUsd": 93.75,
+          "totalCostUsd": 98.4375
+        },
+        "40foot": {
+          "qty": 1950000,
+          "costPerUnit": 121.875,
+          "safetyFactor": 20475,
+          "safetyFactorPct": 2047500,
+          "totalCost": 127.96875,
+          "costPerUnitUsd": 0.0076171875,
+          "totalCostUsd": 0.007998046875
+        },
+        "40hc": {
+          "qty": 121.875,
+          "costPerUnit": 0.05,
+          "safetyFactor": 1.2796875,
+          "safetyFactorPct": 128,
+          "totalCost": 33024.1935483871,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 2.0640120967741935
+        }
+      }
+    },
+    {
+      "no": 5,
+      "description": "DOC  FEE",
+      "byContainer": {
+        "20foot": {
+          "qty": 1,
+          "costPerUnit": 300000,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 315000,
+          "costPerUnitUsd": 18.75,
+          "totalCostUsd": 19.6875
+        },
+        "40foot": {
+          "qty": 300000,
+          "costPerUnit": 18.75,
+          "safetyFactor": 3150,
+          "safetyFactorPct": 315000,
+          "totalCost": 19.6875,
+          "costPerUnitUsd": 0.001171875,
+          "totalCostUsd": 0.00123046875
+        },
+        "40hc": {
+          "qty": 18.75,
+          "costPerUnit": 0.05,
+          "safetyFactor": 0.196875,
+          "safetyFactorPct": 19.7,
+          "totalCost": 5080.645161290323,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 0.3175403225806452
+        }
+      }
+    },
+    {
+      "no": 6,
+      "description": "ADM FEE",
+      "byContainer": {
+        "20foot": {
+          "qty": 1,
+          "costPerUnit": 350000,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 367500,
+          "costPerUnitUsd": 21.875,
+          "totalCostUsd": 22.96875
+        },
+        "40foot": {
+          "qty": 350000,
+          "costPerUnit": 21.875,
+          "safetyFactor": 3675,
+          "safetyFactorPct": 367500,
+          "totalCost": 22.96875,
+          "costPerUnitUsd": 0.0013671875,
+          "totalCostUsd": 0.001435546875
+        },
+        "40hc": {
+          "qty": 21.875,
+          "costPerUnit": 0.05,
+          "safetyFactor": 0.2296875,
+          "safetyFactorPct": 23,
+          "totalCost": 5927.419354838709,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 0.3704637096774193
+        }
+      }
+    },
+    {
+      "no": 7,
+      "description": "SURRENDER FEE",
+      "byContainer": {
+        "20foot": {
+          "qty": 1,
+          "costPerUnit": 450000,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 472500,
+          "costPerUnitUsd": 28.125,
+          "totalCostUsd": 29.53125
+        },
+        "40foot": {
+          "qty": 450000,
+          "costPerUnit": 28.125,
+          "safetyFactor": 4725,
+          "safetyFactorPct": 472500,
+          "totalCost": 29.53125,
+          "costPerUnitUsd": 0.0017578125,
+          "totalCostUsd": 0.001845703125
+        },
+        "40hc": {
+          "qty": 28.125,
+          "costPerUnit": 0.05,
+          "safetyFactor": 0.2953125,
+          "safetyFactorPct": 29.5,
+          "totalCost": 7620.967741935484,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 0.47631048387096775
+        }
+      }
+    },
+    {
+      "no": 8,
+      "description": "SEAL FEE",
+      "byContainer": {
+        "20foot": {
+          "qty": 1,
+          "costPerUnit": 156000,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 163800,
+          "costPerUnitUsd": 9.75,
+          "totalCostUsd": 10.2375
+        },
+        "40foot": {
+          "qty": 156000,
+          "costPerUnit": 9.75,
+          "safetyFactor": 1638,
+          "safetyFactorPct": 163800,
+          "totalCost": 10.2375,
+          "costPerUnitUsd": 0.000609375,
+          "totalCostUsd": 0.00063984375
+        },
+        "40hc": {
+          "qty": 9.75,
+          "costPerUnit": 0.05,
+          "safetyFactor": 0.10237500000000001,
+          "safetyFactorPct": 10.2,
+          "totalCost": 2641.935483870968,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 0.1651209677419355
+        }
+      }
+    },
+    {
+      "no": 9,
+      "description": "SVLK",
+      "byContainer": {
+        "20foot": {
+          "qty": 1,
+          "costPerUnit": 2000000,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 2100000,
+          "costPerUnitUsd": 125,
+          "totalCostUsd": 131.25
+        },
+        "40foot": {
+          "qty": 2000000,
+          "costPerUnit": 125,
+          "safetyFactor": 21000,
+          "safetyFactorPct": 2100000,
+          "totalCost": 131.25,
+          "costPerUnitUsd": 0.0078125,
+          "totalCostUsd": 0.008203125
+        },
+        "40hc": {
+          "qty": 125,
+          "costPerUnit": 0.05,
+          "safetyFactor": 1.3125,
+          "safetyFactorPct": 131.3,
+          "totalCost": 33870.967741935485,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 2.116935483870968
+        }
+      }
+    },
+    {
+      "no": 10,
+      "description": "ABSORB DRY",
+      "byContainer": {
+        "20foot": {
+          "qty": 6,
+          "costPerUnit": 210000,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 220500,
+          "costPerUnitUsd": 13.125,
+          "totalCostUsd": 13.78125
+        },
+        "40foot": {
+          "qty": 350000,
+          "costPerUnit": 21.875,
+          "safetyFactor": 3675,
+          "safetyFactorPct": 367500,
+          "totalCost": 22.96875,
+          "costPerUnitUsd": 0.0013671875,
+          "totalCostUsd": 0.001435546875
+        },
+        "40hc": {
+          "qty": 21.875,
+          "costPerUnit": 0.05,
+          "safetyFactor": 0.2296875,
+          "safetyFactorPct": 23,
+          "totalCost": 5927.419354838709,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 0.3704637096774193
+        }
+      }
+    },
+    {
+      "no": 11,
+      "description": "CONTAINER DRIVER",
+      "byContainer": {
+        "20foot": {
+          "qty": 1,
+          "costPerUnit": 150000,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 157500,
+          "costPerUnitUsd": 9.375,
+          "totalCostUsd": 9.84375
+        },
+        "40foot": {
+          "qty": 150000,
+          "costPerUnit": 9.375,
+          "safetyFactor": 1575,
+          "safetyFactorPct": 157500,
+          "totalCost": 9.84375,
+          "costPerUnitUsd": 0.0005859375,
+          "totalCostUsd": 0.000615234375
+        },
+        "40hc": {
+          "qty": 9.375,
+          "costPerUnit": 0.05,
+          "safetyFactor": 0.0984375,
+          "safetyFactorPct": 9.8,
+          "totalCost": 2540.3225806451615,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 0.1587701612903226
+        }
+      }
+    },
+    {
+      "no": 12,
+      "description": "LOADING GOODS TEAM",
+      "byContainer": {
+        "20foot": {
+          "qty": 1,
+          "costPerUnit": 500000,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 525000,
+          "costPerUnitUsd": 31.25,
+          "totalCostUsd": 32.8125
+        },
+        "40foot": {
+          "qty": 1000000,
+          "costPerUnit": 62.5,
+          "safetyFactor": 10500,
+          "safetyFactorPct": 1050000,
+          "totalCost": 65.625,
+          "costPerUnitUsd": 0.00390625,
+          "totalCostUsd": 0.0041015625
+        },
+        "40hc": {
+          "qty": 62.5,
+          "costPerUnit": 0.05,
+          "safetyFactor": 0.65625,
+          "safetyFactorPct": 65.6,
+          "totalCost": 16935.483870967742,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 1.058467741935484
+        }
+      }
+    },
+    {
+      "no": 13,
+      "description": "CONTAINER ROPE",
+      "byContainer": {
+        "20foot": {
+          "qty": 1,
+          "costPerUnit": 18750,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 19687.5,
+          "costPerUnitUsd": 1.171875,
+          "totalCostUsd": 1.23046875
+        },
+        "40foot": {
+          "qty": 18750,
+          "costPerUnit": 1.171875,
+          "safetyFactor": 196.875,
+          "safetyFactorPct": 19687.5,
+          "totalCost": 1.23046875,
+          "costPerUnitUsd": 0.0000732421875,
+          "totalCostUsd": 0.000076904296875
+        },
+        "40hc": {
+          "qty": 1.171875,
+          "costPerUnit": 0.05,
+          "safetyFactor": 0.0123046875,
+          "safetyFactorPct": 1.2,
+          "totalCost": 317.5403225806452,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 0.019846270161290324
+        }
+      }
+    },
+    {
+      "no": 14,
+      "description": "CONTAINER QUARANTINE",
+      "byContainer": {
+        "20foot": {
+          "qty": 1,
+          "costPerUnit": 2000000,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 2100000,
+          "costPerUnitUsd": 125,
+          "totalCostUsd": 131.25
+        },
+        "40foot": {
+          "qty": 2000000,
+          "costPerUnit": 125,
+          "safetyFactor": 21000,
+          "safetyFactorPct": 2100000,
+          "totalCost": 131.25,
+          "costPerUnitUsd": 0.0078125,
+          "totalCostUsd": 0.008203125
+        },
+        "40hc": {
+          "qty": 125,
+          "costPerUnit": 0.05,
+          "safetyFactor": 1.3125,
+          "safetyFactorPct": 131.3,
+          "totalCost": 33870.967741935485,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 2.116935483870968
+        }
+      }
+    },
+    {
+      "no": 15,
+      "description": "CONTAINER LOCK",
+      "byContainer": {
+        "20foot": {
+          "qty": 1,
+          "costPerUnit": 25000,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 26250,
+          "costPerUnitUsd": 1.5625,
+          "totalCostUsd": 1.640625
+        },
+        "40foot": {
+          "qty": 25000,
+          "costPerUnit": 1.5625,
+          "safetyFactor": 262.5,
+          "safetyFactorPct": 26250,
+          "totalCost": 1.640625,
+          "costPerUnitUsd": 0.00009765625,
+          "totalCostUsd": 0.0001025390625
+        },
+        "40hc": {
+          "qty": 1.5625,
+          "costPerUnit": 0.05,
+          "safetyFactor": 0.01640625,
+          "safetyFactorPct": 1.6,
+          "totalCost": 423.38709677419354,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 0.026461693548387098
+        }
+      }
+    }
+  ],
+  "containers": {
+    "20foot": {
+      "key": "20foot",
+      "label": "20 FT",
+      "volumesM3": [
+        28,
+        32
+      ],
+      "defaultVolumeM3": 28,
+      "lineItems": [
+        {
+          "no": 1,
+          "description": "TRUCKING + CUSTOM",
+          "qty": 1,
+          "costPerUnit": 3000000,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 3150000,
+          "costPerUnitUsd": 187.5,
+          "totalCostUsd": 196.875
+        },
+        {
+          "no": 2,
+          "description": "FUMIGATION",
+          "qty": 1,
+          "costPerUnit": 1350000,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 1417500,
+          "costPerUnitUsd": 84.375,
+          "totalCostUsd": 88.59375
+        },
+        {
+          "no": 3,
+          "description": "SENDING DOCUMENT",
+          "qty": 1,
+          "costPerUnit": 550000,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 577500,
+          "costPerUnitUsd": 34.375,
+          "totalCostUsd": 36.09375
+        },
+        {
+          "no": 4,
+          "description": "ORIGIN THC",
+          "qty": 1,
+          "costPerUnit": 1500000,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 1575000,
+          "costPerUnitUsd": 93.75,
+          "totalCostUsd": 98.4375
+        },
+        {
+          "no": 5,
+          "description": "DOC  FEE",
+          "qty": 1,
+          "costPerUnit": 300000,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 315000,
+          "costPerUnitUsd": 18.75,
+          "totalCostUsd": 19.6875
+        },
+        {
+          "no": 6,
+          "description": "ADM FEE",
+          "qty": 1,
+          "costPerUnit": 350000,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 367500,
+          "costPerUnitUsd": 21.875,
+          "totalCostUsd": 22.96875
+        },
+        {
+          "no": 7,
+          "description": "SURRENDER FEE",
+          "qty": 1,
+          "costPerUnit": 450000,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 472500,
+          "costPerUnitUsd": 28.125,
+          "totalCostUsd": 29.53125
+        },
+        {
+          "no": 8,
+          "description": "SEAL FEE",
+          "qty": 1,
+          "costPerUnit": 156000,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 163800,
+          "costPerUnitUsd": 9.75,
+          "totalCostUsd": 10.2375
+        },
+        {
+          "no": 9,
+          "description": "SVLK",
+          "qty": 1,
+          "costPerUnit": 2000000,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 2100000,
+          "costPerUnitUsd": 125,
+          "totalCostUsd": 131.25
+        },
+        {
+          "no": 10,
+          "description": "ABSORB DRY",
+          "qty": 6,
+          "costPerUnit": 210000,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 220500,
+          "costPerUnitUsd": 13.125,
+          "totalCostUsd": 13.78125
+        },
+        {
+          "no": 11,
+          "description": "CONTAINER DRIVER",
+          "qty": 1,
+          "costPerUnit": 150000,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 157500,
+          "costPerUnitUsd": 9.375,
+          "totalCostUsd": 9.84375
+        },
+        {
+          "no": 12,
+          "description": "LOADING GOODS TEAM",
+          "qty": 1,
+          "costPerUnit": 500000,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 525000,
+          "costPerUnitUsd": 31.25,
+          "totalCostUsd": 32.8125
+        },
+        {
+          "no": 13,
+          "description": "CONTAINER ROPE",
+          "qty": 1,
+          "costPerUnit": 18750,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 19687.5,
+          "costPerUnitUsd": 1.171875,
+          "totalCostUsd": 1.23046875
+        },
+        {
+          "no": 14,
+          "description": "CONTAINER QUARANTINE",
+          "qty": 1,
+          "costPerUnit": 2000000,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 2100000,
+          "costPerUnitUsd": 125,
+          "totalCostUsd": 131.25
+        },
+        {
+          "no": 15,
+          "description": "CONTAINER LOCK",
+          "qty": 1,
+          "costPerUnit": 25000,
+          "safetyFactor": 0.05,
+          "safetyFactorPct": 5,
+          "totalCost": 26250,
+          "costPerUnitUsd": 1.5625,
+          "totalCostUsd": 1.640625
+        }
+      ],
+      "subtotalLineItems": 13187737.5,
+      "totalSafetyFactor": 659387,
+      "totalFobCost": 13187737.5,
+      "totalIncludingSafety": 13847124.375,
+      "roundedTotalFob": 13900000,
+      "roundedFobPerM3": 500000
+    },
+    "40foot": {
+      "key": "40foot",
+      "label": "40 FT",
+      "volumesM3": [
+        55,
+        64
+      ],
+      "defaultVolumeM3": 55,
+      "lineItems": [
+        {
+          "no": 1,
+          "description": "TRUCKING + CUSTOM",
+          "qty": 3500000,
+          "costPerUnit": 218.75,
+          "safetyFactor": 36750,
+          "safetyFactorPct": 3675000,
+          "totalCost": 229.6875,
+          "costPerUnitUsd": 0.013671875,
+          "totalCostUsd": 0.01435546875
+        },
+        {
+          "no": 2,
+          "description": "FUMIGATION",
+          "qty": 1450000,
+          "costPerUnit": 90.625,
+          "safetyFactor": 15225,
+          "safetyFactorPct": 1522500,
+          "totalCost": 95.15625,
+          "costPerUnitUsd": 0.0056640625,
+          "totalCostUsd": 0.005947265625
+        },
+        {
+          "no": 3,
+          "description": "SENDING DOCUMENT",
+          "qty": 550000,
+          "costPerUnit": 34.375,
+          "safetyFactor": 5775,
+          "safetyFactorPct": 577500,
+          "totalCost": 36.09375,
+          "costPerUnitUsd": 0.0021484375,
+          "totalCostUsd": 0.002255859375
+        },
+        {
+          "no": 4,
+          "description": "ORIGIN THC",
+          "qty": 1950000,
+          "costPerUnit": 121.875,
+          "safetyFactor": 20475,
+          "safetyFactorPct": 2047500,
+          "totalCost": 127.96875,
+          "costPerUnitUsd": 0.0076171875,
+          "totalCostUsd": 0.007998046875
+        },
+        {
+          "no": 5,
+          "description": "DOC  FEE",
+          "qty": 300000,
+          "costPerUnit": 18.75,
+          "safetyFactor": 3150,
+          "safetyFactorPct": 315000,
+          "totalCost": 19.6875,
+          "costPerUnitUsd": 0.001171875,
+          "totalCostUsd": 0.00123046875
+        },
+        {
+          "no": 6,
+          "description": "ADM FEE",
+          "qty": 350000,
+          "costPerUnit": 21.875,
+          "safetyFactor": 3675,
+          "safetyFactorPct": 367500,
+          "totalCost": 22.96875,
+          "costPerUnitUsd": 0.0013671875,
+          "totalCostUsd": 0.001435546875
+        },
+        {
+          "no": 7,
+          "description": "SURRENDER FEE",
+          "qty": 450000,
+          "costPerUnit": 28.125,
+          "safetyFactor": 4725,
+          "safetyFactorPct": 472500,
+          "totalCost": 29.53125,
+          "costPerUnitUsd": 0.0017578125,
+          "totalCostUsd": 0.001845703125
+        },
+        {
+          "no": 8,
+          "description": "SEAL FEE",
+          "qty": 156000,
+          "costPerUnit": 9.75,
+          "safetyFactor": 1638,
+          "safetyFactorPct": 163800,
+          "totalCost": 10.2375,
+          "costPerUnitUsd": 0.000609375,
+          "totalCostUsd": 0.00063984375
+        },
+        {
+          "no": 9,
+          "description": "SVLK",
+          "qty": 2000000,
+          "costPerUnit": 125,
+          "safetyFactor": 21000,
+          "safetyFactorPct": 2100000,
+          "totalCost": 131.25,
+          "costPerUnitUsd": 0.0078125,
+          "totalCostUsd": 0.008203125
+        },
+        {
+          "no": 10,
+          "description": "ABSORB DRY",
+          "qty": 350000,
+          "costPerUnit": 21.875,
+          "safetyFactor": 3675,
+          "safetyFactorPct": 367500,
+          "totalCost": 22.96875,
+          "costPerUnitUsd": 0.0013671875,
+          "totalCostUsd": 0.001435546875
+        },
+        {
+          "no": 11,
+          "description": "CONTAINER DRIVER",
+          "qty": 150000,
+          "costPerUnit": 9.375,
+          "safetyFactor": 1575,
+          "safetyFactorPct": 157500,
+          "totalCost": 9.84375,
+          "costPerUnitUsd": 0.0005859375,
+          "totalCostUsd": 0.000615234375
+        },
+        {
+          "no": 12,
+          "description": "LOADING GOODS TEAM",
+          "qty": 1000000,
+          "costPerUnit": 62.5,
+          "safetyFactor": 10500,
+          "safetyFactorPct": 1050000,
+          "totalCost": 65.625,
+          "costPerUnitUsd": 0.00390625,
+          "totalCostUsd": 0.0041015625
+        },
+        {
+          "no": 13,
+          "description": "CONTAINER ROPE",
+          "qty": 18750,
+          "costPerUnit": 1.171875,
+          "safetyFactor": 196.875,
+          "safetyFactorPct": 19687.5,
+          "totalCost": 1.23046875,
+          "costPerUnitUsd": 0.0000732421875,
+          "totalCostUsd": 0.000076904296875
+        },
+        {
+          "no": 14,
+          "description": "CONTAINER QUARANTINE",
+          "qty": 2000000,
+          "costPerUnit": 125,
+          "safetyFactor": 21000,
+          "safetyFactorPct": 2100000,
+          "totalCost": 131.25,
+          "costPerUnitUsd": 0.0078125,
+          "totalCostUsd": 0.008203125
+        },
+        {
+          "no": 15,
+          "description": "CONTAINER LOCK",
+          "qty": 25000,
+          "costPerUnit": 1.5625,
+          "safetyFactor": 262.5,
+          "safetyFactorPct": 26250,
+          "totalCost": 1.640625,
+          "costPerUnitUsd": 0.00009765625,
+          "totalCostUsd": 0.0001025390625
+        }
+      ],
+      "subtotalLineItems": 935.13984375,
+      "totalSafetyFactor": 47,
+      "totalFobCost": 935.13984375,
+      "totalIncludingSafety": 981.8968359375,
+      "roundedTotalFob": 15800000,
+      "roundedFobPerM3": 300000
+    },
+    "40hc": {
+      "key": "40hc",
+      "label": "40 HC",
+      "volumesM3": [
+        62,
+        70
+      ],
+      "defaultVolumeM3": 62,
+      "lineItems": [
+        {
+          "no": 1,
+          "description": "TRUCKING + CUSTOM",
+          "qty": 218.75,
+          "costPerUnit": 0.05,
+          "safetyFactor": 2.296875,
+          "safetyFactorPct": 229.7,
+          "totalCost": 59274.1935483871,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 3.7046370967741935
+        },
+        {
+          "no": 2,
+          "description": "FUMIGATION",
+          "qty": 90.625,
+          "costPerUnit": 0.05,
+          "safetyFactor": 0.9515625,
+          "safetyFactorPct": 95.2,
+          "totalCost": 24556.451612903227,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 1.5347782258064517
+        },
+        {
+          "no": 3,
+          "description": "SENDING DOCUMENT",
+          "qty": 34.375,
+          "costPerUnit": 0.05,
+          "safetyFactor": 0.3609375,
+          "safetyFactorPct": 36.1,
+          "totalCost": 9314.516129032258,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 0.5821572580645161
+        },
+        {
+          "no": 4,
+          "description": "ORIGIN THC",
+          "qty": 121.875,
+          "costPerUnit": 0.05,
+          "safetyFactor": 1.2796875,
+          "safetyFactorPct": 128,
+          "totalCost": 33024.1935483871,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 2.0640120967741935
+        },
+        {
+          "no": 5,
+          "description": "DOC  FEE",
+          "qty": 18.75,
+          "costPerUnit": 0.05,
+          "safetyFactor": 0.196875,
+          "safetyFactorPct": 19.7,
+          "totalCost": 5080.645161290323,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 0.3175403225806452
+        },
+        {
+          "no": 6,
+          "description": "ADM FEE",
+          "qty": 21.875,
+          "costPerUnit": 0.05,
+          "safetyFactor": 0.2296875,
+          "safetyFactorPct": 23,
+          "totalCost": 5927.419354838709,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 0.3704637096774193
+        },
+        {
+          "no": 7,
+          "description": "SURRENDER FEE",
+          "qty": 28.125,
+          "costPerUnit": 0.05,
+          "safetyFactor": 0.2953125,
+          "safetyFactorPct": 29.5,
+          "totalCost": 7620.967741935484,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 0.47631048387096775
+        },
+        {
+          "no": 8,
+          "description": "SEAL FEE",
+          "qty": 9.75,
+          "costPerUnit": 0.05,
+          "safetyFactor": 0.10237500000000001,
+          "safetyFactorPct": 10.2,
+          "totalCost": 2641.935483870968,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 0.1651209677419355
+        },
+        {
+          "no": 9,
+          "description": "SVLK",
+          "qty": 125,
+          "costPerUnit": 0.05,
+          "safetyFactor": 1.3125,
+          "safetyFactorPct": 131.3,
+          "totalCost": 33870.967741935485,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 2.116935483870968
+        },
+        {
+          "no": 10,
+          "description": "ABSORB DRY",
+          "qty": 21.875,
+          "costPerUnit": 0.05,
+          "safetyFactor": 0.2296875,
+          "safetyFactorPct": 23,
+          "totalCost": 5927.419354838709,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 0.3704637096774193
+        },
+        {
+          "no": 11,
+          "description": "CONTAINER DRIVER",
+          "qty": 9.375,
+          "costPerUnit": 0.05,
+          "safetyFactor": 0.0984375,
+          "safetyFactorPct": 9.8,
+          "totalCost": 2540.3225806451615,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 0.1587701612903226
+        },
+        {
+          "no": 12,
+          "description": "LOADING GOODS TEAM",
+          "qty": 62.5,
+          "costPerUnit": 0.05,
+          "safetyFactor": 0.65625,
+          "safetyFactorPct": 65.6,
+          "totalCost": 16935.483870967742,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 1.058467741935484
+        },
+        {
+          "no": 13,
+          "description": "CONTAINER ROPE",
+          "qty": 1.171875,
+          "costPerUnit": 0.05,
+          "safetyFactor": 0.0123046875,
+          "safetyFactorPct": 1.2,
+          "totalCost": 317.5403225806452,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 0.019846270161290324
+        },
+        {
+          "no": 14,
+          "description": "CONTAINER QUARANTINE",
+          "qty": 125,
+          "costPerUnit": 0.05,
+          "safetyFactor": 1.3125,
+          "safetyFactorPct": 131.3,
+          "totalCost": 33870.967741935485,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 2.116935483870968
+        },
+        {
+          "no": 15,
+          "description": "CONTAINER LOCK",
+          "qty": 1.5625,
+          "costPerUnit": 0.05,
+          "safetyFactor": 0.01640625,
+          "safetyFactorPct": 1.6,
+          "totalCost": 423.38709677419354,
+          "costPerUnitUsd": 0.000003125,
+          "totalCostUsd": 0.026461693548387098
+        }
+      ],
+      "subtotalLineItems": 241326.41129032255,
+      "totalSafetyFactor": 12066,
+      "totalFobCost": 241326.41129032255,
+      "totalIncludingSafety": 253392.73185483867,
+      "roundedTotalFob": 15800000,
+      "roundedFobPerM3": 300000
+    }
+  },
+  "aktif": true
+}

@@ -215,6 +215,39 @@ export function hppMentahToCatalogEntry(row) {
   };
 }
 
+/** Entri katalog dari baris section DATA BASE (plywood, mdf, …) */
+export function sectionMaterialToCatalogEntry(row) {
+  if (!row?.specification && !row?.nama) return null;
+  const unit = row.unit || 'm3';
+  const price =
+    Number(row.hargaMaterialSupplier) ||
+    Number(row.pricePerUnitSupplier) ||
+    Number(row.pricePerM3Supplier) ||
+    Number(row.pricePerM2Supplier) ||
+    0;
+  return {
+    id: row.id,
+    kode: row.kode || row.id,
+    no: row.no,
+    nama: row.nama || row.specification,
+    specification: row.specification || row.nama,
+    section: row.section,
+    materialType: row.materialType || 'komponen',
+    unit,
+    dimensi: row.dimensi || { p: 0, l: 0, t: 0, label: row.specification },
+    hargaLog: row.hargaLogBuyer ?? 0,
+    safetyFactor: row.safetyFactorBuyer ?? 0,
+    safetyFactorPct: row.buyerSafetyPct ?? 0,
+    hargaMaterial: price,
+    hargaSatuan: price,
+    vendorSupplier: row.vendorSupplier || '',
+    vendorBuyer: '',
+    source: row.source || 'DATA BASE',
+    excelRef: row.excelRef,
+    aktif: row.aktif !== false,
+  };
+}
+
 /** Gabungkan semua sumber master → satu tabel katalog */
 export function buildMaterialCatalog({
   wood = [],
@@ -224,6 +257,7 @@ export function buildMaterialCatalog({
   supplierParts = [],
   calculationComponents = [],
   hppMentahParts = [],
+  sectionMaterials = [],
 } = {}) {
   const catalog = [];
   const seen = new Set();
@@ -295,6 +329,14 @@ export function buildMaterialCatalog({
   for (const hp of hppMentahParts) {
     const entry = hppMentahToCatalogEntry(hp);
     if (entry && entry.kode && !seen.has(entry.kode)) {
+      seen.add(entry.kode);
+      catalog.push(entry);
+    }
+  }
+
+  for (const sm of sectionMaterials) {
+    const entry = sectionMaterialToCatalogEntry(sm);
+    if (entry && !seen.has(entry.kode)) {
       seen.add(entry.kode);
       catalog.push(entry);
     }

@@ -1,0 +1,656 @@
+{
+  "wizardSteps": [
+    {
+      "tab": "1Produk Akhir",
+      "url": "https://erp.stg.solusiuntuknegeri.com/manufacture/bill-of-materials/new",
+      "headings": [
+        "Aa",
+        "Baru"
+      ],
+      "labels": [
+        "Tipe BOM *",
+        "Nama Item *",
+        "Nama BOM *",
+        "Kode BOM *",
+        "Kuantitas",
+        "Versi",
+        "Dimensi (mm)",
+        "Panjang",
+        "Lebar",
+        "Tinggi",
+        "Volume (m³)"
+      ],
+      "th": [
+        "1. Identitas Komponen",
+        "2. Spesifikasi Teknis",
+        "3. Manufaktur",
+        "4. Keuangan",
+        "5. Tambahan",
+        "ITEM",
+        "DIMENSI (MM)",
+        "VOLUME (m³)",
+        "KUANTITAS",
+        "PUSAT KERJA",
+        "ROUTING",
+        "PERAWATAN",
+        "BIAYA SATUAN",
+        "BIAYA MESIN",
+        "BIAYA TENAGA KERJA",
+        "TOTAL BIAYA",
+        "CATATAN",
+        "INFO BOM",
+        "AKSI",
+        "#",
+        "Kode Material",
+        "Nama Material",
+        "Modul",
+        "Submodul",
+        "Jumlah",
+        "Satuan",
+        "Dimensi",
+        "Harga Satuan",
+        "Total Harga",
+        "#",
+        "Modul",
+        "Nama Operasi",
+        "Tipe",
+        "Durasi (M)",
+        "Tenaga Kerja",
+        "Mesin",
+        "Biaya Tenaga Kerja",
+        "Biaya Operasi",
+        "Total Biaya",
+        "Catatan",
+        "Identitas Komponen",
+        "ITEM",
+        "AKSI"
+      ],
+      "inputs": [
+        {
+          "tag": "INPUT",
+          "name": null,
+          "placeholder": "Search menu...",
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "itemType",
+          "placeholder": null,
+          "type": null
+        },
+        {
+          "tag": "INPUT",
+          "name": null,
+          "placeholder": "Pilih Nama Item...",
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "name",
+          "placeholder": "Masukkan Nama BOM...",
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "code",
+          "placeholder": "Masukkan Kode BOM...",
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "quantity",
+          "placeholder": "Masukkan Kuantitas...",
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": null,
+          "placeholder": "Mayor",
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": null,
+          "placeholder": "Minor",
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "measurement.length",
+          "placeholder": null,
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "measurement.width",
+          "placeholder": null,
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "measurement.height",
+          "placeholder": null,
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "computation.volume",
+          "placeholder": "Volume",
+          "type": "text"
+        }
+      ],
+      "btns": [
+        "Aa",
+        "1Produk Akhir",
+        "2Komponen",
+        "3Sub Perakitan & Bahan Baku",
+        "4Operasi",
+        "Add Item",
+        "Kembali",
+        "Lanjut ke Komponen",
+        "Simpan Item Baru",
+        "Identitas Komponen",
+        "Spesifikasi Teknis",
+        "Manufaktur",
+        "Keuangan",
+        "Tambahan",
+        "Add Catalog",
+        "Tambah"
+      ]
+    },
+    {
+      "tab": "2Komponen",
+      "url": "https://erp.stg.solusiuntuknegeri.com/manufacture/bill-of-materials/new",
+      "headings": [
+        "Aa",
+        "Baru"
+      ],
+      "labels": [
+        "Tipe BOM *",
+        "Nama Item *",
+        "Nama BOM *",
+        "Kode BOM *",
+        "Kuantitas",
+        "Versi",
+        "Dimensi (mm)",
+        "Panjang",
+        "Lebar",
+        "Tinggi",
+        "Volume (m³)"
+      ],
+      "th": [
+        "1. Identitas Komponen",
+        "2. Spesifikasi Teknis",
+        "3. Manufaktur",
+        "4. Keuangan",
+        "5. Tambahan",
+        "ITEM",
+        "DIMENSI (MM)",
+        "VOLUME (m³)",
+        "KUANTITAS",
+        "PUSAT KERJA",
+        "ROUTING",
+        "PERAWATAN",
+        "BIAYA SATUAN",
+        "BIAYA MESIN",
+        "BIAYA TENAGA KERJA",
+        "TOTAL BIAYA",
+        "CATATAN",
+        "INFO BOM",
+        "AKSI",
+        "#",
+        "Kode Material",
+        "Nama Material",
+        "Modul",
+        "Submodul",
+        "Jumlah",
+        "Satuan",
+        "Dimensi",
+        "Harga Satuan",
+        "Total Harga",
+        "#",
+        "Modul",
+        "Nama Operasi",
+        "Tipe",
+        "Durasi (M)",
+        "Tenaga Kerja",
+        "Mesin",
+        "Biaya Tenaga Kerja",
+        "Biaya Operasi",
+        "Total Biaya",
+        "Catatan",
+        "Identitas Komponen",
+        "ITEM",
+        "AKSI"
+      ],
+      "inputs": [
+        {
+          "tag": "INPUT",
+          "name": null,
+          "placeholder": "Search menu...",
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "itemType",
+          "placeholder": null,
+          "type": null
+        },
+        {
+          "tag": "INPUT",
+          "name": null,
+          "placeholder": "Pilih Nama Item...",
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "name",
+          "placeholder": "Masukkan Nama BOM...",
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "code",
+          "placeholder": "Masukkan Kode BOM...",
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "quantity",
+          "placeholder": "Masukkan Kuantitas...",
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": null,
+          "placeholder": "Mayor",
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": null,
+          "placeholder": "Minor",
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "measurement.length",
+          "placeholder": null,
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "measurement.width",
+          "placeholder": null,
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "measurement.height",
+          "placeholder": null,
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "computation.volume",
+          "placeholder": "Volume",
+          "type": "text"
+        }
+      ],
+      "btns": [
+        "Aa",
+        "1Produk Akhir",
+        "2Komponen",
+        "3Sub Perakitan & Bahan Baku",
+        "4Operasi",
+        "Add Item",
+        "Kembali",
+        "Buat",
+        "Simpan Item Baru",
+        "Identitas Komponen",
+        "Spesifikasi Teknis",
+        "Manufaktur",
+        "Keuangan",
+        "Tambahan",
+        "Add Catalog",
+        "Tambah"
+      ]
+    },
+    {
+      "tab": "3Sub Perakitan & Bahan Baku",
+      "url": "https://erp.stg.solusiuntuknegeri.com/manufacture/bill-of-materials/new",
+      "headings": [
+        "Aa",
+        "Baru"
+      ],
+      "labels": [
+        "Tipe BOM *",
+        "Nama Item *",
+        "Nama BOM *",
+        "Kode BOM *",
+        "Kuantitas",
+        "Versi",
+        "Dimensi (mm)",
+        "Panjang",
+        "Lebar",
+        "Tinggi",
+        "Volume (m³)"
+      ],
+      "th": [
+        "1. Identitas Komponen",
+        "2. Spesifikasi Teknis",
+        "3. Manufaktur",
+        "4. Keuangan",
+        "5. Tambahan",
+        "ITEM",
+        "DIMENSI (MM)",
+        "VOLUME (m³)",
+        "KUANTITAS",
+        "PUSAT KERJA",
+        "ROUTING",
+        "PERAWATAN",
+        "BIAYA SATUAN",
+        "BIAYA MESIN",
+        "BIAYA TENAGA KERJA",
+        "TOTAL BIAYA",
+        "CATATAN",
+        "INFO BOM",
+        "AKSI",
+        "#",
+        "Kode Material",
+        "Nama Material",
+        "Modul",
+        "Submodul",
+        "Jumlah",
+        "Satuan",
+        "Dimensi",
+        "Harga Satuan",
+        "Total Harga",
+        "#",
+        "Modul",
+        "Nama Operasi",
+        "Tipe",
+        "Durasi (M)",
+        "Tenaga Kerja",
+        "Mesin",
+        "Biaya Tenaga Kerja",
+        "Biaya Operasi",
+        "Total Biaya",
+        "Catatan",
+        "Identitas Komponen",
+        "ITEM",
+        "AKSI"
+      ],
+      "inputs": [
+        {
+          "tag": "INPUT",
+          "name": null,
+          "placeholder": "Search menu...",
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "itemType",
+          "placeholder": null,
+          "type": null
+        },
+        {
+          "tag": "INPUT",
+          "name": null,
+          "placeholder": "Pilih Nama Item...",
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "name",
+          "placeholder": "Masukkan Nama BOM...",
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "code",
+          "placeholder": "Masukkan Kode BOM...",
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "quantity",
+          "placeholder": "Masukkan Kuantitas...",
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": null,
+          "placeholder": "Mayor",
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": null,
+          "placeholder": "Minor",
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "measurement.length",
+          "placeholder": null,
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "measurement.width",
+          "placeholder": null,
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "measurement.height",
+          "placeholder": null,
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "computation.volume",
+          "placeholder": "Volume",
+          "type": "text"
+        }
+      ],
+      "btns": [
+        "Aa",
+        "1Produk Akhir",
+        "2Komponen",
+        "3Sub Perakitan & Bahan Baku",
+        "4Operasi",
+        "Add Item",
+        "Kembali",
+        "Simpan Item Baru",
+        "Identitas Komponen",
+        "Spesifikasi Teknis",
+        "Manufaktur",
+        "Keuangan",
+        "Tambahan",
+        "Add Catalog",
+        "Tambah"
+      ]
+    },
+    {
+      "tab": "4Operasi",
+      "url": "https://erp.stg.solusiuntuknegeri.com/manufacture/bill-of-materials/new",
+      "headings": [
+        "Aa",
+        "Baru"
+      ],
+      "labels": [
+        "Tipe BOM *",
+        "Nama Item *",
+        "Nama BOM *",
+        "Kode BOM *",
+        "Kuantitas",
+        "Versi",
+        "Dimensi (mm)",
+        "Panjang",
+        "Lebar",
+        "Tinggi",
+        "Volume (m³)"
+      ],
+      "th": [
+        "1. Identitas Komponen",
+        "2. Spesifikasi Teknis",
+        "3. Manufaktur",
+        "4. Keuangan",
+        "5. Tambahan",
+        "ITEM",
+        "DIMENSI (MM)",
+        "VOLUME (m³)",
+        "KUANTITAS",
+        "PUSAT KERJA",
+        "ROUTING",
+        "PERAWATAN",
+        "BIAYA SATUAN",
+        "BIAYA MESIN",
+        "BIAYA TENAGA KERJA",
+        "TOTAL BIAYA",
+        "CATATAN",
+        "INFO BOM",
+        "AKSI",
+        "#",
+        "Kode Material",
+        "Nama Material",
+        "Modul",
+        "Submodul",
+        "Jumlah",
+        "Satuan",
+        "Dimensi",
+        "Harga Satuan",
+        "Total Harga",
+        "#",
+        "Modul",
+        "Nama Operasi",
+        "Tipe",
+        "Durasi (M)",
+        "Tenaga Kerja",
+        "Mesin",
+        "Biaya Tenaga Kerja",
+        "Biaya Operasi",
+        "Total Biaya",
+        "Catatan",
+        "Identitas Komponen",
+        "ITEM",
+        "AKSI"
+      ],
+      "inputs": [
+        {
+          "tag": "INPUT",
+          "name": null,
+          "placeholder": "Search menu...",
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "itemType",
+          "placeholder": null,
+          "type": null
+        },
+        {
+          "tag": "INPUT",
+          "name": null,
+          "placeholder": "Pilih Nama Item...",
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "name",
+          "placeholder": "Masukkan Nama BOM...",
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "code",
+          "placeholder": "Masukkan Kode BOM...",
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "quantity",
+          "placeholder": "Masukkan Kuantitas...",
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": null,
+          "placeholder": "Mayor",
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": null,
+          "placeholder": "Minor",
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "measurement.length",
+          "placeholder": null,
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "measurement.width",
+          "placeholder": null,
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "measurement.height",
+          "placeholder": null,
+          "type": "text"
+        },
+        {
+          "tag": "INPUT",
+          "name": "computation.volume",
+          "placeholder": "Volume",
+          "type": "text"
+        }
+      ],
+      "btns": [
+        "Aa",
+        "1Produk Akhir",
+        "2Komponen",
+        "3Sub Perakitan & Bahan Baku",
+        "4Operasi",
+        "Add Item",
+        "Kembali",
+        "Simpan Item Baru",
+        "Identitas Komponen",
+        "Spesifikasi Teknis",
+        "Manufaktur",
+        "Keuangan",
+        "Tambahan",
+        "Add Catalog",
+        "Tambah"
+      ]
+    }
+  ],
+  "expandedRow": {
+    "th": [
+      "Perluas",
+      "No",
+      "Nama BOM0",
+      "Kode BOM0",
+      "Tipe0",
+      "Varian",
+      "Jumlah",
+      "Biaya0",
+      "Versi",
+      "Tanggal Dibuat0",
+      "Aksi",
+      "Order",
+      "Code",
+      "Name",
+      "Quantity",
+      "Unit Cost",
+      "Total Cost"
+    ],
+    "text": "\t1\t\n\nBOM @KAKI MEJAKU\n\n\t\n\nBOM-KAKU-001\n\n\t\nMaterial\n\tStandar\t\n\n2 Pcs\n\n\tRp 550.833\t1.3\t29 Apr 2026, 16.05\t\n\n\nComponents (1)\n\nTotal Cost: Rp 120.000\n\nORDER\tCODE\tNAME\tQUANTITY\tUNIT COST\tTOTAL COST\n\n1\n\t\n\nBAUT-01\n\n\t\n\n@BAUT\n\n\t\n\n8 pcs\n\n\t\n\nRp 15.000\n\n\t\n\nRp 120.000\n\n\n\n\t2\t\n\nBOM MFC\n\n\t\n\nMFC-002\n\n\t\nMaterial\n\tStandar\t\n\n1 Pcs\n\n\tRp 2.909.399\t1.0\t29 Apr 2026, 16.05\t\n\n\n\n\t3\t\n\nBOM MFC\n\n\t\n\nMFC-001\n\n\t\nMaterial\n\tStandar\t\n\n1 Pcs\n\n\tRp 63.229\t1.2\t28 Apr 2026, 11.23\t\n\n\n\n\t4\t\n\nBOM Melamine Faced C...\n\n\t\n\nBOM-MFC-001\n\n\t\nMaterial\n\tStandar\t\n\n1 Pcs\n\n\tRp 363.023\t1.1\t28 Apr 2026, 11.10\t\n\n\n\n\t5\t\n\nBOM @KAKI MEJAKU\n\n\t\n\nBOM-KAKU-001\n\n\t\nMaterial\n\tStandar\t\n\n2 Pcs\n\n\tRp 126.980\t1.2\t28 Apr 2026, 11.10\t\n\n\n\n\t6\t\n\nBOM CHI Gaming\n\n\t\n\nCHIG002\n\n\t\nProduk\n\t\n\nCOLOR: BLACK\n\n\t\n\n1 Pcs\n\n\tRp 363.023\t1.1\t28 Apr 2026, 11.10\t\n\n\n\n\t7\t\n\nBOM CHI Gaming\n\n\t\n\nCHIG-001\n\n\t\nProduk\n\t\n\nCOLOR: BLACK\n\n\t\n\n1 Pcs\n\n\tRp 1.389.647\t1.0\t28 Apr 2026, 09.00\t\n\n\n\n\t8\t\n\nBOM Melamine Faced C...\n\n\t\n\nBOM-MFC-001\n\n\t\nMaterial\n\tStandar\t\n\n1 Pcs\n\n\tRp 1.389.647\t1.0\t28 Apr 2026, 09.00\t\n\n\n\n\t9\t\n\nBOM @KAKI MEJAKU\n\n\t\n\nBOM-KAKU-001\n\n\t\nMaterial\n\tStandar\t\n\n2 Pcs\n\n\tRp 550.833\t1.1\t28 Apr 2026, 09.00\t\n\n\n\n\t10\t\n\nBOM Ciero Barstool\n\n\t\n\nCBTL252\n\n\t\nProduk\n\t\n\nDECORATION: BEAUTY\n\n\t\n\n1 Pcs\n\n\tRp 14.143.214\t1.1\t22 Apr 2026, 14.58\t\n\n"
+  }
+}

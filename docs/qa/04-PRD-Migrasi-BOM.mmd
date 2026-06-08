@@ -1,0 +1,171 @@
+# PRD — Migrasi BOM ERP Lama → UX Design Baru
+
+| Field | Value |
+|-------|-------|
+| **Versi** | 3.0 |
+| **Tanggal** | 5 Juni 2026 |
+| **Status** | Draft — untuk review Product + Manufacture |
+| **Referensi UAT** | `01-UAT-ERP-Staging.mmd`, `02-UAT-App-Design-Baru.mmd`, `03-Perbandingan-Tabel.mmd` |
+
+---
+
+## 1. Latar belakang
+
+Spartan Jepara saat ini memiliki **dua jalur** kalkulasi Bill of Materials:
+
+1. **ERPKu Staging** — modul manufacture terintegrasi ERP ([staging BOM URL](https://erp.stg.solusiuntuknegeri.com/manufacture/bill-of-materials)), wizard 4 langkah, master material/WC/routing live di database.
+2. **BOM Design by Gemini** — prototipe UX baru selaras **workbook Excel costing** (SUMMARY COST, CALCULATION, DATA BASE), 7 tab editor, engine COGS + parity audit.
+
+Gap utama: ERP kuat di **operasional manufacturing & master terpusat**, tetapi **belum** menampung workflow costing Excel (container, COGS waterfall, FOB, summary operasi). App baru kuat di **kalkulasi & parity Excel**, tetapi master masih **dummy lokal** dan belum terintegrasi ERP production.
+
+```mermaid
+flowchart LR
+  Excel[Excel BOM Workbook] --> App[Design Baru]
+  ERP[ERPKu Staging] --> Ops[Operasional Pabrik]
+  App -. target integrasi .-> ERP
+  Excel -. referensi angka .-> App
+```
+
+---
+
+## 2. Summary produk
+
+**Visi:** Satu pengalaman BOM yang menggabungkan **UX costing Excel** (app baru) dengan **master & operasional ERP** (staging/production), sehingga tim costing dapat menggantikan spreadsheet tanpa kehilangan integrasi gudang/produksi.
+
+**Outcome measurable:**
+- Waktu buat BOM baru (G632L-class sofa): ≤ 4 jam manual / ≤ 30 menit import
+- COGS deviasi vs Excel: ≤ 3% untuk produk pilot
+- 100% kolom ERP list BOM tetap tersedia atau migrated
+- Master material dari API ERP (bukan seed JSON)
+
+---
+
+## 3. Scope
+
+### In scope (v2 UX)
+
+| # | Modul | Deskripsi |
+|---|-------|-----------|
+| S1 | Daftar project BOM | Parity kolom ERP + import Excel + HPP FX |
+| S2 | Produk | Panel identitas + item master ERP picker |
+| S3 | Struktur | Tree MODUL/SUBMODUL/PART + visual |
+| S4 | Container | Packing + kapasitas kontainer |
+| S5 | Material | PART list + DATA BASE picker |
+| S6 | Proses | Rekap + detail routing/WC |
+| S7 | Summary | Kalkulasi per part + operasi |
+| S8 | COGS | Waterfall + parity checklist |
+| S9 | FOB Jurnal | Custom ERP lines + export |
+| S10 | Master bridge | API ke `/purchasing/materials`, WC, routing |
+
+### Out of scope (fase ini)
+
+- Approval workflow ERP (`/manufacture/approval`)
+- QC Packing module
+- Knife / Raw ticket
+- Full PLM / CAD
+
+---
+
+## 4. Persona & user stories
+
+| Persona | Kebutuhan |
+|---------|-----------|
+| **Costing analyst** | Replikasi angka Excel, export SUMMARY COST |
+| **Engineer BOM** | Struktur multi-level, routing per part |
+| **Master data admin** | Maintain material/WC di ERP, sync ke picker |
+| **Sales/pricing** | COGS + markup + FOB selling |
+
+### User stories (prioritas)
+
+| ID | Story | Acceptance criteria |
+|----|-------|---------------------|
+| US-01 | Sebagai costing, saya buat BOM baru tanpa Excel import | Wizard/app: header produk + kerangka modul ≤ 15 menit |
+| US-02 | Sebagai costing, saya pilih material dari master ERP | Picker calls API materials; harga = ERP price |
+| US-03 | Sebagai costing, saya lihat COGS waterfall | Tab COGS: RAW→packing→OH→total→selling |
+| US-04 | Sebagai costing, saya bandingkan dengan Excel | Parity score + baris deviasi jika mirror ada |
+| US-05 | Sebagai engineer, saya atur routing multi-WC | Routing modal; rollup ke tab Proses |
+| US-06 | Sebagai admin, saya tidak duplikasi master | Satu sumber ERP; app read-only master |
+| US-07 | Sebagai user ERP lama, saya lihat daftar BOM familiar | Kolom: Nama, Kode, Tipe, Varian, Jumlah, Biaya, Versi, Tanggal |
+| US-08 | Sebagai logistics, saya hitung container | Tab container: net cap 20/40/40HC |
+
+---
+
+## 5. User experience — alur target
+
+```mermaid
+journey
+  title Alur BOM Design Baru (target terintegrasi)
+  section Dashboard
+    Buka daftar BOM: 5: User
+    Buat / Import: 4: User
+  section Editor
+    Isi produk + master ERP: 4: User
+    Struktur tree: 3: User
+    Material + proses: 3: User
+    Container + COGS: 4: User
+  section Output
+    Parity OK + Export: 5: User
+```
+
+### Prinsip UX (Design Baru vs ERP Lama)
+
+| Prinsip | ERP Lama | Design Baru |
+|---------|----------|-------------|
+| Navigasi | Wizard linear 4 step | Tab bebas + product panel persist |
+| Master | Modul sidebar terpisah | Modal + future API |
+| Costing | Biaya per row komponen | Rollup + COGS waterfall |
+| Preview | Expand row list | Visual graph + summary |
+| Excel | Tidak native | Import + mirror + parity |
+
+---
+
+## 6. Acceptance criteria release
+
+### Fase A — Parity UX table (4 minggu)
+
+- [ ] Semua kolom `03-Perbandingan-Tabel` mapped ke UI
+- [ ] Expand/preview komponen di dashboard (optional ERP parity)
+- [ ] Login ERP API materials untuk picker (read)
+
+### Fase B — COGS engine (4 minggu)
+
+- [ ] G632L import COGS ≤ 3%
+- [ ] `npm test` all samples ≤ 8% loose / ≤ 1.5% curated
+- [ ] Export xlsx sheets = Excel workbook structure
+
+### Fase C — ERP integration (6 minggu)
+
+- [ ] Master tidak lagi seed-only; toggle `MASTER_SOURCE=erp|seed`
+- [ ] Save BOM push ke ERP API (draft)
+- [ ] Auth SSO staging
+
+---
+
+## 7. Mapping wizard ERP → tab app
+
+| ERP Wizard Step | Tab Design Baru | Action migrasi |
+|-----------------|-----------------|----------------|
+| 1 Produk Akhir | Product Panel + root MODUL | Map fields 1:1 |
+| 2 Komponen | Tab Struktur | 5 grup kolom ERP → kolom struktur |
+| 3 Sub Perakitan & Bahan Baku | Tab Material | SF/WF tambahan app |
+| 4 Operasi | Tab Proses + Routing modal | Rekap kategori app+ |
+| — | Container, Summary, COGS, FOB | **Pertahankan app** |
+
+---
+
+## 8. Risiko
+
+| Risiko | Mitigasi |
+|--------|----------|
+| Master dummy ≠ ERP live | API bridge + flag environment |
+| User bingung 2 sistem | Single entry dashboard ERP embed iframe / redirect |
+| COGS gap complex products | Prioritas import Excel; wizard template |
+| Performance picker 800+ SKU | Search + pagination API |
+
+---
+
+## 9. Dokumen terkait
+
+- API contract: `../API-Contract-BOM-Platform.mmd`
+- Rekomendasi: `05-Rekomendasi-Improvement.mmd`
+- Master strategy: `06-Master-Data-Strategy.mmd`

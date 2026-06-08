@@ -8,6 +8,7 @@ import {
   applyMasterToWoodPart,
   enrichNodeFromMaster,
 } from './masterLookup.js';
+import { resolveCogsMode, COGS_MODES } from './emptyProject.js';
 import { calcPartVolume } from './packingVolume.js';
 
 const NON_WOOD_TYPES = new Set([
@@ -107,7 +108,7 @@ function walkBomEnrich(node, ctx) {
 
   if (updated.tipe === 'PART') {
     updated = normalizePartVolume(updated);
-    if (updated.biayaFromExcel && Number(updated.biaya) > 0) {
+    if (updated.biayaFromExcel && Number(updated.biaya) > 0 && !updated.sfWfManual) {
       updated = { ...updated, sf: 0, wf: 0 };
     }
   }
@@ -140,6 +141,14 @@ function walkBomEnrich(node, ctx) {
 export function linkProjectToMasters(project, options = {}) {
   if (!project) return project;
 
+  const cogsMode = resolveCogsMode(project);
+  const defaultApplyBiaya = cogsMode !== COGS_MODES.EXCEL_FIXED;
+  const resolvedOptions = {
+    applyBiaya: defaultApplyBiaya,
+    skipBiayaIfExcel: true,
+    ...options,
+  };
+
   const woodGradeId = resolveWoodGradeId(project.productMeta || {});
   const coatingMeta = resolveCoatingMeta(project.productMeta || {});
   const mat = getCachedMaterials().find((m) => m.id === woodGradeId);
@@ -156,11 +165,11 @@ export function linkProjectToMasters(project, options = {}) {
     ? walkBomEnrich(structuredClone(project.bomData), {
         productMeta,
         productInfo: project.productInfo,
-        ...options,
+        ...resolvedOptions,
       })
     : project.bomData;
 
-  return { ...project, productMeta, bomData };
+  return { ...project, productMeta, bomData, cogsMode: resolveCogsMode({ ...project, cogsMode }) };
 }
 
 /** Sinkron seluruh pohon BOM dari DATA BASE (nama → grade, tipe material, modul ← produk) */

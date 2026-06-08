@@ -3,10 +3,11 @@ import {
   ArrowLeft, DollarSign, Euro, FileText, CheckCircle2, ImagePlus, Network, Package, Grid,
   Wrench, Calculator, BookOpen, Plus, Search, Table as TableIcon, ZoomOut, ZoomIn, Maximize,
   Trash2, ChevronDown, Link as LinkIcon, Image as ImageIcon, ChevronRight, Layout, Activity,
-  AlertTriangle, PieChart, Server, Users, QrCode, Briefcase, Edit, Eye, EyeOff, PanelTopClose, PanelTopOpen, TrendingUp, HelpCircle, ClipboardList,
+  AlertTriangle, PieChart, Server, Users, QrCode, Briefcase, Edit, Eye, EyeOff, PanelTopClose, PanelTopOpen, TrendingUp, ClipboardList,
 } from 'lucide-react';
 import { flattenTree, getPartHierarchyLabels } from '../utils/treeHelpers';
 import { formatIDR, formatPrice } from '../utils/formatters';
+import { MoneyText } from '../components/ui/MoneyText.jsx';
 import {
   CONTAINER_PRESETS,
   buildDefaultContainerRows,
@@ -32,6 +33,7 @@ import SummaryDetailModal from '../components/modals/SummaryDetailModal';
 import KalkulasiModal from '../components/modals/KalkulasiModal';
 import MarkupPreviewModal from '../components/modals/MarkupPreviewModal';
 import ProductPanel from '../components/product/ProductPanel';
+import ProductInlineBar from '../components/product/ProductInlineBar';
 import ExcelParityChecklistModal from '../components/modals/ExcelParityChecklistModal';
 import { auditExcelParity } from '../utils/excelParityAudit.js';
 import CogsProductionPieCard from '../components/cogs/CogsProductionPieCard';
@@ -44,12 +46,14 @@ import ExportMenu from '../components/ui/ExportMenu';
 import { buildBomExportPayload, exportBomToExcel, exportBomToPdf, exportBomToPdfFull } from '../utils/bomExport';
 import MasterWorkCenterModal from '../components/modals/MasterWorkCenterModal';
 import MasterMaterialsModal from '../components/modals/MasterMaterialsModal';
-import MasterUsageGuideModal from '../components/modals/MasterUsageGuideModal';
+import ManualBookModal from '../components/modals/ManualBookModal';
 import { resolveProductCoatingCost } from '../utils/masterLookup';
 import {
   applyMasterToWoodPart,
+  applyMasterToPart,
   enrichNodeFromMaster,
   getWasteRatioForMaterialType,
+  recalcPartBiayaForSfWf,
 } from '../utils/masterLookup';
 import {
   linkProjectToMasters,
@@ -61,11 +65,13 @@ import { VENDOR_SAMPLES } from '../data/masterSamples';
 import { resolveNodeFoto } from '../utils/images';
 import {
   expandProsesList,
+  computePartDisplayFinancials,
   computeNodeDisplayFinancials,
   computePackingTotals,
   computeCogs,
   computeSummaryFromBom,
   computeMaterialTabTotals,
+  computePartCostRow,
   collectProsesEntries,
   computeProsesSummary,
   flattenProsesLineItems,
@@ -73,8 +79,8 @@ import {
   validatePartsForExport,
   buildNodeRollupMap,
 } from '../services/bomCalculations';
-import { normalizeProject } from '../utils/emptyProject.js';
-import { WoodGradeField } from '../components/fields/MasterCombos.jsx';
+import { normalizeProject, COGS_MODES, resolveCogsMode } from '../utils/emptyProject.js';
+import { WoodGradeField, DatabaseMaterialField } from '../components/fields/MasterCombos.jsx';
 
 function MaterialTypeField({ value, onChange, disabled = false }) {
   return (
@@ -469,6 +475,7 @@ function applyProjectToStates(project, setters) {
   setters.setCustomErp(p.customErp ?? { parts: [], machines: [], workers: [] });
   if (setters.setExcelMirror) setters.setExcelMirror(p.excelMirror ?? null);
   if (setters.setImportedFromExcel) setters.setImportedFromExcel(!!p.importedFromExcel);
+  if (setters.setCogsMode) setters.setCogsMode(resolveCogsMode(p));
 }
 
 export default function BOMEditor({
@@ -494,12 +501,14 @@ export default function BOMEditor({
   const [showKalkulasi, setShowKalkulasi] = useState(false);
   const [showMarkupPreview, setShowMarkupPreview] = useState(false);
   const [detailSummaryNode, setDetailSummaryNode] = useState(null);
-  const [showProductPanel, setShowProductPanel] = useState(true);
+  const [showProductPanel, setShowProductPanel] = useState(
+    () => !!safeProject?.importedFromExcel,
+  );
   const [priceDisplay] = useState('IDR');
   const [showHiddenContainers, setShowHiddenContainers] = useState(false);
   const [showMasterWc, setShowMasterWc] = useState(false);
   const [showMasterMaterials, setShowMasterMaterials] = useState(false);
-  const [showMasterGuide, setShowMasterGuide] = useState(false);
+  const [showManual, setShowManual] = useState(false);
   const { mastersReady, mastersTick, reloadMasters } = useMasters();
 
   const [editorTab, setEditorTab] = useState('struktur');
@@ -523,6 +532,7 @@ export default function BOMEditor({
   const [importedFromExcel, setImportedFromExcel] = useState(
     () => !!safeProject?.importedFromExcel,
   );
+  const [cogsMode, setCogsMode] = useState(() => resolveCogsMode(safeProject));
 
   const [cogsConfig, setCogsConfig] = useState(
     () =>
@@ -583,8 +593,18 @@ export default function BOMEditor({
     () => initialProject?.containerCapacity ?? buildDefaultContainerRows(),
   );
 
+  const hydratedProjectIdRef = useRef(null);
+
   useEffect(() => {
     if (!initialProject || !mastersReady) return;
+
+    if (hydratedProjectIdRef.current === projectId) {
+      setBomData((prev) =>
+        enrichBomFromMasters(prev, { productMeta, productInfo }, { applyBiaya: false }),
+      );
+      return;
+    }
+
     const linked = linkProjectToMasters(initialProject, { applyBiaya: true });
     applyProjectToStates(linked, {
       setBomData,
@@ -599,6 +619,7 @@ export default function BOMEditor({
       setExcelMirror,
       setImportedFromExcel,
     });
+    hydratedProjectIdRef.current = projectId;
     setSaveStatus('saved');
   }, [projectId, initialProject, mastersReady, mastersTick]);
 
@@ -706,6 +727,25 @@ export default function BOMEditor({
   const handleApplyWoodMasterToAllParts = () => {
     const gradeId = productMeta.woodGradeId || '';
     if (!gradeId) return;
+    if (cogsMode === COGS_MODES.EXCEL_FIXED) {
+      const ok = window.confirm(
+        'Mode Excel Fixed: hitung ulang dari master akan mengubah biaya part kayu dan beralih ke Live Master. Lanjutkan?',
+      );
+      if (!ok) return;
+      setCogsMode(COGS_MODES.LIVE_MASTER);
+      const clearExcelFlags = (node) => {
+        if (node.tipe === 'PART' && node.biayaFromExcel) {
+          node.biayaFromExcel = false;
+        }
+        (node.children || []).forEach(clearExcelFlags);
+      };
+      setBomData((prev) => {
+        const next = structuredClone(prev);
+        clearExcelFlags(next);
+        return syncProductWoodToParts(next, gradeId, { applyBiaya: true });
+      });
+      return;
+    }
     setBomData((prev) => syncProductWoodToParts(prev, gradeId, { applyBiaya: true }));
   };
 
@@ -744,7 +784,7 @@ export default function BOMEditor({
           updated.sf = updated.sf ?? ratio.sf;
           updated.wf = updated.wf ?? ratio.wf;
         }
-        if (node.tipe === 'PART' && gradeId && updated.vol) {
+        if (node.tipe === 'PART' && gradeId) {
           updated = applyMasterToWoodPart(updated, gradeId);
         }
         return updated;
@@ -764,6 +804,14 @@ export default function BOMEditor({
     }
   };
 
+  const partMaterialSection = (d) => {
+    const mt = String(d.materialType || '').toLowerCase();
+    if (mt === 'plywood') return 'PLYWOOD';
+    if (mt === 'veneer') return d.materialSection || 'VENEER';
+    if (mt === 'komponen') return d.materialSection || 'MDF';
+    return d.materialSection || '';
+  };
+
   const handleStructureMaterialType = (nodeId, materialType) => {
     const updateTree = (node) => {
       if (node.id === nodeId) {
@@ -771,6 +819,24 @@ export default function BOMEditor({
         if (materialType !== 'kayu') {
           updated.woodGradeId = '';
           updated.woodSpecification = '';
+        }
+        if (materialType === 'kayu') {
+          updated.materialMasterId = '';
+          updated.materialSpecification = '';
+        } else if (materialType === 'plywood') {
+          updated.materialSection = 'PLYWOOD';
+          updated.woodGradeId = '';
+          updated.woodSpecification = '';
+        } else if (materialType === 'veneer') {
+          updated.materialSection = updated.materialSection || 'VENEER';
+          updated.woodGradeId = '';
+          updated.woodSpecification = '';
+        } else if (materialType === 'komponen') {
+          updated.materialSection = updated.materialSection || 'MDF';
+        } else {
+          updated.materialMasterId = '';
+          updated.materialSpecification = '';
+          updated.materialSection = '';
         }
         return updated;
       }
@@ -939,10 +1005,92 @@ export default function BOMEditor({
     setBomData((prev) => updateTree(prev));
   };
 
+  const handlePartMaterialField = (nodeId, masterId, mat, manualSpec) => {
+    const updateTree = (node) => {
+      if (node.id === nodeId) {
+        if (manualSpec != null && manualSpec !== undefined && !masterId) {
+          return {
+            ...node,
+            materialMasterId: '',
+            materialSpecification: String(manualSpec),
+          };
+        }
+        if (!masterId && !mat) {
+          return { ...node, materialMasterId: '', materialSpecification: '' };
+        }
+        if (masterId && mat) {
+          let updated = {
+            ...node,
+            materialMasterId: masterId,
+            materialSpecification: mat.specification || '',
+            materialType: mat.materialType || node.materialType,
+            materialSection: mat.section || node.materialSection,
+          };
+          if (node.tipe === 'PART') {
+            updated = applyMasterToPart(updated, masterId);
+          }
+          return updated;
+        }
+        return node;
+      }
+      if (node.children) {
+        return { ...node, children: node.children.map(updateTree) };
+      }
+      return node;
+    };
+    setBomData((prev) => updateTree(prev));
+  };
+
+  const handlePartMaterialSection = (nodeId, section) => {
+    const updateTree = (node) => {
+      if (node.id === nodeId) {
+        return {
+          ...node,
+          materialSection: section,
+          materialMasterId: '',
+          materialSpecification: '',
+        };
+      }
+      if (node.children) {
+        return { ...node, children: node.children.map(updateTree) };
+      }
+      return node;
+    };
+    setBomData((prev) => updateTree(prev));
+  };
+
   const handleUpdateNode = (id, field, value) => {
     const updateTree = (node) => {
       if (node.id === id) {
         let updatedNode = { ...node, [field]: value };
+        if (field === 'sf' || field === 'wf') {
+          const parsed = value === '' ? '' : Number(value);
+          if (parsed !== '' && Number.isNaN(parsed)) return node;
+          const sf = field === 'sf' ? parsed : updatedNode.sf;
+          const wf = field === 'wf' ? parsed : updatedNode.wf;
+          updatedNode = {
+            ...updatedNode,
+            [field]: parsed,
+            sfWfManual: true,
+          };
+          if (updatedNode.tipe === 'PART') {
+            const recalc = recalcPartBiayaForSfWf({
+              ...updatedNode,
+              sf: sf === '' ? 0 : Number(sf) || 0,
+              wf: wf === '' ? 0 : Number(wf) || 0,
+            });
+            updatedNode = {
+              ...updatedNode,
+              sf: recalc.sf,
+              wf: recalc.wf,
+              biaya: recalc.biaya,
+              wasteIncludedInBiaya: recalc.wasteIncludedInBiaya,
+              masterWasteSfPct: recalc.sf,
+              masterWasteWfPct: recalc.wf,
+            };
+          }
+          return updatedNode;
+        }
         if (field === 'p' || field === 'l' || field === 't') {
           const w = field === 'p' ? value : (updatedNode.p || 0);
           const d = field === 'l' ? value : (updatedNode.l || 0);
@@ -950,12 +1098,19 @@ export default function BOMEditor({
           updatedNode.vol = Number(((w * d * h) / 1000000000).toFixed(6));
           if (updatedNode.woodGradeId && updatedNode.tipe === 'PART') {
             updatedNode = applyMasterToWoodPart(updatedNode, updatedNode.woodGradeId);
+          } else if (updatedNode.materialMasterId && updatedNode.tipe === 'PART') {
+            updatedNode = applyMasterToPart(updatedNode, updatedNode.materialMasterId);
           }
+        }
+        if (field === 'qty' && updatedNode.materialMasterId && updatedNode.tipe === 'PART') {
+          updatedNode = applyMasterToPart(updatedNode, updatedNode.materialMasterId);
         }
         if (field === 'nama' || field === 'kode') {
           updatedNode = enrichNodeFromMaster(updatedNode, { productInfo, productMeta });
           if (updatedNode.woodGradeId && updatedNode.tipe === 'PART' && updatedNode.vol) {
             updatedNode = applyMasterToWoodPart(updatedNode, updatedNode.woodGradeId);
+          } else if (updatedNode.materialMasterId && updatedNode.tipe === 'PART') {
+            updatedNode = applyMasterToPart(updatedNode, updatedNode.materialMasterId);
           }
         }
         return updatedNode;
@@ -1020,6 +1175,11 @@ export default function BOMEditor({
 
   // INLINE RENDER TABLE VIEW AGAR KURSOR TIDAK HILANG FOKUS
   const flatNodes = useMemo(() => flattenTree(bomData), [bomData]);
+  const materialParts = useMemo(
+    () => flatNodes.filter((n) => n.data.tipe === 'PART'),
+    [flatNodes],
+  );
+  const materialTableColSpan = 22 + hierarchyColCount;
 
   const nodeRollupMap = useMemo(() => buildNodeRollupMap(bomData), [bomData]);
 
@@ -1062,8 +1222,15 @@ export default function BOMEditor({
   );
 
   const cogsData = useMemo(
-    () => computeCogs({ bomData, cogsConfig, packingTotals, productMeta }),
-    [bomData, cogsConfig, packingTotals, productMeta],
+    () =>
+      computeCogs({
+        bomData,
+        cogsConfig,
+        packingTotals,
+        productMeta,
+        packingVolumeM3: volBoxPacking,
+      }),
+    [bomData, cogsConfig, packingTotals, productMeta, volBoxPacking],
   );
 
   const cogsInsightSampleKey = CURATED_SAMPLE_KEYS.has(productInfo.kode)
@@ -1079,6 +1246,7 @@ export default function BOMEditor({
         productMeta,
         excelMirror,
         importedFromExcel,
+        cogsMode,
         cogsData,
         sampleKey: cogsInsightSampleKey,
       }),
@@ -1089,6 +1257,7 @@ export default function BOMEditor({
       productMeta,
       excelMirror,
       importedFromExcel,
+      cogsMode,
       cogsData,
       cogsInsightSampleKey,
     ],
@@ -1172,6 +1341,7 @@ export default function BOMEditor({
       excelMirror,
       importSheets: initialProject?.importSheets ?? [],
       importedFromExcel,
+      cogsMode,
       cachedHpp: cogsData.totalCogs,
     }),
     [
@@ -1189,6 +1359,7 @@ export default function BOMEditor({
       customErp,
       excelMirror,
       importedFromExcel,
+      cogsMode,
       cogsData.totalCogs,
       initialProject,
     ],
@@ -1413,10 +1584,7 @@ export default function BOMEditor({
                               d.tipe === 'MODUL' ? 'Nama produk / BOM…' : 'Nama komponen…'
                             }
                           />
-                          {/* SUBMODUL: grade opsional sebagai label grup; PART kayu: grade aktif */}
-                          {(d.tipe === 'SUBMODUL' ||
-                            d.tipe === 'SUBMODUL 2' ||
-                            (d.tipe === 'PART' && d.materialType !== 'hardware')) && (
+                          {(d.tipe === 'SUBMODUL' || d.tipe === 'SUBMODUL 2') && (
                             <WoodGradeField
                               mastersTick={mastersTick}
                               compact
@@ -1427,6 +1595,33 @@ export default function BOMEditor({
                               }
                               className="min-w-0 w-full"
                             />
+                          )}
+                          {d.tipe === 'PART' && (
+                            d.materialType === 'kayu' ? (
+                              <WoodGradeField
+                                mastersTick={mastersTick}
+                                compact
+                                value={d.woodGradeId || ''}
+                                manualSpec={d.woodSpecification || ''}
+                                onChange={(gradeId, mat, manualSpec) =>
+                                  handleStructureWoodSelect(node.id, gradeId, mat, manualSpec)
+                                }
+                                className="min-w-0 w-full"
+                              />
+                            ) : (
+                              <DatabaseMaterialField
+                                mastersTick={mastersTick}
+                                compact
+                                showAll
+                                materialType={d.materialType || ''}
+                                value={d.materialMasterId || ''}
+                                manualSpec={d.materialSpecification || ''}
+                                onChange={(masterId, mat, manualSpec) =>
+                                  handlePartMaterialField(node.id, masterId, mat, manualSpec)
+                                }
+                                className="min-w-0 w-full"
+                              />
+                            )
                           )}
                         </div>
                       </td>
@@ -1439,17 +1634,10 @@ export default function BOMEditor({
                       </td>
                       <td className="py-2 px-2 border-r border-slate-100 text-center">
                         {d.tipe === 'PART' ? (
-                          <div className="flex flex-col items-center gap-1">
-                            <MaterialTypeField
-                              value={d.materialType || ''}
-                              onChange={(val) => handleStructureMaterialType(node.id, val)}
-                            />
-                            {d.woodGradeId && (
-                              <span className="text-[8px] font-mono text-emerald-600" title="Grade dari DATA BASE">
-                                DB ✓
-                              </span>
-                            )}
-                          </div>
+                          <MaterialTypeField
+                            value={d.materialType || ''}
+                            onChange={(val) => handleStructureMaterialType(node.id, val)}
+                          />
                         ) : (
                           <span className="text-slate-300 text-[10px]">—</span>
                         )}
@@ -1475,7 +1663,7 @@ export default function BOMEditor({
                             value={d.biaya === 0 ? '' : d.biaya}
                             onChange={(e) => handleUpdateNode(node.id, 'biaya', Number(e.target.value))}
                             placeholder="0"
-                            className={`${inputClasses} text-right w-[5.25rem] text-slate-700 font-medium tabular-nums`}
+                            className={`${inputClasses} text-right w-[5.25rem] text-amber-800 font-bold tabular-nums bg-amber-50/40 border-amber-200/80 focus:border-amber-400 focus:ring-amber-100`}
                             title="Harga material satuan (aktif)"
                           />
                         ) : (
@@ -1494,13 +1682,23 @@ export default function BOMEditor({
                         {isRollupRow ? (fin?.matAdjusted ? eurMat : '—') : eurMat}
                       </td>
 
-                      <td className="py-2 px-1.5 text-right font-black text-indigo-700 bg-indigo-50/10 tabular-nums text-[11px]">
-                        {hargaProduksiIDR ? `Rp ${formatIDR(hargaProduksiIDR)}` : '—'}
+                      <td className="py-2 px-1.5 text-right bg-indigo-50/10 text-[11px]">
+                        {hargaProduksiIDR ? (
+                          <MoneyText variant="prodIdr">Rp {formatIDR(hargaProduksiIDR)}</MoneyText>
+                        ) : (
+                          '—'
+                        )}
                       </td>
                       <td className="py-2 px-1.5 text-right font-bold text-indigo-600 bg-indigo-50/10 tabular-nums text-[11px]">{usdProd}</td>
                       <td className="py-2 px-1.5 border-r border-slate-100 text-right font-bold text-indigo-600 bg-indigo-50/10 tabular-nums text-[11px]">{eurProd}</td>
-                      <td className="py-2 px-1.5 text-right font-bold text-violet-700 bg-violet-50/10 tabular-nums text-[11px]">
-                        {fin ? (d.tipe === 'PART' ? `Rp ${formatIDR(prodUnit)}` : `Rp ${formatIDR(hargaProduksiIDR)}`) : '—'}
+                      <td className="py-2 px-1.5 text-right bg-violet-50/10 text-[11px]">
+                        {fin ? (
+                          <MoneyText variant="unitIdr">
+                            Rp {formatIDR(d.tipe === 'PART' ? prodUnit : hargaProduksiIDR)}
+                          </MoneyText>
+                        ) : (
+                          '—'
+                        )}
                       </td>
                       <td className="py-2 px-1.5 text-right font-bold text-violet-600 bg-violet-50/10 tabular-nums text-[11px]">
                         {fin ? (d.tipe === 'PART' ? usdProdUnit : usdProd) : '—'}
@@ -1554,7 +1752,7 @@ export default function BOMEditor({
       {/* Include Detail Summary Modal */}
       <SummaryDetailModal node={detailSummaryNode} onClose={() => setDetailSummaryNode(null)} />
       <MasterWorkCenterModal isOpen={showMasterWc} onClose={() => setShowMasterWc(false)} />
-      <MasterUsageGuideModal isOpen={showMasterGuide} onClose={() => setShowMasterGuide(false)} />
+      <ManualBookModal isOpen={showManual} onClose={() => setShowManual(false)} />
       <MasterMaterialsModal
         isOpen={showMasterMaterials}
         onClose={() => {
@@ -1578,6 +1776,16 @@ export default function BOMEditor({
           </button>
           <span className="bg-blue-50 border border-blue-100 text-blue-700 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm">
             Project: {productInfo.kode || '—'}
+          </span>
+          <span
+            className={`text-[10px] font-bold uppercase px-2 py-1 rounded border ${
+              cogsMode === COGS_MODES.EXCEL_FIXED
+                ? 'bg-violet-50 text-violet-700 border-violet-200'
+                : 'bg-teal-50 text-teal-700 border-teal-200'
+            }`}
+            title="Mode sumber biaya COGS"
+          >
+            {cogsMode === COGS_MODES.EXCEL_FIXED ? 'Mode: Excel Fixed' : 'Mode: Live Master'}
           </span>
           <span
             className={`text-[10px] font-bold uppercase px-2 py-1 rounded border ${
@@ -1621,11 +1829,11 @@ export default function BOMEditor({
           </button>
           <button
             type="button"
-            onClick={() => setShowMasterGuide(true)}
+            onClick={() => setShowManual(true)}
             className="border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-2"
-            title="Panduan Master Data & kalkulasi"
+            title="Manual Book — panduan sistem BOM & kalkulasi"
           >
-            <HelpCircle className="w-4 h-4" /> Panduan
+            <BookOpen className="w-4 h-4" /> Manual Book
           </button>
           <ExportMenu
             onExportExcel={handleExportExcel}
@@ -1701,25 +1909,24 @@ export default function BOMEditor({
             coatingPreview={coatingPreview}
           />
         ) : (
-          <div className="px-6 pt-4 pb-2 shrink-0 flex items-center justify-between bg-white border-b border-slate-200">
-            <p className="text-xs font-bold text-slate-500">
-              Panel produk disembunyikan — fokus pada kalkulasi & tab editor
-            </p>
-            <button
-              type="button"
-              onClick={() => setShowProductPanel(true)}
-              className="text-xs font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1.5"
-            >
-              <PanelTopOpen className="w-4 h-4" /> Tampilkan data produk
-            </button>
-          </div>
+          <ProductInlineBar
+            productInfo={productInfo}
+            onProductInfoChange={handleProductInfoChange}
+            productMeta={productMeta}
+            onProductMetaChange={handleProductMetaChange}
+            dimensi={dimensi}
+            onDimensiChange={updateDimensi}
+            mastersTick={mastersTick}
+            onWoodGradeChange={handleProductWoodGrade}
+            onCoatingChange={handleProductCoating}
+          />
         )}
 
         {/* TABS NAVIGATION BAR */}
         <EditorTabBar activeTab={editorTab} onTabChange={setEditorTab} />
 
-        {/* TAB CONTENT AREA */}
-        <div className="flex-1 flex flex-col min-h-0 overflow-hidden bg-white">
+        {/* TAB CONTENT AREA — flex-1 1 0% agar selalu dapat sisa tinggi setelah panel produk */}
+        <div className="flex flex-1 flex-col min-h-0 overflow-hidden bg-white basis-0">
           
           {/* TAB 1: STRUKTUR PERAKITAN */}
           {editorTab === 'struktur' && (
@@ -2261,7 +2468,7 @@ export default function BOMEditor({
 
           {/* TAB 3: KEBUTUHAN MATERIAL */}
           {editorTab === 'material' && (
-            <div className="flex-1 overflow-y-auto p-6 md:p-8 bg-page flex flex-col gap-6 scrollbar-hide">
+            <div className="tab-page scrollbar-hide gap-6">
               <MaterialTotalCards fp={fp} totals={materialTabTotals} />
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
                 <div className="px-6 py-5 border-b border-slate-100 bg-white flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -2295,9 +2502,8 @@ export default function BOMEditor({
                         <th rowSpan={2} className="px-4 py-3 border-r border-slate-100 w-16 border-b border-slate-200 align-middle">FOTO</th>
                         <HierarchyHeaderCells cols={materialHierarchyCols} />
                         <th rowSpan={2} className="px-4 py-3 border-r border-slate-100 text-left border-b border-slate-200 align-middle min-w-[120px] text-emerald-700">TIPE MATERIAL</th>
-                        <th rowSpan={2} className="px-4 py-3 border-r border-slate-100 text-left border-b border-slate-200 align-middle min-w-[200px] text-amber-700">GRADE KAYU</th>
                         <th rowSpan={2} className="px-4 py-3 border-r border-slate-100 text-left border-b border-slate-200 align-middle">KODE MATERIAL</th>
-                        <th rowSpan={2} className="px-4 py-3 border-r border-slate-100 text-left border-b border-slate-200 align-middle">NAMA MATERIAL</th>
+                        <th rowSpan={2} className="px-4 py-3 border-r border-slate-100 text-left border-b border-slate-200 align-middle min-w-[280px] text-amber-700">NAMA MATERIAL / GRADE</th>
                         <th rowSpan={2} className="px-4 py-3 border-r border-slate-100 text-left border-b border-slate-200 align-middle">VENDOR</th>
                         <th rowSpan={2} className="px-4 py-3 border-r border-slate-100 text-center border-b border-slate-200 text-amber-600 align-middle">SF (%)</th>
                         <th rowSpan={2} className="px-4 py-3 border-r border-slate-100 text-center border-b border-slate-200 text-red-500 align-middle">WF (%)</th>
@@ -2307,8 +2513,6 @@ export default function BOMEditor({
                         <th colSpan={3} className="px-2 py-2 border-r border-slate-200 border-b border-amber-200 text-amber-700 bg-amber-50/40">HARGA MATERIAL (SATUAN)</th>
                         <th colSpan={3} className="px-2 py-2 border-r border-slate-200 border-b border-indigo-200 text-indigo-700 bg-indigo-50/40">BIAYA PRODUKSI (TOTAL)</th>
                         <th colSpan={3} className="px-2 py-2 border-r border-slate-200 border-b border-violet-200 text-violet-700 bg-violet-50/40">HARGA PRODUKSI (SATUAN)</th>
-                        <th rowSpan={2} className="px-4 py-3 border-r border-slate-100 border-b border-slate-200 align-middle">STOCK GUDANG</th>
-                        <th rowSpan={2} className="px-4 py-3 border-r border-slate-100 border-b border-slate-200 align-middle">STATUS</th>
                         <th rowSpan={2} className="px-4 py-3 w-16 border-b border-slate-200 align-middle">ACTION</th>
                       </tr>
                       <tr className="border-b border-slate-200">
@@ -2324,12 +2528,25 @@ export default function BOMEditor({
                       </tr>
                     </thead>
                     <tbody className="font-medium text-slate-700 divide-y divide-slate-100">
-                      {flatNodes.filter(n => n.data.tipe === 'PART').map((node, i) => {
+                      {materialParts.length === 0 ? (
+                        <tr>
+                          <td
+                            colSpan={materialTableColSpan}
+                            className="px-6 py-16 text-center text-slate-400"
+                          >
+                            <Grid className="w-10 h-10 text-slate-200 mx-auto mb-3" />
+                            <p className="text-sm font-bold text-slate-500">Belum ada komponen PART</p>
+                            <p className="text-xs mt-1 max-w-md mx-auto">
+                              Tambahkan part di tab <strong>Struktur BOM</strong>, lalu isi tipe material, dimensi, dan grade untuk melihat kebutuhan material di sini.
+                            </p>
+                          </td>
+                        </tr>
+                      ) : materialParts.map((node, i) => {
                         const d = node.data;
                         const hierarchy = getPartHierarchyLabels(bomData, node.id);
                         const hargaBeliIDR = d.biaya || 0;
-                        const sf = Number(d.sf) || 0;
-                        const wf = Number(d.wf) || 0;
+                        const sf = d.sf === '' || d.sf == null ? '' : Number(d.sf) || 0;
+                        const wf = d.wf === '' || d.wf == null ? '' : Number(d.wf) || 0;
                         const fin = computePartDisplayFinancials(d, kursUsd, kursEur);
                         const { usdMat, eurMat, prodTotal: hargaProduksiIDR, usdProd, eurProd, prodUnit, usdProdUnit, eurProdUnit } = fin;
 
@@ -2345,26 +2562,45 @@ export default function BOMEditor({
                             <td className="px-4 py-3 border-r border-slate-100">
                               <MaterialTypeField
                                 value={d.materialType || ''}
-                                onChange={(val) => handleUpdateNode(node.id, 'materialType', val)}
+                                onChange={(val) => handleStructureMaterialType(node.id, val)}
                               />
                             </td>
-                            <td className="px-4 py-3 border-r border-slate-100">
-                              {d.materialType === 'kayu' ? (
-                                <WoodGradeField
-                                  mastersTick={mastersTick}
-                                  value={d.woodGradeId || ''}
-                                  manualSpec={d.woodSpecification || ''}
-                                  onChange={(gradeId, mat, manualSpec) =>
-                                    handlePartWoodField(node.id, gradeId, mat, manualSpec)
-                                  }
-                                  className="min-w-[180px]"
-                                />
-                              ) : (
-                                <span className="text-[10px] text-slate-300">—</span>
-                              )}
-                            </td>
                             <td className="px-4 py-3 border-r border-slate-100 font-mono text-slate-500">{d.kode}</td>
-                            <td className="px-4 py-3 border-r border-slate-100 font-black text-slate-700">{d.nama}</td>
+                            <td className="px-4 py-3 border-r border-slate-100 align-top">
+                              <div className="flex flex-col gap-2 min-w-[260px]">
+                                <input
+                                  type="text"
+                                  value={d.nama}
+                                  onChange={(e) => handleUpdateNode(node.id, 'nama', e.target.value)}
+                                  className={`${inputClasses} font-bold text-slate-800 w-full`}
+                                  placeholder="Nama part…"
+                                />
+                                {d.materialType === 'kayu' ? (
+                                  <WoodGradeField
+                                    mastersTick={mastersTick}
+                                    value={d.woodGradeId || ''}
+                                    manualSpec={d.woodSpecification || ''}
+                                    onChange={(gradeId, mat, manualSpec) =>
+                                      handlePartWoodField(node.id, gradeId, mat, manualSpec)
+                                    }
+                                    className="min-w-0 w-full"
+                                  />
+                                ) : (
+                                  <DatabaseMaterialField
+                                    mastersTick={mastersTick}
+                                    showAll
+                                    materialType={d.materialType || ''}
+                                    section={partMaterialSection(d)}
+                                    value={d.materialMasterId || ''}
+                                    manualSpec={d.materialSpecification || ''}
+                                    onChange={(masterId, mat, manualSpec) =>
+                                      handlePartMaterialField(node.id, masterId, mat, manualSpec)
+                                    }
+                                    className="min-w-0 w-full"
+                                  />
+                                )}
+                              </div>
+                            </td>
                             <td className="px-4 py-3 border-r border-slate-100">
                               <VendorField
                                 value={d.vendor || ''}
@@ -2394,8 +2630,10 @@ export default function BOMEditor({
                             <td className="px-4 py-3 border-r border-slate-100 text-center font-black text-amber-600 bg-amber-50/20">{d.qty}</td>
                             <td className="px-4 py-3 border-r border-slate-100 text-center font-bold text-slate-600 uppercase text-[10px]">{d.unit || 'EA'}</td>
                             
-                            <td className="py-2 px-1.5 border-r border-slate-100 text-right bg-amber-50/15 font-bold text-slate-700 tabular-nums">
-                              Rp {formatIDR(hargaBeliIDR)}
+                            <td className="py-2 px-1.5 border-r border-slate-100 text-right bg-amber-50/15">
+                              <MoneyText variant="matIdr" className="text-[11px]">
+                                Rp {formatIDR(hargaBeliIDR)}
+                              </MoneyText>
                             </td>
                             <td className="py-2 px-1.5 text-right text-amber-700/90 bg-amber-50/15 tabular-nums text-[11px] font-semibold">{usdMat}</td>
                             <td className="py-2 px-1.5 border-r border-slate-100 text-right text-amber-700/90 bg-amber-50/15 tabular-nums text-[11px] font-semibold">{eurMat}</td>
@@ -2406,14 +2644,6 @@ export default function BOMEditor({
                             <td className="py-2 px-1.5 text-right font-bold text-violet-600 bg-violet-50/10 tabular-nums text-[11px]">{usdProdUnit}</td>
                             <td className="py-2 px-1.5 border-r border-slate-100 text-right font-bold text-violet-600 bg-violet-50/10 tabular-nums text-[11px]">{eurProdUnit}</td>
 
-                            <td className="px-4 py-3 border-r border-slate-100 text-center">
-                              <input type="text" defaultValue="0" className="w-12 text-center border border-slate-200 rounded px-1 py-1 outline-none focus:border-blue-400 font-bold text-slate-600" />
-                            </td>
-                            <td className="px-4 py-3 border-r border-slate-100 text-center">
-                              <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-600 border border-amber-200 px-2 py-1 rounded text-[9px] font-black tracking-wider uppercase">
-                                <AlertTriangle className="w-3 h-3" /> WAITING
-                              </span>
-                            </td>
                             <td className="px-4 py-3 text-center">
                               <button className="p-1.5 text-red-400 bg-red-50 hover:bg-red-100 hover:text-red-600 border border-red-100 rounded transition-colors mx-auto block">
                                 <Trash2 className="w-3.5 h-3.5"/>
@@ -2472,8 +2702,12 @@ export default function BOMEditor({
                             <span className="bg-slate-100 border border-slate-200 px-2 py-0.5 rounded text-[10px] font-bold text-slate-500">{item.count} Proses</span>
                           </td>
                           <td className="px-3 py-2 border-r border-slate-100 text-center font-black text-blue-600">{item.waktu} Min</td>
-                          <td className="px-3 py-2 border-r border-slate-100 text-right font-bold text-slate-700">Rp {formatIDR(item.mesin)}</td>
-                          <td className="px-3 py-2 border-r border-slate-100 text-right font-bold text-slate-700">Rp {formatIDR(item.pekerja)}</td>
+                          <td className="px-3 py-2 border-r border-slate-100 text-right">
+                            <MoneyText variant="mesin">Rp {formatIDR(item.mesin)}</MoneyText>
+                          </td>
+                          <td className="px-3 py-2 border-r border-slate-100 text-right">
+                            <MoneyText variant="pekerja">Rp {formatIDR(item.pekerja)}</MoneyText>
+                          </td>
                           <td className="px-3 py-2 text-right font-black text-indigo-700 bg-indigo-50/20">Rp {formatIDR(item.total)}</td>
                         </tr>
                       ))}
@@ -2482,8 +2716,12 @@ export default function BOMEditor({
                       <tr>
                         <td colSpan={3} className="px-3 py-2 text-right font-black text-slate-700 uppercase tracking-widest text-[9px]">AKUMULASI TOTAL:</td>
                         <td className="px-3 py-2 text-center font-black text-blue-600">{prosesSummary.totalWaktu} Min</td>
-                        <td className="px-3 py-2 text-right font-black text-slate-800">Rp {formatIDR(prosesSummary.totalMesin)}</td>
-                        <td className="px-3 py-2 text-right font-black text-slate-800">Rp {formatIDR(prosesSummary.totalPekerja)}</td>
+                        <td className="px-3 py-2 text-right">
+                          <MoneyText variant="mesin" className="font-black">Rp {formatIDR(prosesSummary.totalMesin)}</MoneyText>
+                        </td>
+                        <td className="px-3 py-2 text-right">
+                          <MoneyText variant="pekerja" className="font-black">Rp {formatIDR(prosesSummary.totalPekerja)}</MoneyText>
+                        </td>
                         <td className="px-3 py-2 text-right font-black text-indigo-700">Rp {formatIDR(prosesSummary.grandTotal)}</td>
                       </tr>
                     </tfoot>
@@ -2579,7 +2817,9 @@ export default function BOMEditor({
                           <td className="px-3 py-2.5 border-r border-slate-100 text-center font-black text-blue-600">{ln.waktu} mnt</td>
                           <td className="px-3 py-2.5 border-r border-slate-100 text-center font-black text-amber-700">{ln.person}</td>
                           <td className="px-3 py-2.5 border-r border-slate-100 text-center text-[10px] text-slate-500">{ln.waktu * ln.person}</td>
-                          <td className="px-3 py-2.5 border-r border-slate-100 text-right font-bold text-slate-700 tabular-nums">Rp {formatIDR(ln.biayaMesin)}</td>
+                          <td className="px-3 py-2.5 border-r border-slate-100 text-right">
+                            <MoneyText variant="mesin">Rp {formatIDR(ln.biayaMesin)}</MoneyText>
+                          </td>
                           <td className="px-3 py-2.5 border-r border-slate-100 text-right font-bold text-emerald-700 tabular-nums">Rp {formatIDR(ln.biayaPekerja)}</td>
                           <td className="px-3 py-2.5 text-right font-black text-indigo-700 bg-indigo-50/10 tabular-nums">Rp {formatIDR(ln.biayaTotal)}</td>
                           <td className="px-3 py-2.5 text-right font-bold text-amber-700 tabular-nums text-[11px]">
@@ -2608,7 +2848,9 @@ export default function BOMEditor({
                           <td className="px-3 py-3 text-center text-blue-600">{prosesLineTotals.waktu} mnt</td>
                           <td className="px-3 py-3 text-center text-amber-700">—</td>
                           <td className="px-3 py-3 text-center text-slate-600">{prosesLineTotals.personMinutes}</td>
-                          <td className="px-3 py-3 text-right text-slate-800 tabular-nums">Rp {formatIDR(prosesLineTotals.mesin)}</td>
+                          <td className="px-3 py-3 text-right">
+                            <MoneyText variant="mesin" className="font-black">Rp {formatIDR(prosesLineTotals.mesin)}</MoneyText>
+                          </td>
                           <td className="px-3 py-3 text-right text-emerald-700 tabular-nums">Rp {formatIDR(prosesLineTotals.pekerja)}</td>
                           <td className="px-3 py-3 text-right text-indigo-700 tabular-nums">Rp {formatIDR(prosesLineTotals.total)}</td>
                           <td className="px-3 py-3 text-right text-amber-700 tabular-nums">{(prosesLineTotals.total / kursUsd).toFixed(2)}</td>
@@ -2692,25 +2934,22 @@ export default function BOMEditor({
                          ? getPartHierarchyLabels(bomData, node.id)
                          : { modul: null, submodul: null, submodul2: null };
                        
-                       const sf = Number(d.sf) || 0;
-                       const wf = Number(d.wf) || 0;
-                       const baseMatCost = isPart ? (d.biaya || 0) * (d.qty || 1) : 0;
-                       const adjustedMatCost = isPart ? baseMatCost * (1 + (sf/100) + (wf/100)) : 0;
+                       const costRow = isPart ? computePartCostRow(d) : null;
+                       const sf = costRow ? costRow.sf : '';
+                       const wf = costRow ? costRow.wf : '';
+                       const adjustedMatCost = costRow?.matAdjusted ?? 0;
 
                        let totalOpWaktu = 0;
                        let totalOpMesin = 0;
                        let totalOpPekerja = 0;
 
-                       if (isPart) {
-                         expandProsesList(d).forEach((p) => {
-                           const c = calcProsesCosts(p);
-                           totalOpWaktu += c.waktu;
-                           totalOpMesin += c.mesin;
-                           totalOpPekerja += c.pekerja;
-                         });
+                       if (isPart && costRow) {
+                         totalOpWaktu = costRow.waktu;
+                         totalOpMesin = costRow.mesin + costRow.wc;
+                         totalOpPekerja = costRow.pekerja;
                        }
-                       const totalOpCost = totalOpMesin + totalOpPekerja;
-                       const grandTotalRow = adjustedMatCost + totalOpCost;
+                       const totalOpCost = costRow?.prosesTotal ?? 0;
+                       const grandTotalRow = costRow?.biayaProduksi ?? 0;
                        const prosesList = isPart ? expandProsesList(d) : [];
 
                        return (
@@ -2798,7 +3037,11 @@ export default function BOMEditor({
                              )}
                            </td>
                            <td className="px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-800">
-                             {isPart ? <>Rp {formatIDR(d.biaya || 0)}</> : <span className="text-slate-300">—</span>}
+                             {isPart ? (
+                               <MoneyText variant="matIdr">Rp {formatIDR(d.biaya || 0)}</MoneyText>
+                             ) : (
+                               <span className="text-slate-300">—</span>
+                             )}
                            </td>
                            
                            {/* Nested Table Rincian Operasi */}
@@ -2851,7 +3094,7 @@ export default function BOMEditor({
                                             <td className="px-3 py-2 border-r border-slate-100 text-center font-black text-blue-600">{w} Min</td>
                                             <td className="px-3 py-2 border-r border-slate-100 text-right">
                                               <div className="text-[7px] text-slate-400 mb-0.5">Rate: Rp {formatIDR(rate)} / mnt</div>
-                                              <div className="font-bold text-slate-700 text-[10px]">Rp {formatIDR(bMesin)}</div>
+                                              <MoneyText variant="mesin" className="text-[10px]">Rp {formatIDR(bMesin)}</MoneyText>
                                             </td>
                                             <td className="px-3 py-2 border-r border-slate-100 text-right">
                                               <div className="font-black text-amber-600 text-[10px]">{person} org</div>
@@ -2870,7 +3113,9 @@ export default function BOMEditor({
                                      <tr>
                                        <td colSpan={3} className="px-3 py-2 text-right font-black text-slate-500 uppercase tracking-widest">TOTAL ALOKASI OPERASI:</td>
                                        <td className="px-3 py-2 text-center font-black text-blue-600">{totalOpWaktu} Min</td>
-                                       <td className="px-3 py-2 text-right font-black text-slate-700">Rp {formatIDR(totalOpMesin)}</td>
+                                       <td className="px-3 py-2 text-right">
+                                         <MoneyText variant="mesin" className="font-black">Rp {formatIDR(totalOpMesin)}</MoneyText>
+                                       </td>
                                        <td className="px-3 py-2 text-right font-black text-emerald-700">Rp {formatIDR(totalOpPekerja)}</td>
                                        <td className="px-3 py-2 border-r border-slate-100" />
                                        <td className="px-3 py-2 text-right font-black text-indigo-700">Rp {formatIDR(totalOpCost)}</td>
@@ -2892,7 +3137,11 @@ export default function BOMEditor({
                            </td>
 
                            <td className="px-4 py-3 text-right font-black text-indigo-700 bg-indigo-50/30 text-sm align-middle">
-                             {isPart ? <>Rp {formatIDR(grandTotalRow)}</> : <span className="text-slate-300">—</span>}
+                             {isPart ? (
+                               <MoneyText variant="total">Rp {formatIDR(grandTotalRow)}</MoneyText>
+                             ) : (
+                               <span className="text-slate-300">—</span>
+                             )}
                            </td>
                          </tr>
                        )
@@ -3276,7 +3525,7 @@ export default function BOMEditor({
                 <p className="text-[10px] text-slate-500 mt-3 mb-3 font-medium">
                   Packing, overhead, dan markup — mempengaruhi waterfall & deviasi di bawah.
                 </p>
-                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
                   {/* Packing Selector */}
                   <div className="flex flex-col gap-2">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">1. Jalur Packing (Fisik)</label>
@@ -3324,6 +3573,40 @@ export default function BOMEditor({
                         <span className="bg-slate-100 px-2 py-1.5 border-r border-slate-200 flex-1 text-[10px]">Mgmt OH (%)</span>
                         <input type="number" value={cogsConfig.managementOhPct} onChange={e => setCogsConfig(p => ({ ...p, managementOhPct: e.target.value }))} className="w-16 px-2 py-1.5 text-center outline-none text-blue-700 font-black" />
                       </div>
+                    </div>
+                  </div>
+
+                  {/* FOB Export */}
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">FOB Export (DATA BASE)</label>
+                    <label className="flex items-center gap-2 text-xs font-bold text-slate-600 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={cogsConfig.includeFobExport === true || cogsConfig.includeFobExport === 'true'}
+                        onChange={(e) =>
+                          setCogsConfig((p) => ({ ...p, includeFobExport: e.target.checked }))
+                        }
+                        className="rounded border-slate-300"
+                      />
+                      Aktifkan biaya FOB
+                    </label>
+                    <select
+                      value={cogsConfig.exportContainer || '20foot'}
+                      disabled={!(cogsConfig.includeFobExport === true || cogsConfig.includeFobExport === 'true')}
+                      onChange={(e) => setCogsConfig((p) => ({ ...p, exportContainer: e.target.value }))}
+                      className="text-xs font-bold border border-slate-200 rounded-lg px-2 py-1.5 bg-white disabled:opacity-50"
+                    >
+                      <option value="20foot">20 FT — Rp 500.000/m³</option>
+                      <option value="40foot">40 FT — Rp 300.000/m³</option>
+                      <option value="40hc">40 HC — Rp 300.000/m³</option>
+                    </select>
+                    <div className="text-[9px] text-slate-400 leading-tight">
+                      Vol packing: {volBoxPacking.toFixed(4)} m³
+                      {cogsData.fobExportCost > 0 && (
+                        <span className="block text-violet-600 font-bold">
+                          FOB: Rp {formatIDR(cogsData.fobExportCost)} ({formatIDR(cogsData.fobDetail?.fobPerM3)}/m³)
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -3406,8 +3689,12 @@ export default function BOMEditor({
                         <td className="px-6 py-4 text-center font-black text-slate-400">1</td>
                         <td className="px-6 py-4 font-bold text-slate-800">Bahan Baku & Material (RAW)</td>
                         <td className="px-6 py-4 text-[10px] text-slate-500 leading-tight">Harga Part × Qty + Penyesuaian SF/WF<br/><span className="text-blue-500 font-bold">Engine BOM Rollup</span></td>
-                        <td className="px-6 py-4 text-right font-black text-slate-600">Rp {formatIDR(cogsData.totalMaterial)}</td>
-                        <td className="px-6 py-4 text-right font-bold text-slate-400">Rp {formatIDR(cogsData.totalMaterial)}</td>
+                        <td className="px-6 py-4 text-right">
+                          <MoneyText variant="matIdr" className="font-black">Rp {formatIDR(cogsData.totalMaterial)}</MoneyText>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <MoneyText variant="matIdr" className="font-semibold opacity-80">Rp {formatIDR(cogsData.totalMaterial)}</MoneyText>
+                        </td>
                       </tr>
 
                       {/* Step 2: Factory Processing */}
@@ -3415,8 +3702,12 @@ export default function BOMEditor({
                         <td className="px-6 py-4 text-center font-black text-slate-400">2</td>
                         <td className="px-6 py-4 font-bold text-slate-800">Proses Pabrik (Work Center & Labor)</td>
                         <td className="px-6 py-4 text-[10px] text-slate-500 leading-tight">Total Waktu × (Tarif Mesin + Upah Karyawan)<br/><span className="text-blue-500 font-bold">Costing Studio (Proses)</span></td>
-                        <td className="px-6 py-4 text-right font-black text-slate-600">+ Rp {formatIDR(cogsData.totalProcess)}</td>
-                        <td className="px-6 py-4 text-right font-bold text-slate-400">Rp {formatIDR(cogsData.totalMaterial + cogsData.totalProcess)}</td>
+                        <td className="px-6 py-4 text-right">
+                          <MoneyText variant="prodIdr" className="font-black">+ Rp {formatIDR(cogsData.totalProcess)}</MoneyText>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <MoneyText variant="prodIdr" className="font-semibold opacity-80">Rp {formatIDR(cogsData.totalMaterial + cogsData.totalProcess)}</MoneyText>
+                        </td>
                       </tr>
 
                       {/* Step 3: Packing */}
@@ -3433,13 +3724,41 @@ export default function BOMEditor({
                         <td className="px-6 py-4 text-right font-bold text-blue-400">Rp {formatIDR(cogsData.productionCost)}</td>
                       </tr>
 
+                      {cogsData.fobExportCost > 0 && (
+                        <tr className="border-b border-slate-100 hover:bg-slate-50/50 bg-violet-50/10">
+                          <td className="px-6 py-4 text-center font-black text-violet-400">3b</td>
+                          <td className="px-6 py-4 font-bold text-violet-900">
+                            Biaya FOB Export{' '}
+                            <span className="bg-violet-100 text-violet-700 px-2 py-0.5 rounded text-[9px] ml-2">
+                              {cogsData.fobDetail?.containerLabel || cogsConfig.exportContainer}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-[10px] text-slate-500 leading-tight">
+                            {formatIDR(cogsData.fobDetail?.fobPerM3)}/m³ × vol packing {volBoxPacking.toFixed(4)} m³
+                            <br />
+                            <span className="text-violet-600 font-bold text-[9px]">DATA BASE FOB COST — rounded per m³</span>
+                          </td>
+                          <td className="px-6 py-4 text-right font-black text-violet-700">
+                            + Rp {formatIDR(cogsData.fobExportCost)}
+                          </td>
+                          <td className="px-6 py-4 text-right font-bold text-violet-400">
+                            Rp {formatIDR(cogsData.productionCost)}
+                          </td>
+                        </tr>
+                      )}
+
                       {/* Step 4: PRODUCTION COST SUBTOTAL */}
                       <tr className="border-b-2 border-slate-200 bg-slate-100/50">
                         <td className="px-6 py-4"></td>
                         <td className="px-6 py-4 font-black text-slate-800 text-sm uppercase tracking-wide">RAW Production Cost</td>
-                        <td className="px-6 py-4 text-[10px] text-slate-500">Material + Proses Pabrik + Packing ({cogsConfig.packingJalur})</td>
+                        <td className="px-6 py-4 text-[10px] text-slate-500">
+                          Material + Proses + Packing ({cogsConfig.packingJalur})
+                          {cogsData.fobExportCost > 0 ? ' + FOB Export' : ''}
+                        </td>
                         <td className="px-6 py-4 text-right"></td>
-                        <td className="px-6 py-4 text-right font-black text-slate-800 text-sm">Rp {formatIDR(cogsData.productionCost)}</td>
+                        <td className="px-6 py-4 text-right text-sm">
+                          <MoneyText variant="total">Rp {formatIDR(cogsData.productionCost)}</MoneyText>
+                        </td>
                       </tr>
 
                       {/* Step 5: Factory Overhead */}

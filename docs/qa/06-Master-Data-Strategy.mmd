@@ -1,0 +1,140 @@
+# Strategi Master Data — Dummy App vs ERP Terpisah
+
+| Tanggal | 5 Juni 2026 |
+
+---
+
+## 1. Kondisi saat ini
+
+```mermaid
+flowchart TB
+  subgraph app [BOM Design Baru - TODAY]
+    SEED[src/data/masters/*.json]
+    IDB[(IndexedDB browser)]
+    IMP[npm run import:masters:zan]
+    SEED --> IDB
+    IMP --> SEED
+  end
+  subgraph erp [ERPKu Staging - TARGET]
+    DB[(PostgreSQL / ERP DB)]
+    API_M[/purchasing/materials]
+    API_WC[/manufacture/work-centers]
+    API_R[/manufacture/routings]
+    DB --> API_M
+    DB --> API_WC
+    DB --> API_R
+  end
+  PICKER[Material Picker] --> IDB
+  PICKER -. future .-> API_M
+```
+
+| Aspek | App (dummy) | ERP (live) |
+|-------|-------------|------------|
+| Lokasi | File JSON + browser | Database server |
+| Update | Reset import / patch seed | Admin ERP UI |
+| Scope | ~882 SKU ZAN seed | Semua material pabrik |
+| COATING/RATIO/FORMULA | Ada di seed | ❌ tidak exposed di BOM UI |
+| FOB COST | Seed Excel | ❌ |
+| Work Center | Seed | `/manufacture/work-centers` |
+| Routing template | Seed + node-level | `/manufacture/routings` |
+
+**Poin user (req #6):** Master di app saat ini **dummy sementara**; nantinya **dipisah** mengikuti pola **erp.solusiuntuknegeri** (modul master terpisah, BOM hanya konsumen).
+
+---
+
+## 2. Target arsitektur master
+
+```mermaid
+flowchart LR
+  Admin[Master Admin ERP] --> MDB[(Master DB)]
+  MDB --> API[Master API Layer]
+  API --> BOM_APP[BOM Costing App]
+  API --> WC_UI[Work Centers UI]
+  API --> MAT_UI[Materials UI]
+  EXCEL[Excel Import Batch] --> MDB
+```
+
+### Prinsip pemisahan
+
+1. **Single source of truth** = ERP master modules
+2. **BOM app read-only** master (kecuali admin role)
+3. **Cache lokal** optional untuk offline dev only (`MASTER_SOURCE=seed`)
+4. **Formula/ratio/coating** — expose via API atau sub-module `manufacture/costing-master`
+
+---
+
+## 3. Mapping master tab app → ERP
+
+| Tab App (Master Modal) | ERP Module | Strategi migrasi |
+|------------------------|------------|------------------|
+| DATA BASE (Kayu) | `/purchasing/materials?type=wood` | API filter section |
+| DATABASE (Material) | `/purchasing/materials` | Pagination + section chips |
+| FOB COST | **Baru** di ERP atau keep app | Import Excel batch |
+| Non-Kayu | materials | Merge |
+| MASTER RATIO | costing config table | New ERP admin |
+| WOOD LABOR | WC labor rates | Link WC |
+| COATING RATIO | finishing master | New ERP admin |
+| FORMULA DATA | costing engine | Backend service |
+| WORK CENTER | `/manufacture/work-centers` | Direct API |
+| Katalog Material | products + materials join | ERP catalog |
+| Formula Registry | app engine | Keep in engine service |
+| ROUND COMPONENT | costing engine | Keep in engine service |
+
+---
+
+## 4. Fase transisi
+
+| Fase | Mode | `MASTER_SOURCE` | User impact |
+|------|------|-----------------|-------------|
+| **T0** (now) | Seed JSON | `seed` | Dev/demo; dummy prices |
+| **T1** | Hybrid | `hybrid` | Kayu/hardware ERP; ratio seed |
+| **T2** | ERP primary | `erp` | All pickers API |
+| **T3** | ERP only | `erp` (seed deprecated) | Production |
+
+### Acceptance per fase
+
+**T1 Hybrid:**
+- [ ] Picker kayu + hardware dari API
+- [ ] Fallback seed jika API down (banner warning)
+
+**T2 ERP primary:**
+- [ ] Reset import disabled in production build
+- [ ] WC + routing from API
+- [ ] Audit `npm run audit:database` hits ERP endpoint
+
+---
+
+## 5. Dampak pada UAT / testing
+
+| Test case | Dummy master | ERP master |
+|-----------|--------------|------------|
+| Pilih SKU BAUT-01 | Hanya jika ada di seed | Harus match staging row |
+| Harga satuan part | Seed price | ERP `Unit Cost` |
+| COGS parity Excel | ZAN seed OK | Perlu master file Excel same source |
+| Offline demo | ✅ | ❌ without cache |
+
+---
+
+## 6. Rekomendasi implementasi
+
+1. **Env flag** `VITE_MASTER_API_URL=https://erp.stg.../api`
+2. **Adapter layer** `masterLookup.js` → `fetchMaterials({ section, q })`
+3. **Deprecate** bundled JSON gradually (keep for unit tests only)
+4. **Sync job** nightly Excel → ERP for legacy ratio/coating until ERP UI ready
+5. **Document** di Master modal: "Sumber: ERP Staging" vs "Sumber: Seed lokal"
+
+---
+
+## 7. Checklist QA master migration
+
+| # | Step | Expected |
+|---|------|----------|
+| 1 | Buka picker PART hardware | List = ERP materials count ±5% |
+| 2 | Pilih material | `biaya` = ERP supplier price |
+| 3 | Edit master di ERP | Refresh picker → harga baru |
+| 4 | Seed mode dev | `npm run dev` still works offline |
+| 5 | FOB COST | Tetap dari costing service until ERP has module |
+
+---
+
+*Index dokumen: `README.md`*

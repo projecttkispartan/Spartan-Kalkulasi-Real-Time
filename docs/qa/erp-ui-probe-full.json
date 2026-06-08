@@ -1,0 +1,261 @@
+{
+  "timestamp": "2026-06-05T00:06:21.243Z",
+  "environment": {
+    "base": "https://erp.stg.solusiuntuknegeri.com",
+    "user": "nrw"
+  },
+  "listPage": {
+    "url": "https://erp.stg.solusiuntuknegeri.com/manufacture/bill-of-materials",
+    "title": "ERPKu Staging",
+    "headings": [
+      "Aa",
+      "Daftar Bahan",
+      "78",
+      "138",
+      "18"
+    ],
+    "navLinks": [
+      " | /manufacture/products",
+      " | /manufacture/product-variants",
+      " | /manufacture/bill-of-materials",
+      " | /manufacture/raw-ticket",
+      " | /manufacture/work-centers",
+      " | /manufacture/routings",
+      " | /manufacture/knife",
+      " | /manufacture/approval",
+      " | /manufacture/qc-packing",
+      "BOM Baru | /manufacture/bill-of-materials/new"
+    ],
+    "tabLike": [],
+    "buttons": [
+      "Aa",
+      "Filters",
+      "BOM Baru",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "24"
+    ],
+    "tableHeaders": [
+      "Perluas",
+      "No",
+      "Nama BOM0",
+      "Kode BOM0",
+      "Tipe0",
+      "Varian",
+      "Jumlah",
+      "Biaya0",
+      "Versi",
+      "Tanggal Dibuat0",
+      "Aksi"
+    ],
+    "labels": [],
+    "screenshot": "docs/qa/evidence/erp-01-bom-list.png"
+  },
+  "detailPages": [
+    {
+      "step": "initial",
+      "url": "https://erp.stg.solusiuntuknegeri.com/manufacture/bill-of-materials",
+      "title": "ERPKu Staging",
+      "headings": [
+        "Aa",
+        "Daftar Bahan",
+        "78",
+        "138",
+        "18"
+      ],
+      "navLinks": [
+        " | /manufacture/products",
+        " | /manufacture/product-variants",
+        " | /manufacture/bill-of-materials",
+        " | /manufacture/raw-ticket",
+        " | /manufacture/work-centers",
+        " | /manufacture/routings",
+        " | /manufacture/knife",
+        " | /manufacture/approval",
+        " | /manufacture/qc-packing",
+        "BOM Baru | /manufacture/bill-of-materials/new"
+      ],
+      "tabLike": [],
+      "buttons": [
+        "Aa",
+        "Filters",
+        "BOM Baru",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "24"
+      ],
+      "tableHeaders": [
+        "Perluas",
+        "No",
+        "Nama BOM0",
+        "Kode BOM0",
+        "Tipe0",
+        "Varian",
+        "Jumlah",
+        "Biaya0",
+        "Versi",
+        "Tanggal Dibuat0",
+        "Aksi"
+      ],
+      "labels": [],
+      "screenshot": "docs/qa/evidence/erp-03-bom-detail.png"
+    },
+    {
+      "step": "tab:Summary",
+      "url": "https://erp.stg.solusiuntuknegeri.com/stock-management/stock-summary",
+      "title": "ERPKu Staging",
+      "headings": [
+        "Aa",
+        "Ringkasan Stok",
+        "840",
+        "Rp 714.000.000",
+        "Rp 722.000.000"
+      ],
+      "navLinks": [
+        " | /manufacture/products",
+        " | /manufacture/product-variants",
+        " | /manufacture/bill-of-materials",
+        " | /manufacture/raw-ticket",
+        " | /manufacture/work-centers",
+        " | /manufacture/routings",
+        " | /manufacture/knife",
+        " | /manufacture/approval",
+        " | /manufacture/qc-packing"
+      ],
+      "tabLike": [],
+      "buttons": [
+        "Aa",
+        "Unduh PDF",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "15"
+      ],
+      "tableHeaders": [
+        "#",
+        "Tipe",
+        "Kode Item0",
+        "Gambar",
+        "Nama Item0",
+        "Harga Beli0",
+        "Harga Jual0",
+        "Stok Saat Ini0",
+        "Nilai Stok"
+      ],
+      "labels": [
+        "Filter"
+      ],
+      "screenshot": "docs/qa/evidence/erp-tab-summary.png"
+    }
+  ],
+  "createPage": {
+    "url": "https://erp.stg.solusiuntuknegeri.com/manufacture/bill-of-materials/new",
+    "title": "ERPKu Staging",
+    "headings": [
+      "Aa",
+      "Baru"
+    ],
+    "navLinks": [
+      " | /manufacture/products",
+      " | /manufacture/product-variants",
+      " | /manufacture/bill-of-materials",
+      " | /manufacture/raw-ticket",
+      " | /manufacture/work-centers",
+      " | /manufacture/routings",
+      " | /manufacture/knife",
+      " | /manufacture/approval",
+      " | /manufacture/qc-packing"
+    ],
+    "tabLike": [
+      "1Produk Akhir",
+      "2Komponen",
+      "3Sub Perakitan & Bahan Baku",
+      "4Operasi"
+    ],
+    "buttons": [
+      "Aa",
+      "1Produk Akhir",
+      "2Komponen",
+      "3Sub Perakitan & Bahan Baku",
+      "4Operasi",
+      "Add Item",
+      "Kembali",
+      "Lanjut ke Komponen",
+      "Simpan Item Baru",
+      "Identitas Komponen",
+      "Spesifikasi Teknis",
+      "Manufaktur",
+      "Keuangan",
+      "Tambahan",
+      "Add Catalog",
+      "Tambah"
+    ],
+    "tableHeaders": [
+      "1. Identitas Komponen",
+      "2. Spesifikasi Teknis",
+      "3. Manufaktur",
+      "4. Keuangan",
+      "5. Tambahan",
+      "ITEM",
+      "DIMENSI (MM)",
+      "VOLUME (m³)",
+      "KUANTITAS",
+      "PUSAT KERJA",
+      "ROUTING",
+      "PERAWATAN",
+      "BIAYA SATUAN",
+      "BIAYA MESIN",
+      "BIAYA TENAGA KERJA",
+      "TOTAL BIAYA",
+      "CATATAN",
+      "INFO BOM",
+      "AKSI",
+      "#",
+      "Kode Material",
+      "Nama Material",
+      "Modul",
+      "Submodul",
+      "Jumlah",
+      "Satuan",
+      "Dimensi",
+      "Harga Satuan",
+      "Total Harga",
+      "#",
+      "Modul",
+      "Nama Operasi",
+      "Tipe",
+      "Durasi (M)",
+      "Tenaga Kerja",
+      "Mesin",
+      "Biaya Tenaga Kerja",
+      "Biaya Operasi",
+      "Total Biaya",
+      "Catatan",
+      "Identitas Komponen",
+      "ITEM",
+      "AKSI"
+    ],
+    "labels": [
+      "Tipe BOM *",
+      "Nama Item *",
+      "Nama BOM *",
+      "Kode BOM *",
+      "Kuantitas",
+      "Versi",
+      "Dimensi (mm)",
+      "Panjang",
+      "Lebar",
+      "Tinggi",
+      "Volume (m³)"
+    ],
+    "screenshot": "docs/qa/evidence/erp-02-bom-new.png"
+  }
+}

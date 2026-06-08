@@ -1,0 +1,192 @@
+# PRD — Peningkatan Sistem Manufaktur BOM (Post-UAT G632L)
+
+| Field | Value |
+|-------|-------|
+| **Versi** | 2.0 |
+| **Tanggal** | 4 Juni 2026 |
+| **Input** | UAT `UAT-G632L-Manual-From-Zero.mmd`, `npm test`, audit sample COGS |
+| **Status** | Draft untuk roadmap |
+
+---
+
+## 1. Visi produk
+
+Aplikasi menjadi **sumber kebenaran tunggal** kalkulasi BOM & COGS furniture, dengan:
+
+- Input manual terstruktur **atau** import Excel parity.
+- Master DATA BASE per organisasi (multi-file Excel).
+- API terbuka untuk ERP / portal kalkulasi real-time.
+
+```mermaid
+mindmap
+  root((Manufaktur BOM))
+    Master
+      DATA BASE multi-tenant
+      FORMULA DATA
+      COATING RATIO
+      FOB COST
+    Project
+      Manual wizard
+      Excel import
+      Versioning
+    Engine
+      Live COGS
+      Parity audit
+      Rounding Excel
+    Integrasi
+      REST API
+      Webhook
+      Export ERP
+```
+
+---
+
+## 2. Temuan UAT → kebutuhan produk
+
+| ID | Temuan | Severity | Epic |
+|----|--------|----------|------|
+| F-01 | G632L manual dari nol tidak mencapai parity Excel | P0 | E-Manual-Wizard |
+| F-02 | G632L import sample deviasi COGS ~47% | P0 | E-Import-Parity |
+| F-03 | Master seed ZAN tidak mencakup semua SKU G632L | P1 | E-Master-Multi |
+| F-04 | Proses SUMMARY tidak auto dari BOM manual | P1 | E-Proses-Template |
+| F-05 | QA UI tidak terotomasi (E2E kosong) | P2 | E-E2E |
+| F-06 | ELB test path broken di CI | P3 | E-CI |
+
+---
+
+## 3. Epic detail
+
+### E-Manual-Wizard (P0)
+
+**User story:** Sebagai costing, saya membuat proyek G632L tanpa import dengan wizard yang mengisi header + kerangka BOM dari template produk.
+
+**Acceptance criteria:**
+
+- [ ] Wizard 5 langkah: Identitas → Dimensi → Grade/Coating → Kerangka modul (SOFA) → Review.
+- [ ] Pre-fill dari `productTemplates` (G632L-RO, ZAN-100, …).
+- [ ] Generate SUBMODUL default (BODI, KAKI, SANDARAN, …) tanpa part detail.
+- [ ] Checklist “langkah berikutnya” menuju 100% part.
+
+```mermaid
+flowchart LR
+  A[Identitas] --> B[Dimensi]
+  B --> C[Master produk]
+  C --> D[Kerangka BOM]
+  D --> E[Editor lengkap]
+```
+
+### E-Import-Parity (P0)
+
+**User story:** Import `17 - G632L-RO - MARIO 3 S - 12-5-26.xlsx` menghasilkan COGS dalam toleransi ≤ 3% vs SUMMARY COST.
+
+**Acceptance criteria:**
+
+- [ ] `verifySampleCogs('G632L-RO')` PASS di `npm test`.
+- [ ] Upholstery / finishing / hardware mapping ke section benar.
+- [ ] `cogsImportMode` dokumentasi: `rollup` vs `excel-mirror` vs `hybrid`.
+- [ ] Laporan deviasi per baris SUMMARY (KAYU, UPHOLSTERY, …).
+
+### E-Master-Multi (P1)
+
+**User story:** Master DATA BASE bisa di-import dari file Excel aktif proyek (G632L), bukan hanya ZAN-100.
+
+**Acceptance criteria:**
+
+- [ ] `npm run import:masters -- --file=<path>` untuk G632L.
+- [ ] `audit:database` bandingkan SKU count per section vs Excel.
+- [ ] Picker Part menampilkan SKU dari master aktif + indikator sumber file.
+
+### E-Proses-Template (P1)
+
+**User story:** Setelah struktur BOM manual, user terapkan template proses SOFA (LAMINATING, AMPLAS, FINISHING, …) dari `SUMMARY COST`.
+
+**Acceptance criteria:**
+
+- [ ] Template per `itemType` (CHAIR, SOFA, TABLE).
+- [ ] Biaya mesin/pekerja rollup ke modul.
+- [ ] Selaras baris `excelRow` untuk export.
+
+### E-Live-COGS-UX (P1)
+
+**User story:** Nominal dan parity terlihat jelas saat editing.
+
+**Acceptance criteria:**
+
+- [x] Warna nominal MAT/PROD/UNIT (amber/indigo/violet) — **Done**
+- [x] Combo DATA BASE + search + nama sync — **Done**
+- [ ] Deviasi live vs Excel mirror pada proyek manual (tanpa mirror → tampilkan “belum ada referensi”).
+- [ ] Tooltip rumus per sel COGS.
+
+### E-FOB-Export (P2)
+
+**Acceptance criteria:**
+
+- [x] FOB engine 20/40/40HC — **Done**
+- [ ] Persist pilihan kontainer per proyek di COGS export PDF.
+
+### E-E2E (P2)
+
+- [ ] Playwright: create project → add part → pick master → COGS > 0.
+- [ ] Screenshot parity di CI (optional).
+
+---
+
+## 4. Prioritas rilis
+
+```mermaid
+gantt
+  title Roadmap 2026 Q2-Q3
+  dateFormat YYYY-MM-DD
+  section P0
+  Manual Wizard G632L     :2026-06-10, 21d
+  G632L Import Parity     :2026-06-10, 28d
+  section P1
+  Multi Master Import     :2026-07-01, 14d
+  Proses Template SOFA    :2026-07-15, 21d
+  section P2
+  REST API v1             :2026-08-01, 35d
+  E2E Suite               :2026-08-15, 14d
+```
+
+| Release | Scope | Gate |
+|---------|-------|------|
+| **v1.1** | ZAN/FNA parity + UX nominal/combo | `npm test` ZAN/FNA PASS |
+| **v1.2** | G632L import ≤ 3% + wizard kerangka | G632L verify PASS |
+| **v1.3** | API read/write proyek + master | Contract tests PASS |
+| **v2.0** | Multi-tenant master + ERP sync | Security review |
+
+---
+
+## 5. Metrik sukses
+
+| KPI | Baseline (Jun 2026) | Target v1.2 |
+|-----|---------------------|-------------|
+| Sample COGS strict pass | 2/11 | ≥ 6/11 |
+| G632L COGS gap | 46,9% | ≤ 3% |
+| Waktu buat BOM manual G632L | ~8–16 jam (estimasi) | ≤ 2 jam (wizard) |
+| Parity audit score (empty→filled) | N/A | ≥ 85% |
+| API uptime (future) | — | 99,5% |
+
+---
+
+## 6. Non-goals (v1.x)
+
+- Replikasi macro VBA Excel 100%.
+- PLM / CAD sync.
+- Multi-currency selain IDR/USD/EUR display.
+
+---
+
+## 7. Dependensi teknis
+
+| Komponen | File utama |
+|----------|------------|
+| COGS engine | `src/services/bomCalculations.js` |
+| Master lookup | `src/utils/masterLookup.js` |
+| Import BOM | `src/utils/importBomFromExcel.js` |
+| Parity audit | `src/utils/excelParityAudit.js` |
+| Storage | `src/services/projectStorage.js`, `masterStorage.js` |
+
+---
+
+*Lanjutan kontrak API: `API-Contract-BOM-Platform.mmd`*

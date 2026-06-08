@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Plus, Server, HelpCircle } from 'lucide-react';
+import { Plus, Server, BookOpen } from 'lucide-react';
 import { getWorkCenters, saveWorkCenters, reimportMastersFromSeedFiles } from '../../services/masterStorage';
 import FullPageShell from '../ui/FullPageShell.jsx';
-import MasterUsageGuideModal from './MasterUsageGuideModal.jsx';
+import ManualBookModal from './ManualBookModal.jsx';
 import { MasterPanel, MasterLoading, MasterTabHint, MasterDataBody } from '../master/MasterTable.jsx';
 import { WorkCenterTable } from '../master/MasterDataTables.jsx';
 import { MASTER_TAB_META } from '../master/masterTabMeta.js';
@@ -19,7 +19,7 @@ export default function MasterWorkCenterModal({ isOpen, onClose }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState('');
-  const [showGuide, setShowGuide] = useState(false);
+  const [showManual, setShowManual] = useState(false);
   const [loadError, setLoadError] = useState(null);
 
   const wcMeta = MASTER_TAB_META.workCenters;
@@ -89,10 +89,10 @@ export default function MasterWorkCenterModal({ isOpen, onClose }) {
           <>
             <button
               type="button"
-              onClick={() => setShowGuide(true)}
+              onClick={() => setShowManual(true)}
               className="text-xs font-bold text-white border border-white/30 px-3 py-2 rounded-lg hover:bg-white/15 flex items-center gap-1.5"
             >
-              <HelpCircle className="w-3.5 h-3.5" /> Panduan
+              <BookOpen className="w-3.5 h-3.5" /> Manual Book
             </button>
             <button
               type="button"
@@ -167,7 +167,7 @@ export default function MasterWorkCenterModal({ isOpen, onClose }) {
         </div>
       </FullPageShell>
 
-      <MasterUsageGuideModal isOpen={showGuide} onClose={() => setShowGuide(false)} />
+      <ManualBookModal isOpen={showManual} onClose={() => setShowManual(false)} />
     </>
   );
 }

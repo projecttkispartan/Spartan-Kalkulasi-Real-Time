@@ -69,6 +69,13 @@ export const CONTAINER_NET_VOLUME_M3 = {
   '40hc': 31.38096,
 };
 
+/** Volume referensi FOB COST per m³ (DATA BASE — pembulatan tarif export) */
+export const FOB_CONTAINER_VOLUME_M3 = {
+  '20foot': { primary: 28, alt: 32, roundedFobPerM3: 500_000 },
+  '40foot': { primary: 55, alt: 64, roundedFobPerM3: 300_000 },
+  '40hc': { primary: 62, alt: 70, roundedFobPerM3: 300_000 },
+};
+
 /** Kategori biaya SUMMARY COST (baris 15–32) — label analisa Excel */
 export const SUMMARY_COST_CATEGORIES = [
   { key: 'kayu', label: 'KAYU', excelRow: 15 },

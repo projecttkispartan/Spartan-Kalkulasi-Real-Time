@@ -1,54 +1,186 @@
-import { getCachedMaterials, getCachedNonWoodMaterials, getCachedWasteRatios, getCachedCoatings, getCachedMaterialCatalog } from '../services/masterStorage.js';
+import {
+  getCachedMaterials,
+  getCachedNonWoodMaterials,
+  getCachedWasteRatios,
+  getCachedCoatings,
+  getCachedMaterialCatalog,
+  getAllDatabaseMaterials,
+  getCachedDatabaseSections,
+  DATABASE_SECTION_KEYS,
+} from '../services/masterStorage.js';
 import { evalFormula } from './formulaEngine.js';
 
-function allMaterials() {
-  return [...getCachedMaterials(), ...getCachedNonWoodMaterials()];
+function getMaterialsPool() {
+  return getAllDatabaseMaterials();
 }
 
-/**
- * Biaya material per pcs dari DATA BASE: harga/m³ × volume part (m³)
- * + WF% dari MASTER RATIO (default kayu 30%)
- */
-export function computeWoodBiayaFromMaster(partData, materialId) {
-  const materials = allMaterials();
-  const ratios = getCachedWasteRatios();
-  const mat = materials.find((m) => m.id === materialId || m.specification === materialId);
-  if (!mat) return null;
+function allMaterials() {
+  return [...getCachedMaterials(), ...getCachedNonWoodMaterials(), ...getMaterialsPool()];
+}
 
-  const vol = Number(partData.vol) || 0;
-  if (!vol) return null;
+function resolveMaterial(materialId) {
+  const pool = getMaterialsPool();
+  const legacy = [...getCachedMaterials(), ...getCachedNonWoodMaterials()];
+  return (
+    pool.find((m) => m.id === materialId || m.specification === materialId) ||
+    legacy.find((m) => m.id === materialId || m.specification === materialId) ||
+    null
+  );
+}
 
-  const priceM3 =
+function materialUnitPrice(mat) {
+  const unit = String(mat.unit || 'm3').toLowerCase();
+  if (unit === 'm2' || unit === 'm²') {
+    return (
+      Number(mat.hargaMaterialSupplier) ||
+      Number(mat.pricePerM2Supplier) ||
+      Number(mat.pricePerUnitSupplier) ||
+      Number(mat.hargaMaterialBuyer) ||
+      Number(mat.pricePerM2Buyer) ||
+      Number(mat.pricePerUnitBuyer) ||
+      0
+    );
+  }
+  const pieceOrFlat = ['pcs', 'lbr', 'roll', 'unit', 'btl', 'kg', 'm', 'ltr', 'ml'];
+  if (pieceOrFlat.includes(unit)) {
+    return (
+      Number(mat.hargaMaterialSupplier) ||
+      Number(mat.pricePerUnitSupplier) ||
+      Number(mat.hargaMaterialBuyer) ||
+      Number(mat.pricePerUnitBuyer) ||
+      0
+    );
+  }
+  return (
     Number(mat.hargaMaterialSupplier) ||
     Number(mat.pricePerM3Supplier) ||
     Number(mat.hargaMaterialBuyer) ||
     Number(mat.pricePerM3Buyer) ||
-    0;
-  const ratio = ratios.find((r) => r.materialType === 'kayu' && r.aktif !== false) || { sf: 0, wf: 30 };
-  const sf = Number(ratio.sf) || 0;
-  const wf = Number(ratio.wf) ?? 30;
+    0
+  );
+}
 
-  const biaya = evalFormula('wood_material_cost', { pricePerM3: priceM3, vol, sf, wf });
+function partSurfaceM2(part) {
+  const explicit = Number(part.surfaceM2);
+  if (explicit > 0) return explicit;
+  const p = Number(part.p) || 0;
+  const l = Number(part.l) || 0;
+  const t = Number(part.t) || 0;
+  if (p && l && t) {
+    return evalFormula('surface_m2_estimate', { p, l, t }) ?? 0;
+  }
+  return 0;
+}
+
+/**
+ * Biaya material per pcs dari DATA BASE
+ */
+export function computeMaterialBiayaFromMaster(partData, materialId, materialType) {
+  const mat = resolveMaterial(materialId);
+  if (!mat) return null;
+
+  const mt = materialType || mat.materialType || 'kayu';
+  const unit = String(mat.unit || 'm3').toLowerCase();
+  const price = materialUnitPrice(mat);
+  if (!price) return null;
+
+  const ratio = getWasteRatioForMaterialType(mt);
+  const sf = Number(ratio.sf) || 0;
+  const wf = Number(ratio.wf) ?? (mt === 'kayu' ? 30 : 0);
+
+  if (unit === 'm2' || unit === 'm²') {
+    const m2 = partSurfaceM2(partData);
+    if (!m2) return null;
+    const biaya = Math.round(price * m2 * (1 + sf / 100));
+    return {
+      biaya,
+      matBase: Math.round(price * m2),
+      sf,
+      wf: 0,
+      material: mat,
+      pricePerUnit: price,
+      unit: 'm2',
+    };
+  }
+
+  const pieceUnits = new Set(['pcs', 'lbr', 'roll', 'unit', 'btl']);
+  const weightUnits = new Set(['kg']);
+  const lengthUnits = new Set(['m', 'ltr', 'ml']);
+
+  if (pieceUnits.has(unit) || mt === 'steel' || mt === 'hardware' || mt === 'finishing') {
+    const qty = Number(partData.qty) || 1;
+    const biaya = Math.round(price * qty);
+    return {
+      biaya,
+      matBase: biaya,
+      sf: 0,
+      wf: 0,
+      material: mat,
+      pricePerUnit: price,
+      unit: unit || 'pcs',
+    };
+  }
+
+  if (weightUnits.has(unit)) {
+    const qty = Number(partData.weightKg) || Number(partData.qty) || 1;
+    const biaya = Math.round(price * qty);
+    return {
+      biaya,
+      matBase: biaya,
+      sf: 0,
+      wf: 0,
+      material: mat,
+      pricePerUnit: price,
+      unit: 'kg',
+    };
+  }
+
+  if (lengthUnits.has(unit)) {
+    const qty = Number(partData.lengthM) || Number(partData.qty) || 1;
+    const biaya = Math.round(price * qty);
+    return {
+      biaya,
+      matBase: biaya,
+      sf: 0,
+      wf: 0,
+      material: mat,
+      pricePerUnit: price,
+      unit,
+    };
+  }
+
+  const vol = Number(partData.vol) || 0;
+  if (!vol) return null;
+
+  const biaya =
+    evalFormula('wood_material_cost', { pricePerM3: price, vol, sf, wf }) ??
+    Math.round(price * vol * (1 + sf / 100 + wf / 100));
 
   return {
-    biaya: biaya ?? Math.round(priceM3 * vol * (1 + sf / 100 + wf / 100)),
-    matBase: Math.round(priceM3 * vol),
+    biaya,
+    matBase: Math.round(price * vol),
     sf,
     wf,
     material: mat,
-    pricePerM3: priceM3,
+    pricePerM3: price,
+    unit: 'm3',
   };
+}
+
+/** @deprecated — use computeMaterialBiayaFromMaster */
+export function computeWoodBiayaFromMaster(partData, materialId) {
+  return computeMaterialBiayaFromMaster(partData, materialId, 'kayu');
 }
 
 export function findMaterialBySpec(specText) {
   const q = String(specText || '').trim().toUpperCase();
   if (!q) return null;
-  const materials = allMaterials();
+  const materials = getMaterialsPool();
 
   const exactSpec = materials.find((m) => m.specification?.toUpperCase() === q);
   if (exactSpec) return exactSpec;
 
-  const exactName = materials.find((m) => m.woodName?.toUpperCase() === q);
+  const exactName = materials.find((m) => m.woodName?.toUpperCase() === q || m.nama?.toUpperCase() === q);
   if (exactName) return exactName;
 
   const partial = materials.filter(
@@ -80,7 +212,6 @@ export function findCoatingByName(name) {
   return partial.sort((a, b) => (b.name?.length || 0) - (a.name?.length || 0))[0] || null;
 }
 
-/** Cari hardware/komponen dari katalog terpadu (CALCULATION, HPP, supplier) */
 export function findCatalogByKode(kode) {
   const q = String(kode || '').trim().toUpperCase();
   if (!q) return null;
@@ -99,22 +230,278 @@ export function getWasteRatioForMaterialType(materialType) {
   );
 }
 
-export function applyMasterToWoodPart(partData, woodGradeId) {
-  const result = computeWoodBiayaFromMaster(partData, woodGradeId);
-  if (!result) return partData;
+function poolFilterByType(pool, types, section) {
+  const typeSet = new Set((types || []).map((t) => String(t).toLowerCase()));
+  return pool.filter((m) => {
+    if (m.aktif === false) return false;
+    if (section && String(m.section || '').toUpperCase() !== String(section).toUpperCase()) {
+      return false;
+    }
+    if (!typeSet.size) return true;
+    return typeSet.has(String(m.materialType || '').toLowerCase());
+  });
+}
+
+function materialLabel(m) {
+  return String(m.specification || m.nama || m.woodName || m.id || '').trim();
+}
+
+function sortMaterials(a, b) {
+  const sa = String(a.section || a.materialType || '');
+  const sb = String(b.section || b.materialType || '');
+  if (sa !== sb) return sa.localeCompare(sb);
+  return materialLabel(a).localeCompare(materialLabel(b));
+}
+
+export function listMaterialsByType(materialType, section) {
+  const mt = String(materialType || '').toLowerCase();
+  const sec = section ? String(section).toUpperCase() : null;
+
+  if (mt === 'kayu') {
+    return getCachedMaterials().filter((m) => m.aktif !== false);
+  }
+
+  const sections = getCachedDatabaseSections();
+  if (sec && DATABASE_SECTION_KEYS[sec]) {
+    const key = DATABASE_SECTION_KEYS[sec];
+    return (sections[key] || []).filter((m) => m.aktif !== false);
+  }
+
+  if (mt === 'plywood') {
+    return (sections.plywood || []).filter((m) => m.aktif !== false);
+  }
+  if (mt === 'veneer') {
+    const v = [
+      ...(sections.veneer || []),
+      ...(sections.veneerTypes || []),
+      ...(sections.edging || []),
+    ];
+    return v.filter((m) => m.aktif !== false);
+  }
+  if (mt === 'hardware') {
+    return ['assemblingHardware', 'fittingHardware']
+      .flatMap((k) => sections[k] || [])
+      .filter((m) => m.aktif !== false);
+  }
+  if (mt === 'finishing') {
+    return (sections.finishingMaterial || []).filter((m) => m.aktif !== false);
+  }
+  if (mt === 'steel' || mt === 'besi') {
+    return poolFilterByType(getMaterialsPool(), ['steel', 'komponen'], sec);
+  }
+
+  if (mt === 'komponen' && sec === 'HPL') {
+    return (sections.hpl || []).filter((m) => m.aktif !== false);
+  }
+  if (mt === 'komponen' && sec === 'MDF') {
+    return (sections.mdf || []).filter((m) => m.aktif !== false);
+  }
+  if (mt === 'komponen' && sec === 'CORE') {
+    return (sections.core || []).filter((m) => m.aktif !== false);
+  }
+  if (mt === 'komponen' && !sec) {
+    return [
+      ...(sections.mdf || []),
+      ...(sections.core || []),
+      ...(sections.hpl || []),
+      ...(sections.sandingMaterial || []),
+      ...(sections.packingMaterial || []),
+      ...(sections.plywood || []),
+    ].filter((m) => m.aktif !== false);
+  }
+
+  return poolFilterByType(getMaterialsPool(), mt ? [mt] : [], sec);
+}
+
+/**
+ * Semua SKU DATA BASE untuk picker Part (MODUL / SUBMODUL / PART).
+ * @param {{ materialType?: string, section?: string, includeAll?: boolean }} [options]
+ */
+export function listAllPartMaterials(options = {}) {
+  const { materialType, section, includeAll = true } = options;
+  const mt = String(materialType || '').toLowerCase();
+
+  let list;
+  if (mt === 'kayu') {
+    list = getCachedMaterials().filter((m) => m.aktif !== false);
+  } else if (mt && !includeAll) {
+    list = listMaterialsByType(mt, section);
+  } else if (section) {
+    list = listMaterialsByType(mt || 'komponen', section);
+  } else {
+    list = getMaterialsPool().filter((m) => m.aktif !== false);
+    if (mt) {
+      list = list.filter(
+        (m) =>
+          String(m.materialType || '').toLowerCase() === mt ||
+          (mt === 'komponen' &&
+            ['komponen', 'plywood'].includes(String(m.materialType || '').toLowerCase())),
+      );
+    }
+  }
+
+  const seen = new Set();
+  return list.filter((m) => {
+    if (!m.id || seen.has(m.id)) return false;
+    seen.add(m.id);
+    return materialLabel(m);
+  }).sort(sortMaterials);
+}
+
+/** Kelompokkan SKU per section untuk &lt;optgroup&gt; */
+export function groupMaterialsBySection(materials) {
+  const groups = new Map();
+  for (const m of materials) {
+    const key = m.section || m.materialType || 'LAINNYA';
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(m);
+  }
+  return [...groups.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+}
+
+/** Nama/kode tampilan dari baris master DATA BASE */
+export function displayNameFromMaster(mat) {
+  if (!mat) return '';
+  return String(mat.specification || mat.nama || mat.woodName || '').trim();
+}
+
+export function kodeFromMaster(mat) {
+  if (!mat) return '';
+  return String(mat.kode || '').trim();
+}
+
+/** Isi nama, kode, vendor dari SKU master (mode DATA BASE) */
+export function patchNodeIdentityFromMaster(nodeData, mat) {
+  if (!mat || !nodeData) return nodeData;
+  const nama = displayNameFromMaster(mat);
+  const kode = kodeFromMaster(mat);
   return {
-    ...partData,
-    woodGradeId: result.material.id,
-    woodSpecification: result.material.specification,
-    materialType: 'kayu',
-    biaya: result.biaya,
-    /** Waste sudah di `biaya` via wood_material_cost — rollup jangan hitung SF/WF lagi */
-    sf: 0,
-    wf: 0,
-    woodWasteSfPct: result.sf,
-    woodWasteWfPct: result.wf,
-    wasteIncludedInBiaya: true,
+    ...nodeData,
+    ...(nama ? { nama } : {}),
+    ...(kode ? { kode } : {}),
+    ...(mat.vendorSupplier ? { vendor: mat.vendorSupplier } : {}),
   };
+}
+
+/** Hitung ulang biaya satuan part; waste factor sudah termasuk di biaya jika dari master. */
+export function recalcPartBiayaForSfWf(partData) {
+  const masterId = partData.materialMasterId || partData.woodGradeId;
+  const sf = Number(partData.sf) || 0;
+  const wf = Number(partData.wf) || 0;
+
+  if (!masterId) {
+    return {
+      biaya: Number(partData.biaya) || 0,
+      sf,
+      wf,
+      wasteIncludedInBiaya: false,
+    };
+  }
+
+  const mat = resolveMaterial(masterId);
+  if (!mat) {
+    return {
+      biaya: Number(partData.biaya) || 0,
+      sf,
+      wf,
+      wasteIncludedInBiaya: !!partData.wasteIncludedInBiaya,
+    };
+  }
+
+  const mt = mat.materialType || partData.materialType || 'komponen';
+  const price = materialUnitPrice(mat);
+  const unit = String(mat.unit || 'm3').toLowerCase();
+
+  if (unit === 'm2' || unit === 'm²') {
+    const m2 = partSurfaceM2(partData);
+    if (!m2) {
+      return { biaya: Number(partData.biaya) || 0, sf, wf, wasteIncludedInBiaya: true };
+    }
+    return {
+      biaya: Math.round(price * m2 * (1 + sf / 100)),
+      sf,
+      wf: 0,
+      wasteIncludedInBiaya: true,
+    };
+  }
+
+  const pieceUnits = new Set(['pcs', 'lbr', 'roll', 'unit', 'btl']);
+  if (pieceUnits.has(unit) || mt === 'steel' || mt === 'hardware' || mt === 'finishing') {
+    const qty = Number(partData.qty) || 1;
+    return {
+      biaya: Math.round(price * qty),
+      sf: 0,
+      wf: 0,
+      wasteIncludedInBiaya: true,
+    };
+  }
+
+  const vol = Number(partData.vol) || 0;
+  if (!vol) {
+    return { biaya: Number(partData.biaya) || 0, sf, wf, wasteIncludedInBiaya: true };
+  }
+
+  const biaya =
+    evalFormula('wood_material_cost', { pricePerM3: price, vol, sf, wf }) ??
+    Math.round(price * vol * (1 + sf / 100 + wf / 100));
+
+  return { biaya, sf, wf, wasteIncludedInBiaya: true };
+}
+
+export function applyMasterToPart(partData, masterId) {
+  const mat = resolveMaterial(masterId);
+  if (!mat) return partData;
+
+  const mt = mat.materialType || partData.materialType || 'komponen';
+  const result = computeMaterialBiayaFromMaster(partData, masterId, mt);
+  if (!result) return partData;
+
+  const sf = partData.sfWfManual
+    ? Number(partData.sf) || 0
+    : Number(result.sf) || 0;
+  const wf = partData.sfWfManual
+    ? Number(partData.wf) || 0
+    : Number(result.wf) || 0;
+  const recalc = recalcPartBiayaForSfWf({
+    ...partData,
+    materialMasterId: mat.id,
+    woodGradeId: mt === 'kayu' ? mat.id : partData.woodGradeId,
+    sf,
+    wf,
+  });
+
+  const base = patchNodeIdentityFromMaster(
+    {
+      ...partData,
+      materialMasterId: mat.id,
+      materialSpecification: mat.specification || displayNameFromMaster(mat),
+      materialType: mt,
+      materialSection: mat.section || partData.materialSection,
+      biaya: recalc.biaya,
+      sf: recalc.sf,
+      wf: recalc.wf,
+      masterWasteSfPct: recalc.sf,
+      masterWasteWfPct: recalc.wf,
+      wasteIncludedInBiaya: recalc.wasteIncludedInBiaya,
+    },
+    mat,
+  );
+
+  if (mt === 'kayu') {
+    return {
+      ...base,
+      woodGradeId: mat.id,
+      woodSpecification: mat.specification,
+      woodWasteSfPct: recalc.sf,
+      woodWasteWfPct: recalc.wf,
+    };
+  }
+
+  return base;
+}
+
+export function applyMasterToWoodPart(partData, woodGradeId) {
+  return applyMasterToPart(partData, woodGradeId);
 }
 
 export function listActiveWoodMaterials() {
@@ -136,9 +523,26 @@ const NON_WOOD_MATERIAL_TYPES = new Set([
   'coating',
 ]);
 
+/** Prioritas: sfWfManual → biayaFromExcel (0) → nilai part → MASTER RATIO */
+export function resolvePartSfWf(part, ratio = { sf: 0, wf: 0 }) {
+  if (part.sfWfManual) {
+    return {
+      sf: part.sf === '' || part.sf == null ? 0 : Number(part.sf) || 0,
+      wf: part.wf === '' || part.wf == null ? 0 : Number(part.wf) || 0,
+    };
+  }
+  if (part.biayaFromExcel && Number(part.biaya) > 0) {
+    return { sf: 0, wf: 0 };
+  }
+  const sf =
+    part.sf != null && part.sf !== '' ? Number(part.sf) || 0 : Number(ratio.sf) || 0;
+  const wf =
+    part.wf != null && part.wf !== '' ? Number(part.wf) || 0 : Number(ratio.wf) || 0;
+  return { sf, wf };
+}
+
 /**
  * Isi otomatis dari DATA BASE berdasarkan nama/kode node atau info produk.
- * Dipakai saat load project, edit nama di struktur BOM, atau sinkron manual.
  */
 export function enrichNodeFromMaster(node, { productInfo, productMeta } = {}) {
   if (!node) return node;
@@ -153,41 +557,62 @@ export function enrichNodeFromMaster(node, { productInfo, productMeta } = {}) {
   }
 
   const existingMt = String(n.materialType || '').toLowerCase();
-  const skipWoodMatch =
-    n.hardware ||
-    NON_WOOD_MATERIAL_TYPES.has(existingMt) ||
-    (existingMt === 'hardware' && n.biayaFromExcel);
-
   const lookupTexts = [
+    n.materialSpecification,
     n.woodSpecification,
     n.nama,
     n.kode,
     productMeta?.wood,
   ].filter((t) => t && String(t).trim());
 
-  if (!skipWoodMatch) {
-    for (const text of lookupTexts) {
-      const mat = findMaterialBySpec(text);
-      if (mat) {
-        const ratio = getWasteRatioForMaterialType(mat.materialType || 'kayu');
-        const spec = mat.specification || text;
-        const namaLooksLikeGrade =
-          !n.nama ||
-          n.nama === text ||
-          findMaterialBySpec(n.nama) ||
-          String(n.nama).toUpperCase().includes(mat.woodName?.toUpperCase() || '');
+  for (const text of lookupTexts) {
+    const mat = findMaterialBySpec(text);
+    if (!mat) continue;
+    const mt = mat.materialType || 'kayu';
+    if (existingMt && existingMt !== mt && existingMt !== 'komponen') continue;
 
-        n = {
+    const ratio = getWasteRatioForMaterialType(mt);
+    const { sf, wf } = resolvePartSfWf(n, ratio);
+    const spec = mat.specification || text;
+    const patch = {
+      materialMasterId: mat.id,
+      materialSpecification: spec,
+      materialType: mt,
+      materialSection: mat.section,
+    };
+    if (mt === 'kayu') {
+      const namaLooksLikeGrade =
+        !n.nama ||
+        n.nama === text ||
+        findMaterialBySpec(n.nama) ||
+        String(n.nama).toUpperCase().includes(mat.woodName?.toUpperCase() || '');
+      n = patchNodeIdentityFromMaster(
+        {
           ...n,
+          ...patch,
           woodGradeId: mat.id,
           woodSpecification: spec,
-          materialType: mat.materialType || 'kayu',
-          nama: namaLooksLikeGrade ? spec : n.nama,
-          sf: n.biayaFromExcel ? 0 : n.sf != null && n.sf !== '' ? n.sf : ratio.sf,
-          wf: n.biayaFromExcel ? 0 : n.wf != null && n.wf !== '' ? n.wf : ratio.wf,
-        };
-        return n;
+          sf,
+          wf,
+        },
+        mat,
+      );
+      if (!displayNameFromMaster(mat) && namaLooksLikeGrade && spec) {
+        n.nama = spec;
       }
+      return n;
+    }
+    if (!n.hardware && !n.biayaFromExcel) {
+      n = patchNodeIdentityFromMaster(
+        {
+          ...n,
+          ...patch,
+          sf,
+          wf,
+        },
+        mat,
+      );
+      return n;
     }
   }
 
@@ -217,18 +642,6 @@ export function computeCoatingCost(coatingId, surfaceM2) {
 }
 
 const COATING_PART_TYPES = new Set(['finishing', 'coating', 'veneer']);
-
-function partSurfaceM2(part) {
-  const explicit = Number(part.surfaceM2);
-  if (explicit > 0) return explicit;
-  const p = Number(part.p) || 0;
-  const l = Number(part.l) || 0;
-  const t = Number(part.t) || 0;
-  if (p && l && t) {
-    return evalFormula('surface_m2_estimate', { p, l, t }) ?? 0;
-  }
-  return 0;
-}
 
 /** Agregasi luas m² part finishing/coating untuk biaya produk */
 export function aggregateCoatingSurfaceM2(bomData, { coatingId } = {}) {
@@ -262,18 +675,6 @@ export function aggregateExplicitSurfaceM2(bomData) {
   return total;
 }
 
-function aggregateAllPartSurfaceM2(bomData) {
-  let total = 0;
-  const walk = (node) => {
-    if (node.tipe === 'PART') {
-      total += partSurfaceM2(node) * (Number(node.qty) || 1);
-    }
-    (node.children || []).forEach(walk);
-  };
-  if (bomData) walk(bomData);
-  return total;
-}
-
 export function resolveProductCoatingCost(bomData, productMeta) {
   const coatingId = productMeta?.coatingId;
   if (!coatingId) return { coatingCost: 0, surfaceM2: 0 };
@@ -282,7 +683,6 @@ export function resolveProductCoatingCost(bomData, productMeta) {
   const explicitM2 = aggregateExplicitSurfaceM2(bomData);
   const byType = aggregateCoatingSurfaceM2(bomData, { coatingId });
 
-  /** Prioritas: meta Excel → surfaceM2 eksplisit part → part finishing/coating */
   let m2 = 0;
   if (metaM2 > 0) m2 = metaM2;
   else if (explicitM2 > 0) m2 = explicitM2;

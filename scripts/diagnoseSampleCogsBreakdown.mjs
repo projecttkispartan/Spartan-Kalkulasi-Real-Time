@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { linkProjectToMasters } from '../src/utils/linkProjectToMasters.js';
-import { CURATED_SAMPLE_KEYS } from '../src/utils/emptyProject.js';
+import { CURATED_SAMPLE_KEYS, resolveCogsMode, COGS_MODES } from '../src/utils/emptyProject.js';
 import {
   buildDiagnoseReportRow,
   COGS_PART_GROUPS,
@@ -30,9 +30,12 @@ function parseArgs(argv) {
 
 function loadProject(file, sampleKey) {
   const raw = JSON.parse(fs.readFileSync(path.join(PROJECTS_DIR, file), 'utf8'));
-  const opts = CURATED_SAMPLE_KEYS.has(sampleKey)
-    ? { applyBiaya: false, skipBiayaIfExcel: true }
-    : { applyBiaya: true, skipBiayaIfExcel: true };
+  const cogsMode = resolveCogsMode(raw);
+  const excelFixed = cogsMode === COGS_MODES.EXCEL_FIXED || raw.importedFromExcel;
+  const opts =
+    CURATED_SAMPLE_KEYS.has(sampleKey) || excelFixed
+      ? { applyBiaya: false, skipBiayaIfExcel: true }
+      : { applyBiaya: true, skipBiayaIfExcel: true };
   return linkProjectToMasters(raw, opts);
 }
 

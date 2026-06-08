@@ -16,6 +16,11 @@ const ZAN =
   process.env.ZAN_EXCEL ||
   'd:/Project Spartan Jepara/03. DOKUMEN/Modul Document/Manufacture Management/1. Excel Bill Of Material/1 - ZAN-100 - 2-12-25.xlsx';
 
+if (!fs.existsSync(ZAN)) {
+  console.warn('SKIP verifyImportedZanCogs — ZAN Excel not found:', ZAN);
+  process.exit(0);
+}
+
 const wb = XLSX.read(fs.readFileSync(ZAN), { type: 'buffer' });
 const project = parseBomWorkbook(wb);
 const packing = computePackingTotals(project.packingSpec);
