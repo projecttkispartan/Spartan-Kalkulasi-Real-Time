@@ -25,7 +25,9 @@ const baseModul = {
   proses: [],
 };
 
-const sampleOp = (posisiOperasi, materialsUsed) => ({
+const sampleOp = (posisiOperasi, materialsUsed, opKey = 1) => ({
+  id: opKey,
+  opKey,
   nama: 'Operasi Test',
   proses: 'veneer',
   mfgProcess: 'Woodworking',
@@ -43,7 +45,7 @@ let bom = syncPartsFromProsesMaterials(structuredClone(baseModul), {
   prosesList: [sampleOp('F:A', [mat1])],
 });
 
-const key1 = buildPartSourceKey('modul-1', 0, 'mat-a');
+const key1 = buildPartSourceKey('modul-1', 1, 'mat-a');
 const part1 = findPartByKey(bom, key1);
 if (!part1) {
   console.error('FAIL: PART not created under MODUL routing');

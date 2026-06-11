@@ -1,8 +1,22 @@
 import { getPosisiComboItem } from '../data/posisiComboCatalog.js';
 import { applyMasterToPart } from './masterLookup.js';
 
-export function buildPartSourceKey(routingNodeId, opIndex, materialId) {
-  return `${routingNodeId}:${opIndex}:${materialId}`;
+export function buildPartSourceKey(routingNodeId, opKey, materialId) {
+  return `${routingNodeId}:${opKey}:${materialId}`;
+}
+
+function resolveOpKey(op, opIndex) {
+  return op.opKey ?? op.opId ?? op.id ?? opIndex;
+}
+
+function resolveMaterialId(material, fallback) {
+  return (
+    material.id ||
+    material.materialMasterId ||
+    material.kode ||
+    material.nama ||
+    String(fallback)
+  );
 }
 
 function findNode(tree, id) {
@@ -14,12 +28,29 @@ function findNode(tree, id) {
   return null;
 }
 
+function findParentId(tree, childId, parentId = null) {
+  if (tree.id === childId) return parentId;
+  for (const child of tree.children || []) {
+    const hit = findParentId(child, childId, tree.id);
+    if (hit !== undefined) return hit;
+  }
+  return undefined;
+}
+
 function updateNodeById(tree, id, updater) {
   if (tree.id === id) return updater(tree);
   if (!tree.children?.length) return tree;
   return {
     ...tree,
     children: tree.children.map((child) => updateNodeById(child, id, updater)),
+  };
+}
+
+function removeNodeById(tree, id) {
+  if (!tree.children?.length) return tree;
+  return {
+    ...tree,
+    children: tree.children.filter((ch) => ch.id !== id).map((ch) => removeNodeById(ch, id)),
   };
 }
 
@@ -72,7 +103,7 @@ function ensureSubmodulForPosisi(tree, modulId, posisiOperasi) {
     t: 0,
     vol: 0,
     biaya: 0,
-    catatan: '',
+    catatan: 'Dibuat otomatis dari posisi operasi',
     proses: [],
     proses_count: 0,
     foto: '',
@@ -117,7 +148,7 @@ function computeVolMm(p, l, t) {
   return Math.round(pv * lv * tv * 1000) / 1000;
 }
 
-function materialToPartDraft(material, op, opIndex) {
+function materialToPartDraft(material, op, opIndex, routingNodeId) {
   const mode =
     material.materialSourceMode ||
     (material.materialMasterId ? 'database' : material.manualSpec ? 'manual' : 'database');
@@ -126,13 +157,15 @@ function materialToPartDraft(material, op, opIndex) {
   const l = Number(material.l) || 0;
   const t = Number(material.t) || 0;
   const vol = Number(material.vol) || computeVolMm(p, l, t);
+  const userBiaya = Number(material.biaya) || 0;
+  const qty = Math.max(Number(material.qty) || 1, 1);
 
   let part = {
     tipe: 'PART',
     no: 100 + opIndex,
     nama: material.nama || material.manualSpec || material.kode || 'PART BARU',
     kode: material.kode || `PART-${Date.now()}-${opIndex}`,
-    qty: Number(material.qty) || 1,
+    qty,
     unit: material.unit || 'pcs',
     materialSourceMode: mode,
     materialMasterId: material.materialMasterId || '',
@@ -142,15 +175,16 @@ function materialToPartDraft(material, op, opIndex) {
     l,
     t,
     vol,
-    biaya: Number(material.biaya) || 0,
+    biaya: userBiaya,
     sf: Number(material.sf) || 0,
     wf: Number(material.wf) || 0,
-    catatan: '',
+    catatan: 'Sinkron dari operasi manufaktur',
     foto: '',
     vendor: '',
     posisiOperasi: op.posisiOperasi || '',
     proses: [{ ...op, materialsUsed: [material] }],
     proses_count: 1,
+    sourceRoutingNodeId: routingNodeId,
     children: [],
   };
 
@@ -163,6 +197,7 @@ function materialToPartDraft(material, op, opIndex) {
 
   if (material.materialMasterId) {
     part = applyMasterToPart(part, material.materialMasterId);
+    if (userBiaya > 0) part.biaya = userBiaya;
   }
 
   return part;
@@ -171,12 +206,29 @@ function materialToPartDraft(material, op, opIndex) {
 function upsertPart(tree, parentId, sourceKey, draft) {
   const existing = findPartBySourceKey(tree, sourceKey);
   if (existing) {
-    return updateNodeById(tree, existing.id, (node) => ({
-      ...node,
+    const merged = {
+      ...existing,
       ...draft,
-      id: node.id,
+      id: existing.id,
       sourceProsesKey: sourceKey,
-      children: node.children || [],
+      sourceRoutingNodeId: draft.sourceRoutingNodeId,
+      children: existing.children || [],
+      sf: existing.sfWfManual ? existing.sf : (draft.sf ?? existing.sf),
+      wf: existing.sfWfManual ? existing.wf : (draft.wf ?? existing.wf),
+      sfWfManual: existing.sfWfManual,
+      catatan: existing.catatan || draft.catatan,
+    };
+    const currentParentId = findParentId(tree, existing.id);
+    let next = removeNodeById(tree, existing.id);
+    if (currentParentId === parentId) {
+      return updateNodeById(next, parentId, (node) => ({
+        ...node,
+        children: [...(node.children || []), merged],
+      }));
+    }
+    return updateNodeById(next, parentId, (node) => ({
+      ...node,
+      children: [...(node.children || []), merged],
     }));
   }
 
@@ -193,21 +245,67 @@ function upsertPart(tree, parentId, sourceKey, draft) {
   }));
 }
 
+function collectActiveSourceKeys(routingNodeId, prosesList) {
+  const keys = new Set();
+  prosesList.forEach((op, opIndex) => {
+    const opKey = resolveOpKey(op, opIndex);
+    (op.materialsUsed || [])
+      .filter(materialHasIdentity)
+      .forEach((material, mi) => {
+        const materialId = resolveMaterialId(material, `${opKey}-${mi}`);
+        keys.add(buildPartSourceKey(routingNodeId, opKey, materialId));
+      });
+  });
+  return keys;
+}
+
+function pruneOrphanProsesParts(tree, routingNodeId, activeKeys) {
+  const prefix = `${routingNodeId}:`;
+  const prune = (node) => {
+    const children = (node.children || [])
+      .filter((ch) => {
+        if (ch.tipe === 'PART' && ch.sourceProsesKey?.startsWith(prefix)) {
+          return activeKeys.has(ch.sourceProsesKey);
+        }
+        return true;
+      })
+      .map(prune);
+    return { ...node, children };
+  };
+  return prune(tree);
+}
+
+/** Penomoran ulang `no` di seluruh pohon (pre-order). */
+export function renumberBomTree(tree) {
+  if (!tree) return tree;
+  let counter = 0;
+  const walk = (node) => {
+    counter += 1;
+    const next = { ...node, no: counter };
+    if (node.children?.length) {
+      next.children = node.children.map(walk);
+    }
+    return next;
+  };
+  return walk(tree);
+}
+
 /**
  * Sinkronkan bahan operasi (materialsUsed) ke pohon BOM sebagai node PART.
  * Skip jika routing node adalah PART (bahan = consumable operasi).
  */
 export function syncPartsFromProsesMaterials(bomData, { routingNodeId, routingNodeTipe, prosesList }) {
   if (!bomData || !routingNodeId || routingNodeTipe === 'PART') return bomData;
-  if (!prosesList?.length) return bomData;
 
   let tree = bomData;
+  const activeKeys = collectActiveSourceKeys(routingNodeId, prosesList || []);
 
-  prosesList.forEach((op, opIndex) => {
+  (prosesList || []).forEach((op, opIndex) => {
+    const opKey = resolveOpKey(op, opIndex);
     const materials = (op.materialsUsed || []).filter(materialHasIdentity);
-    materials.forEach((material) => {
-      const materialId = material.id || `${material.kode || material.nama || opIndex}`;
-      const sourceKey = buildPartSourceKey(routingNodeId, opIndex, materialId);
+    materials.forEach((material, mi) => {
+      const materialId = resolveMaterialId(material, `${opKey}-${mi}`);
+      const sourceKey = buildPartSourceKey(routingNodeId, opKey, materialId);
       const { tree: treeWithParent, parentId } = resolvePartParentId(
         tree,
         routingNodeId,
@@ -217,10 +315,12 @@ export function syncPartsFromProsesMaterials(bomData, { routingNodeId, routingNo
       tree = treeWithParent;
       if (!parentId) return;
 
-      const draft = materialToPartDraft(material, op, opIndex);
+      const draft = materialToPartDraft(material, op, opIndex, routingNodeId);
       tree = upsertPart(tree, parentId, sourceKey, draft);
     });
   });
 
+  tree = pruneOrphanProsesParts(tree, routingNodeId, activeKeys);
+  tree = renumberBomTree(tree);
   return tree;
 }

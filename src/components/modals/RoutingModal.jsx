@@ -64,8 +64,10 @@ function inferProsesId(p) {
 function mapSavedOp(p, i, materialVol) {
   const prosesId = inferProsesId(p);
   const meta = getProsesById(prosesId);
+  const opKey = p.opKey ?? p.opId ?? i + 1;
   const base = {
-    id: i + 1,
+    id: opKey,
+    opKey,
     proses: prosesId,
     inputMode: p.inputMode || 'work_center',
     workCenterId: p.workCenterId || '',
@@ -351,6 +353,7 @@ export default function RoutingModal({ node, onClose, kursUsd, kursEur, onSave, 
         operations.map((op) => {
           const costs = calcProsesCosts(op);
           return {
+            opKey: op.id,
             proses: op.proses,
             inputMode: op.inputMode,
             workCenterId: op.workCenterId,
@@ -390,7 +393,7 @@ export default function RoutingModal({ node, onClose, kursUsd, kursEur, onSave, 
                 manualSpec: m.manualSpec ?? (mode === 'manual' ? m.nama || m.kode || '' : ''),
                 kode: m.kode || '',
                 nama: m.nama || m.manualSpec || '',
-                qty: Number(m.qty) || 0,
+                qty: Math.max(Number(m.qty) || 1, 1),
                 unit: m.unit || 'pcs',
                 p: Number(m.p) || 0,
                 l: Number(m.l) || 0,

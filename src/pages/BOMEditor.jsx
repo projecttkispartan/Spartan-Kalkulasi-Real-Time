@@ -1942,6 +1942,8 @@ export default function BOMEditor({
     return (
       <SummaryDetailModal
         node={detailSummaryNode}
+        bomData={bomData}
+        rollupMap={nodeRollupMap}
         rollup={nodeRollupMap.get(detailSummaryNode.id) ?? null}
         kursUsd={kursUsd}
         kursEur={kursEur}
