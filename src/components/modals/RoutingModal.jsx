@@ -104,6 +104,13 @@ function mapSavedOp(p, i, materialVol) {
             nama: m.nama || m.manualSpec || '',
             qty: m.qty ?? 1,
             unit: m.unit || 'pcs',
+            p: Number(m.p) || 0,
+            l: Number(m.l) || 0,
+            t: Number(m.t) || 0,
+            vol: Number(m.vol) || 0,
+            biaya: Number(m.biaya) || 0,
+            biayaProduksi: Number(m.biayaProduksi) || 0,
+            materialType: m.materialType || '',
           };
         })
       : [],
@@ -385,6 +392,13 @@ export default function RoutingModal({ node, onClose, kursUsd, kursEur, onSave, 
                 nama: m.nama || m.manualSpec || '',
                 qty: Number(m.qty) || 0,
                 unit: m.unit || 'pcs',
+                p: Number(m.p) || 0,
+                l: Number(m.l) || 0,
+                t: Number(m.t) || 0,
+                vol: Number(m.vol) || 0,
+                biaya: Number(m.biaya) || 0,
+                biayaProduksi: Number(m.biayaProduksi) || 0,
+                materialType: m.materialType || '',
               };
             }),
             dimensiOperasi: {

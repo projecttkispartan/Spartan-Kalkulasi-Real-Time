@@ -122,6 +122,11 @@ function materialToPartDraft(material, op, opIndex) {
     material.materialSourceMode ||
     (material.materialMasterId ? 'database' : material.manualSpec ? 'manual' : 'database');
 
+  const p = Number(material.p) || 0;
+  const l = Number(material.l) || 0;
+  const t = Number(material.t) || 0;
+  const vol = Number(material.vol) || computeVolMm(p, l, t);
+
   let part = {
     tipe: 'PART',
     no: 100 + opIndex,
@@ -132,14 +137,14 @@ function materialToPartDraft(material, op, opIndex) {
     materialSourceMode: mode,
     materialMasterId: material.materialMasterId || '',
     manualSpec: material.manualSpec || '',
-    materialType: '',
-    p: 0,
-    l: 0,
-    t: 0,
-    vol: 0,
-    biaya: 0,
-    sf: 0,
-    wf: 0,
+    materialType: material.materialType || '',
+    p,
+    l,
+    t,
+    vol,
+    biaya: Number(material.biaya) || 0,
+    sf: Number(material.sf) || 0,
+    wf: Number(material.wf) || 0,
     catatan: '',
     foto: '',
     vendor: '',
@@ -149,10 +154,10 @@ function materialToPartDraft(material, op, opIndex) {
     children: [],
   };
 
-  if (op.dimensiOperasi && op.dimensiOperasi.useParentDimensi === false) {
-    part.p = Number(op.dimensiOperasi.p) || 0;
-    part.l = Number(op.dimensiOperasi.l) || 0;
-    part.t = Number(op.dimensiOperasi.t) || 0;
+  if (!part.vol && op.dimensiOperasi && op.dimensiOperasi.useParentDimensi === false) {
+    part.p = Number(op.dimensiOperasi.p) || part.p;
+    part.l = Number(op.dimensiOperasi.l) || part.l;
+    part.t = Number(op.dimensiOperasi.t) || part.t;
     part.vol = computeVolMm(part.p, part.l, part.t);
   }
 
