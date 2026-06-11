@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "id": "sample-fna-550",
   "sampleKey": "FNA-550",
-  "sampleSeedVersion": 5,
+  "sampleSeedVersion": 6,
   "sampleSourceFile": "2 - FNA-550 - 4-12-25.xlsx",
   "status": "draft",
   "createdAt": "2026-06-03T07:34:14.787Z",
-  "updatedAt": "2026-06-04T04:25:15.991Z",
+  "updatedAt": "2026-06-10T01:45:35.537Z",
   "createdBy": "Excel Import",
   "kode": "FNA-550",
   "nama": "FIONA CHAIR BLACK LIMED",
@@ -35,41 +35,30 @@
     "h": 935
   },
   "bomData": {
-    "id": "fna-root",
+    "id": "root-import",
     "no": 1,
-    "nama": "BODI",
+    "nama": "",
     "kode": "FNA-550",
     "tipe": "MODUL",
     "qty": 1,
     "unit": "SET",
-    "p": 530,
-    "l": 575,
-    "t": 935,
+    "p": 0,
+    "l": 0,
+    "t": 0,
     "vol": 0,
     "biaya": 0,
-    "catatan": "FIONA CHAIR BLACK LIMED",
-    "proses_count": 0,
-    "foto": "https://images.unsplash.com/photo-1503602642458-232111445657?w=200&h=200&fit=crop&q=80",
     "children": [
       {
-        "id": "fna-sm-kayu",
+        "id": "sm-0",
         "no": 2,
         "nama": "KAYU",
         "kode": "FNA-KAYU",
         "tipe": "SUBMODUL",
         "qty": 1,
         "unit": "SET",
-        "p": null,
-        "l": null,
-        "t": null,
-        "vol": 0,
-        "biaya": 0,
-        "catatan": "",
-        "proses_count": 0,
-        "foto": "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=200&h=200&fit=crop&q=80",
         "children": [
           {
-            "id": "fna-p-0",
+            "id": "part-0",
             "no": 3,
             "nama": "KAKI",
             "kode": "1200310-1.3.0.2.1",
@@ -102,10 +91,11 @@
                 "note": "Total referensi SUMMARY COST Excel FNA-550",
                 "proses": []
               }
-            ]
+            ],
+            "children": []
           },
           {
-            "id": "fna-p-1",
+            "id": "part-1",
             "no": 4,
             "nama": "SUNDUK SAMPING",
             "kode": "1200310-1.3.0.2.2",
@@ -138,10 +128,11 @@
                 "note": "Total referensi SUMMARY COST Excel FNA-550",
                 "proses": []
               }
-            ]
+            ],
+            "children": []
           },
           {
-            "id": "fna-p-2",
+            "id": "part-2",
             "no": 5,
             "nama": "SUNDUK DEPAN BELAKANG",
             "kode": "1200310-1.3.0.2.3",
@@ -174,10 +165,11 @@
                 "note": "Total referensi SUMMARY COST Excel FNA-550",
                 "proses": []
               }
-            ]
+            ],
+            "children": []
           },
           {
-            "id": "fna-p-3",
+            "id": "part-3",
             "no": 6,
             "nama": "TIANG SANDARAN",
             "kode": "1200310-1.3.0.2.4",
@@ -210,10 +202,11 @@
                 "note": "Total referensi SUMMARY COST Excel FNA-550",
                 "proses": []
               }
-            ]
+            ],
+            "children": []
           },
           {
-            "id": "fna-p-4",
+            "id": "part-4",
             "no": 7,
             "nama": "TEMPEL TIANG SANDARAN",
             "kode": "1200310-1.0.0.2.5",
@@ -246,10 +239,11 @@
                 "note": "Total referensi SUMMARY COST Excel FNA-550",
                 "proses": []
               }
-            ]
+            ],
+            "children": []
           },
           {
-            "id": "fna-p-5",
+            "id": "part-5",
             "no": 8,
             "nama": "JARI JARI SANDARAN",
             "kode": "1200310-1.3.0.2.6",
@@ -282,10 +276,11 @@
                 "note": "Total referensi SUMMARY COST Excel FNA-550",
                 "proses": []
               }
-            ]
+            ],
+            "children": []
           },
           {
-            "id": "fna-p-6",
+            "id": "part-6",
             "no": 9,
             "nama": "SUNDUK SANDARAN ATAS",
             "kode": "1200310-1.3.0.2.7",
@@ -318,10 +313,11 @@
                 "note": "Total referensi SUMMARY COST Excel FNA-550",
                 "proses": []
               }
-            ]
+            ],
+            "children": []
           },
           {
-            "id": "fna-p-7",
+            "id": "part-7",
             "no": 10,
             "nama": "SIKON",
             "kode": "1200310-1.3.0.2.8",
@@ -354,10 +350,11 @@
                 "note": "Total referensi SUMMARY COST Excel FNA-550",
                 "proses": []
               }
-            ]
+            ],
+            "children": []
           },
           {
-            "id": "fna-p-8",
+            "id": "part-8",
             "no": 11,
             "nama": "RAM DUDUKAN PANJANG",
             "kode": "1200310-1.3.0.18.9",
@@ -390,10 +387,11 @@
                 "note": "Total referensi SUMMARY COST Excel FNA-550",
                 "proses": []
               }
-            ]
+            ],
+            "children": []
           },
           {
-            "id": "fna-p-9",
+            "id": "part-9",
             "no": 12,
             "nama": "RAM DUDUKAN PENDEK",
             "kode": "1200310-1.3.0.18.10",
@@ -426,34 +424,22 @@
                 "note": "Total referensi SUMMARY COST Excel FNA-550",
                 "proses": []
               }
-            ]
+            ],
+            "children": []
           }
-        ],
-        "woodGradeId": "wood-11",
-        "woodSpecification": "MINDI - 30 UP 200",
-        "materialType": "kayu",
-        "sf": 0,
-        "wf": 30
+        ]
       },
       {
-        "id": "fna-sm-proses",
-        "no": 20,
+        "id": "sm-1",
+        "no": 3,
         "nama": "KOMPONEN & PROSES",
         "kode": "FNA-KOMPONEN",
         "tipe": "SUBMODUL",
         "qty": 1,
         "unit": "SET",
-        "p": null,
-        "l": null,
-        "t": null,
-        "vol": 0,
-        "biaya": 0,
-        "catatan": "",
-        "proses_count": 0,
-        "foto": "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=200&h=200&fit=crop&q=80",
         "children": [
           {
-            "id": "fna-xl-assembling_hardware",
+            "id": "part-10",
             "no": 21,
             "nama": "ASSEMBLING HARDWARE",
             "kode": "FNA-ASSEMBLING-HARDWARE",
@@ -484,10 +470,11 @@
                 "note": "Total referensi SUMMARY COST Excel FNA-550",
                 "proses": []
               }
-            ]
+            ],
+            "children": []
           },
           {
-            "id": "fna-xl-fitting_hardware",
+            "id": "part-11",
             "no": 22,
             "nama": "FITTING HARDWARE",
             "kode": "FNA-FITTING-HARDWARE",
@@ -518,10 +505,11 @@
                 "note": "Total referensi SUMMARY COST Excel FNA-550",
                 "proses": []
               }
-            ]
+            ],
+            "children": []
           },
           {
-            "id": "fna-xl-gerinda",
+            "id": "part-12",
             "no": 23,
             "nama": "GERINDA",
             "kode": "FNA-GERINDA",
@@ -552,10 +540,11 @@
                 "note": "Total referensi SUMMARY COST Excel FNA-550",
                 "proses": []
               }
-            ]
+            ],
+            "children": []
           },
           {
-            "id": "fna-xl-amplas",
+            "id": "part-13",
             "no": 24,
             "nama": "AMPLAS",
             "kode": "FNA-AMPLAS",
@@ -586,10 +575,11 @@
                 "note": "Total referensi SUMMARY COST Excel FNA-550",
                 "proses": []
               }
-            ]
+            ],
+            "children": []
           },
           {
-            "id": "fna-xl-finishing",
+            "id": "part-14",
             "no": 25,
             "nama": "FINISHING",
             "kode": "FNA-FINISHING",
@@ -620,10 +610,11 @@
                 "note": "Total referensi SUMMARY COST Excel FNA-550",
                 "proses": []
               }
-            ]
+            ],
+            "children": []
           },
           {
-            "id": "fna-xl-upholstery",
+            "id": "part-15",
             "no": 26,
             "nama": "UPHOLSTERY",
             "kode": "FNA-UPHOLSTERY",
@@ -654,21 +645,12 @@
                 "note": "Total referensi SUMMARY COST Excel FNA-550",
                 "proses": []
               }
-            ]
+            ],
+            "children": []
           }
-        ],
-        "woodGradeId": "wood-11",
-        "woodSpecification": "MINDI - 30 UP 200",
-        "materialType": "kayu",
-        "sf": 0,
-        "wf": 30
+        ]
       }
-    ],
-    "woodGradeId": "wood-11",
-    "woodSpecification": "MINDI - 30 UP 200",
-    "materialType": "kayu",
-    "sf": 0,
-    "wf": 30
+    ]
   },
   "packingDimensions": [
     {

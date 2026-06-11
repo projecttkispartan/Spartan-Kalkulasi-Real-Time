@@ -574,8 +574,11 @@ export function enrichNodeFromMaster(node, { productInfo, productMeta } = {}) {
   if (n.tipe === 'MODUL') {
     const pi = productInfo || {};
     if (pi.kode && !String(n.kode || '').trim()) n.kode = pi.kode;
-    const productName = pi.namaBom || pi.nama;
-    if (productName && !String(n.nama || '').trim()) n.nama = productName;
+    return n;
+  }
+
+  if (n.tipe === 'SUBMODUL' || n.tipe === 'SUBMODUL 2') {
+    return n;
   }
 
   if (n.tipe === 'PART') {

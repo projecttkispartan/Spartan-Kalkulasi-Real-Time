@@ -6,6 +6,7 @@ import {
   AlertTriangle, PieChart, Server, Users, QrCode, Briefcase, Edit, Eye, EyeOff, PanelTopClose, PanelTopOpen, TrendingUp, ClipboardList,
 } from 'lucide-react';
 import { flattenTree, getPartHierarchyLabels } from '../utils/treeHelpers';
+import { syncPartsFromProsesMaterials } from '../utils/syncPartsFromProses.js';
 import { formatIDR, formatPrice } from '../utils/formatters';
 import { MoneyText } from '../components/ui/MoneyText.jsx';
 import {
@@ -33,7 +34,7 @@ import SummaryDetailModal from '../components/modals/SummaryDetailModal';
 import KalkulasiModal from '../components/modals/KalkulasiModal';
 import MarkupPreviewModal from '../components/modals/MarkupPreviewModal';
 import ProductPanel from '../components/product/ProductPanel';
-import ProductInlineBar from '../components/product/ProductInlineBar';
+import ProductContextTable from '../components/product/ProductContextTable';
 import ExcelParityChecklistModal from '../components/modals/ExcelParityChecklistModal';
 import { auditExcelParity } from '../utils/excelParityAudit.js';
 import CogsInsightModal from '../components/modals/CogsInsightModal.jsx';
@@ -41,11 +42,15 @@ import { buildCogsInsight } from '../utils/cogsBreakdown.js';
 import { CURATED_SAMPLE_KEYS } from '../utils/emptyProject.js';
 import OperasiDetailCell from '../components/ui/OperasiDetailCell';
 import FontCaseToggle from '../components/ui/FontCaseToggle';
+import DisplayDensityToggle, {
+  readStoredDisplayDensity,
+  DISPLAY_DENSITY_STORAGE_KEY,
+  densityToScale,
+} from '../components/ui/DisplayDensityToggle';
 import ExportMenu from '../components/ui/ExportMenu';
 import { buildBomExportPayload, exportBomToExcel, exportBomToPdf, exportBomToPdfFull } from '../utils/bomExport';
 import MasterWorkCenterModal from '../components/modals/MasterWorkCenterModal';
 import MasterMaterialsModal from '../components/modals/MasterMaterialsModal';
-import ManualBookModal from '../components/modals/ManualBookModal';
 import { resolveProductCoatingCost } from '../utils/masterLookup';
 import {
   applyMasterToWoodPart,
@@ -81,6 +86,78 @@ import {
 } from '../services/bomCalculations';
 import { normalizeProject, COGS_MODES, resolveCogsMode } from '../utils/emptyProject.js';
 import { WoodGradeField, DatabaseMaterialField } from '../components/fields/MasterCombos.jsx';
+
+const PROSES_NODE_TIPES = new Set(['MODUL', 'SUBMODUL', 'SUBMODUL 2', 'PART']);
+
+function canManageProses(tipe) {
+  return PROSES_NODE_TIPES.has(tipe);
+}
+
+function prosesCountForNode(d) {
+  return d?.proses?.length || Number(d?.proses_count) || 0;
+}
+
+const STRUKTUR_ADD_ACTIONS = {
+  MODUL: [
+    { label: 'SUBMODUL', tipe: 'SUBMODUL', cls: 'text-amber-800 bg-amber-50 border-amber-200 hover:bg-amber-100 shadow-amber-100/50' },
+    { label: 'PART', tipe: 'PART', cls: 'text-emerald-800 bg-emerald-50 border-emerald-200 hover:bg-emerald-100 shadow-emerald-100/50' },
+  ],
+  SUBMODUL: [
+    { label: 'SUBMODUL 2', tipe: 'SUBMODUL 2', cls: 'text-purple-800 bg-purple-50 border-purple-200 hover:bg-purple-100 shadow-purple-100/50' },
+    { label: 'PART', tipe: 'PART', cls: 'text-emerald-800 bg-emerald-50 border-emerald-200 hover:bg-emerald-100 shadow-emerald-100/50' },
+  ],
+  'SUBMODUL 2': [
+    { label: 'PART', tipe: 'PART', cls: 'text-emerald-800 bg-emerald-50 border-emerald-200 hover:bg-emerald-100 shadow-emerald-100/50' },
+  ],
+};
+
+function StrukturRowActions({ data: d, onDetail, onDelete, onAddChild, canDelete }) {
+  const addOptions = STRUKTUR_ADD_ACTIONS[d.tipe] || [];
+
+  return (
+    <div
+      className="flex flex-wrap items-center gap-1.5 w-max max-w-full"
+      role="toolbar"
+      aria-label={`Aksi ${d.nama || d.kode || d.tipe}`}
+    >
+      <button
+        type="button"
+        onClick={onDetail}
+        className="p-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg border border-blue-200 transition-colors shadow-sm shrink-0"
+        title="Lihat detail komponen"
+        aria-label="Lihat detail"
+      >
+        <QrCode className="w-3.5 h-3.5" />
+      </button>
+      {addOptions.map((opt) => (
+        <button
+          key={opt.tipe}
+          type="button"
+          onClick={() => onAddChild(opt.tipe)}
+          title={`Tambah ${opt.label}`}
+          className={`flex items-center gap-1 px-2 py-1 text-[9px] font-bold rounded-lg border transition-colors shadow-sm shrink-0 ${opt.cls}`}
+        >
+          <Plus className="w-3 h-3" />
+          {opt.label}
+        </button>
+      ))}
+      {canDelete ? (
+        <>
+          <span className="w-px h-4 bg-slate-200 shrink-0" aria-hidden="true" />
+          <button
+            type="button"
+            onClick={onDelete}
+            className="p-1.5 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg border border-red-200 transition-colors shadow-sm shrink-0"
+            title="Hapus item"
+            aria-label="Hapus item"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+          </button>
+        </>
+      ) : null}
+    </div>
+  );
+}
 
 function MaterialTypeField({ value, onChange, disabled = false }) {
   return (
@@ -176,12 +253,30 @@ function HierarchyHeaderCells({
   );
 }
 
-function HierarchyBodyCells({ cols, hierarchy, compact = false }) {
+const hierarchyInputCls =
+  'w-full min-w-[100px] max-w-[160px] border border-transparent hover:border-slate-200 focus:border-brand-400 focus:ring-1 focus:ring-brand-100 rounded px-1.5 py-1 text-[11px] font-bold text-slate-700 bg-transparent outline-none';
+
+function HierarchyBodyCells({ cols, hierarchy, compact = false, onRenameNode }) {
   const cls = compact
     ? 'px-3 py-2.5 border-r border-slate-100 text-left'
     : 'px-4 py-3 border-r border-slate-100 text-left';
 
   const cell = (node) => {
+    if (!node?.id) {
+      return <span className="text-slate-300">—</span>;
+    }
+    if (onRenameNode) {
+      return (
+        <input
+          type="text"
+          value={node.nama || ''}
+          onChange={(e) => onRenameNode(node.id, e.target.value)}
+          className={hierarchyInputCls}
+          title={node.nama || 'Nama modul / submodul'}
+          placeholder="Nama…"
+        />
+      );
+    }
     if (!node?.nama) {
       return <span className="text-slate-300">—</span>;
     }
@@ -519,16 +614,25 @@ export default function BOMEditor({
   const [viewMode, setViewMode] = useState('table'); 
   const [searchQuery, setSearchQuery] = useState('');
   const [routingNode, setRoutingNode] = useState(null);
+  const [routingReturnTab, setRoutingReturnTab] = useState(null);
   const [showKalkulasi, setShowKalkulasi] = useState(false);
   const [showMarkupPreview, setShowMarkupPreview] = useState(false);
   const [detailSummaryNode, setDetailSummaryNode] = useState(null);
+  const [detailReturnTab, setDetailReturnTab] = useState(null);
   const [showProductPanel, setShowProductPanel] = useState(readProductPanelPref);
-  const [productInlineExpanded, setProductInlineExpanded] = useState(false);
+  const [displayDensity, setDisplayDensity] = useState(readStoredDisplayDensity);
+  const handleDisplayDensityChange = useCallback((value) => {
+    setDisplayDensity(value);
+    try {
+      localStorage.setItem(DISPLAY_DENSITY_STORAGE_KEY, value);
+    } catch {
+      /* ignore */
+    }
+  }, []);
   const toggleProductPanel = useCallback(() => {
     setShowProductPanel((prev) => {
       const next = !prev;
       persistProductPanelPref(next);
-      if (!next) setProductInlineExpanded(false);
       return next;
     });
   }, []);
@@ -536,10 +640,10 @@ export default function BOMEditor({
   const [showHiddenContainers, setShowHiddenContainers] = useState(false);
   const [showMasterWc, setShowMasterWc] = useState(false);
   const [showMasterMaterials, setShowMasterMaterials] = useState(false);
-  const [showManual, setShowManual] = useState(false);
   const { mastersReady, mastersTick, reloadMasters } = useMasters();
 
   const [editorTab, setEditorTab] = useState('struktur');
+  const [showProsesRecap, setShowProsesRecap] = useState(false);
   const [materialHierarchyCols, setMaterialHierarchyCols] = useState({
     modul: true,
     submodul: true,
@@ -652,17 +756,13 @@ export default function BOMEditor({
   }, [projectId, initialProject, mastersReady, mastersTick]);
 
   useEffect(() => {
-    const nama = productInfo.namaBom || productInfo.nama;
-    if (!productInfo.kode && !nama) return;
+    if (!productInfo.kode) return;
     setBomData((prev) => {
       if (!prev || prev.tipe !== 'MODUL') return prev;
-      return {
-        ...prev,
-        kode: productInfo.kode || prev.kode,
-        nama: nama || prev.nama,
-      };
+      if (prev.kode === productInfo.kode) return prev;
+      return { ...prev, kode: productInfo.kode };
     });
-  }, [productInfo.kode, productInfo.nama, productInfo.namaBom]);
+  }, [productInfo.kode]);
 
   const packingBoxItem = useMemo(
     () => findPackingByType(packingDimensions, 'box') || packingDimensions[0],
@@ -975,7 +1075,7 @@ export default function BOMEditor({
       tipe: tipe,
       qty: 1,
       unit: 'EA',
-      p: 0, l: 0, t: 0, vol: 0, biaya: 0, catatan: '', proses_count: 0, foto: '',
+      p: 0, l: 0, t: 0, vol: 0, biaya: 0, catatan: '', proses: [], proses_count: 0, foto: '',
       vendor: '', sf: 0, wf: 0,
       ...(tipe === 'PART' ? { materialType: '' } : {}),
       children: []
@@ -1169,11 +1269,14 @@ export default function BOMEditor({
         if (field === 'qty' && updatedNode.materialMasterId && updatedNode.tipe === 'PART') {
           updatedNode = applyMasterToPart(updatedNode, updatedNode.materialMasterId);
         }
-        if (field === 'nama' || field === 'kode') {
+        if (
+          (field === 'nama' || field === 'kode') &&
+          updatedNode.tipe === 'PART'
+        ) {
           updatedNode = enrichNodeFromMaster(updatedNode, { productInfo, productMeta });
-          if (updatedNode.woodGradeId && updatedNode.tipe === 'PART' && updatedNode.vol) {
+          if (updatedNode.woodGradeId && updatedNode.vol) {
             updatedNode = applyMasterToWoodPart(updatedNode, updatedNode.woodGradeId);
-          } else if (updatedNode.materialMasterId && updatedNode.tipe === 'PART') {
+          } else if (updatedNode.materialMasterId) {
             updatedNode = applyMasterToPart(updatedNode, updatedNode.materialMasterId);
           }
         }
@@ -1187,29 +1290,40 @@ export default function BOMEditor({
     setBomData((prev) => updateTree(prev));
 
     if (id === bomData.id && field === 'kode') {
-      setProductInfo((pi) => ({ ...pi, kode: value }));
-    }
-    if (id === bomData.id && field === 'nama') {
-      setProductInfo((pi) => ({ ...pi, namaBom: value, nama: value }));
+      setProductInfo((pi) => ({ ...pi, kode: value, kodeBom: value }));
     }
   };
 
-  const handleSaveRouting = (nodeId, prosesList) => {
-    const updateTree = (node) => {
-      if (node.id === nodeId) {
-        return {
-          ...node,
-          proses: prosesList,
-          proses_count: prosesList.length,
-        };
-      }
-      if (node.children) {
-        return { ...node, children: node.children.map(updateTree) };
-      }
-      return node;
-    };
-    setBomData((prev) => updateTree(prev));
-  };
+  const handleSaveRouting = useCallback(
+    (nodeId, prosesList) => {
+      const routingTipe = routingNode?.data?.tipe;
+      const updateTree = (node) => {
+        if (node.id === nodeId) {
+          return {
+            ...node,
+            proses: prosesList,
+            proses_count: prosesList.length,
+          };
+        }
+        if (node.children) {
+          return { ...node, children: node.children.map(updateTree) };
+        }
+        return node;
+      };
+      setBomData((prev) => {
+        let next = updateTree(prev);
+        if (routingTipe && routingTipe !== 'PART') {
+          next = syncPartsFromProsesMaterials(next, {
+            routingNodeId: nodeId,
+            routingNodeTipe: routingTipe,
+            prosesList,
+          });
+        }
+        return next;
+      });
+    },
+    [routingNode],
+  );
 
   const handleMouseDownCanvas = (e) => {
     if (viewMode === 'table') return;
@@ -1277,6 +1391,42 @@ export default function BOMEditor({
       });
     return m;
   }, [flatNodes]);
+
+  const openDetailForNode = useCallback((node, fromTab) => {
+    if (!node?.data) return;
+    setDetailReturnTab(fromTab || editorTab);
+    setDetailSummaryNode(node);
+  }, [editorTab]);
+
+  const handleCloseDetail = useCallback(() => {
+    const returnTab = detailReturnTab ?? editorTab;
+    setDetailSummaryNode(null);
+    setDetailReturnTab(null);
+    setEditorTab(returnTab);
+  }, [detailReturnTab, editorTab]);
+
+  const openRoutingForNode = useCallback((node, fromTab) => {
+    if (!node?.data || !canManageProses(node.data.tipe)) return;
+    setDetailSummaryNode(null);
+    setDetailReturnTab(null);
+    setRoutingReturnTab(fromTab || 'struktur');
+    setRoutingNode(node);
+  }, []);
+
+  const handleCloseRouting = useCallback(() => {
+    const returnTab = routingReturnTab ?? 'struktur';
+    setRoutingNode(null);
+    setRoutingReturnTab(null);
+    setEditorTab(returnTab);
+  }, [routingReturnTab]);
+
+  const openRoutingByPartId = useCallback(
+    (partId) => {
+      const node = flatNodes.find((n) => n.id === partId);
+      if (node) openRoutingForNode(node, 'proses');
+    },
+    [flatNodes, openRoutingForNode],
+  );
 
   const prosesSummary = useMemo(() => computeProsesSummary(allProses), [allProses]);
 
@@ -1531,10 +1681,10 @@ export default function BOMEditor({
                 </tr>
                 <tr className="bg-white text-[10px] text-slate-500 font-bold uppercase tracking-wider border-b border-slate-200">
                   <th className="sticky left-0 z-20 bg-white py-3 px-4 border-r border-slate-200 text-center" style={{ minWidth: 50, width: 50 }}>NO</th>
-                  <th className="sticky left-[50px] z-20 bg-white py-3 px-4 border-r border-slate-200 text-left" style={{ minWidth: 260, width: 260 }}>AKSI (TAMBAH / HAPUS)</th>
-                  <th className="sticky left-[310px] z-20 bg-white py-3 px-4 border-r border-slate-200" style={{ minWidth: 150, width: 150 }}>HIERARKI (TIPE)</th>
-                  <th className="sticky left-[460px] z-20 bg-white py-3 px-4 border-r border-slate-200" style={{ minWidth: 140, width: 140 }}>KODE MATERIAL</th>
-                  <th className="sticky left-[600px] z-20 bg-white py-3 px-4 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] border-r border-slate-200" style={{ minWidth: 280, width: 280 }}>NAMA KOMPONEN / GRADE</th>
+                  <th className="sticky left-[50px] z-20 bg-white py-3 px-2 border-r border-slate-200 text-left" style={{ minWidth: 210, width: 210 }}>AKSI</th>
+                  <th className="sticky left-[260px] z-20 bg-white py-3 px-4 border-r border-slate-200" style={{ minWidth: 150, width: 150 }}>HIERARKI (TIPE)</th>
+                  <th className="sticky left-[410px] z-20 bg-white py-3 px-4 border-r border-slate-200" style={{ minWidth: 140, width: 140 }}>KODE MATERIAL</th>
+                  <th className="sticky left-[550px] z-20 bg-white py-3 px-4 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] border-r border-slate-200" style={{ minWidth: 280, width: 280 }}>NAMA KOMPONEN / GRADE</th>
                   
                   <th className="py-3 px-4 text-center w-20">GAMBAR</th>
                   <th className="py-3 px-4 text-center min-w-[130px] text-emerald-700">TIPE MATERIAL</th>
@@ -1576,51 +1726,18 @@ export default function BOMEditor({
                       <td className="sticky left-0 z-10 bg-inherit py-3 px-4 text-center font-bold text-slate-400 border-r border-slate-100">{d.no}</td>
                       
                       {/* KOLOM AKSI */}
-                      <td className="sticky left-[50px] z-10 bg-inherit py-2 px-4 border-r border-slate-100">
-                        <div className="flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity">
-                          <div className="flex flex-wrap items-center gap-1.5">
-                            {d.tipe === 'MODUL' && (
-                              <>
-                                <button onClick={() => handleAddNode(d.id, 'SUBMODUL')} className="flex items-center gap-1 px-2 py-1 text-[9px] font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 rounded border border-amber-200 transition-colors shadow-sm" title="Tambah Submodul di bawah item ini">
-                                  <Plus className="w-3 h-3" /> SUBMODUL
-                                </button>
-                                <button onClick={() => handleAddNode(d.id, 'PART')} className="flex items-center gap-1 px-2 py-1 text-[9px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded border border-emerald-200 transition-colors shadow-sm" title="Tambah Part di bawah item ini">
-                                  <Plus className="w-3 h-3" /> PART
-                                </button>
-                              </>
-                            )}
-                            {d.tipe === 'SUBMODUL' && (
-                              <>
-                                <button onClick={() => handleAddNode(d.id, 'SUBMODUL 2')} className="flex items-center gap-1 px-2 py-1 text-[9px] font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 rounded border border-purple-200 transition-colors shadow-sm" title="Tambah Submodul 2 di bawah item ini">
-                                  <Plus className="w-3 h-3" /> SUBMODUL 2
-                                </button>
-                                <button onClick={() => handleAddNode(d.id, 'PART')} className="flex items-center gap-1 px-2 py-1 text-[9px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded border border-emerald-200 transition-colors shadow-sm" title="Tambah Part di bawah item ini">
-                                  <Plus className="w-3 h-3" /> PART
-                                </button>
-                              </>
-                            )}
-                            {d.tipe === 'SUBMODUL 2' && (
-                              <>
-                                <button onClick={() => handleAddNode(d.id, 'PART')} className="flex items-center gap-1 px-2 py-1 text-[9px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded border border-emerald-200 transition-colors shadow-sm" title="Tambah Part di bawah item ini">
-                                  <Plus className="w-3 h-3" /> PART
-                                </button>
-                              </>
-                            )}
-                            {d.tipe === 'PART' && (
-                              <span className="text-[10px] text-slate-400 italic px-2">Batas Hierarki</span>
-                            )}
-                          </div>
-                          
-                          {node.level > 0 && (
-                            <button onClick={() => handleDeleteNode(d.id)} className="p-1.5 text-red-500 bg-red-50 hover:bg-red-100 hover:text-red-600 rounded border border-red-200 transition-colors shadow-sm" title="Hapus Item">
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          )}
-                        </div>
+                      <td className="sticky left-[50px] z-10 bg-inherit py-2 px-2 border-r border-slate-100 align-top">
+                        <StrukturRowActions
+                          data={d}
+                          canDelete={node.level > 0}
+                          onDetail={() => openDetailForNode(node, editorTab)}
+                          onDelete={() => handleDeleteNode(d.id)}
+                          onAddChild={(tipe) => handleAddNode(d.id, tipe)}
+                        />
                       </td>
 
                       {/* KOLOM HIERARKI */}
-                      <td className="sticky left-[310px] z-10 bg-inherit py-2 px-4 border-r border-slate-100">
+                      <td className="sticky left-[260px] z-10 bg-inherit py-2 px-4 border-r border-slate-100">
                         <div className="flex items-center">
                           {Array.from({ length: node.level }).map((_, i) => (
                             <div key={i} className="w-6 h-10 border-l border-slate-300 ml-4 relative">
@@ -1634,10 +1751,10 @@ export default function BOMEditor({
                         </div>
                       </td>
 
-                      <td className="sticky left-[460px] z-10 bg-inherit py-2 px-2 border-r border-slate-100">
+                      <td className="sticky left-[410px] z-10 bg-inherit py-2 px-2 border-r border-slate-100">
                         <input type="text" value={d.kode} onChange={(e) => handleUpdateNode(node.id, 'kode', e.target.value)} className={`${inputClasses} font-mono text-slate-600 min-w-[120px]`} />
                       </td>
-                      <td className="sticky left-[600px] z-10 bg-inherit py-2 px-2 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] border-r border-slate-100">
+                      <td className="sticky left-[550px] z-10 bg-inherit py-2 px-2 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] border-r border-slate-100">
                         <div className="flex flex-col gap-2 min-w-[250px]">
                           {d.tipe === 'PART' ? (
                             resolvePartSourceMode(d) !== 'manual' ? (
@@ -1659,7 +1776,13 @@ export default function BOMEditor({
                               onChange={(e) => handleUpdateNode(node.id, 'nama', e.target.value)}
                               className={`${inputClasses} font-bold text-slate-800 w-full`}
                               placeholder={
-                                d.tipe === 'MODUL' ? 'Nama produk / BOM…' : 'Nama komponen…'
+                                d.tipe === 'MODUL'
+                                  ? 'Nama modul…'
+                                  : d.tipe === 'SUBMODUL'
+                                    ? 'Nama submodul…'
+                                    : d.tipe === 'SUBMODUL 2'
+                                      ? 'Nama submodul 2…'
+                                      : 'Nama komponen…'
                               }
                             />
                           )}
@@ -1777,15 +1900,15 @@ export default function BOMEditor({
                       </td>
                       
                       <td className="py-3 px-4 border-r border-slate-100">
-                        {d.proses_count > 0 ? (
-                          <div onClick={() => setRoutingNode(node)} className="flex items-center gap-1.5 text-blue-600 font-bold cursor-pointer hover:underline hover:text-blue-800 transition-colors">
-                            <LinkIcon className="w-3.5 h-3.5" /><span>{d.proses_count} Operasi Terdaftar</span>
+                        {canManageProses(d.tipe) && (prosesCountForNode(d) > 0 ? (
+                          <div onClick={() => openRoutingForNode(node, 'struktur')} className="flex items-center gap-1.5 text-blue-600 font-bold cursor-pointer hover:underline hover:text-blue-800 transition-colors">
+                            <LinkIcon className="w-3.5 h-3.5" /><span>{prosesCountForNode(d)} Operasi Terdaftar</span>
                           </div>
                         ) : (
-                          <div onClick={() => setRoutingNode(node)} className="flex items-center gap-1.5 text-slate-400 cursor-pointer hover:text-slate-600 transition-colors font-medium">
+                          <div onClick={() => openRoutingForNode(node, 'struktur')} className="flex items-center gap-1.5 text-slate-400 cursor-pointer hover:text-slate-600 transition-colors font-medium">
                             <LinkIcon className="w-3.5 h-3.5" /><span>Tambah Multi Routing...</span>
                           </div>
-                        )}
+                        ))}
                       </td>
                       <td className="py-2 px-2">
                         <input type="text" value={d.catatan} onChange={(e) => handleUpdateNode(node.id, 'catatan', e.target.value)} placeholder="Ketik catatan..." className={`${inputClasses} min-w-[180px] text-slate-500`} />
@@ -1806,22 +1929,39 @@ export default function BOMEditor({
     return (
       <RoutingModal
         node={routingNode}
-        onClose={() => setRoutingNode(null)}
+        onClose={handleCloseRouting}
         onSave={handleSaveRouting}
         kursUsd={kursUsd}
         kursEur={kursEur}
+        mastersTick={mastersTick}
+      />
+    );
+  }
+
+  if (detailSummaryNode) {
+    return (
+      <SummaryDetailModal
+        node={detailSummaryNode}
+        rollup={nodeRollupMap.get(detailSummaryNode.id) ?? null}
+        kursUsd={kursUsd}
+        kursEur={kursEur}
+        onClose={handleCloseDetail}
+        onManageProses={
+          canManageProses(detailSummaryNode.data?.tipe)
+            ? () => openRoutingForNode(detailSummaryNode, detailReturnTab ?? editorTab)
+            : undefined
+        }
       />
     );
   }
 
   // --- EDITOR RENDER ---
   return (
-    <div className="editor-shell font-sans">
-
-      {/* Include Detail Summary Modal */}
-      <SummaryDetailModal node={detailSummaryNode} onClose={() => setDetailSummaryNode(null)} />
+    <div
+      className="editor-shell font-sans"
+      style={{ '--editor-density': densityToScale(displayDensity) }}
+    >
       <MasterWorkCenterModal isOpen={showMasterWc} onClose={() => setShowMasterWc(false)} />
-      <ManualBookModal isOpen={showManual} onClose={() => setShowManual(false)} />
       <MasterMaterialsModal
         isOpen={showMasterMaterials}
         onClose={() => {
@@ -1839,86 +1979,83 @@ export default function BOMEditor({
       <style>{`@keyframes dashMove { to { stroke-dashoffset: -16; } } .animated-dash { animation: dashMove 0.8s linear infinite; }`}</style>
 
       <div className="editor-topbar">
-        <div className="flex items-center gap-4">
-          <button onClick={onBack} className="flex items-center text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors">
-            <ArrowLeft className="w-4 h-4 mr-2" /> Ke Daftar BOM
-          </button>
-          <span className="bg-blue-50 border border-blue-100 text-blue-700 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm">
-            Project: {productInfo.kode || '—'}
-          </span>
-          <span
-            className={`text-[10px] font-bold uppercase px-2 py-1 rounded border ${
-              cogsMode === COGS_MODES.EXCEL_FIXED
-                ? 'bg-violet-50 text-violet-700 border-violet-200'
-                : 'bg-teal-50 text-teal-700 border-teal-200'
-            }`}
-            title="Mode sumber biaya COGS"
-          >
-            {cogsMode === COGS_MODES.EXCEL_FIXED ? 'Mode: Excel Fixed' : 'Mode: Live Master'}
-          </span>
-          <span
-            className={`text-[10px] font-bold uppercase px-2 py-1 rounded border ${
-              saveStatus === 'saved'
-                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                : saveStatus === 'saving'
-                  ? 'bg-amber-50 text-amber-700 border-amber-200'
-                  : saveStatus === 'error'
-                    ? 'bg-red-50 text-red-700 border-red-200'
-                    : 'bg-slate-100 text-slate-500 border-slate-200'
-            }`}
-          >
-            {saveStatus === 'saved' ? 'Tersimpan' : saveStatus === 'saving' ? 'Menyimpan…' : saveStatus === 'error' ? 'Gagal simpan' : 'Belum disimpan'}
-          </span>
-        </div>
-        <div className="flex items-center gap-3 flex-wrap justify-end">
-          <button
-            type="button"
-            onClick={toggleProductPanel}
-            className="border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors"
-            title={showProductPanel ? 'Sembunyikan data produk' : 'Tampilkan data produk'}
-          >
-            {showProductPanel ? <PanelTopClose className="w-4 h-4" /> : <PanelTopOpen className="w-4 h-4" />}
-            {showProductPanel ? 'Sembunyikan Produk' : 'Tampilkan Produk'}
-          </button>
-          <FontCaseToggle value={fontCase} onChange={setFontCase} />
-          <CurrencyGroup kursUsd={kursUsd} setKursUsd={setKursUsd} kursEur={kursEur} setKursEur={setKursEur} className="mr-1" />
-          <button
-            type="button"
-            onClick={() => setShowMasterMaterials(true)}
-            className="border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-2"
-          >
-            <Server className="w-4 h-4" /> Master Data
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowMasterWc(true)}
-            className="border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-2"
-          >
-            <Server className="w-4 h-4" /> Master WC
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowManual(true)}
-            className="border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-2"
-            title="Manual Book — panduan sistem BOM & kalkulasi"
-          >
-            <BookOpen className="w-4 h-4" /> Manual Book
-          </button>
-          <ExportMenu
-            onExportExcel={handleExportExcel}
-            onExportPdf={handleExportPdf}
-            onExportPdfFull={handleExportPdfFull}
-          />
-          <button onClick={() => setShowKalkulasi(true)} className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors shadow-sm">
-            <FileText className="w-4 h-4" /> View Kalkulasi Lengkap
-          </button>
-          <button
-            type="button"
-            onClick={handleSaveNow}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors shadow-sm shadow-blue-500/30"
-          >
-            <CheckCircle2 className="w-4 h-4" /> Simpan Project
-          </button>
+        <div className="editor-topbar__track">
+          <div className="editor-topbar__leading scroll-thin">
+            <div className="editor-topbar__meta">
+              <button onClick={onBack} className="flex items-center text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors whitespace-nowrap shrink-0">
+                <ArrowLeft className="w-4 h-4 mr-2" /> Ke Daftar BOM
+              </button>
+              <span className="editor-topbar__project" title={productInfo.kode || '—'}>
+                Project: {productInfo.kode || '—'}
+              </span>
+              <span
+                className={`editor-topbar__mode ${
+                  cogsMode === COGS_MODES.EXCEL_FIXED
+                    ? 'bg-violet-50 text-violet-700 border-violet-200'
+                    : 'bg-teal-50 text-teal-700 border-teal-200'
+                }`}
+                title="Mode sumber biaya COGS"
+              >
+                {cogsMode === COGS_MODES.EXCEL_FIXED ? 'Mode: Excel Fixed' : 'Mode: Live Master'}
+              </span>
+              <span
+                className={`editor-topbar__status ${
+                  saveStatus === 'saved'
+                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                    : saveStatus === 'saving'
+                      ? 'bg-amber-50 text-amber-700 border-amber-200'
+                      : saveStatus === 'error'
+                        ? 'bg-red-50 text-red-700 border-red-200'
+                        : 'bg-slate-100 text-slate-500 border-slate-200'
+                }`}
+              >
+                {saveStatus === 'saved' ? 'Tersimpan' : saveStatus === 'saving' ? 'Menyimpan…' : saveStatus === 'error' ? 'Gagal simpan' : 'Belum disimpan'}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={toggleProductPanel}
+              className="editor-topbar__product-toggle border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors"
+              title={showProductPanel ? 'Sembunyikan data produk' : 'Tampilkan data produk'}
+            >
+              {showProductPanel ? <PanelTopClose className="w-4 h-4 shrink-0" /> : <PanelTopOpen className="w-4 h-4 shrink-0" />}
+              <span className="truncate">{showProductPanel ? 'Sembunyikan Produk' : 'Tampilkan Produk'}</span>
+            </button>
+          </div>
+          <div className="editor-topbar__right scroll-thin">
+            <FontCaseToggle value={fontCase} onChange={setFontCase} />
+            <DisplayDensityToggle value={displayDensity} onChange={handleDisplayDensityChange} />
+            <CurrencyGroup kursUsd={kursUsd} setKursUsd={setKursUsd} kursEur={kursEur} setKursEur={setKursEur} />
+            <button
+              type="button"
+              onClick={() => setShowMasterMaterials(true)}
+              className="border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-2 whitespace-nowrap shrink-0"
+            >
+              <Server className="w-4 h-4 shrink-0" /> Master Data
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowMasterWc(true)}
+              className="border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-2 whitespace-nowrap shrink-0"
+            >
+              <Server className="w-4 h-4 shrink-0" /> Master WC
+            </button>
+            <ExportMenu
+              onExportExcel={handleExportExcel}
+              onExportPdf={handleExportPdf}
+              onExportPdfFull={handleExportPdfFull}
+            />
+            <button onClick={() => setShowKalkulasi(true)} className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors shadow-sm whitespace-nowrap shrink-0">
+              <FileText className="w-4 h-4 shrink-0" /> View Kalkulasi Lengkap
+            </button>
+            <button
+              type="button"
+              onClick={handleSaveNow}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors shadow-sm shadow-blue-500/30 whitespace-nowrap shrink-0"
+            >
+              <CheckCircle2 className="w-4 h-4 shrink-0" /> Simpan Project
+            </button>
+          </div>
         </div>
       </div>
 
@@ -1964,8 +2101,8 @@ export default function BOMEditor({
 
       <div className="editor-body">
         
-        {/* PRODUCT INFORMATION — bisa disembunyikan untuk fokus kalkulasi */}
-        {showProductPanel ? (
+        {/* 1.1 Data produk — disembunyikan di tab Proses agar tabel full viewport */}
+        {editorTab !== 'proses' && (showProductPanel ? (
           <ProductPanel
             productInfo={productInfo}
             onProductInfoChange={handleProductInfoChange}
@@ -1984,32 +2121,18 @@ export default function BOMEditor({
             coatingPreview={coatingPreview}
           />
         ) : (
-          <ProductInlineBar
-            expanded={productInlineExpanded}
-            onToggleExpand={() => setProductInlineExpanded((v) => !v)}
-            onShowFullPanel={() => {
-              setShowProductPanel(true);
-              persistProductPanelPref(true);
-            }}
+          <ProductContextTable
             productInfo={productInfo}
-            onProductInfoChange={handleProductInfoChange}
             productMeta={productMeta}
-            onProductMetaChange={handleProductMetaChange}
             dimensi={dimensi}
-            onDimensiChange={updateDimensi}
             volProduk={volProduk}
             packingDimensions={packingDimensions}
-            onPackingTolChange={(id, tol, val) => handleUpdatePackingDim(id, tol, val)}
             packingVolOpts={packingVolOpts}
-            mastersTick={mastersTick}
-            onWoodGradeChange={handleProductWoodGrade}
-            onCoatingChange={handleProductCoating}
-            coatingPreview={coatingPreview}
             productImage={resolveNodeFoto(bomData)}
           />
-        )}
+        ))}
 
-        {/* TABS NAVIGATION BAR */}
+        {/* 1.2 Tab menu */}
         <EditorTabBar activeTab={editorTab} onTabChange={setEditorTab} />
 
         {/* TAB CONTENT AREA — flex-1 1 0% agar selalu dapat sisa tinggi setelah panel produk */}
@@ -2645,7 +2768,11 @@ export default function BOMEditor({
                                  {d.foto ? <img src={d.foto} alt="pic" className="w-full h-full object-cover" /> : <ImageIcon className="w-4 h-4 text-slate-300" />}
                                </div>
                             </td>
-                            <HierarchyBodyCells cols={materialHierarchyCols} hierarchy={hierarchy} />
+                            <HierarchyBodyCells
+                              cols={materialHierarchyCols}
+                              hierarchy={hierarchy}
+                              onRenameNode={(id, nama) => handleUpdateNode(id, 'nama', nama)}
+                            />
                             <td className="px-4 py-3 border-r border-slate-100">
                               <MaterialTypeField
                                 value={d.materialType || ''}
@@ -2739,8 +2866,13 @@ export default function BOMEditor({
                             <td className="py-2 px-1.5 border-r border-slate-100 text-right font-bold text-violet-600 bg-violet-50/10 tabular-nums text-[11px]">{eurProdUnit}</td>
 
                             <td className="px-4 py-3 text-center">
-                              <button className="p-1.5 text-red-400 bg-red-50 hover:bg-red-100 hover:text-red-600 border border-red-100 rounded transition-colors mx-auto block">
-                                <Trash2 className="w-3.5 h-3.5"/>
+                              <button
+                                type="button"
+                                onClick={() => openDetailForNode(node, editorTab)}
+                                className="p-1.5 bg-slate-100 hover:bg-blue-100 text-slate-400 hover:text-blue-600 rounded border border-slate-200 transition-colors mx-auto block"
+                                title="Lihat detail part / kalkulasi"
+                              >
+                                <QrCode className="w-3.5 h-3.5" />
                               </button>
                             </td>
                           </tr>
@@ -2761,14 +2893,27 @@ export default function BOMEditor({
               </div>
 
               <div className="flex-1 min-h-0 flex flex-col gap-2 overflow-hidden">
-              {/* Tabel Rekapitulasi Manufaktur */}
-              <div className="shrink-0 flex flex-col max-h-[min(10rem,22vh)] bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                <div className="px-4 py-2 border-b border-slate-100 bg-white shrink-0">
+              {/* Tabel Rekapitulasi Manufaktur — accordion default collapsed */}
+              <div className="shrink-0 flex flex-col bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setShowProsesRecap((v) => !v)}
+                  className="px-4 py-2 border-b border-slate-100 bg-white shrink-0 w-full flex items-center justify-between gap-2 hover:bg-slate-50 transition-colors text-left"
+                >
                   <h3 className="text-xs font-black text-slate-800 flex items-center gap-2">
                     <PieChart className="w-3.5 h-3.5 text-indigo-500" /> Tabel Rekapitulasi Manufaktur
+                    {prosesSummary.items.length > 0 && (
+                      <span className="text-[9px] font-bold text-slate-400 normal-case">
+                        ({prosesSummary.grandTotal ? `Rp ${formatIDR(prosesSummary.grandTotal)}` : '—'})
+                      </span>
+                    )}
                   </h3>
-                </div>
-                <div className="min-h-0 overflow-y-auto overflow-x-auto">
+                  <ChevronDown
+                    className={`w-4 h-4 text-slate-400 shrink-0 transition-transform ${showProsesRecap ? '' : '-rotate-90'}`}
+                  />
+                </button>
+                {showProsesRecap && (
+                <div className="min-h-0 max-h-[min(14rem,28vh)] overflow-y-auto overflow-x-auto">
                   <table className="w-full text-left text-xs whitespace-nowrap">
                     <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-extrabold uppercase text-[9px] tracking-wider text-center sticky top-0 z-[1]">
                       <tr>
@@ -2821,6 +2966,7 @@ export default function BOMEditor({
                     </tfoot>
                   </table>
                 </div>
+                )}
               </div>
 
               {/* Tabel Detail Kebutuhan Proses — mengisi sisa tinggi + scroll */}
@@ -2831,7 +2977,7 @@ export default function BOMEditor({
                       <Wrench className="w-3.5 h-3.5 text-indigo-500" /> Detail Kebutuhan Proses
                     </h3>
                     <p className="text-[9px] text-slate-500 mt-0.5 font-medium hidden sm:block">
-                      Satu baris per operasi — kolom hierarki mengikuti part induk.
+                      Klik kode/nama part atau ikon Proses untuk kelola operasi manufaktur.
                     </p>
                   </div>
                   <HierarchyColToggles cols={materialHierarchyCols} onToggle={toggleHierarchyCol} />
@@ -2851,6 +2997,8 @@ export default function BOMEditor({
                         <th rowSpan={2} className="px-3 py-3 border-r border-slate-100 w-24 align-middle">TIPE</th>
                         <th rowSpan={2} className="px-3 py-3 border-r border-slate-100 text-left min-w-[100px] align-middle">TAHAP</th>
                         <th rowSpan={2} className="px-3 py-3 border-r border-slate-100 text-left min-w-[140px] align-middle">WC / LANGKAH</th>
+                        <th rowSpan={2} className="px-3 py-3 border-r border-slate-100 text-left min-w-[120px] align-middle">BAHAN</th>
+                        <th rowSpan={2} className="px-3 py-3 border-r border-slate-100 text-left min-w-[90px] align-middle">DIM (mm)</th>
                         <th rowSpan={2} className="px-3 py-3 border-r border-slate-100 text-blue-600 w-16 align-middle">DURASI</th>
                         <th rowSpan={2} className="px-3 py-3 border-r border-slate-100 text-amber-600 w-14 align-middle">ORG</th>
                         <th rowSpan={2} className="px-3 py-3 border-r border-slate-100 w-20 align-middle">ORG·MNT</th>
@@ -2861,7 +3009,7 @@ export default function BOMEditor({
                         <th rowSpan={2} className="px-3 py-3 text-left min-w-[140px] align-middle">DETAIL</th>
                       </tr>
                       <tr className="bg-white border-b border-slate-200 text-[9px] font-extrabold uppercase text-slate-500">
-                        <th colSpan={12 + hierarchyColCount} className="border-r border-slate-100" />
+                        <th colSpan={14 + hierarchyColCount} className="border-r border-slate-100" />
                         <th className="py-2 px-1.5 text-right text-indigo-700">IDR</th>
                         <th className="py-2 px-1.5 text-right text-amber-600">USD</th>
                         <th className="py-2 px-1.5 border-r border-slate-200 text-right text-brand-600">EUR</th>
@@ -2874,8 +3022,8 @@ export default function BOMEditor({
                     <tbody className="font-medium text-slate-700 divide-y divide-slate-100">
                       {prosesLineItems.length === 0 ? (
                         <tr>
-                          <td colSpan={19 + hierarchyColCount} className="px-6 py-10 text-center text-slate-400 text-xs italic">
-                            Belum ada operasi manufaktur — tambahkan proses pada part di tab Struktur atau buka Routing.
+                          <td colSpan={21 + hierarchyColCount} className="px-6 py-10 text-center text-slate-400 text-xs italic">
+                            Belum ada operasi manufaktur — buka dari kolom Manufaktur di tab Struktur, detail komponen, atau klik baris di tab ini.
                           </td>
                         </tr>
                       ) : prosesLineItems.map((ln, i) => {
@@ -2887,9 +3035,40 @@ export default function BOMEditor({
                         return (
                         <tr key={ln.key} className="hover:bg-slate-50 transition-colors align-top">
                           <td className="px-3 py-2.5 text-center border-r border-slate-100 text-slate-400 font-bold">{i + 1}</td>
-                          <HierarchyBodyCells cols={materialHierarchyCols} hierarchy={hierarchy} compact />
-                          <td className="px-3 py-2.5 border-r border-slate-100 font-mono text-[10px] text-slate-500">{ln.nodeKode || '—'}</td>
-                          <td className="px-3 py-2.5 border-r border-slate-100 font-bold text-slate-800 text-[11px]">{ln.nodeNama || '—'}</td>
+                          <HierarchyBodyCells
+                            cols={materialHierarchyCols}
+                            hierarchy={hierarchy}
+                            compact
+                            onRenameNode={(id, nama) => handleUpdateNode(id, 'nama', nama)}
+                          />
+                          <td className="px-3 py-2.5 border-r border-slate-100 font-mono text-[10px] text-slate-500">
+                            {ln.nodeId ? (
+                              <button
+                                type="button"
+                                onClick={() => openRoutingByPartId(ln.nodeId)}
+                                className="text-left hover:text-indigo-700 hover:underline font-mono"
+                                title="Kelola operasi part"
+                              >
+                                {ln.nodeKode || '—'}
+                              </button>
+                            ) : (
+                              ln.nodeKode || '—'
+                            )}
+                          </td>
+                          <td className="px-3 py-2.5 border-r border-slate-100 font-bold text-slate-800 text-[11px]">
+                            {ln.nodeId ? (
+                              <button
+                                type="button"
+                                onClick={() => openRoutingByPartId(ln.nodeId)}
+                                className="text-left hover:text-indigo-700 hover:underline"
+                                title="Kelola operasi part"
+                              >
+                                {ln.nodeNama || '—'}
+                              </button>
+                            ) : (
+                              ln.nodeNama || '—'
+                            )}
+                          </td>
                           <td className="px-3 py-2.5 border-r border-slate-100 font-bold text-slate-700">{ln.opNama || '—'}</td>
                           <td className="px-3 py-2.5 border-r border-slate-100 text-center">
                             <span className={`inline-block text-[8px] font-black uppercase px-1.5 py-0.5 rounded border ${
@@ -2907,6 +3086,12 @@ export default function BOMEditor({
                             ) : (
                               <span className="font-bold text-blue-700 text-[10px]">{ln.wcNama}</span>
                             )}
+                          </td>
+                          <td className="px-3 py-2.5 border-r border-slate-100 text-[10px] text-slate-600 max-w-[140px] whitespace-normal leading-snug" title={ln.materialsLabel}>
+                            {ln.materialsLabel || '—'}
+                          </td>
+                          <td className="px-3 py-2.5 border-r border-slate-100 text-[10px] text-slate-600 tabular-nums">
+                            {ln.dimensiLabel || '—'}
                           </td>
                           <td className="px-3 py-2.5 border-r border-slate-100 text-center font-black text-blue-600">{ln.waktu} mnt</td>
                           <td className="px-3 py-2.5 border-r border-slate-100 text-center font-black text-amber-700">{ln.person}</td>
@@ -2926,11 +3111,25 @@ export default function BOMEditor({
                           <td className="px-3 py-2.5 text-right font-bold text-violet-600 tabular-nums text-[11px]">{(prodUnit / kursUsd).toFixed(2)}</td>
                           <td className="px-3 py-2.5 border-r border-slate-100 text-right font-bold text-violet-600 tabular-nums text-[11px]">{(prodUnit / kursEur).toFixed(2)}</td>
                           <td className="px-3 py-2.5 text-left align-top">
-                            {ln.inputMode === 'routing' && ln.stepUrutan === 1 ? (
-                              <OperasiDetailCell operasi={ln.parentOp} operasiIndex={ln.opIndex} />
-                            ) : (
-                              <span className="text-[10px] text-slate-500">{ln.note || '—'}</span>
-                            )}
+                            <div className="flex items-start gap-1.5">
+                              {ln.nodeId ? (
+                                <button
+                                  type="button"
+                                  onClick={() => openRoutingByPartId(ln.nodeId)}
+                                  className="shrink-0 p-1 rounded border border-indigo-200 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors"
+                                  title="Kelola operasi manufaktur"
+                                >
+                                  <Wrench className="w-3.5 h-3.5" />
+                                </button>
+                              ) : null}
+                              <div className="min-w-0 flex-1">
+                                {ln.inputMode === 'routing' && ln.stepUrutan === 1 ? (
+                                  <OperasiDetailCell operasi={ln.parentOp} operasiIndex={ln.opIndex} />
+                                ) : (
+                                  <span className="text-[10px] text-slate-500">{ln.note || '—'}</span>
+                                )}
+                              </div>
+                            </div>
                           </td>
                         </tr>
                       );})}
@@ -2938,7 +3137,7 @@ export default function BOMEditor({
                     {prosesLineItems.length > 0 && (
                       <tfoot className="bg-slate-50 border-t-2 border-slate-200 text-[10px] font-black">
                         <tr>
-                          <td colSpan={7 + hierarchyColCount} className="px-3 py-3 text-right uppercase tracking-widest text-slate-500">Total ({prosesLineItems.length} baris):</td>
+                          <td colSpan={9 + hierarchyColCount} className="px-3 py-3 text-right uppercase tracking-widest text-slate-500">Total ({prosesLineItems.length} baris):</td>
                           <td className="px-3 py-3 text-center text-blue-600">{prosesLineTotals.waktu} mnt</td>
                           <td className="px-3 py-3 text-center text-amber-700">—</td>
                           <td className="px-3 py-3 text-center text-slate-600">{prosesLineTotals.personMinutes}</td>
@@ -3057,7 +3256,7 @@ export default function BOMEditor({
                                  <span className="text-slate-400 font-bold text-[10px]">{rowIndex + 1}</span>
                                  <button
                                    type="button"
-                                   onClick={() => setDetailSummaryNode(node)}
+                                   onClick={() => openDetailForNode(node, editorTab)}
                                    className="p-1 bg-slate-100 hover:bg-blue-100 text-slate-400 hover:text-blue-600 rounded transition-colors"
                                    title="Detail summary"
                                  >
@@ -3067,7 +3266,7 @@ export default function BOMEditor({
                              ) : (
                                <button
                                  type="button"
-                                 onClick={() => setDetailSummaryNode(node)}
+                                 onClick={() => openDetailForNode(node, editorTab)}
                                  className="p-1.5 bg-slate-100 hover:bg-blue-100 text-slate-400 hover:text-blue-600 rounded transition-colors"
                                  title="Lihat Detail Summary"
                                >
@@ -3076,7 +3275,11 @@ export default function BOMEditor({
                              )}
                            </td>
                            {summaryPartsOnly && (
-                             <HierarchyBodyCells cols={materialHierarchyCols} hierarchy={hierarchy} />
+                             <HierarchyBodyCells
+                               cols={materialHierarchyCols}
+                               hierarchy={hierarchy}
+                               onRenameNode={(id, nama) => handleUpdateNode(id, 'nama', nama)}
+                             />
                            )}
                            <td className="px-4 py-3 border-r border-slate-100">
                              {summaryPartsOnly ? (

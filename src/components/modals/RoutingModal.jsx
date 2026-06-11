@@ -38,6 +38,8 @@ const defaultOperation = (id = 1, materialVol = 0) => {
     ratePekerja: WORK_CENTERS[0]?.laborRatePerMin ?? LABOR_RATE_PER_MIN,
     wcCapacity: WORK_CENTERS[0]?.capacity ?? '14 m³',
     note: '',
+    materialsUsed: [],
+    dimensiOperasi: { useParentDimensi: true, p: 0, l: 0, t: 0 },
   };
   return applyVolumeToOperation(base, materialVol);
 };
@@ -88,6 +90,24 @@ function mapSavedOp(p, i, materialVol) {
     biayaMesin: p.biayaMesin,
     biayaPekerja: p.biayaPekerja,
     note: p.note ?? '',
+    materialsUsed: Array.isArray(p.materialsUsed)
+      ? p.materialsUsed.map((m) => {
+          const mode =
+            m.materialSourceMode ||
+            (m.materialMasterId ? 'database' : m.manualSpec || (m.nama && !m.materialMasterId) ? 'manual' : 'database');
+          return {
+            id: m.id || Date.now(),
+            materialMasterId: m.materialMasterId || '',
+            materialSourceMode: mode,
+            manualSpec: m.manualSpec ?? (mode === 'manual' ? m.nama || m.kode || '' : ''),
+            kode: m.kode || '',
+            nama: m.nama || m.manualSpec || '',
+            qty: m.qty ?? 1,
+            unit: m.unit || 'pcs',
+          };
+        })
+      : [],
+    dimensiOperasi: p.dimensiOperasi || { useParentDimensi: true, p: 0, l: 0, t: 0 },
   };
   if (base.inputMode === 'routing' && base.routingId && !base.routingSteps.length) {
     const fromRt = calcOperationFromRouting(base.routingId);
@@ -141,7 +161,7 @@ function withVolumeTime(op, materialVol, resetManual = false) {
   return applyVolumeToOperation(next, materialVol);
 }
 
-export default function RoutingModal({ node, onClose, kursUsd, kursEur, onSave }) {
+export default function RoutingModal({ node, onClose, kursUsd, kursEur, onSave, mastersTick = 0 }) {
   const nodeData = useMemo(() => node?.data ?? node, [node]);
   const materialVol = useMemo(() => Number(nodeData?.vol) || 0, [nodeData]);
   const [operations, setOperations] = useState(() => buildOperationsFromNode(node));
@@ -352,6 +372,27 @@ export default function RoutingModal({ node, onClose, kursUsd, kursEur, onSave }
             biayaPekerja: costs.pekerja,
             biaya: costs.total,
             note: op.note ?? '',
+            materialsUsed: (op.materialsUsed || []).map((m) => {
+              const mode =
+                m.materialSourceMode ||
+                (m.materialMasterId ? 'database' : m.manualSpec || (m.nama && !m.materialMasterId) ? 'manual' : 'database');
+              return {
+                id: m.id || Date.now(),
+                materialMasterId: m.materialMasterId || '',
+                materialSourceMode: mode,
+                manualSpec: m.manualSpec ?? (mode === 'manual' ? m.nama || m.kode || '' : ''),
+                kode: m.kode || '',
+                nama: m.nama || m.manualSpec || '',
+                qty: Number(m.qty) || 0,
+                unit: m.unit || 'pcs',
+              };
+            }),
+            dimensiOperasi: {
+              useParentDimensi: op.dimensiOperasi?.useParentDimensi !== false,
+              p: Number(op.dimensiOperasi?.p) || 0,
+              l: Number(op.dimensiOperasi?.l) || 0,
+              t: Number(op.dimensiOperasi?.t) || 0,
+            },
           };
         })
       );
@@ -370,6 +411,7 @@ export default function RoutingModal({ node, onClose, kursUsd, kursEur, onSave }
       operations={operations}
       costsById={costsById}
       totals={totals}
+      mastersTick={mastersTick}
       onUpdate={updateOperation}
       onUpdateStep={updateRoutingStep}
       onRemove={handleRemove}

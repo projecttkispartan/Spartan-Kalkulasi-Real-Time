@@ -103,7 +103,7 @@ export function SearchableSelect({
     }
     syncPanelPosition();
     const t = setTimeout(() => searchRef.current?.focus(), 0);
-    const onScroll = () => syncPanelPosition();
+    const onScroll = () => setOpen(false);
     const onResize = () => syncPanelPosition();
     window.addEventListener('scroll', onScroll, true);
     window.addEventListener('resize', onResize);

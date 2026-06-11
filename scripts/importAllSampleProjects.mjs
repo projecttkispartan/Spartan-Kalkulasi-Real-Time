@@ -86,7 +86,7 @@ const SAMPLE_FILES = [
 
 const OUT_DIR = path.join(ROOT, 'src/data/samples/projects');
 const MANIFEST_PATH = path.join(ROOT, 'src/data/samples/manifest.json');
-const SAMPLE_VERSION = 5;
+const SAMPLE_VERSION = 6;
 
 function slug(s) {
   return String(s)

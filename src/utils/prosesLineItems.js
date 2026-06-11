@@ -1,10 +1,48 @@
 import { enrichRoutingSteps } from '../data/routingCatalog.js';
 import { calcProsesCosts } from './operationCosts.js';
 
+export function formatOperasiDimensiLabel(dimensiOperasi, nodeP, nodeL, nodeT) {
+  if (!dimensiOperasi || dimensiOperasi.useParentDimensi !== false) {
+    if (nodeP || nodeL || nodeT) return `${nodeP || 0}×${nodeL || 0}×${nodeT || 0}`;
+    return 'Part';
+  }
+  return `${dimensiOperasi.p || 0}×${dimensiOperasi.l || 0}×${dimensiOperasi.t || 0}`;
+}
+
+function materialModeTag(m) {
+  const mode =
+    m.materialSourceMode ||
+    (m.materialMasterId ? 'database' : m.manualSpec || (m.nama && !m.materialMasterId) ? 'manual' : null);
+  if (mode === 'database') return 'DB';
+  if (mode === 'manual') return 'Manual';
+  return '';
+}
+
+export function formatMaterialsUsedLabel(materialsUsed) {
+  if (!materialsUsed?.length) return '—';
+  return materialsUsed
+    .map((m) => {
+      const name = m.nama || m.manualSpec || m.kode || '—';
+      const qty = Number(m.qty) || 0;
+      const unit = m.unit || 'pcs';
+      const tag = materialModeTag(m);
+      const qtyPart = qty ? ` (${qty} ${unit})` : '';
+      const tagPart = tag ? ` [${tag}]` : '';
+      return `${name}${qtyPart}${tagPart}`;
+    })
+    .join(', ');
+}
+
 /** Satu baris kebutuhan proses — WC tunggal atau langkah routing */
 export function flattenProsesLineItems(prosesEntries) {
   const lines = [];
   prosesEntries.forEach((p, opIndex) => {
+    const shared = {
+      materialsUsed: p.materialsUsed || [],
+      dimensiOperasi: p.dimensiOperasi || null,
+      dimensiLabel: formatOperasiDimensiLabel(p.dimensiOperasi, p.nodeP, p.nodeL, p.nodeT),
+      materialsLabel: formatMaterialsUsedLabel(p.materialsUsed),
+    };
     if (p.inputMode === 'routing' && p.routingSteps?.length) {
       enrichRoutingSteps(p.routingSteps).forEach((st) => {
         const biayaMesin = (st.biayaMesin || 0) + (st.biayaWc || 0);
@@ -27,6 +65,7 @@ export function flattenProsesLineItems(prosesEntries) {
           biayaTotal: biayaMesin + biayaPekerja,
           note: st.note,
           parentOp: p,
+          ...shared,
         });
       });
     } else {
@@ -49,6 +88,7 @@ export function flattenProsesLineItems(prosesEntries) {
         biayaTotal: c.total,
         note: p.note,
         parentOp: p,
+        ...shared,
       });
     }
   });

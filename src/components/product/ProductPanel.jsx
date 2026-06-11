@@ -5,9 +5,9 @@ import { resolveNodeFoto } from '../../utils/images';
 import { formatIDR } from '../../utils/formatters';
 import { WoodGradeField, CoatingField } from '../fields/MasterCombos';
 
-const fieldLabel = 'label-field mb-0.5 block text-[10px]';
+const fieldLabel = 'label-field editor-field-label mb-0.5 block';
 const fieldInput =
-  'w-full border-b-2 border-slate-200 px-0 py-1 text-xs font-bold text-slate-700 focus:outline-none focus:border-brand-500 bg-transparent transition-colors hover:border-slate-300';
+  'editor-field-input w-full border-b-2 border-slate-200 px-0 py-1 text-xs font-bold text-slate-700 focus:outline-none focus:border-brand-500 bg-transparent transition-colors hover:border-slate-300';
 
 function SectionTitle({ children }) {
   return (
@@ -170,25 +170,39 @@ export default function ProductPanel({
   return (
     <div className="editor-product-panel">
       <div className="surface-card-lg overflow-hidden">
-        <div className="grid grid-cols-1 xl:grid-cols-[6.5rem_1fr] gap-0">
-          <div className="flex flex-row xl:flex-col items-center gap-2 p-2 xl:p-3 border-b xl:border-b-0 xl:border-r border-slate-100 bg-slate-50/40 shrink-0">
-            <ClickZoomImage
-              fill
-              src={fotoSrc}
-              alt={productInfo.nama}
-              className="h-16 w-16 xl:h-[4.5rem] xl:w-full xl:aspect-square rounded-lg border-slate-200"
-            />
-            <div className="flex flex-wrap xl:flex-col gap-1 min-w-0">
-              <span className="px-1.5 py-0.5 rounded bg-brand-100 text-brand-800 text-[9px] font-black uppercase truncate max-w-full">
-                {productMeta.itemType || '—'}
+        <div className="product-panel-header">
+          <ClickZoomImage
+            fill
+            src={fotoSrc}
+            alt={productInfo.nama}
+            className="h-14 w-14 sm:h-16 sm:w-16 rounded-lg border-slate-200 shrink-0"
+          />
+          <div className="flex flex-wrap items-center gap-1.5 min-w-0 flex-1">
+            {productMeta.itemType ? (
+              <span
+                className="product-panel-header__chip product-panel-header__chip--type"
+                title={productMeta.itemType}
+              >
+                {productMeta.itemType}
               </span>
-              <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[9px] font-bold">
-                v{productInfo.versi || '—'}
+            ) : null}
+            {productInfo.versi ? (
+              <span className="product-panel-header__chip product-panel-header__chip--versi">
+                v{productInfo.versi}
               </span>
-            </div>
+            ) : null}
+            {productInfo.kode ? (
+              <span
+                className="product-panel-header__chip product-panel-header__chip--kode"
+                title={productInfo.kode}
+              >
+                {productInfo.kode}
+              </span>
+            ) : null}
           </div>
+        </div>
 
-          <div className="flex flex-col gap-0 p-2 md:p-3 min-w-0">
+        <div className="product-panel-body flex flex-col gap-0 p-2 md:p-3 min-w-0">
             <section className="product-panel-section">
               <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-x-3 gap-y-1.5">
                 <SectionTitle>Identitas</SectionTitle>
@@ -329,7 +343,6 @@ export default function ProductPanel({
                 </div>
               </div>
             </section>
-          </div>
         </div>
       </div>
     </div>

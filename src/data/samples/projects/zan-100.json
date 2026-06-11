@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "id": "sample-zan-100",
   "sampleKey": "ZAN-100",
-  "sampleSeedVersion": 5,
+  "sampleSeedVersion": 6,
   "sampleSourceFile": "1 - ZAN-100 - 2-12-25.xlsx",
   "status": "draft",
   "createdAt": "2026-06-03T07:18:48.392Z",
-  "updatedAt": "2026-06-04T04:25:15.823Z",
+  "updatedAt": "2026-06-10T01:45:35.635Z",
   "createdBy": "Excel Import",
   "kode": "ZAN-10",
   "nama": "ZAN-10 - ZANZIBAR STOOL/ SIDE TABLE",
@@ -35,41 +35,30 @@
     "h": 505
   },
   "bomData": {
-    "id": "zan-root",
+    "id": "root-import",
     "no": 1,
-    "nama": "BODI",
-    "kode": "1200230-0.0.0.2.0",
+    "nama": "",
+    "kode": "ZAN-10",
     "tipe": "MODUL",
     "qty": 1,
     "unit": "SET",
-    "p": 340,
-    "l": 340,
-    "t": 505,
-    "vol": 0.05837,
+    "p": 0,
+    "l": 0,
+    "t": 0,
+    "vol": 0,
     "biaya": 0,
-    "catatan": "Modul utama — ZANZIBAR STOOL",
-    "proses_count": 0,
-    "foto": "https://images.unsplash.com/photo-1503602642458-232111445657?w=200&h=200&fit=crop&q=80",
     "children": [
       {
-        "id": "zan-sm-atas",
+        "id": "sm-0",
         "no": 2,
         "nama": "ATAS",
         "kode": "1200230-1.1",
         "tipe": "SUBMODUL",
         "qty": 1,
         "unit": "SET",
-        "p": null,
-        "l": null,
-        "t": null,
-        "vol": 0,
-        "biaya": 0,
-        "catatan": "",
-        "proses_count": 0,
-        "foto": "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=200&h=200&fit=crop&q=80",
         "children": [
           {
-            "id": "zan-p-1",
+            "id": "part-0",
             "no": 3,
             "nama": "DUDUKAN LAMINASI SAMPING",
             "kode": "1200230-1.3.0.2.1",
@@ -102,10 +91,11 @@
                 "note": "Total referensi SUMMARY COST Excel ZAN-100",
                 "proses": []
               }
-            ]
+            ],
+            "children": []
           },
           {
-            "id": "zan-p-2",
+            "id": "part-1",
             "no": 4,
             "nama": "DUDUKAN LAMINASI TENGAH",
             "kode": "1200230-1.3.0.2.2",
@@ -138,34 +128,22 @@
                 "note": "Total referensi SUMMARY COST Excel ZAN-100",
                 "proses": []
               }
-            ]
+            ],
+            "children": []
           }
-        ],
-        "woodGradeId": "wood-11",
-        "woodSpecification": "MINDI - 30 UP 200",
-        "materialType": "kayu",
-        "sf": 0,
-        "wf": 30
+        ]
       },
       {
-        "id": "zan-sm-bawah",
-        "no": 5,
+        "id": "sm-1",
+        "no": 3,
         "nama": "BAWAH",
         "kode": "1200230-1.2",
         "tipe": "SUBMODUL",
         "qty": 1,
         "unit": "SET",
-        "p": null,
-        "l": null,
-        "t": null,
-        "vol": 0,
-        "biaya": 0,
-        "catatan": "",
-        "proses_count": 0,
-        "foto": "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=200&h=200&fit=crop&q=80",
         "children": [
           {
-            "id": "zan-p-3",
+            "id": "part-2",
             "no": 6,
             "nama": "BAWAH LAMINASI SAMPING",
             "kode": "1200230-1.3.0.2.3",
@@ -198,10 +176,11 @@
                 "note": "Total referensi SUMMARY COST Excel ZAN-100",
                 "proses": []
               }
-            ]
+            ],
+            "children": []
           },
           {
-            "id": "zan-p-4",
+            "id": "part-3",
             "no": 7,
             "nama": "BAWAH LAMINASI TENGAH",
             "kode": "1200230-1.3.0.2.4",
@@ -234,34 +213,22 @@
                 "note": "Total referensi SUMMARY COST Excel ZAN-100",
                 "proses": []
               }
-            ]
+            ],
+            "children": []
           }
-        ],
-        "woodGradeId": "wood-11",
-        "woodSpecification": "MINDI - 30 UP 200",
-        "materialType": "kayu",
-        "sf": 0,
-        "wf": 30
+        ]
       },
       {
-        "id": "zan-sm-samping",
-        "no": 8,
+        "id": "sm-2",
+        "no": 4,
         "nama": "SAMPING",
         "kode": "1200230-1.3",
         "tipe": "SUBMODUL",
         "qty": 1,
         "unit": "SET",
-        "p": null,
-        "l": null,
-        "t": null,
-        "vol": 0,
-        "biaya": 0,
-        "catatan": "",
-        "proses_count": 0,
-        "foto": "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=200&h=200&fit=crop&q=80",
         "children": [
           {
-            "id": "zan-p-5",
+            "id": "part-4",
             "no": 9,
             "nama": "PANEL SAMPING",
             "kode": "1200230-1.3.0.2.5",
@@ -294,34 +261,22 @@
                 "note": "Total referensi SUMMARY COST Excel ZAN-100",
                 "proses": []
               }
-            ]
+            ],
+            "children": []
           }
-        ],
-        "woodGradeId": "wood-11",
-        "woodSpecification": "MINDI - 30 UP 200",
-        "materialType": "kayu",
-        "sf": 0,
-        "wf": 30
+        ]
       },
       {
-        "id": "zan-sm-komponen",
-        "no": 10,
+        "id": "sm-3",
+        "no": 5,
         "nama": "KOMPONEN & PROSES",
         "kode": "ZAN-KOMPONEN",
         "tipe": "SUBMODUL",
         "qty": 1,
         "unit": "SET",
-        "p": null,
-        "l": null,
-        "t": null,
-        "vol": 0,
-        "biaya": 0,
-        "catatan": "",
-        "proses_count": 0,
-        "foto": "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=200&h=200&fit=crop&q=80",
         "children": [
           {
-            "id": "zan-xl-laminating",
+            "id": "part-5",
             "no": 11,
             "nama": "LAMINATING",
             "kode": "ZAN-LAMINATING",
@@ -352,10 +307,11 @@
                 "note": "Total referensi SUMMARY COST Excel ZAN-100",
                 "proses": []
               }
-            ]
+            ],
+            "children": []
           },
           {
-            "id": "zan-xl-assemblingHw",
+            "id": "part-6",
             "no": 12,
             "nama": "ASSEMBLING HARDWARE",
             "kode": "ZAN-ASSEMBLINGHW",
@@ -386,10 +342,11 @@
                 "note": "Total referensi SUMMARY COST Excel ZAN-100",
                 "proses": []
               }
-            ]
+            ],
+            "children": []
           },
           {
-            "id": "zan-xl-fittingHw",
+            "id": "part-7",
             "no": 13,
             "nama": "FITTING HARDWARE",
             "kode": "ZAN-FITTINGHW",
@@ -420,10 +377,11 @@
                 "note": "Total referensi SUMMARY COST Excel ZAN-100",
                 "proses": []
               }
-            ]
+            ],
+            "children": []
           },
           {
-            "id": "zan-xl-amplas",
+            "id": "part-8",
             "no": 14,
             "nama": "AMPLAS",
             "kode": "ZAN-AMPLAS",
@@ -454,10 +412,11 @@
                 "note": "Total referensi SUMMARY COST Excel ZAN-100",
                 "proses": []
               }
-            ]
+            ],
+            "children": []
           },
           {
-            "id": "zan-xl-finishing",
+            "id": "part-9",
             "no": 15,
             "nama": "FINISHING",
             "kode": "ZAN-FINISHING",
@@ -488,21 +447,12 @@
                 "note": "Total referensi SUMMARY COST Excel ZAN-100",
                 "proses": []
               }
-            ]
+            ],
+            "children": []
           }
-        ],
-        "woodGradeId": "wood-11",
-        "woodSpecification": "MINDI - 30 UP 200",
-        "materialType": "kayu",
-        "sf": 0,
-        "wf": 30
+        ]
       }
-    ],
-    "woodGradeId": "wood-11",
-    "woodSpecification": "MINDI - 30 UP 200",
-    "materialType": "kayu",
-    "sf": 0,
-    "wf": 30
+    ]
   },
   "packingDimensions": [
     {

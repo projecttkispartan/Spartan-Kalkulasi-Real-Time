@@ -229,6 +229,9 @@ export function collectProsesEntries(flatNodes) {
         nodeId: node.id,
         nodeNama: node.data.nama,
         nodeKode: node.data.kode,
+        nodeP: node.data.p,
+        nodeL: node.data.l,
+        nodeT: node.data.t,
       });
     });
   });

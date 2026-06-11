@@ -64,6 +64,38 @@ export default function OperasiRoutingDetailModal({ operasi, operasiIndex = 0, o
             </div>
           )}
 
+          {operasi.materialsUsed?.length > 0 && (
+            <div className="rounded-lg border border-amber-100 bg-amber-50/50 px-3 py-2">
+              <p className="text-[9px] font-bold uppercase text-amber-700 mb-1">Bahan operasi</p>
+              <ul className="text-xs text-slate-700 space-y-0.5">
+                {operasi.materialsUsed.map((m, i) => {
+                  const mode =
+                    m.materialSourceMode ||
+                    (m.materialMasterId ? 'database' : m.manualSpec || (m.nama && !m.materialMasterId) ? 'manual' : null);
+                  const name = m.nama || m.manualSpec || m.kode || '—';
+                  return (
+                    <li key={m.id || i}>
+                      {name}
+                      {Number(m.qty) ? ` · ${m.qty} ${m.unit || 'pcs'}` : ''}
+                      {mode === 'database' ? (
+                        <span className="ml-1 text-[9px] font-bold text-emerald-600">[DB]</span>
+                      ) : mode === 'manual' ? (
+                        <span className="ml-1 text-[9px] font-bold text-slate-500">[Manual]</span>
+                      ) : null}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
+
+          {operasi.dimensiOperasi && operasi.dimensiOperasi.useParentDimensi === false && (
+            <div className="rounded-lg border border-violet-100 bg-violet-50/50 px-3 py-2 text-xs text-slate-700">
+              <span className="text-[9px] font-bold uppercase text-violet-700 block mb-0.5">Dimensi operasi</span>
+              {operasi.dimensiOperasi.p || 0} × {operasi.dimensiOperasi.l || 0} × {operasi.dimensiOperasi.t || 0} mm
+            </div>
+          )}
+
           {isRouting && steps.length > 0 ? (
             <div className="rounded-xl border border-indigo-100 overflow-hidden">
               <div className="px-3 py-2 bg-indigo-50 border-b border-indigo-100 flex items-center gap-2">

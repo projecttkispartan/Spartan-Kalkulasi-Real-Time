@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "id": "sample-mf081",
   "sampleKey": "MF081",
-  "sampleSeedVersion": 5,
+  "sampleSeedVersion": 6,
   "sampleSourceFile": "2 - MF081 - PURSER'S CHAIR BLACK & HONEY - HARD DAM -FINAL- 28-3-22.xlsx",
   "status": "draft",
   "createdAt": "2026-06-03T07:20:34.888Z",
-  "updatedAt": "2026-06-04T04:25:15.854Z",
+  "updatedAt": "2026-06-10T01:45:35.595Z",
   "createdBy": "Excel Import",
   "kode": "MF081",
   "nama": "PURSER CHAIR BLACK & HONEY",
@@ -36,7 +36,7 @@
   "bomData": {
     "id": "root-import",
     "no": 1,
-    "nama": "ASSEMBLING",
+    "nama": "",
     "kode": "MF081",
     "tipe": "MODUL",
     "qty": 1,
@@ -57,97 +57,60 @@
         "unit": "SET",
         "children": [
           {
-            "id": "sub-0",
-            "no": 10,
+            "id": "part-0",
+            "no": 3,
             "nama": "DEX SCREW M6 X 80 MM",
-            "kode": "",
-            "tipe": "SUBMODUL",
+            "kode": "005-016-008-002",
+            "tipe": "PART",
             "qty": 1,
-            "unit": "SET",
-            "children": [
-              {
-                "id": "part-0",
-                "no": 3,
-                "nama": "DEX SCREW M6 X 80 MM",
-                "kode": "005-016-008-002",
-                "tipe": "PART",
-                "qty": 1,
-                "unit": "EA",
-                "p": 0,
-                "l": 0,
-                "t": 0,
-                "vol": 0,
-                "biaya": 1050,
-                "materialType": "hardware",
-                "sf": 0,
-                "wf": 0,
-                "proses_count": 0,
-                "proses": [],
-                "children": [],
-                "excelRow": 1123,
-                "photoIndex": 0,
-                "biayaFromExcel": true,
-                "hardware": true,
-                "woodGradeId": ""
-              }
-            ],
-            "woodGradeId": "wood-2",
-            "woodSpecification": "MAHOGANY - 40 UP",
-            "materialType": "kayu",
+            "unit": "EA",
+            "p": 0,
+            "l": 0,
+            "t": 0,
+            "vol": 0,
+            "biaya": 1050,
+            "materialType": "hardware",
             "sf": 0,
-            "wf": 30
+            "wf": 0,
+            "proses_count": 0,
+            "proses": [],
+            "children": [],
+            "excelRow": 1123,
+            "photoIndex": 0,
+            "biayaFromExcel": true,
+            "hardware": true,
+            "woodGradeId": ""
           },
           {
-            "id": "sub-1",
-            "no": 11,
+            "id": "part-1",
+            "no": 4,
             "nama": "Screw FAB 8 x 1 3/4",
-            "kode": "",
-            "tipe": "SUBMODUL",
-            "qty": 1,
-            "unit": "SET",
-            "children": [
-              {
-                "id": "part-1",
-                "no": 4,
-                "nama": "Screw FAB 8 x 1 3/4",
-                "kode": "005-016-001-014",
-                "tipe": "PART",
-                "qty": 5,
-                "unit": "EA",
-                "p": 0,
-                "l": 0,
-                "t": 0,
-                "vol": 0,
-                "biaya": 210,
-                "materialType": "hardware",
-                "sf": 0,
-                "wf": 0,
-                "proses_count": 0,
-                "proses": [],
-                "children": [],
-                "excelRow": 1125,
-                "photoIndex": 0,
-                "biayaFromExcel": true,
-                "hardware": true,
-                "woodGradeId": ""
-              }
-            ],
-            "woodGradeId": "wood-2",
-            "woodSpecification": "MAHOGANY - 40 UP",
-            "materialType": "kayu",
+            "kode": "005-016-001-014",
+            "tipe": "PART",
+            "qty": 5,
+            "unit": "EA",
+            "p": 0,
+            "l": 0,
+            "t": 0,
+            "vol": 0,
+            "biaya": 210,
+            "materialType": "hardware",
             "sf": 0,
-            "wf": 30
+            "wf": 0,
+            "proses_count": 0,
+            "proses": [],
+            "children": [],
+            "excelRow": 1125,
+            "photoIndex": 0,
+            "biayaFromExcel": true,
+            "hardware": true,
+            "woodGradeId": ""
           }
-        ],
-        "woodGradeId": "wood-2",
-        "woodSpecification": "MAHOGANY - 40 UP",
-        "materialType": "kayu",
-        "sf": 0,
-        "wf": 30
+        ]
       },
       {
-        "id": "excel-summary-proses",
-        "no": 99,
+        "id": "sm-1",
+        "no": 3,
         "nama": "PROSES (SUMMARY COST)",
         "kode": "EXCEL-SUMMARY",
         "tipe": "SUBMODUL",
@@ -155,7 +118,7 @@
         "unit": "SET",
         "children": [
           {
-            "id": "excel-proc-0",
+            "id": "part-2",
             "no": 900,
             "nama": "ASSEMBLING HARDWARE",
             "kode": "EXCEL-assembling_hardware",
@@ -186,7 +149,7 @@
             "children": []
           },
           {
-            "id": "excel-proc-1",
+            "id": "part-3",
             "no": 901,
             "nama": "FITTING HARDWARE",
             "kode": "EXCEL-fitting_hardware",
@@ -217,7 +180,7 @@
             "children": []
           },
           {
-            "id": "excel-proc-2",
+            "id": "part-4",
             "no": 902,
             "nama": "AMPLAS",
             "kode": "EXCEL-amplas",
@@ -232,7 +195,7 @@
             "materialType": "komponen",
             "sf": 0,
             "wf": 0,
-            "catatan": "Impor SUMMARY COST baris 26",
+            "catatan": "Impor SUMMARY COST baris 123",
             "proses_count": 1,
             "proses": [
               {
@@ -248,7 +211,7 @@
             "children": []
           },
           {
-            "id": "excel-proc-3",
+            "id": "part-5",
             "no": 903,
             "nama": "FINISHING",
             "kode": "EXCEL-finishing",
@@ -259,11 +222,11 @@
             "l": 0,
             "t": 0,
             "vol": 0,
-            "biaya": 129131,
+            "biaya": 113692,
             "materialType": "komponen",
             "sf": 0,
             "wf": 0,
-            "catatan": "Impor SUMMARY COST baris 27",
+            "catatan": "Impor SUMMARY COST baris 124",
             "proses_count": 1,
             "proses": [
               {
@@ -273,13 +236,13 @@
                 "waktuOperasi": 0,
                 "totalPerson": 1,
                 "biayaMesin": 0,
-                "biayaPekerja": 51724
+                "biayaPekerja": 46066
               }
             ],
             "children": []
           },
           {
-            "id": "excel-proc-4",
+            "id": "part-6",
             "no": 904,
             "nama": "AMPLAS",
             "kode": "EXCEL-amplas",
@@ -310,7 +273,7 @@
             "children": []
           },
           {
-            "id": "excel-proc-5",
+            "id": "part-7",
             "no": 905,
             "nama": "FINISHING",
             "kode": "EXCEL-finishing",
@@ -340,19 +303,9 @@
             ],
             "children": []
           }
-        ],
-        "woodGradeId": "wood-2",
-        "woodSpecification": "MAHOGANY - 40 UP",
-        "materialType": "kayu",
-        "sf": 0,
-        "wf": 30
+        ]
       }
-    ],
-    "woodGradeId": "wood-2",
-    "woodSpecification": "MAHOGANY - 40 UP",
-    "materialType": "kayu",
-    "sf": 0,
-    "wf": 30
+    ]
   },
   "packingDimensions": [
     {

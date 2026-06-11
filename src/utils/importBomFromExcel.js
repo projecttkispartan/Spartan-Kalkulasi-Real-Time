@@ -73,13 +73,35 @@ function parseProductHeader(rows) {
   return { productInfo: info, productMeta: meta, dimensi: parseProductDimensi(rows) };
 }
 
-function buildTreeFromFlatRows(partRows) {
+/** Apakah baris punya grup submodul terpisah dari modul (kode Excel berbeda). */
+function hasDistinctSubmodulGroup(row) {
+  const modCode = String(row.modulCode ?? '').trim();
+  const subCode = String(row.submodulCode ?? '').trim();
+  if (!subCode) return false;
+  if (!modCode) return true;
+  return subCode !== modCode;
+}
+
+/** Nama SUBMODUL 2 dari struktur Excel — bukan nama komponen/part (kolom O). */
+function submodul2Label(row) {
+  const subCode = String(row.submodulCode ?? '').trim();
+  const modName = String(row.modulName ?? '').trim();
+  const subName = String(row.submodulName ?? '').trim();
+  if (subName && subName !== modName) return subName;
+  return subCode || 'SUBMODUL';
+}
+
+/**
+ * Bangun pohon BOM dari baris flat BOM TEMPLATE.
+ * ROOT = kode produk saja; modul/submodul dari kolom struktur Excel (N/K/L), part dari kolom O.
+ */
+export function buildTreeFromFlatRows(partRows, { productKode = '' } = {}) {
   if (!partRows.length) {
     return {
       id: 'root-import',
       tipe: 'MODUL',
-      nama: 'IMPORT',
-      kode: '',
+      nama: '',
+      kode: productKode || '',
       qty: 1,
       unit: 'SET',
       children: [],
@@ -89,8 +111,8 @@ function buildTreeFromFlatRows(partRows) {
   const root = {
     id: 'root-import',
     no: 1,
-    nama: partRows[0].modulName || 'MODUL',
-    kode: partRows[0].modulCode || '',
+    nama: '',
+    kode: productKode || '',
     tipe: 'MODUL',
     qty: 1,
     unit: 'SET',
@@ -103,13 +125,13 @@ function buildTreeFromFlatRows(partRows) {
   };
 
   const modMap = new Map();
-  const subMap = new Map();
+  const sub2Map = new Map();
 
   partRows.forEach((p, idx) => {
     const partNode = {
       id: `part-${idx}`,
       no: p.no || idx + 1,
-      nama: p.nama,
+      nama: p.partName || p.nama,
       kode: p.kode,
       tipe: 'PART',
       qty: p.qty || 1,
@@ -131,7 +153,7 @@ function buildTreeFromFlatRows(partRows) {
 
     const modKey = p.modulCode || p.modulName || 'default';
     if (!modMap.has(modKey)) {
-      const sm = {
+      const modNode = {
         id: `sm-${modMap.size}`,
         no: modMap.size + 2,
         nama: p.modulName || modKey,
@@ -141,39 +163,50 @@ function buildTreeFromFlatRows(partRows) {
         unit: 'SET',
         children: [],
       };
-      modMap.set(modKey, sm);
-      root.children.push(sm);
+      modMap.set(modKey, modNode);
+      root.children.push(modNode);
     }
-    const subKey = `${modKey}::${p.submodulCode || p.submodulName || 'main'}`;
     const modNode = modMap.get(modKey);
-    if (!subMap.has(subKey)) {
-      const sub = {
-        id: `sub-${subMap.size}`,
-        no: subMap.size + 10,
-        nama: p.submodulName || 'SUBMODUL',
-        kode: p.submodulCode || '',
-        tipe: 'SUBMODUL',
-        qty: 1,
-        unit: 'SET',
-        children: [],
-      };
-      subMap.set(subKey, sub);
-      modNode.children.push(sub);
+
+    if (hasDistinctSubmodulGroup(p)) {
+      const sub2Key = `${modKey}::${p.submodulCode}`;
+      if (!sub2Map.has(sub2Key)) {
+        const sub2 = {
+          id: `sub-${sub2Map.size}`,
+          no: sub2Map.size + 10,
+          nama: submodul2Label(p),
+          kode: p.submodulCode || '',
+          tipe: 'SUBMODUL 2',
+          qty: 1,
+          unit: 'SET',
+          children: [],
+        };
+        sub2Map.set(sub2Key, sub2);
+        modNode.children.push(sub2);
+      }
+      sub2Map.get(sub2Key).children.push(partNode);
+    } else {
+      modNode.children.push(partNode);
     }
-    subMap.get(subKey).children.push(partNode);
   });
 
   return root;
 }
 
-function parseBomTemplateRows(rows) {
+export function parseBomTemplateRows(rows) {
   const parts = [];
+  let lastModulName = '';
+
   for (let i = 20; i < rows.length; i++) {
     const r = rows[i];
     const no = Number(r[8]);
     const kode = String(r[12] ?? '').trim();
-    const nama = String(r[14] ?? '').trim();
-    if (!no || !kode || !nama) continue;
+    const partName = String(r[14] ?? '').trim();
+    if (!no || !kode || !partName) continue;
+
+    const modulNameRaw = String(r[13] ?? '').trim();
+    if (modulNameRaw) lastModulName = modulNameRaw;
+    const modulName = modulNameRaw || lastModulName;
 
     const mat = String(r[15] ?? '').trim().toUpperCase();
     const materialType =
@@ -192,16 +225,24 @@ function parseBomTemplateRows(rows) {
     const qty = Number(r[39]) || 1;
     const photoIndex = Number(r[2]) || Number(r[1]) || 0;
 
+    const modulCode = String(r[11] ?? '').trim();
+    const submodulCode = String(r[10] ?? '').trim();
+    const submodulName =
+      submodulCode && submodulCode !== modulCode
+        ? submodulCode
+        : '';
+
     parts.push({
       no,
       excelRow: i + 1,
       photoIndex,
       kode,
-      nama,
-      modulName: String(r[13] ?? '').trim(),
-      modulCode: String(r[11] ?? '').trim(),
-      submodulName: String(r[14] ?? '').trim(),
-      submodulCode: String(r[10] ?? '').trim(),
+      nama: partName,
+      partName,
+      modulName,
+      modulCode,
+      submodulName,
+      submodulCode,
       materialType,
       p,
       l,
@@ -221,7 +262,7 @@ export function parseBomWorkbook(wb) {
   const templateRows = readSheetRows(wb, templateName);
   const { productInfo, productMeta, dimensi } = parseProductHeader(templateRows);
   const partRows = parseBomTemplateRows(templateRows);
-  let bomData = buildTreeFromFlatRows(partRows);
+  let bomData = buildTreeFromFlatRows(partRows, { productKode: productInfo.kode || '' });
 
   const mirror = parseFullWorkbookMirror(wb);
   const calcMap = parseCalculationPartsMap(readSheetRows(wb, 'CALCULATION'));

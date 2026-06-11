@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { createPortal } from 'react-dom';
 import {
   X,
   Settings,
@@ -24,7 +23,48 @@ import ClickZoomImage from '../ui/ClickZoomImage';
 import { getActiveWorkCenters, ROUTING_TEMPLATES, PROSES_OPTIONS, getWorkCenterById } from '../../data/routingCatalog';
 import { POSISI_COMBO_GROUPS, getPosisiComboItem } from '../../data/posisiComboCatalog';
 import { formatIDR } from '../../utils/formatters';
+import { DatabaseMaterialField } from '../fields/MasterCombos.jsx';
+import { formatMaterialsUsedLabel } from '../../utils/prosesLineItems.js';
+
 const PAGE = 'page-inner-full w-full max-w-[1600px] mx-auto';
+
+const UNIT_OPTIONS = ['pcs', 'm', 'm²', 'kg', 'l', 'set'];
+
+function resolveMaterialSourceMode(m) {
+  if (m.materialSourceMode === 'manual' || m.materialSourceMode === 'database') {
+    return m.materialSourceMode;
+  }
+  if (m.materialMasterId) return 'database';
+  if (m.manualSpec || ((m.nama || m.kode) && !m.materialMasterId)) return 'manual';
+  return 'database';
+}
+
+function normalizeMaterialRow(m) {
+  const mode = resolveMaterialSourceMode(m);
+  return {
+    id: m.id || Date.now(),
+    materialMasterId: m.materialMasterId || '',
+    materialSourceMode: mode,
+    manualSpec: m.manualSpec ?? (mode === 'manual' ? (m.nama || m.kode || '') : ''),
+    kode: m.kode || '',
+    nama: m.nama || m.manualSpec || '',
+    qty: m.qty ?? 1,
+    unit: m.unit || 'pcs',
+  };
+}
+
+function newMaterialRow() {
+  return normalizeMaterialRow({
+    id: Date.now(),
+    materialMasterId: '',
+    materialSourceMode: 'database',
+    manualSpec: '',
+    kode: '',
+    nama: '',
+    qty: 1,
+    unit: 'pcs',
+  });
+}
 
 const selectCls =
   'w-full h-10 appearance-none rounded-lg border border-slate-200 bg-white pl-3 pr-9 text-sm font-medium text-slate-800 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 outline-none';
@@ -226,42 +266,232 @@ function RateKapasitasInfo({ rateMesin, ratePekerja, capacity, compact = false }
   );
 }
 
-function OperationDetailModal({ op, index, costs, materialVol, onClose, onUpdate, onUpdateStep, onAddStep, onRemoveStep }) {
+function OperationMaterialRow({ row, index, mastersTick, onChange, onRemove }) {
+  const m = normalizeMaterialRow(row);
+  const sourceMode = resolveMaterialSourceMode(m);
+
+  return (
+    <div className="rounded-lg border border-amber-200/80 bg-white p-3 space-y-2.5 shadow-sm">
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-[10px] font-black uppercase tracking-wide text-amber-800">
+          Bahan #{index + 1}
+          {m.kode ? (
+            <span className="ml-2 font-mono font-bold text-slate-500 normal-case">{m.kode}</span>
+          ) : null}
+        </span>
+        <button
+          type="button"
+          onClick={onRemove}
+          className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg"
+          title="Hapus bahan"
+        >
+          <Trash2 className="w-4 h-4" />
+        </button>
+      </div>
+      <DatabaseMaterialField
+        showAll
+        compact
+        mastersTick={mastersTick}
+        value={m.materialMasterId || ''}
+        manualSpec={sourceMode === 'manual' ? (m.manualSpec || m.nama || '') : ''}
+        sourceMode={sourceMode === 'manual' ? 'manual' : 'database'}
+        className="min-w-0 w-full"
+        onChange={(masterId, mat, manualSpec, modeHint) => {
+          const mode = modeHint?.sourceMode === 'manual' ? 'manual' : 'database';
+          if (mode === 'manual') {
+            onChange({
+              ...m,
+              materialMasterId: '',
+              materialSourceMode: 'manual',
+              manualSpec: manualSpec || '',
+              kode: '',
+              nama: manualSpec || '',
+            });
+            return;
+          }
+          if (!masterId || !mat) {
+            onChange({
+              ...m,
+              materialMasterId: '',
+              materialSourceMode: 'database',
+              manualSpec: '',
+              kode: '',
+              nama: '',
+            });
+            return;
+          }
+          onChange({
+            ...m,
+            materialMasterId: masterId,
+            materialSourceMode: 'database',
+            manualSpec: '',
+            kode: mat.kode || '',
+            nama: mat.specification || mat.nama || '',
+            unit: mat.unit || m.unit || 'pcs',
+          });
+        }}
+      />
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 items-end">
+        <Field label="Qty" className="sm:col-span-1">
+          <input
+            type="number"
+            min={0}
+            step="any"
+            value={m.qty ?? 1}
+            onChange={(e) => onChange({ ...m, qty: e.target.value })}
+            className={inputCls}
+          />
+        </Field>
+        <Field label="Unit" className="sm:col-span-1">
+          <SelectWrap>
+            <select
+              value={m.unit || 'pcs'}
+              onChange={(e) => onChange({ ...m, unit: e.target.value })}
+              className={selectCls}
+            >
+              {UNIT_OPTIONS.map((u) => (
+                <option key={u} value={u}>
+                  {u}
+                </option>
+              ))}
+              {m.unit && !UNIT_OPTIONS.includes(m.unit) ? (
+                <option value={m.unit}>{m.unit}</option>
+              ) : null}
+            </select>
+          </SelectWrap>
+        </Field>
+        <div className="sm:col-span-1 flex items-end pb-1">
+          <span
+            className={`text-[9px] font-bold uppercase px-2 py-1 rounded-md border ${
+              sourceMode === 'database'
+                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                : 'bg-slate-100 text-slate-600 border-slate-200'
+            }`}
+          >
+            {sourceMode === 'database' ? 'DATA BASE' : 'Manual'}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function OperationMaterialsDimensiSection({ op, materialData, mastersTick = 0, onUpdate }) {
+  const materials = (op.materialsUsed || []).map(normalizeMaterialRow);
+  const dim = op.dimensiOperasi || { useParentDimensi: true, p: 0, l: 0, t: 0 };
+  const useParent = dim.useParentDimensi !== false;
+
+  const updateMaterials = (next) => onUpdate(op.id, 'materialsUsed', next.map(normalizeMaterialRow));
+  const updateDim = (patch) => onUpdate(op.id, 'dimensiOperasi', { ...dim, ...patch });
+
+  return (
+    <div className="space-y-4">
+      <div className="rounded-xl border border-amber-100 bg-amber-50/30 p-4 space-y-3">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-amber-800">
+            <Package className="w-4 h-4" /> Bahan yang digunakan
+          </div>
+          <button
+            type="button"
+            onClick={() => updateMaterials([...materials, newMaterialRow()])}
+            className="text-[10px] font-bold text-amber-700 hover:text-amber-900 inline-flex items-center gap-1"
+          >
+            <Plus className="w-3.5 h-3.5" /> Tambah bahan
+          </button>
+        </div>
+        <p className="text-[10px] text-amber-700/90 italic leading-snug">
+          Bahan ini otomatis menjadi PART di tab Struktur (di bawah modul/submodul sesuai posisi) saat Simpan Routing.
+        </p>
+        {materials.length === 0 ? (
+          <p className="text-xs text-slate-500 italic">Belum ada bahan — klik tambah bahan.</p>
+        ) : (
+          <div className="space-y-3">
+            {materials.map((m, mi) => (
+              <OperationMaterialRow
+                key={m.id || mi}
+                row={m}
+                index={mi}
+                mastersTick={mastersTick}
+                onChange={(next) => {
+                  const updated = [...materials];
+                  updated[mi] = next;
+                  updateMaterials(updated);
+                }}
+                onRemove={() => updateMaterials(materials.filter((_, i) => i !== mi))}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="rounded-xl border border-violet-100 bg-violet-50/30 p-4 space-y-3">
+        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-violet-800">
+          <Ruler className="w-4 h-4" /> Dimensi operasi (mm)
+        </div>
+        <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={useParent}
+            onChange={(e) => updateDim({ useParentDimensi: e.target.checked })}
+            className="rounded border-slate-300 text-brand-600"
+          />
+          Gunakan dimensi part ({materialData?.p || 0} × {materialData?.l || 0} × {materialData?.t || 0} mm)
+        </label>
+        <div className="grid grid-cols-3 gap-3">
+          {['p', 'l', 't'].map((key, i) => (
+            <Field key={key} label={['P (W)', 'L (D)', 'T (H)'][i]}>
+              <input
+                type="number"
+                min={0}
+                disabled={useParent}
+                value={useParent ? (materialData?.[key] || 0) : (dim[key] || 0)}
+                onChange={(e) => updateDim({ [key]: e.target.value, useParentDimensi: false })}
+                className={`${inputCls} disabled:bg-slate-100 disabled:text-slate-500`}
+              />
+            </Field>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function OperationDetailPage({ op, index, costs, materialVol, materialData, mastersTick = 0, onClose, onUpdate, onUpdateStep, onAddStep, onRemoveStep }) {
   if (!op) return null;
 
   const isRouting = op.inputMode === 'routing';
   const selectedWc = !isRouting ? getWorkCenterById(op.workCenterId) : null;
 
-  const modal = (
-    <div
-      className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm"
-      onClick={onClose}
-      role="dialog"
-      aria-modal="true"
-      aria-label="Detail operasi"
-    >
-      <div
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[min(90vh,820px)] flex flex-col overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <header className="shrink-0 px-5 py-4 border-b border-brand-100 bg-gradient-to-r from-brand-50 to-sky-50/50 flex items-center justify-between gap-3">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Detail Tahap {index + 1}</p>
-            <h2 className="text-lg font-black text-slate-800">{op.nama || `Operasi ${index + 1}`}</h2>
-            <span
-              className={`inline-block mt-1 text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${
-                isRouting ? 'bg-indigo-100 text-indigo-700' : 'bg-blue-100 text-blue-700'
-              }`}
+  return (
+    <div className="routing-fullpage-root font-sans flex flex-col" role="dialog" aria-modal="true" aria-label="Detail operasi">
+      <header className="shrink-0 bg-gradient-to-r from-brand-700 to-brand-600 text-white shadow-md">
+        <div className={`${PAGE} px-4 sm:px-6 lg:px-8 py-4`}>
+          <div className="flex items-center gap-3 min-w-0">
+            <button
+              type="button"
+              onClick={onClose}
+              className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-lg bg-white/10 hover:bg-white/20"
+              title="Kembali ke daftar operasi"
             >
-              {isRouting ? 'Routing' : 'Work Center'}
-            </span>
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-brand-100">Detail Tahap {index + 1}</p>
+              <h1 className="text-lg sm:text-xl font-bold tracking-wide truncate">{op.nama || `Operasi ${index + 1}`}</h1>
+              <span
+                className={`inline-block mt-1 text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${
+                  isRouting ? 'bg-indigo-200/90 text-indigo-900' : 'bg-sky-200/90 text-sky-900'
+                }`}
+              >
+                {isRouting ? 'Routing' : 'Work Center'}
+              </span>
+            </div>
           </div>
-          <button type="button" onClick={onClose} className="p-2 rounded-lg hover:bg-slate-200 text-slate-500">
-            <X className="w-5 h-5" />
-          </button>
-        </header>
+        </div>
+      </header>
 
-        <div className="flex-1 min-h-0 overflow-y-auto scroll-thin p-5 space-y-5">
+      <main className="flex-1 min-h-0 overflow-y-auto scroll-thin bg-page">
+        <div className={`${PAGE} px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-5`}>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <Field label="Proses">
               <SelectWrap>
@@ -445,6 +675,13 @@ function OperationDetailModal({ op, index, costs, materialVol, onClose, onUpdate
             </>
           )}
 
+          <OperationMaterialsDimensiSection
+            op={op}
+            materialData={materialData}
+            mastersTick={mastersTick}
+            onUpdate={onUpdate}
+          />
+
           <div className="rounded-xl border border-violet-100 bg-violet-50/30 p-4 space-y-2">
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-violet-700">
               <Activity className="w-4 h-4" /> Kalkulasi Lengkap
@@ -456,17 +693,17 @@ function OperationDetailModal({ op, index, costs, materialVol, onClose, onUpdate
             )}
           </div>
         </div>
+      </main>
 
-        <footer className="shrink-0 px-5 py-3 border-t border-slate-100 flex justify-end">
+      <footer className="shrink-0 border-t border-slate-200 bg-white shadow-[0_-4px_12px_rgba(0,0,0,0.06)]">
+        <div className={`${PAGE} px-4 sm:px-6 lg:px-8 py-4 flex justify-end`}>
           <button type="button" onClick={onClose} className="btn-primary h-10 px-5 text-sm">
             Selesai
           </button>
-        </footer>
-      </div>
+        </div>
+      </footer>
     </div>
   );
-
-  return createPortal(modal, document.body);
 }
 
 function OperationCard({ op, index, costs, materialVol, onRemove, onUpdate, onViewDetail }) {
@@ -489,6 +726,27 @@ function OperationCard({ op, index, costs, materialVol, onRemove, onUpdate, onVi
             >
               {isRouting ? 'Routing' : 'Work Center'}
             </span>
+            {(op.materialsUsed?.length > 0 || (op.dimensiOperasi && op.dimensiOperasi.useParentDimensi === false)) ? (
+              <div className="flex flex-wrap gap-1 mt-1">
+                {op.materialsUsed?.length > 0 ? (
+                  <span
+                    className="text-[8px] font-bold text-amber-700 bg-amber-50 border border-amber-100 px-1.5 py-0.5 rounded max-w-[200px] truncate"
+                    title={formatMaterialsUsedLabel(op.materialsUsed)}
+                  >
+                    {op.materialsUsed.length} bahan
+                    {op.materialsUsed[0]
+                      ? ` · ${op.materialsUsed[0].nama || op.materialsUsed[0].manualSpec || op.materialsUsed[0].kode || '—'}`
+                      : ''}
+                    {op.materialsUsed.length > 1 ? '…' : ''}
+                  </span>
+                ) : null}
+                {op.dimensiOperasi && op.dimensiOperasi.useParentDimensi === false ? (
+                  <span className="text-[8px] font-bold text-violet-700 bg-violet-50 border border-violet-100 px-1.5 py-0.5 rounded">
+                    Dim custom
+                  </span>
+                ) : null}
+              </div>
+            ) : null}
           </div>
         </div>
         <div className="flex items-center gap-1 shrink-0">
@@ -639,6 +897,7 @@ export default function RoutingExcelView({
   operations,
   costsById,
   totals,
+  mastersTick = 0,
   onUpdate,
   onUpdateStep,
   onRemove,
@@ -654,6 +913,24 @@ export default function RoutingExcelView({
   const detailIndex = operations.findIndex((o) => o.id === detailOpId);
   const detailOp = detailIndex >= 0 ? operations[detailIndex] : null;
   const detailCosts = detailOp ? costsById[detailOp.id] : null;
+
+  if (detailOp && detailCosts) {
+    return (
+      <OperationDetailPage
+        op={detailOp}
+        index={detailIndex}
+        costs={detailCosts}
+        materialVol={materialVol}
+        materialData={materialData}
+        mastersTick={mastersTick}
+        onClose={() => setDetailOpId(null)}
+        onUpdate={onUpdate}
+        onUpdateStep={onUpdateStep}
+        onAddStep={onAddStep}
+        onRemoveStep={onRemoveStep}
+      />
+    );
+  }
 
   return (
     <div className="routing-fullpage-root font-sans flex flex-col" role="dialog" aria-modal="true">
@@ -754,20 +1031,6 @@ export default function RoutingExcelView({
           </button>
         </div>
       </footer>
-
-      {detailOp && detailCosts && (
-        <OperationDetailModal
-          op={detailOp}
-          index={detailIndex}
-          costs={detailCosts}
-          materialVol={materialVol}
-          onClose={() => setDetailOpId(null)}
-          onUpdate={onUpdate}
-          onUpdateStep={onUpdateStep}
-          onAddStep={onAddStep}
-          onRemoveStep={onRemoveStep}
-        />
-      )}
     </div>
   );
 }
