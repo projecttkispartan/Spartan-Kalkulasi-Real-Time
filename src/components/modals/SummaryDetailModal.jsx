@@ -37,6 +37,20 @@ function nodeDisplayName(data) {
   return data.tipe === 'PART' ? (partNameFromMaterialFields(data) || data.nama) : data.nama;
 }
 
+function formatDimensiMm(d) {
+  const p = Number(d?.p) || 0;
+  const l = Number(d?.l) || 0;
+  const t = Number(d?.t) || 0;
+  if (!p && !l && !t) return '—';
+  return `${p} × ${l} × ${t}`;
+}
+
+function formatVolumeM3(vol) {
+  const v = Number(vol);
+  if (!v) return '—';
+  return `${v} m³`;
+}
+
 function HierarchyChildrenTable({ bomData, nodeId, rollupMap, onDrill }) {
   const treeNode = findTreeNode(bomData, nodeId);
   if (!treeNode) return <p className="text-xs text-slate-400 italic px-1">Data tidak ditemukan.</p>;
@@ -61,10 +75,11 @@ function HierarchyChildrenTable({ bomData, nodeId, rollupMap, onDrill }) {
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-50 text-slate-500 font-semibold uppercase text-[10px]">
                 <tr>
-                  <th className="px-4 py-2">Nama / Kode</th>
-                  <th className="px-2 py-2 text-center">Qty</th>
-                  <th className="px-2 py-2 text-right">Vol</th>
-                  <th className="px-2 py-2 text-right">Biaya Prod.</th>
+                  <th className="px-4 py-2 min-w-[140px]">Nama / Kode</th>
+                  <th className="px-2 py-2 text-center w-12">Qty</th>
+                  <th className="px-2 py-2 text-center min-w-[100px]">Dimensi (mm)</th>
+                  <th className="px-2 py-2 text-right min-w-[72px]">Volume</th>
+                  <th className="px-2 py-2 text-right min-w-[88px]">Biaya Prod.</th>
                   <th className="px-4 py-2 text-right w-24">Aksi</th>
                 </tr>
               </thead>
@@ -89,7 +104,12 @@ function HierarchyChildrenTable({ bomData, nodeId, rollupMap, onDrill }) {
                         ) : null}
                       </td>
                       <td className="px-2 py-2.5 text-center font-bold text-slate-600">{ch.qty ?? 1}</td>
-                      <td className="px-2 py-2.5 text-right tabular-nums text-slate-600">{ch.vol ? `${ch.vol} m³` : '—'}</td>
+                      <td className="px-2 py-2.5 text-center tabular-nums text-[11px] font-semibold text-slate-600">
+                        {formatDimensiMm(ch)}
+                      </td>
+                      <td className="px-2 py-2.5 text-right tabular-nums font-semibold text-brand-700">
+                        {formatVolumeM3(ch.vol)}
+                      </td>
                       <td className="px-2 py-2.5 text-right tabular-nums font-bold text-emerald-700">
                         {chFin?.biayaProduksi ? `Rp ${formatIDR(chFin.biayaProduksi)}` : '—'}
                       </td>
@@ -125,6 +145,7 @@ function HierarchyNodeSnapshot({ data, rollupMap, kursUsd, kursEur }) {
         ? computeNodeDisplayFinancials(data, rollup, kursUsd, kursEur)
         : null;
   const grandTotal = fin?.biayaProduksi ?? fin?.prodTotal ?? 0;
+  const dimensiLabel = formatDimensiMm(data);
 
   return (
     <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 space-y-3">
@@ -135,14 +156,14 @@ function HierarchyNodeSnapshot({ data, rollupMap, kursUsd, kursEur }) {
       <h4 className="text-sm font-bold text-slate-800">{nodeDisplayName(data)}</h4>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
         <div>
-          <span className="block text-[10px] font-bold text-slate-400 uppercase mb-0.5">Dimensi</span>
+          <span className="block text-[10px] font-bold text-slate-400 uppercase mb-0.5">Dimensi (P × L × T)</span>
           <span className="font-semibold text-slate-700">
-            {data.p || 0} × {data.l || 0} × {data.t || 0} mm
+            {dimensiLabel === '—' ? '—' : `${dimensiLabel} mm`}
           </span>
         </div>
         <div>
-          <span className="block text-[10px] font-bold text-slate-400 uppercase mb-0.5">Volume</span>
-          <span className="font-semibold text-brand-600">{data.vol || '—'} m³</span>
+          <span className="block text-[10px] font-bold text-slate-400 uppercase mb-0.5">Volume kalkulasi</span>
+          <span className="font-semibold text-brand-600">{formatVolumeM3(data.vol)}</span>
         </div>
         <div>
           <span className="block text-[10px] font-bold text-slate-400 uppercase mb-0.5">Qty</span>
@@ -216,7 +237,7 @@ function HierarchyDetailPopup({
         onClick={onClose}
         aria-label="Tutup popup"
       />
-      <div className="relative w-full max-w-3xl max-h-[min(90vh,820px)] flex flex-col rounded-2xl bg-white shadow-2xl border border-slate-200 overflow-hidden">
+      <div className="relative w-full max-w-4xl max-h-[min(90vh,820px)] flex flex-col rounded-2xl bg-white shadow-2xl border border-slate-200 overflow-hidden">
         <header className="shrink-0 flex items-center gap-2 px-4 py-3 border-b border-slate-200 bg-gradient-to-r from-teal-700 to-teal-600 text-white">
           <button
             type="button"
