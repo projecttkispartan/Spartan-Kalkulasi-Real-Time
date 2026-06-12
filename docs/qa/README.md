@@ -11,6 +11,7 @@
 | [06-Master-Data-Strategy.mmd](./06-Master-Data-Strategy.mmd) | Master dummy vs ERP terpisah |
 | [07-Dev-Improvement-Backlog.mmd](./07-Dev-Improvement-Backlog.mmd) | **Backlog dev** — P0/P1/P2 penggantian Excel |
 | [08-Acceptance-Criteria-Perbaikan-BOM.mmd](./08-Acceptance-Criteria-Perbaikan-BOM.mmd) | **Acceptance criteria** — sign-off untuk programmer |
+| [Table-Details.mmd](./Table-Details.mmd) | **Inventaris kolom UI** — posisi menu, nama kolom, tipe data (client) |
 
 **Environment ERP:** [https://erp.stg.solusiuntuknegeri.com/manufacture/bill-of-materials](https://erp.stg.solusiuntuknegeri.com/manufacture/bill-of-materials)  
 **Evidence:** `evidence/*.png`, `erp-wizard-steps.json`, `erp-bom-structure.json`  

@@ -169,7 +169,7 @@ export default function ProductPanel({
 
   return (
     <div className="editor-product-panel">
-      <div className="surface-card-lg overflow-hidden">
+      <div className="product-panel-card surface-card-lg">
         <div className="product-panel-header">
           <ClickZoomImage
             fill

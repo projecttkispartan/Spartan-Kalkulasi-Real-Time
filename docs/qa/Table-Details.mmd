@@ -1,0 +1,582 @@
+# Table Details — Inventaris Kolom & Field UI (Client)
+
+| Field | Value |
+|-------|-------|
+| **Aplikasi** | Manufaktur BOM · BOM Design by Gemini v1.0 |
+| **Tujuan** | Data dictionary UI — posisi menu, nama kolom, tipe data |
+| **Audience** | Client / UAT / Product |
+| **Cakupan** | Dashboard, Panel Produk, 7 tab editor, halaman overlay |
+| **Excluded** | Import Excel (tidak masuk alur client) |
+| **Tanggal** | 5 Juni 2026 |
+| **Referensi kode** | `src/design/tokens.js` · `src/pages/BOMEditor.jsx` · `src/pages/Dashboard.jsx` |
+
+---
+
+## Legenda tipe data
+
+| Tipe | Arti |
+|------|------|
+| Teks | Input teks bebas |
+| Angka | Bilangan (qty, mm, menit, dll.) |
+| Mata uang IDR | Rupiah |
+| Mata uang USD/EUR | Konversi dari IDR (tampilan) |
+| Persen | Angka persentase |
+| Pilihan | Dropdown / toggle tetap |
+| Boolean | Centang ya/tidak |
+| Gambar | Foto / ikon visual |
+| Hitung otomatis | Diisi sistem, tidak diedit manual |
+| Tanggal | Tanggal update |
+| Aksi | Tombol/link interaksi (bukan field data) |
+
+---
+
+## Peta menu editor
+
+```mermaid
+flowchart LR
+  D[Dashboard] --> E[BOM Editor]
+  E --> P[Panel Data Produk]
+  E --> T1[1 Struktur Perakitan]
+  E --> T2[2 Container Capacity]
+  E --> T3[3 Kebutuhan Material]
+  E --> T4[4 Kebutuhan Proses]
+  E --> T5[5 Summary Kalkulasi]
+  E --> T6[6 Detail COGS]
+  E --> T7[7 Jurnal FOB HPP]
+  T1 --> R[Routing Overlay]
+  T1 --> DET[Detail Komponen]
+  DET --> HIE[Popup Hierarki]
+```
+
+---
+
+## A. Dashboard — Daftar Project BOM
+
+| Kolom | Tipe |
+|-------|------|
+| No | Angka |
+| Gambar | Gambar |
+| Expand preview | Aksi |
+| Tipe BOM | Teks |
+| Kode Produk | Teks |
+| Nama Produk | Teks |
+| Customer | Teks |
+| Collection | Teks |
+| Versi | Teks |
+| Harga (HPP) | Mata uang IDR |
+| Harga (Dolar) | Mata uang USD |
+| Status | Teks |
+| Update | Tanggal |
+| Aksi (buka / duplikat / hapus) | Aksi |
+
+### Header global Dashboard
+
+| Field | Tipe |
+|-------|------|
+| Kurs USD | Angka |
+| Kurs EUR | Angka |
+| Cari produk | Teks |
+
+---
+
+## B. Panel Data Produk (atas editor, bisa disembunyikan)
+
+> Tampil di semua tab editor **kecuali** tab Kebutuhan Proses.
+
+### Identitas
+
+| Kolom | Tipe |
+|-------|------|
+| Nama Produk | Teks |
+| Kode Produk | Teks |
+| Varian | Teks |
+| Collection | Teks |
+| Customer | Teks |
+
+### BOM
+
+| Kolom | Tipe |
+|-------|------|
+| Nama BOM | Teks |
+| Kode BOM | Teks |
+| Versi | Teks |
+| Item Type | Teks |
+
+### Material produk
+
+| Kolom | Tipe |
+|-------|------|
+| Kayu (grade / spesifikasi) | Pilihan + Teks |
+| Coating | Pilihan |
+| Preview biaya coating | Hitung otomatis (m² + IDR) |
+
+### Dimensi (mm) — Produk / Box / Single Face
+
+| Kolom | Tipe |
+|-------|------|
+| W (Produk) | Angka |
+| D (Produk) | Angka |
+| H (Produk) | Angka |
+| Volume Produk | Hitung otomatis (m³) |
+| Toleransi +W (Box / SF) | Angka |
+| Toleransi +D (Box / SF) | Angka |
+| Toleransi +H (Box / SF) | Angka |
+| Gross W×D×H (Box / SF) | Hitung otomatis |
+| Volume Box / SF | Hitung otomatis (m³) |
+
+---
+
+## C. Tab 1 — Struktur Perakitan & Modul
+
+| Kolom | Tipe |
+|-------|------|
+| No | Angka |
+| Aksi (detail / tambah anak / hapus) | Aksi |
+| Hierarki (Tipe) | Pilihan (MODUL / SUBMODUL / SUBMODUL 2 / PART) |
+| Kode Material | Teks |
+| Nama Komponen / Grade | Teks / Pilihan material |
+| Gambar | Gambar |
+| Tipe Material | Pilihan |
+| Qty | Angka |
+| Width (MM) | Angka |
+| Depth (MM) | Angka |
+| Height (MM) | Angka |
+| Volume (M³) | Hitung otomatis |
+| MAT (IDR) | Mata uang IDR |
+| MAT (USD) | Mata uang USD |
+| MAT (EUR) | Mata uang EUR |
+| PROD total (IDR) | Hitung otomatis |
+| PROD (USD) | Hitung otomatis |
+| PROD (EUR) | Hitung otomatis |
+| PROD/U (IDR) | Hitung otomatis |
+| PROD/U (USD) | Hitung otomatis |
+| PROD/U (EUR) | Hitung otomatis |
+| Pengaturan Proses Lengkap | Aksi |
+| Catatan | Teks |
+
+### Toolbar tab
+
+| Field | Tipe |
+|-------|------|
+| Sinkron DATA BASE | Aksi |
+| Tambah Modul Utama | Aksi |
+| Cari komponen | Teks |
+| Toggle Tabel / Visual | Aksi |
+
+---
+
+## D. Tab 2 — Container Capacity Per Item
+
+### 1. Dimensi Produk (Nett)
+
+| Kolom | Tipe |
+|-------|------|
+| Parameter | Teks |
+| W (mm) | Angka (read-only dari panel produk) |
+| D (mm) | Angka (read-only) |
+| H (mm) | Angka (read-only) |
+| Volume (m³) | Hitung otomatis |
+
+### 2. Dimensi Packing (Gross)
+
+| Kolom | Tipe |
+|-------|------|
+| Tipe Packing | Teks |
+| W×D×H gross (mm) | Hitung otomatis |
+| Toleransi +W / +D / +H | Angka |
+| Volume (m³) | Hitung otomatis |
+| Aksi | Aksi |
+
+### 3. Material Packing — Box & Single Face (masing-masing)
+
+| Kolom | Tipe |
+|-------|------|
+| Item Material | Teks |
+| Qty | Angka |
+| Unit | Teks |
+| Harga (IDR) | Mata uang IDR |
+| Total | Hitung otomatis |
+| Aksi | Aksi |
+
+### 4. Routing Pekerja Packing — Box & Single Face (masing-masing)
+
+| Kolom | Tipe |
+|-------|------|
+| Proses Kerja | Teks |
+| Waktu (menit) | Angka |
+| Pekerja | Angka |
+| Rate (IDR) | Mata uang IDR |
+| Total | Hitung otomatis |
+| Aksi | Aksi |
+
+### 5. Tabel Container Capacity Terpadu
+
+| Kolom | Tipe |
+|-------|------|
+| Type | Teks |
+| Net Capacity — BOX | Angka / Hitung otomatis |
+| Net Capacity — SINGLE FACE | Angka / Hitung otomatis |
+| Material Cost — BOX | Mata uang IDR |
+| Material Cost — SF | Mata uang IDR |
+| Routing Cost — BOX | Mata uang IDR |
+| Routing Cost — SF | Mata uang IDR |
+| Management Overhead — BOX | Mata uang IDR |
+| Management Overhead — SF | Mata uang IDR |
+| Total Cost — BOX | Hitung otomatis |
+| Total Cost — SF | Hitung otomatis |
+| Aksi (sembunyikan baris) | Aksi |
+
+---
+
+## E. Tab 3 — Kebutuhan Material
+
+**Kolom hierarki opsional** (toggle): MODUL | SUBMODUL | SUBMODUL 2 — semua **Teks**
+
+| Kolom | Tipe |
+|-------|------|
+| No | Angka |
+| Foto | Gambar |
+| MODUL / SUBMODUL / SUBMODUL 2 | Teks (opsional) |
+| Tipe Material | Pilihan |
+| Kode Material | Teks |
+| Nama Material / Grade | Teks / Pilihan |
+| Vendor | Teks |
+| SF (%) | Persen |
+| WF (%) | Persen |
+| Dimensi (P×L×T mm) | Angka (tampilan) |
+| Volume (m³) | Hitung otomatis |
+| Qty | Angka |
+| Unit | Teks |
+| MAT (IDR) | Mata uang IDR |
+| MAT (USD) | Mata uang USD |
+| MAT (EUR) | Mata uang EUR |
+| PROD total (IDR) | Hitung otomatis |
+| PROD (USD) | Hitung otomatis |
+| PROD (EUR) | Hitung otomatis |
+| PROD/U (IDR) | Hitung otomatis |
+| PROD/U (USD) | Hitung otomatis |
+| PROD/U (EUR) | Hitung otomatis |
+| Action (detail) | Aksi |
+
+### Kartu ringkas atas tab
+
+| Field | Tipe |
+|-------|------|
+| Total Material | Hitung otomatis (IDR) |
+| Material Dasar | Hitung otomatis (IDR) |
+| Waste SF/WF | Hitung otomatis (IDR) |
+
+---
+
+## F. Tab 4 — Kebutuhan Proses
+
+### Tabel Rekapitulasi Manufaktur
+
+| Kolom | Tipe |
+|-------|------|
+| No | Angka |
+| Kategori Manufaktur | Teks |
+| Total Operasi | Angka |
+| Total Durasi | Angka (menit) |
+| Subtotal Work Center | Mata uang IDR |
+| Subtotal Man Power | Mata uang IDR |
+| Total Biaya (IDR) | Hitung otomatis |
+
+### Detail Kebutuhan Proses
+
+| Kolom | Tipe |
+|-------|------|
+| No | Angka |
+| MODUL / SUBMODUL / SUBMODUL 2 | Teks (opsional) |
+| Kode Part | Teks |
+| Nama Part | Teks |
+| Operasi | Teks |
+| Tipe | Pilihan (Work Center / Routing) |
+| Tahap | Teks |
+| WC / Langkah | Teks |
+| Bahan | Teks |
+| Dim (mm) | Teks / Angka |
+| Durasi | Angka (menit) |
+| Org | Angka |
+| Org·Mnt | Hitung otomatis |
+| Biaya WC | Mata uang IDR |
+| Biaya TK | Mata uang IDR |
+| Subtotal IDR | Hitung otomatis |
+| Subtotal USD | Mata uang USD |
+| Subtotal EUR | Mata uang EUR |
+| PROD/U IDR | Hitung otomatis |
+| PROD/U USD | Mata uang USD |
+| PROD/U EUR | Mata uang EUR |
+| Detail | Teks (baca) / Aksi |
+
+---
+
+## G. Tab 5 — Summary Kalkulasi
+
+| Kolom | Tipe |
+|-------|------|
+| REF / NO | Angka |
+| MODUL / SUBMODUL / SUBMODUL 2 | Teks (opsional, mode part-only) |
+| Hierarki & Nama Komponen / Nama Part | Teks |
+| Kode Material | Teks |
+| Qty | Angka |
+| Dimensi (W×D×H) | Angka (tampilan) |
+| Volume | Angka (m³) |
+| Safety Factor (%) | Persen |
+| Waste Factor (%) | Persen |
+| Harga Part (IDR) | Mata uang IDR |
+| Rincian Operasi Produksi — Visual Posisi | Gambar |
+| Rincian Operasi — Proses | Teks |
+| Rincian Operasi — Tahap & Nama | Teks |
+| Rincian Operasi — Durasi | Angka (menit) |
+| Rincian Operasi — Work Center (Mesin) | Mata uang IDR |
+| Rincian Operasi — Pekerja & Biaya | Mata uang IDR |
+| Rincian Operasi — Detail | Teks |
+| Rincian Operasi — Subtotal | Mata uang IDR |
+| Total Biaya (IDR) | Hitung otomatis |
+
+---
+
+## H. Tab 6 — Detail COGS & Pricing
+
+### Konfigurasi (input)
+
+| Field | Tipe |
+|-------|------|
+| Jalur Packing (BOX / SF) | Pilihan |
+| Biaya Packing BOX | Hitung otomatis (IDR) |
+| Biaya Packing INNER/SF | Hitung otomatis (IDR) |
+| Factory OH (%) | Persen |
+| Management OH (%) | Persen |
+| Aktifkan biaya FOB | Boolean |
+| Tipe kontainer ekspor | Pilihan |
+| Target Markup (%) | Persen |
+| Harga Jual FOB (preview header) | Hitung otomatis |
+
+### Tabel Waterfall COGS
+
+| Kolom | Tipe |
+|-------|------|
+| Step | Angka |
+| Komponen Cost | Teks |
+| Sumber & Referensi | Teks |
+| Nilai Akumulasi (IDR) | Mata uang IDR |
+| Running Total (IDR) | Hitung otomatis |
+
+**Baris komponen waterfall:**
+
+| Step | Komponen |
+|------|----------|
+| 1 | Bahan Baku & Material (RAW) |
+| 2 | Proses Pabrik (Work Center & Labor) |
+| 3 | Biaya Packing |
+| 3b | FOB Export (opsional) |
+| — | RAW Production Cost |
+| 4 | Factory Overhead |
+| 5 | Management Overhead |
+| 6 | TOTAL COGS |
+| 7 | Harga Jual FOB (+ markup) |
+
+---
+
+## I. Tab 7 — Jurnal FOB / HPP Custom (ERP)
+
+### Kartu ringkas
+
+| Field | Tipe |
+|-------|------|
+| Grand Total Estimasi HPP | Hitung otomatis |
+| Total Nodes | Angka |
+| Material Part (Base + Custom) | Hitung otomatis |
+| Beban Mesin (Base + Custom) | Hitung otomatis |
+| Gaji Karyawan (Base + Custom) | Hitung otomatis |
+| Work Proses (jumlah) | Angka |
+
+### 1. Hirarki BOM
+
+| Field | Tipe |
+|-------|------|
+| Modul Utama (jumlah) | Angka |
+| Submodul (jumlah) | Angka |
+| Submodul 2 (jumlah) | Angka |
+| Part / Material Dasar (jumlah) | Angka |
+
+### 2. Kebutuhan Part & Material
+
+| Kolom | Tipe |
+|-------|------|
+| Tipe (SYSTEM / CUSTOM) | Pilihan |
+| Deskripsi / Nama Part | Teks |
+| Qty | Angka |
+| Harga Satuan (IDR) | Mata uang IDR |
+| Subtotal (IDR) | Hitung otomatis |
+| Aksi | Aksi |
+
+### 3. Beban Work Center (Mesin)
+
+| Kolom | Tipe |
+|-------|------|
+| Tipe | Pilihan |
+| Deskripsi Operasi Mesin | Teks |
+| Waktu (Mnt) | Angka |
+| Rate/Mnt (IDR) | Mata uang IDR |
+| Subtotal Biaya (IDR) | Hitung otomatis |
+| Aksi | Aksi |
+
+### 4. Beban Karyawan (Man Power)
+
+| Kolom | Tipe |
+|-------|------|
+| Tipe | Pilihan |
+| Deskripsi Pekerjaan | Teks |
+| Jumlah Org | Angka |
+| Waktu (Mnt) | Angka |
+| Rate/Org/Mnt (IDR) | Mata uang IDR |
+| Subtotal Biaya (IDR) | Hitung otomatis |
+| Aksi | Aksi |
+
+---
+
+## J. Halaman — Kelola Operasi Manufaktur (Routing)
+
+### Kartu operasi (daftar)
+
+| Field | Tipe |
+|-------|------|
+| Proses | Pilihan |
+| Volume material | Hitung otomatis |
+| Tipe input | Pilihan (Work Center / Routing) |
+| Work center / Routing | Pilihan |
+| Urutan | Angka |
+| Nama operasi | Teks |
+| Waktu (menit) | Angka |
+| Total person | Angka |
+| Rate mesin (/mnt) | Mata uang IDR |
+| Rate pekerja (/mnt) | Mata uang IDR |
+| Catatan | Teks |
+| Kode posisi / combo | Pilihan |
+| Visual posisi | Gambar |
+| Kalkulasi (mesin / pekerja / total) | Hitung otomatis |
+
+### Langkah Routing (jika mode Routing)
+
+| Kolom | Tipe |
+|-------|------|
+| # Urutan | Angka |
+| Work center | Teks |
+| Mnt | Angka |
+| Org | Angka |
+
+### Tambah Part (per operasi)
+
+| Field | Tipe |
+|-------|------|
+| Material (DATA BASE / Manual) | Pilihan |
+| Qty | Angka |
+| Unit | Pilihan |
+| P / L / T (mm) | Angka |
+| Volume (m³) | Hitung otomatis |
+| Harga (1 Part) | Mata uang IDR |
+| Harga Produksi (× Qty) | Hitung otomatis |
+
+---
+
+## K. Halaman — Lihat Detail Komponen
+
+### Spesifikasi & kalkulasi
+
+| Field | Tipe |
+|-------|------|
+| Tipe komponen | Pilihan |
+| Kode | Teks |
+| Nama | Teks |
+| Dimensi (W×D×H mm) | Angka |
+| Volume kalkulasi (m³) | Hitung otomatis |
+| Qty | Angka |
+| Level hierarki | Angka |
+| Harga satuan part | Mata uang IDR |
+| SF (%) | Persen |
+| Total base harga (× qty) | Hitung otomatis |
+| WF (%) | Persen |
+| Subtotal material | Hitung otomatis |
+
+### Tabel operasi manufaktur
+
+| Kolom | Tipe |
+|-------|------|
+| Visual | Gambar |
+| Proses | Teks |
+| Tahap & Nama Operasi | Teks |
+| Durasi | Angka (menit) |
+| Biaya Mesin | Mata uang IDR |
+| Jumlah Pekerja & Biaya | Mata uang IDR |
+| Detail | Teks |
+| Subtotal | Hitung otomatis |
+
+| Field | Tipe |
+|-------|------|
+| Grand Total (Material + Operasi) | Hitung otomatis |
+
+---
+
+## L. Popup — Detail Hierarki
+
+### Ringkasan node
+
+| Field | Tipe |
+|-------|------|
+| Tipe | Pilihan |
+| Kode | Teks |
+| Nama | Teks |
+| Dimensi (P×L×T mm) | Angka |
+| Volume kalkulasi (m³) | Hitung otomatis |
+| Qty | Angka |
+| Biaya produksi | Hitung otomatis |
+
+### Tabel anak langsung
+
+| Kolom | Tipe |
+|-------|------|
+| Nama / Kode | Teks |
+| Qty | Angka |
+| Dimensi (mm) | Angka (tampilan) |
+| Volume | Hitung otomatis (m³) |
+| Biaya Prod. | Hitung otomatis |
+| Aksi Detail | Aksi |
+
+---
+
+## M. Header Editor (lintas tab)
+
+| Field | Tipe |
+|-------|------|
+| Kode Project | Teks |
+| Mode kalkulasi | Pilihan (Live Master / Excel Fixed) |
+| Status simpan | Teks |
+| Kurs USD | Angka |
+| Kurs EUR | Angka |
+| Kepadatan tampilan | Pilihan |
+
+---
+
+## Indeks tab → file UI
+
+| Tab ID | Label UI | Section dokumen |
+|--------|----------|-----------------|
+| `struktur` | Struktur Perakitan & Modul | C |
+| `container` | Container Capacity Per Item | D |
+| `material` | Kebutuhan Material | E |
+| `proses` | Kebutuhan Proses | F |
+| `summary` | Summary Kalkulasi | G |
+| `cogs` | Detail COGS & Pricing | H |
+| `erp` | Jurnal FOB / HPP Custom | I |
+
+---
+
+## Dokumen terkait
+
+| Dokumen | Isi |
+|---------|-----|
+| [02-UAT-App-Design-Baru.mmd](./02-UAT-App-Design-Baru.mmd) | UAT step-by-step per tab |
+| [08-Acceptance-Criteria-Perbaikan-BOM.mmd](./08-Acceptance-Criteria-Perbaikan-BOM.mmd) | AC teknis programmer |
+| [03-Perbandingan-Tabel.mmd](./03-Perbandingan-Tabel.mmd) | Gap kolom vs ERP staging |
