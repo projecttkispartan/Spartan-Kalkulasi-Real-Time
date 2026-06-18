@@ -60,6 +60,10 @@ if (part1.data.nama !== 'Panel Kayu') {
   console.error('FAIL: PART nama mismatch', part1.data.nama);
   process.exit(1);
 }
+if ((part1.data.proses?.length || 0) > 0 || part1.data.proses_count > 0) {
+  console.error('FAIL: synced PART must not copy parent proses');
+  process.exit(1);
+}
 
 // Re-save tidak duplikat
 const bom2 = syncPartsFromProsesMaterials(structuredClone(bom), {

@@ -69,7 +69,10 @@ for (const key of CURATED) {
     `${key}: total COGS deviation status`,
   );
 
-  console.log(`OK ${key} pie=${pieSum} prod=${insight.production.total} notes=${insight.notes.length}`);
+  assert.ok(insight.excelCompare.breakdown?.productionComponents?.length >= 3, `${key}: production breakdown`);
+  assert.ok(insight.excelCompare.breakdown?.summaryLines?.length >= 3, `${key}: summary line breakdown`);
+
+  console.log(`OK ${key} pie=${pieSum} prod=${insight.production.total} notes=${insight.notes.length} breakdown=${insight.excelCompare.breakdown.summaryLines.length} lines`);
 }
 
 console.log('\ntestCogsBreakdown: done');

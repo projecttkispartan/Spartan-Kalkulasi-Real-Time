@@ -8,7 +8,7 @@ import {
   EXCEL_PARITY_TOLERANCE_IDR,
   EXCEL_PARITY_TOLERANCE_PCT,
 } from '../data/excelParityChecklist.js';
-import { PROCESS_SUMMARY_WHITELIST } from './excelWorkbookParsers.js';
+import { PROCESS_SUMMARY_WHITELIST, dedupeSummaryCostLines } from './excelWorkbookParsers.js';
 import { CURATED_SAMPLE_KEYS } from './emptyProject.js';
 
 export const COGS_PART_GROUPS = [
@@ -247,6 +247,269 @@ function compareMetric(app, excel, strictPct) {
   };
 }
 
+const SUMMARY_SUBTOTAL_LABELS = new Set([
+  'RAW PRODUCTION COST',
+  'FACTORY PROCESSING COST',
+  'PRODUCTION COST',
+  'COST OF GOOD SOLD',
+  'COST OF GOODS SOLD',
+  'MATERIAL COST',
+  'BOX PACKING',
+  'SINGLE FACE PACKING',
+]);
+
+function partMatchesSummaryLine(part, line) {
+  const label = normLabel(line.label);
+  const kode = String(part.kode || '').trim();
+  if (kode.startsWith('EXCEL-')) {
+    const partKey = kode.slice(6).toLowerCase().replace(/-/g, '_');
+    const lineKey = String(line.key || '').toLowerCase();
+    if (partKey === lineKey) return true;
+    if (partKey.replace(/_/g, '') === lineKey.replace(/_/g, '')) return true;
+  }
+  const mt = String(part.materialType || '').toLowerCase();
+  const nama = String(part.nama || '').toUpperCase();
+  if (label === 'KAYU') return mt === 'kayu';
+  if (label === 'PLYWOOD') return mt === 'plywood';
+  if (label === 'MDF') return mt === 'mdf';
+  if (label === 'VENEER' || label.includes('LAMINAT')) {
+    return mt === 'veneer' || mt === 'finishing' || nama.includes('LAMIN');
+  }
+  if (label.includes('HARDWARE') || label.includes('FITTING') || label.includes('ASSEMBL')) {
+    return mt === 'hardware';
+  }
+  if (label.includes('AMPLAS') || label.includes('FINISH') || label.includes('GERINDA')) {
+    return mt === 'finishing' || mt === 'coating';
+  }
+  if (label.includes('UPHOLST')) return mt === 'upholstery' || mt === 'fabric';
+  if (label.includes('QC') || label.includes('LAIN')) return false;
+  return false;
+}
+
+function aggregatePartsForSummaryLines(bomData, summaryLines) {
+  const lines = dedupeSummaryCostLines(summaryLines || []).filter(
+    (ln) => !SUMMARY_SUBTOTAL_LABELS.has(normLabel(ln.label)),
+  );
+  const buckets = new Map(
+    lines.map((ln) => [
+      normLabel(ln.label),
+      { material: 0, process: 0, total: 0, partCount: 0 },
+    ]),
+  );
+  const unallocated = { material: 0, process: 0, total: 0, partCount: 0 };
+
+  walkBomParts(bomData, null, (part) => {
+    const row = computePartCostRow(part);
+    let matched = false;
+    for (const ln of lines) {
+      if (partMatchesSummaryLine(part, ln)) {
+        const b = buckets.get(normLabel(ln.label));
+        b.material += row.matAdjusted;
+        b.process += row.prosesTotal;
+        b.total += row.biayaProduksi;
+        b.partCount += 1;
+        matched = true;
+        break;
+      }
+    }
+    if (!matched) {
+      unallocated.material += row.matAdjusted;
+      unallocated.process += row.prosesTotal;
+      unallocated.total += row.biayaProduksi;
+      unallocated.partCount += 1;
+    }
+  });
+
+  for (const b of buckets.values()) {
+    b.material = Math.round(b.material);
+    b.process = Math.round(b.process);
+    b.total = Math.round(b.total);
+  }
+  unallocated.material = Math.round(unallocated.material);
+  unallocated.process = Math.round(unallocated.process);
+  unallocated.total = Math.round(unallocated.total);
+
+  return { lines, buckets, unallocated };
+}
+
+function summaryLineHint(label) {
+  const u = normLabel(label);
+  if (u === 'KAYU') return 'Tab Material · part kayu (P×L×T, grade, SF/WF)';
+  if (u.includes('LAMINAT') || u === 'VENEER') return 'Tab Material · veneer/laminating';
+  if (u.includes('HARDWARE') || u.includes('FITTING') || u.includes('ASSEMBL')) {
+    return 'Tab Material / Proses · hardware';
+  }
+  if (u.includes('AMPLAS') || u.includes('FINISH') || u.includes('GERINDA')) {
+    return 'Tab Proses · finishing / coating';
+  }
+  if (u.includes('PACKING')) return 'Tab Container · packing';
+  return 'Tab Material / Proses';
+}
+
+function componentHint(id) {
+  const hints = {
+    material: 'Tab Material · Σ biaya material part',
+    process: 'Tab Proses · routing WC per part',
+    packing: 'Tab Container · material + TK packing (jalur aktif)',
+    coating: 'Config COGS · includeCoatingInCogs + coating produk',
+    fob: 'Config COGS · FOB export',
+    factoryOh: 'Config COGS · Factory OH %',
+    managementOh: 'Config COGS · Management OH %',
+    rawProduction: 'Sheet SUMMARY · baris RAW PRODUCTION (informasi)',
+  };
+  return hints[id] || '—';
+}
+
+/**
+ * Breakdown deviasi per komponen production + baris SUMMARY COST.
+ * @returns {{ productionComponents: object[], summaryLines: object[], unallocated: object|null }}
+ */
+export function buildExcelDeviationBreakdown({
+  bomData,
+  cogs,
+  cogsConfig = {},
+  excelMirror = null,
+  strictPct = null,
+}) {
+  const excel = excelMirror?.summaryCost || {};
+  if (!excel.productionCost || !excel.totalCogs) {
+    return { productionComponents: [], summaryLines: [], unallocated: null };
+  }
+
+  const jalur = cogsConfig.packingJalur === 'SF' ? 'SF' : 'BOX';
+  const packingExcel = jalur === 'SF' ? excel.packingSf : excel.packingBox;
+  const excelPackTotal = Number(packingExcel?.total) || 0;
+
+  const { lines, buckets, unallocated } = aggregatePartsForSummaryLines(
+    bomData,
+    excel.lines,
+  );
+
+  let excelMatSum = 0;
+  let excelProcSum = 0;
+  for (const ln of lines) {
+    excelMatSum += Number(ln.material) || 0;
+    excelProcSum += (Number(ln.labor) || 0) + (Number(ln.machine) || 0);
+  }
+
+  const factoryOhPct = Number(excel.factoryOhPct ?? cogsConfig.factoryOhPct) || 0;
+  const mgmtOhPct = Number(excel.managementOhPct ?? cogsConfig.managementOhPct) || 0;
+  const excelProd = Number(excel.productionCost) || 0;
+  const excelFactoryOh = Math.round(excelProd * (factoryOhPct / 100));
+  const excelMgmtOh = Math.round(excelProd * (mgmtOhPct / 100));
+
+  const rawLine = dedupeSummaryCostLines(excel.lines || []).find(
+    (ln) => normLabel(ln.label) === 'RAW PRODUCTION COST',
+  );
+
+  const productionComponents = [
+    {
+      id: 'material',
+      label: 'Material (Σ part)',
+      hint: componentHint('material'),
+      ...compareMetric(cogs.totalMaterial, excelMatSum, strictPct),
+    },
+    {
+      id: 'process',
+      label: 'Proses (Σ part)',
+      hint: componentHint('process'),
+      ...compareMetric(cogs.totalProcess, excelProcSum, strictPct),
+    },
+    {
+      id: 'packing',
+      label: `Packing ${jalur}`,
+      hint: componentHint('packing'),
+      ...compareMetric(cogs.packingCost, excelPackTotal, strictPct),
+    },
+  ];
+
+  if ((cogs.coatingCostDetail || 0) > 0 || (cogs.coatingCost || 0) > 0) {
+    productionComponents.push({
+      id: 'coating',
+      label: 'Coating (production)',
+      hint: componentHint('coating'),
+      ...compareMetric(cogs.coatingCost || 0, 0, strictPct),
+      excelNote: 'Excel often excludes coating from production when includeCoatingInCogs=false',
+    });
+  }
+
+  if ((cogs.fobExportCost || 0) > 0) {
+    productionComponents.push({
+      id: 'fob',
+      label: 'FOB export',
+      hint: componentHint('fob'),
+      ...compareMetric(cogs.fobExportCost, 0, strictPct),
+    });
+  }
+
+  if (rawLine) {
+    productionComponents.push({
+      id: 'rawProduction',
+      label: 'RAW Production (info)',
+      hint: componentHint('rawProduction'),
+      app: Math.round(cogs.totalMaterial + cogs.totalProcess),
+      excel: Math.round(Number(rawLine.total) || 0),
+      diffIdr: Math.round(
+        cogs.totalMaterial + cogs.totalProcess - (Number(rawLine.total) || 0),
+      ),
+      diffPct:
+        rawLine.total > 0
+          ? Math.abs(cogs.totalMaterial + cogs.totalProcess - rawLine.total) / rawLine.total
+          : 0,
+      status: 'skip',
+    });
+  }
+
+  productionComponents.push(
+    {
+      id: 'factoryOh',
+      label: `Factory OH (${factoryOhPct}%)`,
+      hint: componentHint('factoryOh'),
+      ...compareMetric(cogs.factoryOh, excelFactoryOh, strictPct),
+    },
+    {
+      id: 'managementOh',
+      label: `Management OH (${mgmtOhPct}%)`,
+      hint: componentHint('managementOh'),
+      ...compareMetric(cogs.managementOh, excelMgmtOh, strictPct),
+    },
+  );
+
+  const summaryLines = lines.map((ln) => {
+    const label = normLabel(ln.label);
+    const appBucket = buckets.get(label) || { material: 0, process: 0, total: 0, partCount: 0 };
+    const excelMaterial = Math.round(Number(ln.material) || 0);
+    const excelProcess = Math.round((Number(ln.labor) || 0) + (Number(ln.machine) || 0));
+    const excelTotal = Math.round(Number(ln.total) || excelMaterial + excelProcess);
+    const matCmp = compareMetric(appBucket.material, excelMaterial, strictPct);
+    const procCmp = compareMetric(appBucket.process, excelProcess, strictPct);
+    const totalCmp = compareMetric(appBucket.total, excelTotal, strictPct);
+    return {
+      label: ln.label,
+      key: ln.key,
+      excelRow: ln.excelRow,
+      hint: summaryLineHint(ln.label),
+      partCount: appBucket.partCount,
+      material: matCmp,
+      process: procCmp,
+      total: totalCmp,
+      isProcessCategory: PROCESS_SUMMARY_WHITELIST.has(label),
+    };
+  });
+
+  summaryLines.sort((a, b) => {
+    const da = Math.abs(b.total.diffIdr);
+    const db = Math.abs(a.total.diffIdr);
+    return da - db;
+  });
+
+  return {
+    productionComponents,
+    summaryLines,
+    unallocated: unallocated.partCount > 0 ? unallocated : null,
+  };
+}
+
 /**
  * @param {object} params
  * @param {object} params.bomData
@@ -343,6 +606,15 @@ export function buildCogsInsight({
     emptyReason: comparable ? null : emptyReason,
     production: compareMetric(cogs.productionCost, excelProd, strictPct),
     totalCogs: compareMetric(cogs.totalCogs, excelCogs, strictPct),
+    breakdown: comparable
+      ? buildExcelDeviationBreakdown({
+          bomData,
+          cogs,
+          cogsConfig,
+          excelMirror,
+          strictPct,
+        })
+      : null,
   };
 
   const hybridBlocked =

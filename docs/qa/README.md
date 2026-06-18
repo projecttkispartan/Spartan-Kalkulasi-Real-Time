@@ -12,6 +12,7 @@
 | [07-Dev-Improvement-Backlog.mmd](./07-Dev-Improvement-Backlog.mmd) | **Backlog dev** — P0/P1/P2 penggantian Excel |
 | [08-Acceptance-Criteria-Perbaikan-BOM.mmd](./08-Acceptance-Criteria-Perbaikan-BOM.mmd) | **Acceptance criteria** — sign-off untuk programmer |
 | [Table-Details.mmd](./Table-Details.mmd) | **Inventaris kolom UI** — posisi menu, nama kolom, tipe data (client) |
+| [09-UAT-ZAN-100-End-to-End.mmd](./09-UAT-ZAN-100-End-to-End.mmd) | **UAT E2E ZAN-100** — import Excel → COGS parity (ZANZIBAR STOOL) |
 
 **Environment ERP:** [https://erp.stg.solusiuntuknegeri.com/manufacture/bill-of-materials](https://erp.stg.solusiuntuknegeri.com/manufacture/bill-of-materials)  
 **Evidence:** `evidence/*.png`, `erp-wizard-steps.json`, `erp-bom-structure.json`  

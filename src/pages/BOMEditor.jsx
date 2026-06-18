@@ -39,6 +39,11 @@ import ExcelParityChecklistModal from '../components/modals/ExcelParityChecklist
 import { auditExcelParity } from '../utils/excelParityAudit.js';
 import CogsInsightModal from '../components/modals/CogsInsightModal.jsx';
 import { buildCogsInsight } from '../utils/cogsBreakdown.js';
+import {
+  applyDeviationAction,
+  buildDeviationActions,
+  previewDeviationAction,
+} from '../utils/cogsDeviationActions.js';
 import { CURATED_SAMPLE_KEYS } from '../utils/emptyProject.js';
 import OperasiDetailCell from '../components/ui/OperasiDetailCell';
 import FontCaseToggle from '../components/ui/FontCaseToggle';
@@ -678,6 +683,7 @@ export default function BOMEditor({
   const [cogsConfigOpen, setCogsConfigOpen] = useState(true);
   const [showCogsInsightModal, setShowCogsInsightModal] = useState(false);
   const [showExcelChecklistModal, setShowExcelChecklistModal] = useState(false);
+  const [applyingDeviationActionId, setApplyingDeviationActionId] = useState(null);
 
   const [productMeta, setProductMeta] = useState(
     () =>
@@ -1447,9 +1453,11 @@ export default function BOMEditor({
     [bomData, cogsConfig, packingTotals, productMeta, volBoxPacking],
   );
 
-  const cogsInsightSampleKey = CURATED_SAMPLE_KEYS.has(productInfo.kode)
-    ? productInfo.kode
-    : null;
+  const cogsInsightSampleKey = CURATED_SAMPLE_KEYS.has(safeProject?.sampleKey)
+    ? safeProject.sampleKey
+    : CURATED_SAMPLE_KEYS.has(productInfo.kode)
+      ? productInfo.kode
+      : null;
 
   const cogsInsight = useMemo(
     () =>
@@ -1475,6 +1483,85 @@ export default function BOMEditor({
       cogsData,
       cogsInsightSampleKey,
     ],
+  );
+
+  const cogsDeviationActions = useMemo(
+    () =>
+      buildDeviationActions({
+        insight: cogsInsight,
+        cogsConfig,
+        excelMirror,
+        cogsMode,
+        importedFromExcel,
+      }),
+    [cogsInsight, cogsConfig, excelMirror, cogsMode, importedFromExcel],
+  );
+
+  const deviationActionContext = useMemo(
+    () => ({
+      bomData,
+      cogsConfig,
+      excelMirror,
+      packingSpec,
+      packingTotals,
+      productMeta,
+      insight: cogsInsight,
+      importedFromExcel,
+      cogsMode,
+      sampleKey: cogsInsightSampleKey,
+    }),
+    [
+      bomData,
+      cogsConfig,
+      excelMirror,
+      packingSpec,
+      packingTotals,
+      productMeta,
+      cogsInsight,
+      importedFromExcel,
+      cogsMode,
+      cogsInsightSampleKey,
+    ],
+  );
+
+  const handleApplyDeviationAction = useCallback(
+    async (actionId) => {
+      const action = cogsDeviationActions.find((a) => a.id === actionId);
+      if (!action) return;
+
+      const result = applyDeviationAction(actionId, deviationActionContext);
+      if (!result) return;
+
+      if (result.kind === 'navigate') {
+        if (result.openModal === 'parity-checklist') {
+          setShowExcelChecklistModal(true);
+        }
+        if (result.navigateTo) {
+          setEditorTab(result.navigateTo);
+          setShowCogsInsightModal(false);
+        }
+        return;
+      }
+
+      const preview = previewDeviationAction(actionId, deviationActionContext);
+      const previewText = preview?.lines?.length
+        ? `\n\nPerkiraan setelah diterapkan:\n${preview.lines.join('\n')}`
+        : '';
+      const ok = window.confirm(
+        `${action.label}\n\n${action.detail}${previewText}\n\nTerapkan perubahan ini?`,
+      );
+      if (!ok) return;
+
+      setApplyingDeviationActionId(actionId);
+      try {
+        if (result.cogsConfig) setCogsConfig(result.cogsConfig);
+        if (result.bomData) setBomData(result.bomData);
+        if (result.cogsMode) setCogsMode(result.cogsMode);
+      } finally {
+        setApplyingDeviationActionId(null);
+      }
+    },
+    [cogsDeviationActions, deviationActionContext],
   );
 
   const excelParityAudit = useMemo(
@@ -2082,6 +2169,9 @@ export default function BOMEditor({
         onClose={() => setShowCogsInsightModal(false)}
         insight={cogsInsight}
         productInfo={productInfo}
+        deviationActions={cogsDeviationActions}
+        onApplyDeviationAction={handleApplyDeviationAction}
+        applyingDeviationActionId={applyingDeviationActionId}
       />
       <ExcelParityChecklistModal
         isOpen={showExcelChecklistModal}
@@ -3011,14 +3101,12 @@ export default function BOMEditor({
                         <th rowSpan={2} className="px-3 py-3 text-left min-w-[140px] align-middle">DETAIL</th>
                       </tr>
                       <tr className="bg-white border-b border-slate-200 text-[9px] font-extrabold uppercase text-slate-500">
-                        <th colSpan={14 + hierarchyColCount} className="border-r border-slate-100" />
                         <th className="py-2 px-1.5 text-right text-indigo-700">IDR</th>
                         <th className="py-2 px-1.5 text-right text-amber-600">USD</th>
                         <th className="py-2 px-1.5 border-r border-slate-200 text-right text-brand-600">EUR</th>
                         <th className="py-2 px-1.5 text-right text-violet-700">IDR</th>
                         <th className="py-2 px-1.5 text-right text-violet-600">USD</th>
                         <th className="py-2 px-1.5 border-r border-slate-200 text-right text-violet-600">EUR</th>
-                        <th />
                       </tr>
                     </thead>
                     <tbody className="font-medium text-slate-700 divide-y divide-slate-100">

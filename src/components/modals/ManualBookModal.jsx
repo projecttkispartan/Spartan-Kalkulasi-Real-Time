@@ -192,10 +192,18 @@ function SectionContent({ section, scenarios, bestPractices, onPreviewFlow, onPr
   );
 }
 
-export default function ManualBookModal({ isOpen, onClose }) {
-  const [activeSectionId, setActiveSectionId] = useState('intro');
+export default function ManualBookModal({ isOpen, onClose, initialSectionId = 'intro' }) {
+  const [activeSectionId, setActiveSectionId] = useState(initialSectionId);
   const [previewFlowId, setPreviewFlowId] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      setActiveSectionId(initialSectionId || 'intro');
+      setPreviewFlowId(null);
+      setPreviewImage(null);
+    }
+  }, [isOpen, initialSectionId]);
 
   const scenariosBySection = useMemo(() => {
     const map = {};

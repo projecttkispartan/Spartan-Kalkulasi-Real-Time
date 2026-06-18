@@ -1,0 +1,357 @@
+# UAT End-to-End — ZAN-100 (ZANZIBAR STOOL)
+
+| Field | Value |
+|-------|-------|
+| **Aplikasi** | Manufaktur BOM · BOM Design by Gemini v1.0 |
+| **File uji** | `1 - ZAN-100 - 2-12-25.xlsx` |
+| **Path user** | `d:\Project Spartan Jepara\03. DOKUMEN\Excel Document\1 - ZAN-100 - 2-12-25.xlsx` |
+| **Produk** | ZAN-10 — ZANZIBAR STOOL / SIDE TABLE |
+| **Customer** | AMATA |
+| **Metode** | Manual UI + `npm test` + `node scripts/uatZan100Report.mjs` |
+| **Target COGS** | ≤ **1,5%** atau ≤ **Rp 25.000** vs SUMMARY COST |
+| **Referensi angka** | [`src/data/zanExcelSummary.js`](../../src/data/zanExcelSummary.js) |
+| **Kolom UI** | [`Table-Details.mmd`](./Table-Details.mmd) |
+| **Tanggal** | Juni 2026 |
+
+---
+
+## 1. Ringkasan produk & target angka
+
+| Item | Nilai |
+|------|-------|
+| Kode produk | ZAN-10 |
+| Kode BOM | ZAN-100 |
+| Versi | 2-12-25 |
+| Item Type | STOOL |
+| Dimensi nett (mm) | 340 × 340 × 505 |
+| Kayu | MINDI - 30 UP 200 |
+| Coating | 33.DESERT BROWN HARKA |
+
+### Target COGS (sheet SUMMARY COST — jalur BOX)
+
+| Metrik | Excel (Rp) | Toleransi sign-off |
+|--------|------------|-------------------|
+| RAW Production Cost | 1.567.717 | Informasi |
+| **Production Cost** | **2.043.407** | ≤ 1,5% atau ≤ 25.000 |
+| **Total COGS** | **2.196.662** | ≤ 1,5% atau ≤ 25.000 |
+| Material kayu (kolom material baris KAYU) | 781.739 | Bukan total baris KAYU 1.291.225 |
+| Packing BOX (material + tenaga) | 57.936 | Material ~45.726 + tenaga ~12.210 |
+
+**Catatan:** Import workbook **penuh** lewat Dashboard belum dijamin parity COGS ketat. Sample **ZAN-100** (seed terkurasi + `excelMirror`) adalah **release gate** resmi (~0,01% deviasi).
+
+```mermaid
+flowchart TD
+  prep[Phase0_Persiapan] --> trackA[TrackA_ImportExcel_Baru]
+  prep --> trackB[TrackB_Sample_ZAN100_Golden]
+  trackA --> mirror[excelMirror_terisi]
+  trackB --> parity[COGS_leq_1_5pct]
+  mirror --> cogsTab[Tab_COGS_Checklist_Deviasi]
+  parity --> cogsTab
+  cogsTab --> signoff{PASS?}
+  signoff -->|Ya| release[Export_Summary]
+  signoff -->|Tidak| fix[Koreksi_komponen]
+  fix --> cogsTab
+```
+
+---
+
+## 2. Phase 0 — Persiapan lingkungan (wajib)
+
+### 0.1 File & environment
+
+```powershell
+cd "d:\Project Spartan Jepara\02. RESEARCH\Bill Of Materials\BOM Design by Gemini"
+$env:ZAN_EXCEL = "d:\Project Spartan Jepara\03. DOKUMEN\Excel Document\1 - ZAN-100 - 2-12-25.xlsx"
+```
+
+| # | Check | Expected | Actual | Status |
+|---|-------|----------|--------|--------|
+| 0.1.1 | File `.xlsx` ada | Path valid, bisa dibuka Excel | | |
+| 0.1.2 | `ZAN_EXCEL` diset | Path user atau default script | | |
+
+### 0.2 Import master global
+
+```powershell
+npm run import:masters
+```
+
+| # | Check | Expected | Actual | Status |
+|---|-------|----------|--------|--------|
+| 0.2.1 | Output `src/data/masters/` | File ter-update | | |
+| 0.2.2 | `meta.json` | `sourceFile`: `1 - ZAN-100 - 2-12-25.xlsx` | | |
+
+### 0.3 (Opsional) Refresh sample dari Excel user
+
+```powershell
+npm run import:samples
+npm run patch:samples
+npm run refresh:mirror
+```
+
+| # | Check | Expected | Actual | Status |
+|---|-------|----------|--------|--------|
+| 0.3.1 | `zan-100.json` ter-regenerasi | `excelMirror.summaryCost` terisi | | |
+| 0.3.2 | `loadSamples.js` | Auto-generated, ZAN-100 included | | |
+
+### 0.4 Jalankan aplikasi
+
+```powershell
+npm run dev
+```
+
+| # | Check | Expected | Actual | Status |
+|---|-------|----------|--------|--------|
+| 0.4.1 | App load | `http://localhost:5173` (atau port Vite) | | |
+| 0.4.2 | Kurs USD/EUR | Ter-set di header (default OK untuk UAT IDR) | | |
+
+### 0.5 Regresi otomatis baseline
+
+```powershell
+npm test
+node scripts/uatZan100Report.mjs
+```
+
+| # | Check | Expected | Actual | Status |
+|---|-------|----------|--------|--------|
+| 0.5.1 | `verifyZanCogs.mjs` | PASS | | |
+| 0.5.2 | `verifyAllSampleCogs.mjs` | ZAN-100 OK | | |
+| 0.5.3 | `uatZan100Report.mjs` | Laporan parity tercetak | | |
+
+---
+
+## 3. Track A — Kalkulasi baru via Import Excel
+
+### A1 — Dashboard: Import workbook
+
+| # | Langkah | Expected | Actual | Status |
+|---|---------|----------|--------|--------|
+| A1.1 | Dashboard → **Import Excel** → pilih `1 - ZAN-100 - 2-12-25.xlsx` | Overlay: validate → parse → save | | |
+| A1.2 | Tunggu selesai | Editor terbuka otomatis | | |
+| A1.3 | Cek header editor | Badge **Mode: Excel Fixed** | | |
+| A1.4 | Cek status simpan | **Tersimpan** muncul | | |
+
+### A2 — Panel Data Produk
+
+| Field | Expected | Actual | Status |
+|-------|----------|--------|--------|
+| Kode | ZAN-10 | | |
+| Nama | ZANZIBAR STOOL / SIDE TABLE | | |
+| Customer | AMATA | | |
+| Versi | 2-12-25 | | |
+| Item Type | STOOL | | |
+| Dimensi W/D/H (mm) | 340 / 340 / 505 | | |
+| Volume produk (m³) | ~0,058 | | |
+| Kayu / Coating | MINDI grade + DESERT BROWN | | |
+| Scroll Box / SF packing | Kolom dimensi packing terlihat | | |
+
+### A3 — Tab 1: Struktur Perakitan & Modul
+
+| # | Check | Expected | Actual | Status |
+|---|-------|----------|--------|--------|
+| A3.1 | Hierarki | MODUL → SUBMODUL → PART | | |
+| A3.2 | Part kayu | Kode `1200230-1.3.0.2.x`, P×L×T terisi | | |
+| A3.3 | Jumlah part import | Bisa 68+ part (BOM TEMPLATE penuh) | | |
+| A3.4 | Kolom biaya | MAT/PROD terisi | | |
+| A3.5 | Routing / proses | Minimal beberapa part punya operasi | | |
+
+### A4 — Tab 2: Container Capacity
+
+| # | Check | Expected | Actual | Status |
+|---|-------|----------|--------|--------|
+| A4.1 | Dimensi nett | 340×340×505 read-only | | |
+| A4.2 | Gross box | Tol +40/+40/+50 → ~380×380×555 | | |
+| A4.3 | Volume box (m³) | ~0,080142 | | |
+| A4.4 | Material packing BOX | Total ≈ Rp 45.726 | | |
+| A4.5 | Routing packing BOX | Total ≈ Rp 12.210 | | |
+| A4.6 | Container 20ft / 40ft / 40HC | 28 / 55 / 62 Pcs | | |
+
+### A5 — Tab 3: Kebutuhan Material
+
+| # | Check | Expected | Actual | Status |
+|---|-------|----------|--------|--------|
+| A5.1 | Hanya PART | Semua baris tipe PART | | |
+| A5.2 | SF / WF | 0 pada part import Excel | | |
+| A5.3 | Kartu total material | > 0, konsisten Σ PROD | | |
+| A5.4 | Grade kayu | MINDI - 30 UP 200 | | |
+
+### A6 — Tab 4: Kebutuhan Proses
+
+| # | Check | Expected | Actual | Status |
+|---|-------|----------|--------|--------|
+| A6.1 | Rekapitulasi kategori | Woodworking, Laminating, Assembling, Amplas, Finishing | | |
+| A6.2 | Detail baris | Kode/nama part, durasi, biaya WC + TK | | |
+| A6.3 | Header IDR/USD/EUR | Di bawah SUBTOTAL & PROD/U (bukan kolom DETAIL) | | |
+| A6.4 | Kolom DETAIL | Wrench + catatan operasi | | |
+
+### A7 — Tab 5: Summary Kalkulasi
+
+| # | Check | Expected | Actual | Status |
+|---|-------|----------|--------|--------|
+| A7.1 | Σ TOTAL BIAYA | = kartu header (Δ ≤ Rp 1) | | |
+| A7.2 | Baris SUMMARY | LAMINATING, ASSEMBLING, AMPLAS, FINISHING | | |
+| A7.3 | Nested operasi | Durasi + subtotal per part | | |
+
+### A8 — Tab 6: Detail COGS & Pricing (gate Track A)
+
+**Konfigurasi expected:**
+
+| Setting | Expected | Actual | Status |
+|---------|----------|--------|--------|
+| Jalur packing | BOX | | |
+| Factory OH | 5% | | |
+| Management OH | 2,5% | | |
+| Aktifkan FOB | Off | | |
+| includeCoatingInCogs | false | | |
+
+**Verifikasi angka:**
+
+| Metrik | Expected (Rp) | Actual (Rp) | Δ | Status |
+|--------|---------------|-------------|---|--------|
+| Packing BOX | ~57.936 | | | |
+| RAW Production | ~2.043.407 | | | |
+| Total COGS | ~2.196.662 | | | |
+| Checklist parity | ≥ 85% | | | |
+| View Deviasi | pass / warn / fail | | | |
+
+**Kriteria Track A:**
+
+| Hasil | Arti |
+|-------|------|
+| Checklist ≥ 85%, deviasi PASS | Import siap replace Excel |
+| WARN, deviasi 5–15% | Struktur OK, perlu kalibrasi |
+| deviasi > 15% | Expected import mentah — lanjut Track B |
+
+### A9 — Tab 7: Jurnal FOB / HPP
+
+| # | Check | Expected | Actual | Status |
+|---|-------|----------|--------|--------|
+| A9.1 | SYSTEM material | ≈ Σ part BOM | | |
+| A9.2 | SYSTEM mesin + karyawan | ≈ total operasi | | |
+| A9.3 | Grand Total HPP | Material + mesin + karyawan | | |
+
+### A10 — Export & arsip
+
+| # | Check | Expected | Actual | Status |
+|---|-------|----------|--------|--------|
+| A10.1 | View Kalkulasi Lengkap | Grand total = tab COGS | | |
+| A10.2 | Export PDF/Excel | (jika parity OK) | | |
+
+---
+
+## 4. Track B — Sign-off COGS (sample ZAN-100 terkurasi)
+
+**Release gate resmi** — gunakan bila Track A tidak mencapai ≤ 1,5%.
+
+### B1 — Buka sample
+
+| # | Langkah | Expected | Actual | Status |
+|---|---------|----------|--------|--------|
+| B1.1 | Dashboard → cari ZAN-10 / ZAN-100 | Project sample muncul | | |
+| B1.2 | Buka `sample-zan-100` | Editor terbuka | | |
+| B1.3 | Mode | Excel Fixed + cogsImportMode rollup | | |
+
+### B2 — Struktur seed (10 part + ringkasan SUMMARY)
+
+| Kode part | Qty | Peran |
+|-----------|-----|-------|
+| 1200230-1.3.0.2.1 | 2 | Kayu — dudukan samping |
+| 1200230-1.3.0.2.2 | 1 | Kayu — dudukan tengah |
+| 1200230-1.3.0.2.3 | 2 | Kayu — bawah samping |
+| 1200230-1.3.0.2.4 | 1 | Kayu — bawah tengah |
+| 1200230-1.3.0.2.5 | 8 | Kayu — panel samping |
+
+Plus part ringkasan: LAMINATING, ASSEMBLING HARDWARE, FITTING HARDWARE, AMPLAS, FINISHING.
+
+| # | Check | Expected | Actual | Status |
+|---|-------|----------|--------|--------|
+| B2.1 | 5 part kayu + 5 ringkasan | 10 baris PART aktif | | |
+| B2.2 | Biaya kayu diskalakan | ≈ material KAYU Excel 781.739 | | |
+
+### B3 — Verifikasi COGS (wajib PASS)
+
+| Metrik | Excel (Rp) | App (Rp) | Δ (Rp) | Δ (%) | Status |
+|--------|------------|----------|--------|-------|--------|
+| Production Cost | 2.043.407 | | | | |
+| Total COGS | 2.196.662 | | | | |
+
+| # | Check | Expected | Actual | Status |
+|---|-------|----------|--------|--------|
+| B3.1 | View Deviasi | status **pass** | | |
+| B3.2 | Selisih COGS | ≤ 25.000 atau ≤ 1,5% | | |
+
+### B4 — Otomatis
+
+```powershell
+node scripts/verifyZanCogs.mjs
+node scripts/auditAllSampleCogs.mjs
+```
+
+| # | Check | Expected | Actual | Status |
+|---|-------|----------|--------|--------|
+| B4.1 | verifyZanCogs | OK, diff minimal | | |
+| B4.2 | auditAllSampleCogs | ZAN-100 OK ~0,01% | | |
+
+---
+
+## 5. Matriks banding sheet Excel ↔ tab app
+
+| Sheet Excel | Tab app | Apa dibandingkan |
+|-------------|---------|------------------|
+| BOM TEMPLATE | Struktur | Hierarki, kode, qty, dimensi |
+| CALCULATION | Material / Struktur | Biaya kayu per kode part |
+| SUMMARY COST | COGS + Summary | Production, COGS, baris proses |
+| DATA BASE | Master Data | Grade MINDI, harga/m³ |
+| COATING RATIO | Panel produk | Coating + m² |
+| ROUND COMPONENT | COGS markup | Harga jual FOB preview |
+| PICK LIST | excelMirror | Daftar order |
+| KALKULASI HPP/SUPPLIER | excelMirror | HPP mentah & supplier |
+
+---
+
+## 6. Checklist sign-off client
+
+- [ ] Master ter-import (`npm run import:masters`)
+- [ ] Import Excel ZAN-100 sukses (Track A)
+- [ ] Header produk + dimensi 340×340×505 benar
+- [ ] Packing BOX ≈ Rp 57.936
+- [ ] OH 5% + 2,5%, jalur BOX, coating OFF di COGS
+- [ ] **Total COGS app vs Excel: Δ ≤ 1,5%** (Track B wajib)
+- [ ] Summary Σ baris = kartu total
+- [ ] `npm test` green
+- [ ] `node scripts/uatZan100Report.mjs` — laporan QA
+- [ ] Live (opsional): [Spartan-Kalkulasi-Real-Time](https://projecttkispartan.github.io/Spartan-Kalkulasi-Real-Time/)
+
+---
+
+## 7. Risiko & mitigasi
+
+| Risiko | Mitigasi |
+|--------|----------|
+| Path Excel user ≠ path script | Set `$env:ZAN_EXCEL` |
+| Import 68 part vs seed 10 part | Track B untuk COGS sign-off |
+| Double SF/WF | SF=0, WF=0 pada part import |
+| Coating double-count | `includeCoatingInCogs: false` |
+| Header Proses misaligned | Verifikasi A6.3 setelah fix header |
+
+---
+
+## 8. Perintah cepat
+
+```powershell
+$env:ZAN_EXCEL = "d:\Project Spartan Jepara\03. DOKUMEN\Excel Document\1 - ZAN-100 - 2-12-25.xlsx"
+npm run import:masters
+npm run dev
+node scripts/uatZan100Report.mjs
+npm test
+```
+
+---
+
+## Dokumen terkait
+
+| Dokumen | Isi |
+|---------|-----|
+| [Excel-vs-App.md](../Excel-vs-App.md) | Panduan parity Excel |
+| [Sample-COGS-Audit.md](../Sample-COGS-Audit.md) | Hasil audit semua sample |
+| [Checklist-Pengganti-Excel.md](../Checklist-Pengganti-Excel.md) | Checklist COGS |
+| [Table-Details.mmd](./Table-Details.mmd) | Inventaris kolom UI |

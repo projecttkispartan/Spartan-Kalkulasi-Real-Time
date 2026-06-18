@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef, Fragment } from 'react';
-import { Search, Plus, Network, Package, Image as ImageIcon, SquarePen, Trash2, Copy, FileSpreadsheet, ChevronDown, ChevronRight, BookOpen } from 'lucide-react';
+import { Search, Plus, Network, Package, Image as ImageIcon, SquarePen, Trash2, Copy, FileSpreadsheet, ChevronDown, ChevronRight, BookOpen, ClipboardCheck } from 'lucide-react';
 import AppHeader from '../components/ui/AppHeader';
 import { CurrencyGroup } from '../components/ui/CurrencyInput';
 import FontCaseToggle from '../components/ui/FontCaseToggle';
@@ -38,6 +38,7 @@ export default function Dashboard({
   const [search, setSearch] = useState('');
   const [importJob, setImportJob] = useState(null);
   const [showManual, setShowManual] = useState(false);
+  const [manualSectionId, setManualSectionId] = useState('intro');
   const [expandedId, setExpandedId] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -172,9 +173,28 @@ export default function Dashboard({
 
   const importBusy = Boolean(importJob && !importJob.error);
 
+  const zanSample = projects.find((p) => p.sampleKey === 'ZAN-100' || p.id === 'sample-zan-100');
+
+  const openManualAt = (sectionId = 'intro') => {
+    setManualSectionId(sectionId);
+    setShowManual(true);
+  };
+
+  const handleOpenZanSample = () => {
+    if (zanSample) {
+      onOpenProject(zanSample.id);
+      return;
+    }
+    window.alert('Sample ZAN-100 belum tersedia. Refresh halaman — sample di-seed otomatis saat memuat daftar project.');
+  };
+
   return (
     <div className="flex flex-1 flex-col min-h-0 min-w-0">
-      <ManualBookModal isOpen={showManual} onClose={() => setShowManual(false)} />
+      <ManualBookModal
+        isOpen={showManual}
+        onClose={() => setShowManual(false)}
+        initialSectionId={manualSectionId}
+      />
       <ExcelImportOverlay
         open={Boolean(importJob)}
         fileName={importJob?.fileName}
@@ -199,7 +219,7 @@ export default function Dashboard({
         </div>
         <button
           type="button"
-          onClick={() => setShowManual(true)}
+          onClick={() => openManualAt('intro')}
           className="border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-2"
         >
           <BookOpen className="w-4 h-4" /> Manual Book
@@ -229,6 +249,40 @@ export default function Dashboard({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 shrink-0">
           <KpiCard icon={Network} label="Total BOM Aktif" value={totalBom} accent="amber" />
           <KpiCard icon={Package} label="Total Produk" value={totalProduk} accent="emerald" />
+        </div>
+
+        <div className="shrink-0 rounded-xl border border-violet-200 bg-gradient-to-r from-violet-50/90 to-indigo-50/60 p-4 md:p-5 flex flex-col md:flex-row md:items-center gap-4">
+          <div className="flex items-start gap-3 flex-1 min-w-0">
+            <div className="shrink-0 w-10 h-10 rounded-xl bg-violet-100 border border-violet-200 flex items-center justify-center text-violet-700">
+              <ClipboardCheck className="w-5 h-5" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-black text-violet-900 tracking-tight">UAT ZAN-100 — ZANZIBAR STOOL</p>
+              <p className="text-xs text-violet-800/80 mt-1 leading-relaxed">
+                Sign-off parity COGS vs Excel SUMMARY COST. Track B (sample seed) = release gate · Production ≈ Rp 2.043.407 · COGS ≈ Rp 2.196.662 · toleransi ≤ 1,5%.
+              </p>
+              <p className="text-[10px] text-violet-600/70 mt-1 font-medium">
+                Gate otomatis: <code className="font-mono bg-white/60 px-1 rounded">npm run uat:zan100</code>
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => openManualAt('uat-zan100')}
+              className="border border-violet-300 bg-white hover:bg-violet-50 text-violet-900 px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-2"
+            >
+              <BookOpen className="w-4 h-4" /> Panduan UAT
+            </button>
+            <button
+              type="button"
+              onClick={handleOpenZanSample}
+              disabled={importBusy}
+              className="btn-primary shadow-violet-500/20 text-xs disabled:opacity-50"
+            >
+              Buka Sample ZAN-100
+            </button>
+          </div>
         </div>
 
         <div className="surface-card flex-1 min-h-0 flex flex-col overflow-hidden">

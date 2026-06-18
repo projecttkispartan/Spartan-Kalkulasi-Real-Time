@@ -5,6 +5,20 @@
 /** Rekomendasi urutan ideal per persona — ditampilkan di sidebar atas Manual Book */
 export const MANUAL_BEST_PRACTICES = [
   {
+    id: 'bp-uat-zan100',
+    sectionId: 'uat-zan100',
+    persona: 'QA / Sign-off ZAN-100',
+    title: 'UAT ZAN-100 — sample seed + import Excel → COGS parity',
+    steps: [
+      { n: 1, action: 'Track B — buka sample ZAN-100', detail: 'Dashboard → kartu UAT ZAN-100 → Buka Sample · atau pilih baris sample ZAN-100 di daftar.', expected: 'Editor terbuka · Mode Excel Fixed · excelMirror terisi · Jumlah Part > 0.', fail: 'Sample hilang — refresh · pastikan ensureSeedProjects jalan.' },
+      { n: 2, action: 'Verifikasi 7 tab + panel produk', detail: 'Struktur → Material → Proses → Container → Summary → COGS → ERP · scroll panel produk untuk dimensi Box/SF.', expected: 'Header Proses: IDR/USD/EUR di bawah SUBTOTAL & PROD/U · bukan di kolom DETAIL.', fail: 'Header misalign — build terbaru (fix colSpan row 2 Proses).' },
+      { n: 3, action: 'Tab COGS → View Deviasi', detail: 'Bandingkan Production Cost & Total COGS vs Excel SUMMARY COST.', expected: 'Production ≈ Rp 2.043.407 · COGS ≈ Rp 2.196.662 · Δ ≤ 1,5%.', fail: 'FAIL besar — cek packing jalur BOX · coating · mode excel-fixed.' },
+      { n: 4, action: 'Track A — import workbook asli (opsional)', detail: 'Dashboard → Import Excel · file 1 - ZAN-100 - 2-12-25.xlsx · ulang langkah COGS.', expected: 'Editor + mirror terisi · deviasi ~1–2% (import penuh ≠ seed terkurasi).', fail: 'Parse error — sheet BOM TEMPLATE + SUMMARY COST wajib ada.' },
+      { n: 5, action: 'Gate otomatis', detail: 'Terminal: npm run uat:zan100 · atau npm test (Track B seed wajib PASS).', expected: 'Track B release gate: PASS · Track A WARN jika file Excel ada.', fail: 'Assert fail — lihat output script · docs/qa/09-UAT-ZAN-100-End-to-End.mmd.' },
+    ],
+    flow: 'cogs',
+  },
+  {
     id: 'bp-qa-parity',
     sectionId: 'best-practices',
     persona: 'QA / Parity Excel',
@@ -84,6 +98,22 @@ export const MANUAL_SCENARIOS = [
       { n: 6, action: 'Tab Proses', detail: 'Buka routing modal part · tambah operasi WC · biaya mesin (biru) + pekerja (hijau).', expected: 'Σ proses > 0 di footer part.', fail: 'WC rate 0 — isi Master Work Center.' },
     ],
     flow: 'bom',
+  },
+  {
+    id: 's-uat-zan100',
+    sectionId: 'uat-zan100',
+    title: 'S7 — UAT end-to-end ZAN-100 (ZANZIBAR STOOL)',
+    steps: [
+      { n: 1, action: 'Phase 0 — prasyarat', detail: 'Chrome/Edge · npm run import:all sudah pernah dijalankan dev · master banner hijau.', expected: 'Dashboard KPI tampil · sample ZAN-100 ada di daftar.', fail: 'Master merah — npm run import:masters + refresh.' },
+      { n: 2, action: 'Track B — sample terkurasi', detail: 'Buka sample ZAN-100 (seed zanStoolGraph + excelMirror).', expected: 'Badge Excel Fixed · COGS Δ ≤ 1,5% vs SUMMARY (gate release).', fail: 'Sample stale — bump sampleSeedVersion · refresh browser.' },
+      { n: 3, action: 'Tab Struktur & Material', detail: 'Verifikasi hierarki MODUL/SUBMODUL/PART · picker DATA BASE kayu TEAK.', expected: 'Part count > 0 · nominal material > 0 di tab Material.', fail: 'Material kosong — PART belum ada di Struktur.' },
+      { n: 4, action: 'Tab Proses', detail: 'Routing WC per part · sub-header IDR/USD/EUR selaras SUBTOTAL & PROD/U.', expected: 'Σ proses > 0 · footer total proses konsisten Summary.', fail: 'Header currency di kolom DETAIL — update build.' },
+      { n: 5, action: 'Tab Container & Summary', detail: 'Packing jalur BOX aktif · Σ baris PART = kartu total header (Δ = 0).', expected: 'Summary Δ = 0 · packing BOX ≈ Rp 73.800 material.', fail: 'Summary selisih — regresi computePartCostRow.' },
+      { n: 6, action: 'Tab COGS + View Deviasi', detail: 'Factory OH 5% · Mgmt OH 2,5% · markup 20% · include coating OFF.', expected: 'Total COGS ≈ Rp 2.196.662 · badge PASS/WARN.', fail: 'Hybrid excel+master checklist FAIL — normal di excel-fixed partial.' },
+      { n: 7, action: 'Track A — import Excel (QA penuh)', detail: 'Import 1 - ZAN-100 - 2-12-25.xlsx · bandingkan vs Track B.', expected: 'Mirror terisi · deviasi import ~1–2% (dokumentasi known gap).', fail: 'File path — set ZAN_EXCEL untuk npm run uat:zan100.' },
+      { n: 8, action: 'Sign-off', detail: 'Centang checklist docs/qa/09-UAT-ZAN-100 · npm run uat:zan100 PASS Track B.', expected: 'QA approve Track B · Track A dicatat WARN jika applicable.', fail: 'Track B FAIL — blocker release.' },
+    ],
+    flow: 'importExcel',
   },
   {
     id: 's-cogs-parity',
@@ -273,6 +303,36 @@ export const MANUAL_BOOK_SECTIONS = [
       'Excel Fixed (import): biaya part dari CALCULATION · jangan recalc master tanpa konfirmasi.',
       'Live Master (baru/manual): hitung dari DATA BASE · tombol «Hitung harga kayu dari master» tersedia.',
       'Switch excel-fixed → live-master: konfirmasi dialog · clears biayaFromExcel flags.',
+    ],
+  },
+  {
+    id: 'uat-zan100',
+    title: '9. UAT ZAN-100 (ZANZIBAR STOOL)',
+    summary: 'Sign-off parity COGS — sample seed (release gate) + import workbook asli.',
+    flow: 'cogs',
+    body: [
+      'Referensi Excel: 1 - ZAN-100 - 2-12-25.xlsx · customer AMATA · produk ZANZIBAR STOOL / SIDE TABLE.',
+      'Angka acuan SUMMARY COST (jalur packing BOX): Production Cost Rp 2.043.407 · Total COGS Rp 2.196.662 · toleransi sign-off ≤ 1,5% atau ≤ Rp 25.000.',
+      'Track B (sample terkurasi zanStoolGraph / zan-100.json) = release gate — harus PASS di npm run uat:zan100 dan npm test.',
+      'Track A (import workbook penuh) = UAT manual opsional — deviasi ~1–2% diharapkan karena import otomatis ≠ seed engineer terkurasi (lihat verifyImportedZanCogs.mjs).',
+      'Dokumen lengkap: docs/qa/09-UAT-ZAN-100-End-to-End.mmd · inventaris kolom: docs/qa/Table-Details.mmd.',
+    ],
+    checklist: [
+      'Dashboard → kartu UAT ZAN-100 → Buka Sample atau Import Excel.',
+      '7 tab editor + panel produk (scroll dimensi Box/SF).',
+      'COGS → View Deviasi: Production & Total COGS vs excelMirror.',
+      'Terminal: npm run uat:zan100 — Track B release gate PASS.',
+    ],
+    tips: [
+      'Demo GitHub Pages: andalkan sample seed, bukan upload Excel di server static.',
+      'Set ZAN_EXCEL ke path workbook lokal sebelum npm run uat:zan100 untuk laporan Track A.',
+    ],
+    images: [
+      {
+        src: '/assets/excel-images/zan-100/by-sheet-row/SUMMARY_COST_row3.png',
+        alt: 'SUMMARY COST ZAN-100',
+        caption: 'Acuan parity: baris production + COGS sheet SUMMARY COST.',
+      },
     ],
   },
   {

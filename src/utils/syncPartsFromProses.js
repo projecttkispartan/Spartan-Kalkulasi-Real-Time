@@ -148,6 +148,11 @@ function computeVolMm(p, l, t) {
   return Math.round(pv * lv * tv * 1000) / 1000;
 }
 
+/** PART hasil sync bahan operasi — hanya material; proses tetap di node routing induk. */
+export function isProsesSyncedMaterialPart(node) {
+  return Boolean(node?.sourceProsesKey);
+}
+
 function materialToPartDraft(material, op, opIndex, routingNodeId) {
   const mode =
     material.materialSourceMode ||
@@ -182,8 +187,8 @@ function materialToPartDraft(material, op, opIndex, routingNodeId) {
     foto: '',
     vendor: '',
     posisiOperasi: op.posisiOperasi || '',
-    proses: [{ ...op, materialsUsed: [material] }],
-    proses_count: 1,
+    proses: [],
+    proses_count: 0,
     sourceRoutingNodeId: routingNodeId,
     children: [],
   };
@@ -212,6 +217,8 @@ function upsertPart(tree, parentId, sourceKey, draft) {
       id: existing.id,
       sourceProsesKey: sourceKey,
       sourceRoutingNodeId: draft.sourceRoutingNodeId,
+      proses: [],
+      proses_count: 0,
       children: existing.children || [],
       sf: existing.sfWfManual ? existing.sf : (draft.sf ?? existing.sf),
       wf: existing.sfWfManual ? existing.wf : (draft.wf ?? existing.wf),

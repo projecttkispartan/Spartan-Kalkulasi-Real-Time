@@ -4,11 +4,14 @@ import {
   CheckCircle2,
   ChevronDown,
   ChevronRight,
+  ExternalLink,
   FileSpreadsheet,
+  Sparkles,
   XCircle,
 } from 'lucide-react';
 import { formatIDR } from '../../utils/formatters';
 import { COGS_PART_GROUPS } from '../../utils/cogsBreakdown.js';
+import ExcelDeviationBreakdown from './ExcelDeviationBreakdown.jsx';
 
 const STATUS_BADGE = {
   pass: {
@@ -83,9 +86,47 @@ const GROUP_LABELS = {
   'template-other': 'Lainnya',
 };
 
-export default function ExcelDeviationCard({ insight, compact = false }) {
+function DeviationActionButton({ action, onApply, applyingId }) {
+  const busy = applyingId === action.id;
+  const isNavigate = action.kind === 'navigate';
+
+  return (
+    <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-3 flex flex-col sm:flex-row sm:items-center gap-3">
+      <div className="flex-1 min-w-0">
+        <p className="text-xs font-black text-slate-800">{action.label}</p>
+        <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">{action.detail}</p>
+      </div>
+      <button
+        type="button"
+        disabled={Boolean(applyingId)}
+        onClick={() => onApply?.(action.id)}
+        className={`shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-wide border transition-colors disabled:opacity-50 ${
+          isNavigate
+            ? 'border-slate-300 bg-white text-slate-700 hover:bg-slate-100'
+            : 'border-violet-300 bg-violet-50 text-violet-800 hover:bg-violet-100'
+        }`}
+      >
+        {isNavigate ? (
+          <ExternalLink className="w-3.5 h-3.5" aria-hidden />
+        ) : (
+          <Sparkles className="w-3.5 h-3.5" aria-hidden />
+        )}
+        {busy ? 'Memproses…' : isNavigate ? 'Buka' : 'Terapkan'}
+      </button>
+    </div>
+  );
+}
+
+export default function ExcelDeviationCard({
+  insight,
+  actions = [],
+  onApplyAction,
+  applyingActionId = null,
+  compact = false,
+}) {
   const [showGroups, setShowGroups] = useState(false);
   const [showCauseNotes, setShowCauseNotes] = useState(false);
+  const [showActions, setShowActions] = useState(true);
   const excelCompare = insight?.excelCompare;
 
   if (!excelCompare?.comparable) {
@@ -150,6 +191,37 @@ export default function ExcelDeviationCard({ insight, compact = false }) {
           </tbody>
         </table>
       </div>
+
+      <ExcelDeviationBreakdown breakdown={excelCompare.breakdown} />
+
+      {actions.length > 0 && onApplyAction && (
+        <div className="border-t border-slate-100 pt-3 space-y-2">
+          <button
+            type="button"
+            onClick={() => setShowActions((v) => !v)}
+            className="flex items-center gap-1 text-[10px] font-black uppercase tracking-wide text-violet-700 hover:text-violet-900"
+          >
+            {showActions ? (
+              <ChevronDown className="w-4 h-4" />
+            ) : (
+              <ChevronRight className="w-4 h-4" />
+            )}
+            Perbaiki deviasi ({actions.length} aksi)
+          </button>
+          {showActions && (
+            <div className="space-y-2">
+              {actions.map((action) => (
+                <DeviationActionButton
+                  key={action.id}
+                  action={action}
+                  onApply={onApplyAction}
+                  applyingId={applyingActionId}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {hasCauseContent && (
         <div className="border-t border-slate-100 pt-2">

@@ -3,6 +3,7 @@ import { calcProsesCosts } from './operationCosts.js';
 /** Estimasi operasi jika hanya proses_count (non-live / legacy) */
 export function expandProsesList(nodeData, options = {}) {
   const { allowEstimateFallback = false } = options;
+  if (nodeData?.sourceProsesKey) return [];
   if (nodeData.proses?.length) return nodeData.proses;
   if (!allowEstimateFallback || !(nodeData.proses_count > 0)) return [];
   const est = Math.round(110000 / nodeData.proses_count);
@@ -131,21 +132,35 @@ export function rollupTreeCosts(node) {
   return node._rollup;
 }
 
-/** Total dari semua PART di pohon */
+/** Total material (PART) + proses (PART + routing MODUL/SUBMODUL). */
 export function computePartsTotals(bomData) {
   if (!bomData) return { ...EMPTY_ROLLUP };
   const walk = (node, acc) => {
     if (node.tipe === 'PART') {
       const r = computePartCostRow(node);
-      Object.keys(acc).forEach((k) => {
-        acc[k] += r[k] || 0;
+      acc.matBase += r.matBase;
+      acc.sfAmt += r.sfAmt;
+      acc.wfAmt += r.wfAmt;
+      acc.matAdjusted += r.matAdjusted;
+      acc.mesin += r.mesin;
+      acc.wc += r.wc;
+      acc.pekerja += r.pekerja;
+      acc.waktu += r.waktu;
+    } else if (node.proses?.length) {
+      expandProsesList(node).forEach((p) => {
+        const c = calcProsesCosts(p);
+        acc.mesin += c.mesin;
+        acc.wc += c.wc || 0;
+        acc.pekerja += c.pekerja;
+        acc.waktu += c.waktu;
       });
-      return;
     }
     (node.children || []).forEach((ch) => walk(ch, acc));
   };
   const acc = { ...EMPTY_ROLLUP };
   walk(bomData, acc);
+  acc.prosesTotal = acc.mesin + acc.wc + acc.pekerja;
+  acc.biayaProduksi = acc.matAdjusted + acc.prosesTotal;
   return acc;
 }
 

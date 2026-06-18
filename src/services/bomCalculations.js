@@ -223,6 +223,7 @@ export function computeMaterialTabTotals(flatNodes) {
 export function collectProsesEntries(flatNodes) {
   const result = [];
   flatNodes.forEach((node) => {
+    if (node.data?.sourceProsesKey) return;
     expandProsesList(node.data).forEach((p) => {
       result.push({
         ...p,

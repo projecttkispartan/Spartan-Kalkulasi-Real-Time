@@ -3,7 +3,15 @@ import { PieChart } from 'lucide-react';
 import CogsProductionPieCard from '../cogs/CogsProductionPieCard.jsx';
 import ExcelDeviationCard from '../cogs/ExcelDeviationCard.jsx';
 
-export default function CogsInsightModal({ isOpen, onClose, insight, productInfo }) {
+export default function CogsInsightModal({
+  isOpen,
+  onClose,
+  insight,
+  productInfo,
+  deviationActions = [],
+  onApplyDeviationAction,
+  applyingDeviationActionId = null,
+}) {
   return (
     <FullPageShell
       isOpen={isOpen}
@@ -21,7 +29,12 @@ export default function CogsInsightModal({ isOpen, onClose, insight, productInfo
     >
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 pb-8">
         <CogsProductionPieCard insight={insight} />
-        <ExcelDeviationCard insight={insight} />
+        <ExcelDeviationCard
+          insight={insight}
+          actions={deviationActions}
+          onApplyAction={onApplyDeviationAction}
+          applyingActionId={applyingDeviationActionId}
+        />
       </div>
     </FullPageShell>
   );
