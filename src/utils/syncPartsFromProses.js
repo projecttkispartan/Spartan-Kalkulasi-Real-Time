@@ -259,6 +259,7 @@ function collectActiveSourceKeys(routingNodeId, prosesList) {
     (op.materialsUsed || [])
       .filter(materialHasIdentity)
       .forEach((material, mi) => {
+        if (material.sourcePartId) return;
         const materialId = resolveMaterialId(material, `${opKey}-${mi}`);
         keys.add(buildPartSourceKey(routingNodeId, opKey, materialId));
       });
@@ -311,6 +312,9 @@ export function syncPartsFromProsesMaterials(bomData, { routingNodeId, routingNo
     const opKey = resolveOpKey(op, opIndex);
     const materials = (op.materialsUsed || []).filter(materialHasIdentity);
     materials.forEach((material, mi) => {
+      // Salinan dari PART existing di Struktur — tetap di tree aslinya
+      if (material.sourcePartId) return;
+
       const materialId = resolveMaterialId(material, `${opKey}-${mi}`);
       const sourceKey = buildPartSourceKey(routingNodeId, opKey, materialId);
       const { tree: treeWithParent, parentId } = resolvePartParentId(

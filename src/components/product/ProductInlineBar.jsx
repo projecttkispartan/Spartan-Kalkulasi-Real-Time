@@ -78,11 +78,6 @@ export default function ProductInlineBar({
               {productInfo.collection}
             </span>
           ) : null}
-          {productMeta.itemType ? (
-            <span className="text-[9px] font-bold uppercase text-slate-500 hidden lg:inline shrink-0">
-              {productMeta.itemType}
-            </span>
-          ) : null}
           <div className="flex items-center gap-2 ml-auto shrink-0">
             <button
               type="button"
@@ -218,14 +213,6 @@ export default function ProductInlineBar({
                 type="text"
                 value={productInfo.versi || ''}
                 onChange={(e) => onProductInfoChange('versi', e.target.value)}
-                className={inputCls}
-              />
-            </Field>
-            <Field label="Item type">
-              <input
-                type="text"
-                value={productMeta.itemType || ''}
-                onChange={(e) => onProductMetaChange('itemType', e.target.value)}
                 className={inputCls}
               />
             </Field>

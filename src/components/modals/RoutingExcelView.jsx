@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   X,
   Settings,
@@ -30,6 +30,7 @@ import {
   kodeFromMaster,
 } from '../../utils/masterLookup.js';
 import { DatabaseMaterialField } from '../fields/MasterCombos.jsx';
+import { SearchableSelect } from '../fields/SearchableSelect.jsx';
 import { formatMaterialsUsedLabel } from '../../utils/prosesLineItems.js';
 
 let materialRowSeq = 0;
@@ -71,6 +72,7 @@ function normalizeMaterialRow(m) {
   const biayaProduksi = Math.round(biaya * qty);
   return {
     id: m.id || newMaterialRowId(),
+    sourcePartId: m.sourcePartId || '',
     materialMasterId: m.materialMasterId || '',
     materialSourceMode: mode,
     manualSpec: m.manualSpec ?? (mode === 'manual' ? (m.nama || m.kode || '') : ''),
@@ -86,6 +88,44 @@ function normalizeMaterialRow(m) {
     biayaProduksi,
     materialType: m.materialType || '',
   };
+}
+
+/** Salin PART dari pohon Struktur ke baris materialsUsed operasi. */
+function materialRowFromStructurePart(part) {
+  const d = part?.data || part || {};
+  const partId = part?.id || d.id || '';
+  const qty = Math.max(Number(d.qty) || 1, 1);
+  const biaya = Number(d.biaya) || 0;
+  const hasMaster = Boolean(d.materialMasterId || d.woodGradeId);
+  const mode =
+    d.materialSourceMode === 'manual' || d.materialSourceMode === 'database'
+      ? d.materialSourceMode
+      : hasMaster
+        ? 'database'
+        : d.materialSpecification || d.woodSpecification || d.nama
+          ? 'manual'
+          : 'database';
+  return normalizeMaterialRow({
+    id: newMaterialRowId(),
+    sourcePartId: partId,
+    materialMasterId: d.materialMasterId || d.woodGradeId || '',
+    materialSourceMode: mode,
+    manualSpec:
+      mode === 'manual'
+        ? d.materialSpecification || d.woodSpecification || d.nama || ''
+        : '',
+    kode: d.kode || '',
+    nama: d.nama || d.materialSpecification || d.woodSpecification || '',
+    qty,
+    unit: d.unit || 'pcs',
+    p: Number(d.p) || 0,
+    l: Number(d.l) || 0,
+    t: Number(d.t) || 0,
+    vol: Number(d.vol) || 0,
+    biaya,
+    biayaProduksi: Math.round(biaya * qty),
+    materialType: d.materialType || '',
+  });
 }
 
 function masterUnitPrice(mat) {
@@ -496,6 +536,11 @@ function OperationMaterialRow({ row, index, mastersTick, onPatch, onRemove }) {
           {m.kode ? (
             <span className="ml-2 font-mono font-bold text-slate-500 normal-case">{m.kode}</span>
           ) : null}
+          {m.sourcePartId ? (
+            <span className="ml-2 text-[8px] font-black uppercase tracking-wide text-brand-700 bg-brand-50 border border-brand-200 px-1.5 py-0.5 rounded normal-case">
+              Dari Struktur
+            </span>
+          ) : null}
         </span>
         <button
           type="button"
@@ -628,7 +673,7 @@ function OperationMaterialRow({ row, index, mastersTick, onPatch, onRemove }) {
                 : 'bg-slate-100 text-slate-600 border-slate-200'
             }`}
           >
-            {sourceMode === 'database' ? 'DATA BASE' : 'Manual'}
+            {sourceMode === 'database' ? 'Master' : 'Baru'}
           </span>
         </div>
       </div>
@@ -636,8 +681,9 @@ function OperationMaterialRow({ row, index, mastersTick, onPatch, onRemove }) {
   );
 }
 
-function OperationMaterialsSection({ op, mastersTick = 0, onUpdate }) {
+function OperationMaterialsSection({ op, mastersTick = 0, onUpdate, structureParts = [] }) {
   const materials = (op.materialsUsed || []).map(normalizeMaterialRow);
+  const [showStructurePicker, setShowStructurePicker] = useState(false);
 
   const commitMaterials = (next) => {
     onUpdate(op.id, 'materialsUsed', next.map(normalizeMaterialRow));
@@ -651,30 +697,90 @@ function OperationMaterialsSection({ op, mastersTick = 0, onUpdate }) {
     commitMaterials(materials.filter((m) => m.id !== rowId));
   };
 
-  const addRow = () => {
+  const addNewRow = () => {
+    setShowStructurePicker(false);
     commitMaterials([...materials, newMaterialRow()]);
+  };
+
+  const usedStructureIds = useMemo(
+    () => new Set(materials.map((m) => m.sourcePartId).filter(Boolean)),
+    [materials],
+  );
+
+  const structureOptions = useMemo(
+    () =>
+      (structureParts || [])
+        .filter((p) => {
+          const id = p.id || p.data?.id;
+          return id && !usedStructureIds.has(id);
+        })
+        .map((p) => {
+          const d = p.data || p;
+          const label = [d.kode, d.nama].filter(Boolean).join(' · ') || 'PART';
+          return {
+            value: p.id || d.id,
+            label,
+            searchText: `${d.kode || ''} ${d.nama || ''} ${d.materialType || ''}`.toLowerCase(),
+            raw: p,
+          };
+        }),
+    [structureParts, usedStructureIds],
+  );
+
+  const addFromStructure = (partId, part) => {
+    if (!partId || !part) return;
+    commitMaterials([...materials, materialRowFromStructurePart(part)]);
+    setShowStructurePicker(false);
   };
 
   return (
     <div className="space-y-4">
       <div className="rounded-xl border border-amber-100 bg-amber-50/30 p-4 space-y-3">
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-amber-800">
             <Package className="w-4 h-4" /> Part dari operasi
           </div>
-          <button
-            type="button"
-            onClick={addRow}
-            className="text-[10px] font-bold text-amber-700 hover:text-amber-900 inline-flex items-center gap-1 px-2 py-1 rounded-md border border-amber-200 bg-white hover:bg-amber-50"
-          >
-            <Plus className="w-3.5 h-3.5" /> Tambah Part
-          </button>
+          <div className="flex flex-wrap items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => setShowStructurePicker((v) => !v)}
+              className="text-[10px] font-bold text-brand-700 hover:text-brand-900 inline-flex items-center gap-1 px-2 py-1 rounded-md border border-brand-200 bg-white hover:bg-brand-50"
+              title="Pilih PART dari Struktur"
+            >
+              <Network className="w-3.5 h-3.5" /> Dari Struktur
+            </button>
+            <button
+              type="button"
+              onClick={addNewRow}
+              className="text-[10px] font-bold text-amber-700 hover:text-amber-900 inline-flex items-center gap-1 px-2 py-1 rounded-md border border-amber-200 bg-white hover:bg-amber-50"
+            >
+              <Plus className="w-3.5 h-3.5" /> Part baru
+            </button>
+          </div>
         </div>
         <p className="text-[10px] text-amber-700/90 italic leading-snug">
-          Pilih SKU DATA BASE → unit, dimensi, volume, dan harga terisi otomatis. Part masuk tab Struktur saat Simpan Routing.
+          Pilih part dari Struktur atau buat baru. Part baru masuk tab Struktur saat Simpan Routing.
         </p>
+        {showStructurePicker ? (
+          <div className="rounded-lg border border-brand-200 bg-white p-3 space-y-2">
+            <p className="text-[10px] font-bold text-brand-800 uppercase tracking-wide">
+              Pilih PART dari Struktur
+            </p>
+            {structureOptions.length === 0 ? (
+              <p className="text-xs text-slate-500 italic">Semua PART sudah dipakai atau belum ada di Struktur.</p>
+            ) : (
+              <SearchableSelect
+                value=""
+                onChange={(id, raw) => addFromStructure(id, raw)}
+                options={structureOptions}
+                placeholder="— Cari PART di Struktur —"
+                emptyMessage="PART tidak ditemukan"
+              />
+            )}
+          </div>
+        ) : null}
         {materials.length === 0 ? (
-          <p className="text-xs text-slate-500 italic">Belum ada part — klik Tambah Part.</p>
+          <p className="text-xs text-slate-500 italic">Belum ada part — pilih Dari Struktur atau Part baru.</p>
         ) : (
           <div className="space-y-3">
             {materials.map((m, mi) => (
@@ -916,7 +1022,7 @@ function OperationDetailPage({ op, index, costs, materialVol, materialData, onCl
   );
 }
 
-function OperationPartPage({ op, index, materialData, mastersTick = 0, onClose, onUpdate }) {
+function OperationPartPage({ op, index, materialData, mastersTick = 0, onClose, onUpdate, structureParts = [] }) {
   if (!op) return null;
 
   return (
@@ -945,6 +1051,7 @@ function OperationPartPage({ op, index, materialData, mastersTick = 0, onClose, 
           op={op}
           mastersTick={mastersTick}
           onUpdate={onUpdate}
+          structureParts={structureParts}
         />
       </div>
     </OperationPageShell>
@@ -1240,6 +1347,7 @@ export default function RoutingExcelView({
   costsById,
   totals,
   mastersTick = 0,
+  structureParts = [],
   onUpdate,
   onUpdateStep,
   onRemove,
@@ -1292,6 +1400,7 @@ export default function RoutingExcelView({
         index={detailIndex}
         materialData={materialData}
         mastersTick={mastersTick}
+        structureParts={structureParts}
         onClose={closeDetail}
         onUpdate={onUpdate}
       />

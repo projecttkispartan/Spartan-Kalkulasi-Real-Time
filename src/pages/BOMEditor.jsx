@@ -62,7 +62,6 @@ import {
   applyMasterToPart,
   enrichNodeFromMaster,
   getWasteRatioForMaterialType,
-  partNameFromMaterialFields,
   recalcPartBiayaForSfWf,
 } from '../utils/masterLookup';
 import {
@@ -91,6 +90,12 @@ import {
 } from '../services/bomCalculations';
 import { normalizeProject, COGS_MODES, resolveCogsMode } from '../utils/emptyProject.js';
 import { WoodGradeField, DatabaseMaterialField } from '../components/fields/MasterCombos.jsx';
+import {
+  PackingMaterialCombo,
+  PackingRoutingCombo,
+  applyPackingMaterialFromMaster,
+  applyPackingRoutingFromMaster,
+} from '../components/fields/PackingMasterCombos.jsx';
 
 const PROSES_NODE_TIPES = new Set(['MODUL', 'SUBMODUL', 'SUBMODUL 2', 'PART']);
 
@@ -1052,23 +1057,63 @@ export default function BOMEditor({
   // HANDLER UNTUK PACKING SPECIFICATION (TAMBAH, EDIT, HAPUS)
   const handleAddPackingSpec = (type) => {
     const isMaterial = type.includes('materials');
-    const newItem = isMaterial 
-      ? { id: Date.now(), nama: '', qty: 1, unit: 'Pcs', harga: 0 }
-      : { id: Date.now(), nama: '', waktu: 1, pekerja: 1, rate: 500 };
-    setPackingSpec(prev => ({ ...prev, [type]: [...prev[type], newItem] }));
+    const newItem = isMaterial
+      ? { id: Date.now(), materialMasterId: '', nama: '', qty: 1, unit: 'Pcs', harga: 0 }
+      : { id: Date.now(), workCenterId: '', nama: '', waktu: 1, pekerja: 1, rate: 500 };
+    setPackingSpec((prev) => ({ ...prev, [type]: [...prev[type], newItem] }));
   };
 
   const handleUpdatePackingSpec = (type, id, field, value) => {
-    setPackingSpec(prev => ({
+    setPackingSpec((prev) => ({
       ...prev,
-      [type]: prev[type].map(item => item.id === id ? { ...item, [field]: value } : item)
+      [type]: prev[type].map((item) => (item.id === id ? { ...item, [field]: value } : item)),
+    }));
+  };
+
+  const handlePackingMaterialMaster = (type, id, masterId, mat, manualName) => {
+    setPackingSpec((prev) => ({
+      ...prev,
+      [type]: prev[type].map((item) => {
+        if (item.id !== id) return item;
+        if (manualName) {
+          return {
+            ...item,
+            materialMasterId: '',
+            nama: manualName,
+          };
+        }
+        if (!mat) {
+          return { ...item, materialMasterId: '', nama: '' };
+        }
+        return applyPackingMaterialFromMaster(item, mat);
+      }),
+    }));
+  };
+
+  const handlePackingRoutingMaster = (type, id, workCenterId, wc, manualName) => {
+    setPackingSpec((prev) => ({
+      ...prev,
+      [type]: prev[type].map((item) => {
+        if (item.id !== id) return item;
+        if (manualName) {
+          return {
+            ...item,
+            workCenterId: '',
+            nama: manualName,
+          };
+        }
+        if (!wc) {
+          return { ...item, workCenterId: '', nama: '' };
+        }
+        return applyPackingRoutingFromMaster(item, wc);
+      }),
     }));
   };
 
   const handleDeletePackingSpec = (type, id) => {
-    setPackingSpec(prev => ({
+    setPackingSpec((prev) => ({
       ...prev,
-      [type]: prev[type].filter(item => item.id !== id)
+      [type]: prev[type].filter((item) => item.id !== id),
     }));
   };
 
@@ -1758,7 +1803,7 @@ export default function BOMEditor({
               <thead>
                 <tr>
                   <th colSpan={5} className="sticky left-0 z-20 bg-slate-50 border-b-[3px] border-b-slate-300 text-center py-3 px-2 text-[10px] text-slate-600 font-bold uppercase tracking-wider border-r border-slate-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">KOMPONEN, IDENTITAS & AKSI</th>
-                  <th colSpan={3} className="border-b-[3px] border-b-slate-200 text-center py-3 px-2 text-[10px] text-slate-500 font-bold uppercase tracking-wider border-r border-slate-200 bg-slate-50/50">DETAIL LAINNYA</th>
+                  <th colSpan={2} className="border-b-[3px] border-b-slate-200 text-center py-3 px-2 text-[10px] text-slate-500 font-bold uppercase tracking-wider border-r border-slate-200 bg-slate-50/50">DETAIL LAINNYA</th>
                   <th colSpan={4} className="border-b-[3px] border-b-blue-500 text-center py-2 px-1 text-[10px] text-blue-700 font-bold uppercase tracking-wider border-r border-slate-200 bg-blue-50/30">SPESIFIKASI FISIK (DIMENSI & VOL)</th>
                   <th colSpan={3} className="border-b-[3px] border-b-amber-400 text-center py-2 px-1 text-[10px] text-amber-700 font-bold uppercase tracking-wider border-r border-slate-200 bg-amber-50/30">HARGA MATERIAL (SATUAN)</th>
                   <th colSpan={3} className="border-b-[3px] border-b-indigo-400 text-center py-2 px-1 text-[10px] text-indigo-700 font-bold uppercase tracking-wider border-r border-slate-200 bg-indigo-50/30">BIAYA PRODUKSI (TOTAL)</th>
@@ -1774,7 +1819,6 @@ export default function BOMEditor({
                   <th className="sticky left-[550px] z-20 bg-white py-3 px-4 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] border-r border-slate-200" style={{ minWidth: 280, width: 280 }}>NAMA KOMPONEN / GRADE</th>
                   
                   <th className="py-3 px-4 text-center w-20">GAMBAR</th>
-                  <th className="py-3 px-4 text-center min-w-[130px] text-emerald-700">TIPE MATERIAL</th>
                   <th className="py-3 px-4 border-r border-slate-200 text-center">QTY</th>
                   <th className="py-2 px-1.5 text-center w-[4.25rem]">Width (MM)</th>
                   <th className="py-2 px-1.5 text-center w-[4.25rem]">Depth (MM)</th>
@@ -1844,36 +1888,6 @@ export default function BOMEditor({
                       <td className="sticky left-[550px] z-10 bg-inherit py-2 px-2 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] border-r border-slate-100">
                         <div className="flex flex-col gap-2 min-w-[250px]">
                           {d.tipe === 'PART' ? (
-                            resolvePartSourceMode(d) !== 'manual' ? (
-                              <span
-                                className={`block text-xs font-bold leading-tight px-1 py-0.5 ${
-                                  partNameFromMaterialFields(d)
-                                    ? 'text-slate-800'
-                                    : 'text-slate-400 italic'
-                                }`}
-                                title={partNameFromMaterialFields(d) || 'Nama dari material'}
-                              >
-                                {partNameFromMaterialFields(d) || '— Pilih material —'}
-                              </span>
-                            ) : null
-                          ) : (
-                            <input
-                              type="text"
-                              value={d.nama}
-                              onChange={(e) => handleUpdateNode(node.id, 'nama', e.target.value)}
-                              className={`${inputClasses} font-bold text-slate-800 w-full`}
-                              placeholder={
-                                d.tipe === 'MODUL'
-                                  ? 'Nama modul…'
-                                  : d.tipe === 'SUBMODUL'
-                                    ? 'Nama submodul…'
-                                    : d.tipe === 'SUBMODUL 2'
-                                      ? 'Nama submodul 2…'
-                                      : 'Nama komponen…'
-                              }
-                            />
-                          )}
-                          {d.tipe === 'PART' && (
                             d.materialType === 'kayu' ? (
                               <WoodGradeField
                                 mastersTick={mastersTick}
@@ -1901,6 +1915,22 @@ export default function BOMEditor({
                                 className="min-w-0 w-full"
                               />
                             )
+                          ) : (
+                            <input
+                              type="text"
+                              value={d.nama}
+                              onChange={(e) => handleUpdateNode(node.id, 'nama', e.target.value)}
+                              className={`${inputClasses} font-bold text-slate-800 w-full`}
+                              placeholder={
+                                d.tipe === 'MODUL'
+                                  ? 'Nama modul…'
+                                  : d.tipe === 'SUBMODUL'
+                                    ? 'Nama submodul…'
+                                    : d.tipe === 'SUBMODUL 2'
+                                      ? 'Nama submodul 2…'
+                                      : 'Nama komponen…'
+                              }
+                            />
                           )}
                         </div>
                       </td>
@@ -1910,16 +1940,6 @@ export default function BOMEditor({
                         <div className="w-10 h-10 rounded-lg border border-slate-200 overflow-hidden bg-slate-50 flex items-center justify-center mx-auto shadow-sm">
                           {d.foto ? <img src={d.foto} alt="pic" className="w-full h-full object-cover" /> : <ImageIcon className="w-4 h-4 text-slate-300" />}
                         </div>
-                      </td>
-                      <td className="py-2 px-2 border-r border-slate-100 text-center">
-                        {d.tipe === 'PART' ? (
-                          <MaterialTypeField
-                            value={d.materialType || ''}
-                            onChange={(val) => handleStructureMaterialType(node.id, val)}
-                          />
-                        ) : (
-                          <span className="text-slate-300 text-[10px]">—</span>
-                        )}
                       </td>
                       <td className="py-2 px-2 border-r border-slate-100 text-center">
                         <input type="number" value={d.qty} onChange={(e) => handleUpdateNode(node.id, 'qty', Number(e.target.value))} className={`${inputClasses} font-bold text-center w-16 text-slate-700`} />
@@ -2021,6 +2041,7 @@ export default function BOMEditor({
         kursUsd={kursUsd}
         kursEur={kursEur}
         mastersTick={mastersTick}
+        structureParts={flatNodes.filter((n) => n.data?.tipe === 'PART')}
       />
     );
   }
@@ -2402,6 +2423,7 @@ export default function BOMEditor({
                   <h3 className="text-sm font-black text-slate-800 flex items-center gap-2">
                     <Grid className="w-4 h-4 text-amber-500" /> 3. BOM Material Packing (Box & Single Face)
                   </h3>
+                  <p className="text-[10px] text-slate-500 mt-1">Pilih SKU dari master PACKING MATERIAL — unit & harga terisi otomatis.</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-0 divide-y md:divide-y-0 md:divide-x divide-slate-200">
                   
@@ -2425,7 +2447,16 @@ export default function BOMEditor({
                       <tbody>
                         {packingSpec.materialsBox.map(m => (
                           <tr key={m.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors">
-                            <td className="px-5 py-2"><input type="text" value={m.nama} onChange={e => handleUpdatePackingSpec('materialsBox', m.id, 'nama', e.target.value)} className="w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-amber-400 focus:outline-none font-bold text-slate-700 py-1" placeholder="Nama Material"/></td>
+                            <td className="px-5 py-2 min-w-[200px]">
+                              <PackingMaterialCombo
+                                mastersTick={mastersTick}
+                                value={m.materialMasterId || ''}
+                                displayName={m.nama || ''}
+                                onSelect={(masterId, mat, manualName) =>
+                                  handlePackingMaterialMaster('materialsBox', m.id, masterId, mat, manualName)
+                                }
+                              />
+                            </td>
                             <td className="px-2 py-2 text-center"><input type="number" value={m.qty} onChange={e => handleUpdatePackingSpec('materialsBox', m.id, 'qty', e.target.value)} className="w-full text-center bg-transparent border-b border-transparent hover:border-slate-300 focus:border-amber-400 focus:outline-none text-slate-600 py-1" /></td>
                             <td className="px-2 py-2 text-center"><input type="text" value={m.unit} onChange={e => handleUpdatePackingSpec('materialsBox', m.id, 'unit', e.target.value)} className="w-full text-center bg-transparent border-b border-transparent hover:border-slate-300 focus:border-amber-400 focus:outline-none text-slate-600 py-1 uppercase text-[10px]" /></td>
                             <td className="px-2 py-2 text-right"><input type="number" value={m.harga} onChange={e => handleUpdatePackingSpec('materialsBox', m.id, 'harga', e.target.value)} className="w-full text-right bg-transparent border-b border-transparent hover:border-slate-300 focus:border-amber-400 focus:outline-none text-slate-600 py-1" /></td>
@@ -2457,7 +2488,16 @@ export default function BOMEditor({
                       <tbody>
                         {packingSpec.materialsSF.map(m => (
                           <tr key={m.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors">
-                            <td className="px-5 py-2"><input type="text" value={m.nama} onChange={e => handleUpdatePackingSpec('materialsSF', m.id, 'nama', e.target.value)} className="w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-emerald-400 focus:outline-none font-bold text-slate-700 py-1" placeholder="Nama Material"/></td>
+                            <td className="px-5 py-2 min-w-[200px]">
+                              <PackingMaterialCombo
+                                mastersTick={mastersTick}
+                                value={m.materialMasterId || ''}
+                                displayName={m.nama || ''}
+                                onSelect={(masterId, mat, manualName) =>
+                                  handlePackingMaterialMaster('materialsSF', m.id, masterId, mat, manualName)
+                                }
+                              />
+                            </td>
                             <td className="px-2 py-2 text-center"><input type="number" value={m.qty} onChange={e => handleUpdatePackingSpec('materialsSF', m.id, 'qty', e.target.value)} className="w-full text-center bg-transparent border-b border-transparent hover:border-slate-300 focus:border-emerald-400 focus:outline-none text-slate-600 py-1" /></td>
                             <td className="px-2 py-2 text-center"><input type="text" value={m.unit} onChange={e => handleUpdatePackingSpec('materialsSF', m.id, 'unit', e.target.value)} className="w-full text-center bg-transparent border-b border-transparent hover:border-slate-300 focus:border-emerald-400 focus:outline-none text-slate-600 py-1 uppercase text-[10px]" /></td>
                             <td className="px-2 py-2 text-right"><input type="number" value={m.harga} onChange={e => handleUpdatePackingSpec('materialsSF', m.id, 'harga', e.target.value)} className="w-full text-right bg-transparent border-b border-transparent hover:border-slate-300 focus:border-emerald-400 focus:outline-none text-slate-600 py-1" /></td>
@@ -2478,6 +2518,7 @@ export default function BOMEditor({
                   <h3 className="text-sm font-black text-slate-800 flex items-center gap-2">
                     <Wrench className="w-4 h-4 text-indigo-500" /> 4. Routing / Pekerja Packing (Box & Single Face)
                   </h3>
+                  <p className="text-[10px] text-slate-500 mt-1">Pilih Work Center master — rate tenaga kerja terisi otomatis.</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-0 divide-y md:divide-y-0 md:divide-x divide-slate-200">
                   
@@ -2501,7 +2542,16 @@ export default function BOMEditor({
                       <tbody>
                         {packingSpec.routingBox.map(r => (
                           <tr key={r.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors">
-                            <td className="px-5 py-2"><input type="text" value={r.nama} onChange={e => handleUpdatePackingSpec('routingBox', r.id, 'nama', e.target.value)} className="w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-indigo-400 focus:outline-none font-bold text-slate-700 py-1" placeholder="Nama Routing"/></td>
+                            <td className="px-5 py-2 min-w-[200px]">
+                              <PackingRoutingCombo
+                                mastersTick={mastersTick}
+                                value={r.workCenterId || ''}
+                                displayName={r.nama || ''}
+                                onSelect={(wcId, wc, manualName) =>
+                                  handlePackingRoutingMaster('routingBox', r.id, wcId, wc, manualName)
+                                }
+                              />
+                            </td>
                             <td className="px-2 py-2 text-center"><input type="number" value={r.waktu} onChange={e => handleUpdatePackingSpec('routingBox', r.id, 'waktu', e.target.value)} className="w-full text-center bg-transparent border-b border-transparent hover:border-slate-300 focus:border-indigo-400 focus:outline-none text-slate-600 py-1" /></td>
                             <td className="px-2 py-2 text-center"><input type="number" value={r.pekerja} onChange={e => handleUpdatePackingSpec('routingBox', r.id, 'pekerja', e.target.value)} className="w-full text-center bg-transparent border-b border-transparent hover:border-slate-300 focus:border-indigo-400 focus:outline-none text-slate-600 py-1" /></td>
                             <td className="px-2 py-2 text-right"><input type="number" value={r.rate} onChange={e => handleUpdatePackingSpec('routingBox', r.id, 'rate', e.target.value)} className="w-full text-right bg-transparent border-b border-transparent hover:border-slate-300 focus:border-indigo-400 focus:outline-none text-slate-600 py-1" /></td>
@@ -2533,7 +2583,16 @@ export default function BOMEditor({
                       <tbody>
                         {packingSpec.routingSF.map(r => (
                           <tr key={r.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors">
-                            <td className="px-5 py-2"><input type="text" value={r.nama} onChange={e => handleUpdatePackingSpec('routingSF', r.id, 'nama', e.target.value)} className="w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blue-400 focus:outline-none font-bold text-slate-700 py-1" placeholder="Nama Routing"/></td>
+                            <td className="px-5 py-2 min-w-[200px]">
+                              <PackingRoutingCombo
+                                mastersTick={mastersTick}
+                                value={r.workCenterId || ''}
+                                displayName={r.nama || ''}
+                                onSelect={(wcId, wc, manualName) =>
+                                  handlePackingRoutingMaster('routingSF', r.id, wcId, wc, manualName)
+                                }
+                              />
+                            </td>
                             <td className="px-2 py-2 text-center"><input type="number" value={r.waktu} onChange={e => handleUpdatePackingSpec('routingSF', r.id, 'waktu', e.target.value)} className="w-full text-center bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blue-400 focus:outline-none text-slate-600 py-1" /></td>
                             <td className="px-2 py-2 text-center"><input type="number" value={r.pekerja} onChange={e => handleUpdatePackingSpec('routingSF', r.id, 'pekerja', e.target.value)} className="w-full text-center bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blue-400 focus:outline-none text-slate-600 py-1" /></td>
                             <td className="px-2 py-2 text-right"><input type="number" value={r.rate} onChange={e => handleUpdatePackingSpec('routingSF', r.id, 'rate', e.target.value)} className="w-full text-right bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blue-400 focus:outline-none text-slate-600 py-1" /></td>
@@ -2874,18 +2933,6 @@ export default function BOMEditor({
                             <td className="px-4 py-3 border-r border-slate-100 font-mono text-slate-500">{d.kode}</td>
                             <td className="px-4 py-3 border-r border-slate-100 align-top">
                               <div className="flex flex-col gap-2 min-w-[260px]">
-                                {resolvePartSourceMode(d) !== 'manual' ? (
-                                  <span
-                                    className={`block text-xs font-bold leading-tight px-1 py-0.5 ${
-                                      partNameFromMaterialFields(d)
-                                        ? 'text-slate-800'
-                                        : 'text-slate-400 italic'
-                                    }`}
-                                    title={partNameFromMaterialFields(d) || 'Nama dari material'}
-                                  >
-                                    {partNameFromMaterialFields(d) || '— Pilih material —'}
-                                  </span>
-                                ) : null}
                                 {d.materialType === 'kayu' ? (
                                   <WoodGradeField
                                     mastersTick={mastersTick}

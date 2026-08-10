@@ -178,14 +178,6 @@ export default function ProductPanel({
             className="h-14 w-14 sm:h-16 sm:w-16 rounded-lg border-slate-200 shrink-0"
           />
           <div className="flex flex-wrap items-center gap-1.5 min-w-0 flex-1">
-            {productMeta.itemType ? (
-              <span
-                className="product-panel-header__chip product-panel-header__chip--type"
-                title={productMeta.itemType}
-              >
-                {productMeta.itemType}
-              </span>
-            ) : null}
             {productInfo.versi ? (
               <span className="product-panel-header__chip product-panel-header__chip--versi">
                 v{productInfo.versi}
@@ -248,15 +240,6 @@ export default function ProductPanel({
                 </Field>
                 <Field label="Versi">
                   <input type="text" value={productInfo.versi} onChange={(e) => onProductInfoChange('versi', e.target.value)} className={fieldInput} />
-                </Field>
-                <Field label="Item Type">
-                  <input
-                    type="text"
-                    value={productMeta.itemType}
-                    onChange={(e) => onProductMetaChange('itemType', e.target.value)}
-                    className={fieldInput}
-                    placeholder="CHAIR"
-                  />
                 </Field>
               </div>
             </section>

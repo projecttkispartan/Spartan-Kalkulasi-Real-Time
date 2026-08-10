@@ -1,7 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo } from 'react';
 import { X } from 'lucide-react';
-
-const MANUAL_DEBOUNCE_MS = 220;
 import {
   listActiveWoodMaterials,
   listActiveCoatings,
@@ -12,76 +10,9 @@ import { formatIDR } from '../../utils/formatters';
 import { MoneyText } from '../ui/MoneyText.jsx';
 import { SearchableSelect, buildMaterialSearchText } from './SearchableSelect.jsx';
 
-const fieldInputCls =
-  'w-full border border-slate-200 rounded-lg px-2 py-1.5 text-xs font-medium bg-white focus:border-brand-400 outline-none';
-
-function ModeToggle({ mode, onModeChange }) {
-  return (
-    <div className="flex rounded-md border border-slate-200 overflow-hidden text-[9px] font-bold shrink-0">
-      <button
-        type="button"
-        onClick={() => onModeChange('master')}
-        className={`px-2 py-1 transition-colors ${
-          mode === 'master' ? 'bg-emerald-600 text-white' : 'bg-white text-slate-500 hover:bg-slate-50'
-        }`}
-      >
-        DATA BASE
-      </button>
-      <button
-        type="button"
-        onClick={() => onModeChange('manual')}
-        className={`px-2 py-1 border-l border-slate-200 transition-colors ${
-          mode === 'manual' ? 'bg-slate-600 text-white' : 'bg-white text-slate-500 hover:bg-slate-50'
-        }`}
-      >
-        Manual
-      </button>
-    </div>
-  );
-}
-
-/** Draft lokal + debounce agar ketikan manual tidak memicu re-render BOM tiap key. */
-function useManualDraft(manualSpec, activeMode) {
-  const [draft, setDraft] = useState(manualSpec || '');
-  const debounceRef = useRef(null);
-
-  useEffect(() => {
-    setDraft(manualSpec || '');
-  }, [manualSpec, activeMode]);
-
-  useEffect(() => () => clearTimeout(debounceRef.current), []);
-
-  const scheduleCommit = useCallback((value, onCommit) => {
-    clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => onCommit(value), MANUAL_DEBOUNCE_MS);
-  }, []);
-
-  const flushCommit = useCallback(
-    (onCommit) => {
-      clearTimeout(debounceRef.current);
-      onCommit(draft);
-    },
-    [draft],
-  );
-
-  return { draft, setDraft, scheduleCommit, flushCommit };
-}
-
-/** Toggle mode langsung di UI sebelum parent state selesai update. */
-function useOptimisticMode(derivedMode) {
-  const [pending, setPending] = useState(null);
-  const activeMode = pending ?? derivedMode;
-
-  useEffect(() => {
-    setPending(null);
-  }, [derivedMode]);
-
-  return [activeMode, setPending];
-}
-
 /**
- * Grade kayu: satu mode aktif (master ATAU manual).
- * onChange(gradeId, mat, manualSpec) — manualSpec hanya untuk mode manual.
+ * Grade kayu: satu combobox — pilih master ATAU ketik nama baru (manual).
+ * onChange(gradeId, mat, manualSpec, modeHint)
  */
 export function WoodGradeField({
   value = '',
@@ -95,101 +26,59 @@ export function WoodGradeField({
 }) {
   const materials = useMemo(() => listActiveWoodMaterials(), [mastersTick]);
   const linkedMat = materials.find((m) => m.id === value);
-
-  const [internalMode, setInternalMode] = useState('master');
-
-  const derivedMode = useMemo(() => {
-    if (sourceMode === 'manual') return 'manual';
-    if (sourceMode === 'database') return 'master';
-    if (value && linkedMat) return 'master';
-    if (manualSpec && !value) return 'manual';
-    return internalMode;
-  }, [sourceMode, value, linkedMat, manualSpec, internalMode]);
-
-  const [activeMode, setPendingMode] = useOptimisticMode(derivedMode);
-  const { draft, setDraft, scheduleCommit, flushCommit } = useManualDraft(manualSpec, activeMode);
-
-  const commitManual = useCallback(
-    (text) => {
-      onChange('', null, text, { sourceMode: 'manual' });
-    },
-    [onChange],
+  const isManual = sourceMode === 'manual' || (!value && Boolean(manualSpec));
+  const woodOptions = useMemo(
+    () =>
+      mapMaterialOptions(
+        materials,
+        (m) => `Rp ${formatIDR(m.pricePerM3Supplier)}/m³`,
+      ),
+    [materials],
   );
 
-  const handleModeChange = (next) => {
-    setPendingMode(next);
-    setInternalMode(next);
-    if (next === 'manual') {
-      onChange('', null, draft || manualSpec || '', { sourceMode: 'manual' });
-    } else {
-      onChange('', null, '', { sourceMode: 'database' });
-    }
-  };
-
-  const handleClearMaster = () => {
-    setPendingMode('master');
-    setInternalMode('master');
+  const handleClear = () => {
     onChange('', null, '', { sourceMode: 'database' });
   };
 
   return (
     <div className={`flex flex-col gap-1.5 min-w-[200px] ${className}`}>
-      <div className="flex items-center gap-1.5 flex-wrap">
-        <ModeToggle mode={activeMode} onModeChange={handleModeChange} />
-        {(value || manualSpec || draft) && (
+      <div className="flex items-center gap-1.5 min-w-0">
+        <SearchableSelect
+          className="flex-1 min-w-0"
+          value={isManual ? '' : value || ''}
+          displayLabel={isManual ? manualSpec || '' : ''}
+          allowCreate
+          createHint="Buat grade"
+          onCreate={(text) => onChange('', null, text, { sourceMode: 'manual' })}
+          onChange={(v, mat) => {
+            if (!v || !mat) {
+              onChange('', null, '', { sourceMode: 'database' });
+              return;
+            }
+            onChange(mat.id, mat, '', { sourceMode: 'database' });
+          }}
+          options={woodOptions}
+          placeholder="Cari grade atau buat baru…"
+          emptyMessage="Grade tidak ditemukan — ketik lalu Enter untuk buat baru"
+        />
+        {(value || manualSpec) && (
           <button
             type="button"
-            onClick={handleClearMaster}
-            className="p-1 rounded border border-slate-200 text-slate-400 hover:text-red-600 hover:border-red-200 hover:bg-red-50"
+            onClick={handleClear}
+            className="p-1 rounded border border-slate-200 text-slate-400 hover:text-red-600 hover:border-red-200 hover:bg-red-50 shrink-0"
             title="Putuskan / kosongkan grade"
           >
             <X className="w-3.5 h-3.5" />
           </button>
         )}
       </div>
-
-      {activeMode === 'master' ? (
-        <>
-          <SearchableSelect
-            key={`wood-db-${activeMode}`}
-            value={value || ''}
-            onChange={(v, mat) => {
-              if (!v || !mat) {
-                onChange('', null, '', { sourceMode: 'database' });
-                return;
-              }
-              onChange(mat.id, mat, '');
-            }}
-            options={mapMaterialOptions(
-              materials,
-              (m) => `Rp ${formatIDR(m.pricePerM3Supplier)}/m³`,
-            )}
-            placeholder="— Pilih grade kayu —"
-            emptyMessage="Grade tidak ditemukan"
-          />
-          {linkedMat && !compact && (
-            <span className="text-[9px] text-slate-500 font-medium leading-tight">
-              {linkedMat.woodName} ·{' '}
-              <MoneyText variant="price" className="text-[9px]">
-                Rp {formatIDR(linkedMat.pricePerM3Supplier)}/m³
-              </MoneyText>
-            </span>
-          )}
-        </>
-      ) : (
-        <input
-          type="text"
-          value={draft}
-          onChange={(e) => {
-            const next = e.target.value;
-            setDraft(next);
-            scheduleCommit(next, commitManual);
-          }}
-          onBlur={() => flushCommit(commitManual)}
-          placeholder="Spec / grade manual…"
-          className={fieldInputCls}
-          autoFocus
-        />
+      {linkedMat && !compact && !isManual && (
+        <span className="text-[9px] text-slate-500 font-medium leading-tight">
+          {linkedMat.woodName} ·{' '}
+          <MoneyText variant="price" className="text-[9px]">
+            Rp {formatIDR(linkedMat.pricePerM3Supplier)}/m³
+          </MoneyText>
+        </span>
       )}
     </div>
   );
@@ -251,8 +140,8 @@ function mapMaterialOptions(materials, priceFn, withGroup = false) {
 }
 
 /**
- * Picker SKU lengkap DATA BASE — semua section (hardware, finishing, packing, panel, …).
- * onChange(masterId, mat, manualSpec)
+ * Picker SKU lengkap DATA BASE — satu combobox creatable (cari master atau buat baru).
+ * onChange(masterId, mat, manualSpec, modeHint)
  */
 export function DatabaseMaterialField({
   materialType = '',
@@ -277,116 +166,58 @@ export function DatabaseMaterialField({
     [materialType, section, showAll, mastersTick],
   );
   const linkedMat = materials.find((m) => m.id === value);
+  const isManual = sourceMode === 'manual' || (!value && Boolean(manualSpec));
   const dbOptions = useMemo(
-    () =>
-      mapMaterialOptions(materials, (m) => formatPriceHint(m), true),
+    () => mapMaterialOptions(materials, (m) => formatPriceHint(m), true),
     [materials],
   );
 
-  const [internalMode, setInternalMode] = useState('master');
-  const derivedMode = useMemo(() => {
-    if (sourceMode === 'manual') return 'manual';
-    if (sourceMode === 'database') return 'master';
-    if (value && linkedMat) return 'master';
-    if (manualSpec && !value) return 'manual';
-    return internalMode;
-  }, [sourceMode, value, linkedMat, manualSpec, internalMode]);
-
-  const [activeMode, setPendingMode] = useOptimisticMode(derivedMode);
-  const { draft, setDraft, scheduleCommit, flushCommit } = useManualDraft(manualSpec, activeMode);
-
-  const commitManual = useCallback(
-    (text) => {
-      onChange('', null, text, { sourceMode: 'manual' });
-    },
-    [onChange],
-  );
-
-  const handleModeChange = (next) => {
-    setPendingMode(next);
-    setInternalMode(next);
-    if (next === 'manual') {
-      onChange('', null, draft || manualSpec || '', { sourceMode: 'manual' });
-    } else {
-      onChange('', null, '', { sourceMode: 'database' });
-    }
-  };
-
   return (
     <div className={`flex flex-col gap-1.5 min-w-[220px] ${className}`}>
-      <div className="flex items-center gap-1.5 flex-wrap">
-        <ModeToggle
-          mode={activeMode}
-          onModeChange={handleModeChange}
+      <div className="flex items-center gap-1.5 min-w-0">
+        <SearchableSelect
+          className="flex-1 min-w-0"
+          value={isManual ? '' : value || ''}
+          displayLabel={isManual ? manualSpec || '' : ''}
+          allowCreate
+          createHint="Buat material"
+          onCreate={(text) => onChange('', null, text, { sourceMode: 'manual' })}
+          onChange={(v, mat) => {
+            if (!v || !mat) {
+              onChange('', null, '', { sourceMode: 'database' });
+              return;
+            }
+            onChange(mat.id, mat, '', { sourceMode: 'database' });
+          }}
+          options={dbOptions}
+          placeholder="Cari material atau buat baru…"
+          emptyMessage="SKU tidak ditemukan — ketik lalu Enter untuk buat baru"
         />
-        {(value || manualSpec || draft) && (
+        {(value || manualSpec) && (
           <button
             type="button"
-            onClick={() => {
-              setPendingMode('master');
-              setInternalMode('master');
-              onChange('', null, '', { sourceMode: 'database' });
-            }}
-            className="p-1 rounded border border-slate-200 text-slate-400 hover:text-red-600 hover:border-red-200 hover:bg-red-50"
+            onClick={() => onChange('', null, '', { sourceMode: 'database' })}
+            className="p-1 rounded border border-slate-200 text-slate-400 hover:text-red-600 hover:border-red-200 hover:bg-red-50 shrink-0"
             title="Kosongkan material"
           >
             <X className="w-3.5 h-3.5" />
           </button>
         )}
       </div>
-
-      {activeMode === 'master' ? (
-        materials.length === 0 ? (
-          <span className="text-[9px] text-amber-600 font-bold">
-            Belum ada SKU — jalankan import master (npm run import:masters:zan)
-          </span>
-        ) : (
-          <>
-            <SearchableSelect
-              key={`mat-db-${activeMode}-${materialType}-${section}`}
-              value={value || ''}
-              onChange={(v, mat) => {
-                if (!v || !mat) {
-                  onChange('', null, '', { sourceMode: 'database' });
-                  return;
-                }
-                onChange(mat.id, mat, '');
-              }}
-              options={dbOptions}
-              placeholder="— Pilih material DATA BASE —"
-              emptyMessage="SKU tidak ditemukan"
-            />
-            {linkedMat && !compact && (
-              <span className="text-[9px] text-slate-500 font-medium leading-tight">
-                {linkedMat.section} · {linkedMat.materialType} ·{' '}
-                <MoneyText variant="price" className="text-[9px]">
-                  {formatPriceHint(linkedMat)}
-                </MoneyText>
-              </span>
-            )}
-          </>
-        )
-      ) : (
-        <input
-          type="text"
-          value={draft}
-          onChange={(e) => {
-            const next = e.target.value;
-            setDraft(next);
-            scheduleCommit(next, commitManual);
-          }}
-          onBlur={() => flushCommit(commitManual)}
-          placeholder="Spec material manual…"
-          className={fieldInputCls}
-          autoFocus
-        />
+      {linkedMat && !compact && !isManual && (
+        <span className="text-[9px] text-slate-500 font-medium leading-tight">
+          {linkedMat.section} · {linkedMat.materialType} ·{' '}
+          <MoneyText variant="price" className="text-[9px]">
+            {formatPriceHint(linkedMat)}
+          </MoneyText>
+        </span>
       )}
     </div>
   );
 }
 
 /**
- * Material DATA BASE (plywood, mdf, hpl, veneer, …) — pola WoodGradeField.
+ * Material DATA BASE (plywood, mdf, hpl, veneer, …) — satu combobox creatable.
  * onChange(masterId, mat, manualSpec)
  */
 export function MaterialMasterField({
@@ -404,23 +235,7 @@ export function MaterialMasterField({
     [materialType, section, mastersTick],
   );
   const linkedMat = materials.find((m) => m.id === value);
-
-  const [mode, setMode] = useState('master');
-
-  const activeMode = useMemo(() => {
-    if (value && linkedMat) return 'master';
-    if (manualSpec && !value) return 'manual';
-    return mode;
-  }, [value, linkedMat, manualSpec, mode]);
-
-  const handleModeChange = (next) => {
-    setMode(next);
-    if (next === 'manual') {
-      onChange('', null, manualSpec || '');
-    } else {
-      onChange('', null, '');
-    }
-  };
+  const isManual = !value && Boolean(manualSpec);
 
   const label =
     section ||
@@ -428,58 +243,43 @@ export function MaterialMasterField({
 
   return (
     <div className={`flex flex-col gap-1.5 min-w-[200px] ${className}`}>
-      <div className="flex items-center gap-1.5 flex-wrap">
-        <ModeToggle mode={activeMode} onModeChange={handleModeChange} />
+      <div className="flex items-center gap-1.5 min-w-0">
+        <SearchableSelect
+          className="flex-1 min-w-0"
+          value={isManual ? '' : value || ''}
+          displayLabel={isManual ? manualSpec || '' : ''}
+          allowCreate
+          createHint={`Buat ${label}`}
+          onCreate={(text) => onChange('', null, text)}
+          onChange={(v, mat) => {
+            if (!v || !mat) {
+              onChange('', null, '');
+              return;
+            }
+            onChange(mat.id, mat, '');
+          }}
+          options={mapMaterialOptions(materials, (m) => formatPriceHint(m))}
+          placeholder={`Cari ${label} atau buat baru…`}
+          emptyMessage="SKU tidak ditemukan — ketik lalu Enter untuk buat baru"
+        />
         {(value || manualSpec) && (
           <button
             type="button"
             onClick={() => onChange('', null, '')}
-            className="p-1 rounded border border-slate-200 text-slate-400 hover:text-red-600 hover:border-red-200 hover:bg-red-50"
+            className="p-1 rounded border border-slate-200 text-slate-400 hover:text-red-600 hover:border-red-200 hover:bg-red-50 shrink-0"
             title="Kosongkan material"
           >
             <X className="w-3.5 h-3.5" />
           </button>
         )}
       </div>
-
-      {activeMode === 'master' ? (
-        materials.length === 0 ? (
-          <span className="text-[9px] text-amber-600 font-bold">
-            Belum ada SKU {label} — import master atau mode Manual
-          </span>
-        ) : (
-          <>
-            <SearchableSelect
-              value={value || ''}
-              onChange={(v, mat) => {
-                if (!v || !mat) {
-                  onChange('', null, '');
-                  return;
-                }
-                onChange(mat.id, mat, '');
-              }}
-              options={mapMaterialOptions(materials, (m) => formatPriceHint(m))}
-              placeholder={`— Pilih ${label} —`}
-              emptyMessage="SKU tidak ditemukan"
-            />
-            {linkedMat && !compact && (
-              <span className="text-[9px] text-slate-500 font-medium leading-tight">
-                {linkedMat.section || label} ·{' '}
-                <MoneyText variant="price" className="text-[9px]">
-                  {formatPriceHint(linkedMat)}
-                </MoneyText>
-              </span>
-            )}
-          </>
-        )
-      ) : (
-        <input
-          type="text"
-          value={manualSpec}
-          onChange={(e) => onChange('', null, e.target.value)}
-          placeholder={`Spec ${label} manual…`}
-          className={fieldInputCls}
-        />
+      {linkedMat && !compact && !isManual && (
+        <span className="text-[9px] text-slate-500 font-medium leading-tight">
+          {linkedMat.section || label} ·{' '}
+          <MoneyText variant="price" className="text-[9px]">
+            {formatPriceHint(linkedMat)}
+          </MoneyText>
+        </span>
       )}
     </div>
   );
@@ -504,74 +304,48 @@ export function CoatingField({ value, coatingId, onChange, className = '', maste
   );
   const byId = coatings.find((c) => c.id === coatingId);
   const byName = coatings.find((c) => c.name === value || c.name?.includes(value));
-
-  const deriveMode = () => {
-    if (coatingId && byId) return 'master';
-    if (value && !byId && !byName) return 'manual';
-    if (coatingId || value) return 'master';
-    return 'master';
-  };
-
-  const [mode, setMode] = useState(deriveMode);
-  const activeMode =
-    coatingId && byId ? 'master' : value && !byId && !byName ? 'manual' : mode;
-
+  const isManual = Boolean(value) && !byId && !byName;
   const selectValue = byId?.id || byName?.id || '';
 
   return (
     <div className={`flex flex-col gap-1.5 min-w-[220px] ${className}`}>
-      <div className="flex items-center gap-1.5 flex-wrap">
-        <ModeToggle
-          mode={activeMode}
-          onModeChange={(next) => {
-            setMode(next);
-            onChange({ coatingId: '', coating: '' });
+      <div className="flex items-center gap-1.5 min-w-0">
+        <SearchableSelect
+          className="flex-1 min-w-0"
+          value={isManual ? '' : selectValue}
+          displayLabel={isManual ? value || '' : ''}
+          allowCreate
+          createHint="Buat coating"
+          onCreate={(text) => onChange({ coatingId: '', coating: text })}
+          onChange={(v, coat) => {
+            if (!v || !coat) {
+              onChange({ coatingId: '', coating: '' });
+              return;
+            }
+            onChange({ coatingId: coat.id, coating: coat.name, coatingData: coat });
           }}
+          options={coatingOptions}
+          placeholder="Cari coating atau buat baru…"
+          emptyMessage="Coating tidak ditemukan — ketik lalu Enter untuk buat baru"
         />
         {(coatingId || value) && (
           <button
             type="button"
             onClick={() => onChange({ coatingId: '', coating: '' })}
-            className="p-1 rounded border border-slate-200 text-slate-400 hover:text-red-600 hover:border-red-200 hover:bg-red-50"
+            className="p-1 rounded border border-slate-200 text-slate-400 hover:text-red-600 hover:border-red-200 hover:bg-red-50 shrink-0"
             title="Kosongkan coating"
           >
             <X className="w-3.5 h-3.5" />
           </button>
         )}
       </div>
-
-      {activeMode === 'master' ? (
-        <>
-          <SearchableSelect
-            value={selectValue}
-            onChange={(v, coat) => {
-              if (!v || !coat) {
-                onChange({ coatingId: '', coating: '' });
-                return;
-              }
-              onChange({ coatingId: coat.id, coating: coat.name, coatingData: coat });
-            }}
-            options={coatingOptions}
-            placeholder="— Pilih coating —"
-            emptyMessage="Coating tidak ditemukan"
-          />
-          {byId && (
-            <span className="text-[9px] text-slate-500">
-              <MoneyText variant="unitIdr" className="text-[9px]">
-                Rp {formatIDR(byId.roundedCostM2)}/m²
-              </MoneyText>{' '}
-              rounded
-            </span>
-          )}
-        </>
-      ) : (
-        <input
-          type="text"
-          value={value || ''}
-          onChange={(e) => onChange({ coatingId: '', coating: e.target.value })}
-          placeholder="Nama coating manual…"
-          className={fieldInputCls}
-        />
+      {byId && !isManual && (
+        <span className="text-[9px] text-slate-500">
+          <MoneyText variant="unitIdr" className="text-[9px]">
+            Rp {formatIDR(byId.roundedCostM2)}/m²
+          </MoneyText>{' '}
+          rounded
+        </span>
       )}
     </div>
   );

@@ -337,9 +337,6 @@ export default function Dashboard({
                         <span className="text-[10px] font-bold uppercase px-2 py-1 rounded bg-slate-100 text-slate-600 border border-slate-200">
                           {p.bomType || 'Produk'}
                         </span>
-                        {p.itemType && p.itemType !== '—' && (
-                          <div className="text-[9px] text-slate-400 mt-1 truncate max-w-[120px]" title={p.itemType}>{p.itemType}</div>
-                        )}
                       </td>
                       <td className="py-4 px-4 border-r border-slate-100">
                         <button

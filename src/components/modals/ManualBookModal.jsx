@@ -97,6 +97,7 @@ function SectionContent({ section, scenarios, bestPractices, onPreviewFlow, onPr
   const flowMeta = section.flow ? MANUAL_FLOW_REGISTRY[section.flow] : null;
   const FlowComp = flowMeta?.Component;
   const isTroubleshoot = section.id === 'troubleshoot';
+  const isFaq = section.faq === true;
 
   const isBestPractices = section.id === 'best-practices';
 
@@ -160,9 +161,11 @@ function SectionContent({ section, scenarios, bestPractices, onPreviewFlow, onPr
         />
       )}
 
-      {isTroubleshoot && section.steps && (
+      {(isTroubleshoot || isFaq) && section.steps && (
         <div>
-          <p className="text-[10px] font-bold uppercase text-slate-400 tracking-widest mb-2">Masalah & solusi</p>
+          <p className="text-[10px] font-bold uppercase text-slate-400 tracking-widest mb-2">
+            {isFaq ? 'Pertanyaan umum (FAQ)' : 'Masalah & solusi'}
+          </p>
           <StepList steps={section.steps} variant="troubleshoot" />
         </div>
       )}

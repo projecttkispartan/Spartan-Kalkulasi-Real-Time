@@ -64,7 +64,6 @@ export default function ProductContextTable({
               <Cell label="Nama produk" className="min-w-[140px]">
                 {productInfo.nama || productInfo.namaBom}
               </Cell>
-              <Cell label="Item type">{productMeta.itemType}</Cell>
               <Cell label="Versi">v{productInfo.versi}</Cell>
               <Cell label="Customer">{productInfo.customer}</Cell>
               <Cell label="Collection">{productInfo.collection}</Cell>

@@ -248,6 +248,55 @@ export const MANUAL_BOOK_SECTIONS = [
     ],
   },
   {
+    id: 'part-faq',
+    title: '4b. FAQ — PART & Biaya Komponen',
+    summary: 'Mengapa PROD/U muncul di PART · PART bukan produk jadi · beda vs MODUL/COGS.',
+    flow: 'bom',
+    faq: true,
+    body: [
+      'PART = komponen terkecil dengan material + routing sendiri (selaras sheet CALCULATION Excel). Bukan produk jadi.',
+      'PROD/U di PART = biaya per 1 pcs komponen (material + proses pada komponen itu), bukan harga jual produk akhir.',
+      'MODUL/SUBMODUL = rollup subtree + proses assembly induk · PROD/U modul = total (tidak dibagi qty).',
+      'COGS/Summary = biaya 1 unit produk jadi. Dokumen lengkap: docs/FAQ-Part-Biaya-Komponen.md.',
+    ],
+    checklist: [
+      'PART: MAT = harga 1 unit · PROD = material×qty + proses · PROD/U = PROD ÷ qty.',
+      'MODUL: MAT/PROD = jumlah anak · PROD/U = sama dengan PROD total.',
+      'Total COGS: Σ PART + proses modul — bukan jumlah baris modul + part (hindari double count).',
+    ],
+    tips: [
+      'Training user: sebut PROD/U PART sebagai «Biaya komponen / pcs», bukan «Harga produksi jadi».',
+      'Contoh angka & hierarki: docs/Sample-MAT-PROD-PROD-U.md.',
+    ],
+    steps: [
+      {
+        n: 1,
+        problem: 'PART kan cuma bahan — kenapa ada Harga Produksi (Satuan)?',
+        fix: 'Itu biaya per 1 pcs komponen setelah material + routing pada part (potong, laminating, amplas) — sebelum dirakit ke modul. Parity Excel: CALCULATION per kode part.',
+      },
+      {
+        n: 2,
+        problem: 'Bukankah harga produksi baru setelah dirakit jadi Modul?',
+        fix: 'Ada dua lapisan: (1) biaya komponen di PART, (2) biaya rakitan di MODUL/SUBMODUL. Produk jadi 1 unit hanya di Summary/COGS (+ packing, OH, markup).',
+      },
+      {
+        n: 3,
+        problem: 'User bisa mengira PART = produk jadi?',
+        fix: 'Risiko valid. Jelaskan: PART = HPP line item · MODUL = total rakitan · COGS = produk akhir. Backlog UX: rename kolom PART ke «Biaya Komponen / pcs».',
+      },
+      {
+        n: 4,
+        problem: 'PROD di PART dan MODUL — double count?',
+        fix: 'Tidak. COGS menjumlah Σ PART + proses modul sekali. Baris MODUL hanya rollup tampilan, bukan penjumlahan terpisah di engine total.',
+      },
+      {
+        n: 5,
+        problem: 'Qty modul = 1 — PROD/U sama dengan PROD?',
+        fix: 'Di MODUL/SUBMODUL PROD/U selalu = PROD (tidak pernah dibagi qty). Koinsidensi qty=1 bukan penyebabnya — logika rollup memang tidak pakai qty modul.',
+      },
+    ],
+  },
+  {
     id: 'cogs',
     title: '5. COGS, packing & parity',
     summary: 'Production cost, OH, markup, deviasi Excel.',

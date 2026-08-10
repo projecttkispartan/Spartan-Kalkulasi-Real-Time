@@ -42,7 +42,7 @@ function filterOptions(options, query) {
 
 /**
  * Combo klasik: klik → panel dropdown + search + list panjang (scroll).
- * Tertutup = satu baris seperti &lt;select&gt; biasa.
+ * allowCreate: ketik teks bebas → onCreate(text) (buat entri baru / manual).
  */
 export function SearchableSelect({
   value = '',
@@ -52,6 +52,10 @@ export function SearchableSelect({
   emptyMessage = 'Tidak ada hasil',
   className = '',
   disabled = false,
+  allowCreate = false,
+  onCreate,
+  displayLabel = '',
+  createHint = 'Buat baru',
 }) {
   const triggerRef = useRef(null);
   const panelRef = useRef(null);
@@ -66,6 +70,23 @@ export function SearchableSelect({
   );
 
   const filtered = useMemo(() => filterOptions(options, query), [options, query]);
+
+  const queryTrim = String(query || '').trim();
+  const exactMatch = useMemo(() => {
+    if (!queryTrim) return null;
+    const q = queryTrim.toLowerCase();
+    return (
+      options.find((o) => String(o.label || '').toLowerCase() === q) ||
+      options.find((o) => String(o.value || '').toLowerCase() === q) ||
+      null
+    );
+  }, [options, queryTrim]);
+
+  const showCreate =
+    allowCreate &&
+    typeof onCreate === 'function' &&
+    queryTrim.length > 0 &&
+    !exactMatch;
 
   const grouped = useMemo(() => {
     const hasGroup = filtered.some((o) => o.group);
@@ -147,6 +168,13 @@ export function SearchableSelect({
     setQuery('');
   };
 
+  const createFromQuery = () => {
+    if (!showCreate) return;
+    onCreate(queryTrim);
+    setOpen(false);
+    setQuery('');
+  };
+
   const renderOption = (opt) => (
     <button
       key={opt.value}
@@ -159,6 +187,9 @@ export function SearchableSelect({
       {opt.content ?? opt.label}
     </button>
   );
+
+  const closedLabel = selected?.label || displayLabel || '';
+  const isManualDisplay = !selected && Boolean(displayLabel);
 
   const panel =
     open &&
@@ -182,9 +213,21 @@ export function SearchableSelect({
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Cari kode, nama, section…"
+            placeholder={allowCreate ? 'Cari atau ketik nama baru…' : 'Cari kode, nama, section…'}
             className={searchInputCls}
-            onKeyDown={(e) => e.stopPropagation()}
+            onKeyDown={(e) => {
+              e.stopPropagation();
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                if (exactMatch) {
+                  pick(exactMatch);
+                } else if (showCreate) {
+                  createFromQuery();
+                } else if (filtered.length === 1) {
+                  pick(filtered[0]);
+                }
+              }
+            }}
           />
           {query.trim() && (
             <button
@@ -201,7 +244,7 @@ export function SearchableSelect({
           className="overflow-y-auto overscroll-contain"
           style={{ maxHeight: PANEL_MAX_H }}
         >
-          {value && (
+          {(value || displayLabel) && (
             <button
               type="button"
               className="w-full text-left px-2.5 py-1.5 text-[10px] font-bold text-slate-400 hover:bg-red-50 hover:text-red-600 border-b border-slate-50"
@@ -211,7 +254,18 @@ export function SearchableSelect({
               — Kosongkan pilihan —
             </button>
           )}
-          {filtered.length === 0 ? (
+          {showCreate ? (
+            <button
+              type="button"
+              className="w-full text-left px-2.5 py-2 text-xs font-bold text-emerald-800 bg-emerald-50/80 hover:bg-emerald-100 border-b border-emerald-100"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={createFromQuery}
+              title={`${createHint}: ${queryTrim}`}
+            >
+              + {createHint}: «{queryTrim}»
+            </button>
+          ) : null}
+          {filtered.length === 0 && !showCreate ? (
             <p className="px-2.5 py-4 text-[10px] text-slate-400 text-center">{emptyMessage}</p>
           ) : grouped ? (
             grouped.map(([group, items]) => (
@@ -227,8 +281,8 @@ export function SearchableSelect({
 
         <p className="px-2.5 py-1 text-[9px] text-slate-400 font-medium border-t border-slate-50 bg-slate-50/80">
           {query.trim()
-            ? `${filtered.length} dari ${options.length} SKU`
-            : `${options.length} SKU — scroll daftar`}
+            ? `${filtered.length} dari ${options.length} SKU${showCreate ? ' · Enter = buat baru' : ''}`
+            : `${options.length} SKU — scroll daftar${allowCreate ? ' · ketik untuk buat baru' : ''}`}
         </p>
       </div>,
       document.body,
@@ -248,9 +302,18 @@ export function SearchableSelect({
         aria-expanded={open}
         aria-haspopup="listbox"
       >
-        <span className={`flex-1 truncate ${selected ? 'text-slate-800' : 'text-slate-400'}`}>
-          {selected?.label || placeholder}
+        <span className={`flex-1 truncate ${closedLabel ? 'text-slate-800' : 'text-slate-400'}`}>
+          {closedLabel || placeholder}
         </span>
+        {isManualDisplay ? (
+          <span className="shrink-0 text-[8px] font-black uppercase tracking-wide text-slate-500 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded">
+            Baru
+          </span>
+        ) : selected ? (
+          <span className="shrink-0 text-[8px] font-black uppercase tracking-wide text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">
+            Master
+          </span>
+        ) : null}
         <ChevronDown
           className={`w-3.5 h-3.5 shrink-0 text-slate-400 transition-transform ${open ? 'rotate-180' : ''}`}
         />

@@ -99,6 +99,7 @@ function mapSavedOp(p, i, materialVol) {
             (m.materialMasterId ? 'database' : m.manualSpec || (m.nama && !m.materialMasterId) ? 'manual' : 'database');
           return {
             id: m.id || Date.now(),
+            sourcePartId: m.sourcePartId || '',
             materialMasterId: m.materialMasterId || '',
             materialSourceMode: mode,
             manualSpec: m.manualSpec ?? (mode === 'manual' ? m.nama || m.kode || '' : ''),
@@ -170,7 +171,7 @@ function withVolumeTime(op, materialVol, resetManual = false) {
   return applyVolumeToOperation(next, materialVol);
 }
 
-export default function RoutingModal({ node, onClose, kursUsd, kursEur, onSave, mastersTick = 0 }) {
+export default function RoutingModal({ node, onClose, kursUsd, kursEur, onSave, mastersTick = 0, structureParts = [] }) {
   const nodeData = useMemo(() => node?.data ?? node, [node]);
   const materialVol = useMemo(() => Number(nodeData?.vol) || 0, [nodeData]);
   const [operations, setOperations] = useState(() => buildOperationsFromNode(node));
@@ -388,6 +389,7 @@ export default function RoutingModal({ node, onClose, kursUsd, kursEur, onSave, 
                 (m.materialMasterId ? 'database' : m.manualSpec || (m.nama && !m.materialMasterId) ? 'manual' : 'database');
               return {
                 id: m.id || Date.now(),
+                sourcePartId: m.sourcePartId || '',
                 materialMasterId: m.materialMasterId || '',
                 materialSourceMode: mode,
                 manualSpec: m.manualSpec ?? (mode === 'manual' ? m.nama || m.kode || '' : ''),
@@ -429,6 +431,7 @@ export default function RoutingModal({ node, onClose, kursUsd, kursEur, onSave, 
       costsById={costsById}
       totals={totals}
       mastersTick={mastersTick}
+      structureParts={structureParts}
       onUpdate={updateOperation}
       onUpdateStep={updateRoutingStep}
       onRemove={handleRemove}
